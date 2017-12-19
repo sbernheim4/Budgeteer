@@ -44,9 +44,11 @@ module.exports = {
 			canPrint: true
 		}),
 		new BrowserSyncPlugin({
+			notify: false,
 			host: 'localhost',
 			port: 3000,
-			server: { baseDir: ['public'] }
+			server: { baseDir: ['public'],
+		}
 		})
 	]
 };

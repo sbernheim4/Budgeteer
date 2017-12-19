@@ -1,13 +1,14 @@
 'use strict'
 
+require('dotenv').config()
+
 const express = require(`express`);
 const app = express();
 const path = require('path');
 const chalk = require('chalk');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 const cacheTime = 31536000000;
-
 
 // Log all requests
 app.all('*', (req, res, next) => {
