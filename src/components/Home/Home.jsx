@@ -3,7 +3,9 @@ import '../../scss/index.scss';
 
 class Home extends Component {
 	render() {
-		return <p>HI</p>;
+		return (
+			<p>HI. This line is a react component. Isn't that neat</p>
+		);
 	}
 }
 
