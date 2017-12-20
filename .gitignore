@@ -60,5 +60,3 @@ typings/
 # swap files from editors
 *.swp
 *.swo
-
-bundle*

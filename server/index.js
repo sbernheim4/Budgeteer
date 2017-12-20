@@ -19,6 +19,7 @@ app.all('*', (req, res, next) => {
 /******************  SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime} ));
 
+app.use('/plaid-api', require('./plaid-api.js'));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/index.html'));

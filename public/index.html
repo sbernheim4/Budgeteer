@@ -2,12 +2,19 @@
 <html>
 <head>
 	<title></title>
+	<!-- JQuery and Plaid -->
+	<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 </head>
 <body>
+	<div id='nav'></div>
 	<h1>WELCOME</h1>
-<div id="Home"></div>
+	<div id="Home"></div>
 
+
+	<!-- THE BUNDLED JS FROM WEBPACK -->
 	<script src='./bundle.js'></script>
-	<link rel='stylesheet' href='index.css'>
+	<!-- <link rel="stylesheet" type="text/css" href="index.css"> -->
+
 </body>
 </html>

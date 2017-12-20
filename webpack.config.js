@@ -24,20 +24,28 @@ module.exports = {
 			},
 			{
 				test: /\.scss$/,
-				use: ExtractTextPlugin.extract({
-					fallback: 'style-loader',
-					use: ['css-loader', 'sass-loader']
-				})
+				use: ['style-loader', 'css-loader', 'sass-loader']
 			}
+			// UNCOMMENT THE FOLLOWING LINES TO PUT ALL THE SCSS INTO A SINGLE FILE
+			// ,
+			// {
+			// 	test: /\.scss$/,
+			// 	use: ExtractTextPlugin.extract({
+			// 		fallback: 'style-loader',
+			// 		use: ['css-loader', 'sass-loader']
+			// 	})
+			// }
+
 		]
 	},
 	resolve: {
 		extensions: ['*', '.js', 'jsx', '.scss']
 	},
 	plugins: [
-		new ExtractTextPlugin({
-			filename: 'index.css'
-		}),
+		// UNCOMMENT THE FOLLOWING LINES TO PUT ALL THE SCSS INTO A SINGLE FILE
+		// new ExtractTextPlugin({
+		// 	filename: 'index.css'
+		// }),
 		new OptimizeCssAssetsPlugin({
 			cssProcessor: nano,
 			cssProcessorOptions: {discardComments: {removeAll: true} },
