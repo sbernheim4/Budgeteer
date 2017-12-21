@@ -43,16 +43,10 @@ app.all('*', (req, res, next) => {
 
 app.get('/key-and-env', (req, res) => {
 
-	console.log("HERE");
-	console.log(PLAID_PUBLIC_KEY.toString());
-	console.log(PLAID_ENV.toString());
-
 	let jsonResponse = {
 		"publicKey": PLAID_PUBLIC_KEY.toString(),
 		"env": PLAID_ENV.toString()
 	}
-
-	// res.send(PLAID_PUBLIC_KEY);
 
 	res.send(jsonResponse);
 })
