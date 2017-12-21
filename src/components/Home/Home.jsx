@@ -1,11 +1,19 @@
 import React, { Component } from 'react';
+import TransactionContainer from '../TransactionContainer/TransactionContainer.jsx'
+import Transaction from '../Transaction/Transaction.jsx'
 
 import '../../scss/home.scss';
 
 class Home extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {};
+		this.state = {
+			transaction: [{
+				name: "sam",
+				amount: 20,
+				date: "12-21-17"
+			}]
+		};
 	}
 
 	// 1. Make request to the server to get variables and have the server return JSON
@@ -47,21 +55,29 @@ class Home extends Component {
 
 	addAccount() {
 		this.state.handler.open();
-		console.log('account added');
 	}
 
 	getTransactions() {
-		console.log('transactions received');
+		$.post('/plaid-api/transactions', data => {
+			this.setState({transaction: data.transactions});
+		});
+
+
+	}
+
+	renderContainer() {
+
 	}
 
 	render() {
 		return (
 			<div className='home'>
 
-			<p>HI. This line is a react component. Isn't that neat</p>
-
 			<button onClick={this.addAccount.bind(this)}>Add Accounts</button>
 			<button onClick={this.getTransactions.bind(this)}>Get Transactions</button>
+
+			<TransactionContainer transactions={this.state.transaction} />
+
 			</div>
 			);
 	}

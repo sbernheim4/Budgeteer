@@ -74,14 +74,29 @@ app.post('/get-access-token', function(req, res, next) {
 	});
 });
 
+app.post('/transactions', function(req, res, next) {
+	// Pull transactions for the Item for the last 30 days
+	const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+	const endDate = moment().format('YYYY-MM-DD');
+
+	client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
+		count: 250,
+		offset: 0,
+	}, function(error, transactionsResponse) {
+
+		if (error != null) {
+
+			console.log(JSON.stringify(error));
+			return res.json({
+				error: error
+			});
+
+		}
+
+		console.log('pulled ' + transactionsResponse.transactions.length + ' transactions');
+		res.json(transactionsResponse);
+	});
+});
+
+
 module.exports = app;
-
-// {
-// 	"display_message":null,
-
-// 	"error_code":"INVALID_API_KEYS",
-// 	"error_message":"invalid client_id or secret provided",
-// 	"error_type":"INVALID_INPUT",
-// 	"request_id":"pGxca",
-// 	"status_code":400
-// }
