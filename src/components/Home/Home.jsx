@@ -28,13 +28,17 @@ class Home extends Component {
 				product: ['transactions'],
 				key: this.state.publicKey,
 				onSuccess: function(public_token) {
-					$.post('/get_access_token', {
-						public_token: public_token
+					$.post('/plaid-api/get-access-token', {
+						public_token: public_token,
+						client_id: "5a24ca6a4e95b836d37e37fe",
+						secret: "f07a761a591de3cbbc5ac3ba2f4301"
 					});
 				}
 			});
 			this.setState({handler: plaid});
-		}).catch(err => console.error(err));
+		}).catch(err => {
+			console.error(err)
+		});
 	}
 
 	componentDidMount() {

@@ -11,15 +11,16 @@ const port = process.env.PORT;
 const cacheTime = 31536000000;
 
 // Log all requests
-app.all('*', (req, res, next) => {
-	console.log(chalk.blue(`New ${req.method} request for ${req.path} on ${new Date().toLocaleString()}`));
-	next();
-});
 
 /******************  SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime} ));
 
 app.use('/plaid-api', require('./plaid-api.js'));
+
+app.all('*', (req, res, next) => {
+	console.log(chalk.blue(`New ${req.method} request for ${req.path} on ${new Date().toLocaleString()}`));
+	next();
+});
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/index.html'));

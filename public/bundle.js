@@ -1508,14 +1508,16 @@ var Home = function (_Component) {
 					product: ['transactions'],
 					key: _this2.state.publicKey,
 					onSuccess: function onSuccess(public_token) {
-						$.post('/get_access_token', {
-							public_token: public_token
+						$.post('/plaid-api/get-access-token', {
+							public_token: public_token,
+							client_id: "5a24ca6a4e95b836d37e37fe",
+							secret: "f07a761a591de3cbbc5ac3ba2f4301"
 						});
 					}
 				});
 				_this2.setState({ handler: plaid });
 			}).catch(function (err) {
-				return console.error(err);
+				console.error(err);
 			});
 		}
 	}, {
