@@ -9,10 +9,6 @@ class TransactionContainer extends Component {
 	}
 
 	render() {
-
-		const nums = [1, 2, 3, 4];
-
-
 		return (
 			<div className='transactions'>
 				{this.props.transactions.map( (t, index) => (
@@ -20,7 +16,6 @@ class TransactionContainer extends Component {
 				))}
 			</div>
 		);
-
 	}
 }
 

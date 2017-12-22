@@ -61,8 +61,6 @@ class Home extends Component {
 		$.post('/plaid-api/transactions', data => {
 			this.setState({transaction: data.transactions});
 		});
-
-
 	}
 
 	renderContainer() {
@@ -73,10 +71,12 @@ class Home extends Component {
 		return (
 			<div className='home'>
 
-			<button onClick={this.addAccount.bind(this)}>Add Accounts</button>
-			<button onClick={this.getTransactions.bind(this)}>Get Transactions</button>
+				<div class='home--buttons'>
+					<button onClick={this.addAccount.bind(this)}>Add Accounts</button>
+					<button onClick={this.getTransactions.bind(this)}>Get Transactions</button>
+				</div>
 
-			<TransactionContainer transactions={this.state.transaction} />
+				<TransactionContainer transactions={this.state.transaction} />
 
 			</div>
 			);

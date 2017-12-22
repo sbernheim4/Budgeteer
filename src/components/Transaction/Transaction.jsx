@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import '../../scss/transactions.scss';
+import '../../scss/transaction.scss';
 
 class Transaction extends Component {
 	constructor(props) {
@@ -9,10 +9,10 @@ class Transaction extends Component {
 	}
 	render() {
 		return (
-			<div className='transactions--transaction'>
-				<p>{JSON.stringify(this.props.transaction.name)}</p>
-				<p>{JSON.stringify(this.props.transaction.amount)}</p>
-				<p>{JSON.stringify(this.props.transaction.date)}</p>
+			<div className='transaction'>
+				<h4>Name: {JSON.stringify(this.props.transaction.name)}</h4>
+				<p>Amount: {JSON.stringify(this.props.transaction.amount)}</p>
+				<p>Date: {JSON.stringify(this.props.transaction.date)}</p>
 			</div>
 		);
 	}

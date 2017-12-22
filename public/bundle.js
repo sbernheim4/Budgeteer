@@ -1606,6 +1606,7 @@ var Home = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Home.__proto__ || (0, _getPrototypeOf2.default)(Home)).call(this, props));
 
 		_this.state = {
+			opened: false,
 			transaction: [{
 				name: "sam",
 				amount: 20,
@@ -1657,6 +1658,7 @@ var Home = function (_Component) {
 		key: 'addAccount',
 		value: function addAccount() {
 			this.state.handler.open();
+			this.setState({ opened: true });
 		}
 	}, {
 		key: 'getTransactions',
@@ -1677,14 +1679,18 @@ var Home = function (_Component) {
 				'div',
 				{ className: 'home' },
 				_react2.default.createElement(
-					'button',
-					{ onClick: this.addAccount.bind(this) },
-					'Add Accounts'
-				),
-				_react2.default.createElement(
-					'button',
-					{ onClick: this.getTransactions.bind(this) },
-					'Get Transactions'
+					'div',
+					{ 'class': 'home--buttons' },
+					_react2.default.createElement(
+						'button',
+						{ onClick: this.addAccount.bind(this) },
+						'Add Accounts'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: this.getTransactions.bind(this) },
+						'Get Transactions'
+					)
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.transaction })
 			);
@@ -2083,9 +2089,6 @@ var TransactionContainer = function (_Component) {
 	(0, _createClass3.default)(TransactionContainer, [{
 		key: 'render',
 		value: function render() {
-
-			var nums = [1, 2, 3, 4];
-
 			return _react2.default.createElement(
 				'div',
 				{ className: 'transactions' },
@@ -2139,7 +2142,7 @@ var _react = __webpack_require__(6);
 
 var _react2 = _interopRequireDefault(_react);
 
-__webpack_require__(109);
+__webpack_require__(130);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2160,20 +2163,23 @@ var Transaction = function (_Component) {
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
-				{ className: 'transactions--transaction' },
+				{ className: 'transaction' },
 				_react2.default.createElement(
-					'p',
+					'h4',
 					null,
+					'Name: ',
 					(0, _stringify2.default)(this.props.transaction.name)
 				),
 				_react2.default.createElement(
 					'p',
 					null,
+					'Amount: ',
 					(0, _stringify2.default)(this.props.transaction.amount)
 				),
 				_react2.default.createElement(
 					'p',
 					null,
+					'Date: ',
 					(0, _stringify2.default)(this.props.transaction.date)
 				)
 			);
@@ -4796,51 +4802,8 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 109 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(110);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactions.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactions.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(24)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
+/* 109 */,
+/* 110 */,
 /* 111 */
 /***/ (function(module, exports) {
 
@@ -4975,7 +4938,7 @@ exports = module.exports = __webpack_require__(24)(undefined);
 
 
 // module
-exports.push([module.i, ".home {\n  margin: 0 auto;\n  display: flex;\n  flex-direction: column;\n  align-items: center; }\n  .home button {\n    margin-top: 10px;\n    width: 200px;\n    height: 30px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".home {\n  margin: 0 auto; }\n  .home .home--buttons button {\n    margin-top: 10px;\n    width: 200px;\n    height: 30px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -21014,6 +20977,51 @@ var $JSON = core.JSON || (core.JSON = { stringify: JSON.stringify });
 module.exports = function stringify(it) { // eslint-disable-line no-unused-vars
   return $JSON.stringify.apply($JSON, arguments);
 };
+
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(131);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(25)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transaction.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transaction.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 131 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(24)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".transaction {\n  margin: 10px; }\n", ""]);
+
+// exports
 
 
 /***/ })
