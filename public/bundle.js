@@ -1676,13 +1676,9 @@ var _react = __webpack_require__(6);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _TransactionContainer = __webpack_require__(58);
+var _AccountsContainer = __webpack_require__(154);
 
-var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
-
-var _Transaction = __webpack_require__(42);
-
-var _Transaction2 = _interopRequireDefault(_Transaction);
+var _AccountsContainer2 = _interopRequireDefault(_AccountsContainer);
 
 __webpack_require__(114);
 
@@ -1709,8 +1705,8 @@ var Home = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Home, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
+		key: 'componentDidMount',
+		value: function componentDidMount() {
 			var _this2 = this;
 
 			fetch('http://localhost:5000/plaid-api/key-and-env').then(function (response) {
@@ -1719,6 +1715,7 @@ var Home = function (_Component) {
 				_this2.setState({ env: res.env, publicKey: res.publicKey });
 				return res;
 			}).then(function (res) {
+
 				var plaid = Plaid.create({
 					apiVersion: 'v2',
 					clientName: 'Plaid Walkthrough Demo',
@@ -1733,6 +1730,7 @@ var Home = function (_Component) {
 						});
 					}
 				});
+
 				_this2.setState({ handler: plaid });
 			}).catch(function (err) {
 				console.error(err);
@@ -1786,7 +1784,6 @@ var Home = function (_Component) {
 			var currentTransactions = this.state.transactions;
 
 			// Add all the transactions for the new bank the user just selected
-
 			transactions.forEach(function (t) {
 				if (!_this5.state.transaction_ids.has(t.transaction_id)) {
 
@@ -1823,7 +1820,7 @@ var Home = function (_Component) {
 						'Get Transactions'
 					)
 				),
-				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.transactions })
+				_react2.default.createElement(_AccountsContainer2.default, { transactions: this.state.transactions, accounts: this.state.accounts })
 			);
 		}
 	}]);
@@ -21676,6 +21673,167 @@ module.exports = function (COLLECTION) {
     return new this(A);
   } });
 };
+
+
+/***/ }),
+/* 154 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _getPrototypeOf = __webpack_require__(15);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(18);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(19);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(20);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(21);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(6);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _TransactionContainer = __webpack_require__(58);
+
+var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
+
+__webpack_require__(155);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var AccountsContainer = function (_Component) {
+	(0, _inherits3.default)(AccountsContainer, _Component);
+
+	function AccountsContainer(props) {
+		(0, _classCallCheck3.default)(this, AccountsContainer);
+
+		var _this = (0, _possibleConstructorReturn3.default)(this, (AccountsContainer.__proto__ || (0, _getPrototypeOf2.default)(AccountsContainer)).call(this, props));
+
+		_this.state = {
+			transactions: []
+		};
+
+		_this.handleClick = _this.handleClick.bind(_this);
+		return _this;
+	}
+
+	(0, _createClass3.default)(AccountsContainer, [{
+		key: 'handleClick',
+		value: function handleClick(account_id) {
+			var allTransactions = this.props.transactions;
+
+			if (account_id === "all") {
+				this.setState({ transactions: allTransactions });
+			} else {
+
+				var releventTransactions = [];
+
+				allTransactions.map(function (transaction) {
+					if (transaction.account_id === account_id) {
+						releventTransactions.push(transaction);
+					}
+				});
+
+				this.setState({ transactions: releventTransactions });
+			}
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'accounts' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'accounts--btns' },
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.handleClick("all");
+							} },
+						'View All Transactions'
+					),
+					this.props.accounts.map(function (a, index) {
+						return _react2.default.createElement(
+							'button',
+							{ onClick: function onClick() {
+									_this2.handleClick(a.account_id);
+								} },
+							a.name
+						);
+					})
+				),
+				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.transactions })
+			);
+		}
+	}]);
+	return AccountsContainer;
+}(_react.Component);
+
+exports.default = AccountsContainer;
+
+/***/ }),
+/* 155 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(156);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(25)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./accountsContainer.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./accountsContainer.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 156 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(24)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".accounts--btns {\n  display: flex;\n  justify-content: center; }\n\n.accounts button {\n  margin: 10px;\n  padding: 10px;\n  border-radius: 5px;\n  cursor: pointer; }\n", ""]);
+
+// exports
 
 
 /***/ })

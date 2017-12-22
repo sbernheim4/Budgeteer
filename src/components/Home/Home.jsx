@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import TransactionContainer from '../TransactionContainer/TransactionContainer.jsx'
-import Transaction from '../Transaction/Transaction.jsx'
+import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
 
 import '../../scss/home.scss';
 
@@ -19,7 +18,7 @@ class Home extends Component {
 		};
 	}
 
-	componentWillMount () {
+	componentDidMount() {
 		fetch('http://localhost:5000/plaid-api/key-and-env')
 		.then(response => {
 			return response.json();
@@ -27,6 +26,7 @@ class Home extends Component {
 			this.setState( {env: res.env, publicKey: res.publicKey} );
 			return res;
 		}).then( res => {
+
 			const plaid = Plaid.create({
 				apiVersion: 'v2',
 				clientName: 'Plaid Walkthrough Demo',
@@ -41,7 +41,9 @@ class Home extends Component {
 					});
 				}
 			});
+
 			this.setState({handler: plaid});
+
 		}).catch(err => {
 			console.error(err)
 		});
@@ -84,7 +86,6 @@ class Home extends Component {
 		let currentTransactions = this.state.transactions;
 
 		// Add all the transactions for the new bank the user just selected
-
 		transactions.forEach( (t) => {
 			if (!this.state.transaction_ids.has(t.transaction_id)) {
 
@@ -111,7 +112,7 @@ class Home extends Component {
 			<button onClick={this.getTransactions.bind(this)}>Get Transactions</button>
 			</div>
 
-			<TransactionContainer transactions={this.state.transactions} />
+			<AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts}/>
 
 			</div>
 			);
