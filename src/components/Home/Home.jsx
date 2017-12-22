@@ -7,19 +7,17 @@ import '../../scss/home.scss';
 class Home extends Component {
 	constructor(props) {
 		super(props)
+
+		let setOne = new Set();
+		let setTwo = new Set();
+
 		this.state = {
-			transaction: [{
-				name: "sam",
-				amount: 20,
-				date: "12-21-17"
-			}]
+			transactions: [],
+			accounts: [],
+			account_ids: setOne,
+			transaction_ids: setTwo
 		};
 	}
-
-	// 1. Make request to the server to get variables and have the server return JSON
-	// 	PLAID_ENV
-	// 	PLAID_PUBLIC_KEY
-
 
 	componentWillMount () {
 		fetch('http://localhost:5000/plaid-api/key-and-env')
@@ -49,34 +47,71 @@ class Home extends Component {
 		});
 	}
 
-	componentDidMount() {
-
-	}
-
 	addAccount() {
 		this.state.handler.open();
 	}
 
 	getTransactions() {
 		$.post('/plaid-api/transactions', data => {
-			this.setState({transaction: data.transactions});
+			this.storeTransactions(data.transactions);
+			this.storeAccounts(data.accounts);
 		});
 	}
 
-	renderContainer() {
+	storeAccounts(accounts) {
+		// Determine if any accounts already exist in the state
+		let currentAccounts = this.state.accounts;
 
+		// Add all the accounts for the new bank the user just selected
+		accounts.forEach( acct => {
+			if (!this.state.account_ids.has(acct.account_id)) {
+				this.state.account_ids.add(acct.account_id);
+				currentAccounts.push(acct);
+			}
+		});
+
+		// Sort the accounts based on account_id
+		currentAccounts = currentAccounts.sort( (a, b) => {
+			return a.account_id - b.account_id
+		});
+
+		// Update accounts state variable
+		this.setState({accounts: currentAccounts})
+	}
+
+	storeTransactions(transactions) {
+		// Determine if any transactions already exist in the state
+		let currentTransactions = this.state.transactions;
+
+		// Add all the transactions for the new bank the user just selected
+
+		transactions.forEach( (t) => {
+			if (!this.state.transaction_ids.has(t.transaction_id)) {
+
+				this.state.transaction_ids.add(t.transaction_id);
+				currentTransactions.push(t);
+			}
+		})
+
+		// Sort the transactions based on account_id
+		currentTransactions = currentTransactions.sort( (a, b) => {
+			return a.account_id - b.account_id;
+		});
+
+		// Update transactions state variable
+		this.setState({transactions: currentTransactions});
 	}
 
 	render() {
 		return (
 			<div className='home'>
 
-				<div class='home--buttons'>
-					<button onClick={this.addAccount.bind(this)}>Add Accounts</button>
-					<button onClick={this.getTransactions.bind(this)}>Get Transactions</button>
-				</div>
+			<div className='home--buttons'>
+			<button onClick={this.addAccount.bind(this)}>Add Accounts</button>
+			<button onClick={this.getTransactions.bind(this)}>Get Transactions</button>
+			</div>
 
-				<TransactionContainer transactions={this.state.transaction} />
+			<TransactionContainer transactions={this.state.transactions} />
 
 			</div>
 			);

@@ -16,8 +16,7 @@ const PLAID_PUBLIC_KEY = process.env.PLAID_PUBLIC_KEY;
 const PLAID_ENV = process.env.PLAID_ENV
 
 // TODO:
-// We store the access_token in memory - in production, store it in a secure
-// persistent data store
+// We store the access_token in memory - in production, store it in a secure persistent data store
 let ACCESS_TOKEN = null;
 let PUBLIC_TOKEN = null;
 let ITEM_ID = null;
@@ -96,6 +95,10 @@ app.post('/transactions', function(req, res, next) {
 		console.log('pulled ' + transactionsResponse.transactions.length + ' transactions');
 		res.json(transactionsResponse);
 	});
+});
+
+app.post('/institutions', (req, res) => {
+	client.getInstitutions()
 });
 
 

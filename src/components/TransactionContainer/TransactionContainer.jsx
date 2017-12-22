@@ -12,7 +12,7 @@ class TransactionContainer extends Component {
 		return (
 			<div className='transactions'>
 				{this.props.transactions.map( (t, index) => (
-					<Transaction transaction={t} />
+					<Transaction key={index} transaction={t} />
 				))}
 			</div>
 		);
