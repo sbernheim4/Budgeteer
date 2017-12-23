@@ -10,7 +10,6 @@ class Navbar extends Component {
 				<p>Sign Up</p>
 				<p>Sign In</p>
 			</div>
-
 		);
 	}
 }

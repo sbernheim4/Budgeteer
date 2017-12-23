@@ -84,12 +84,10 @@ app.post('/transactions', function(req, res, next) {
 	}, function(error, transactionsResponse) {
 
 		if (error != null) {
-
 			console.log(JSON.stringify(error));
 			return res.json({
 				error: error
 			});
-
 		}
 
 		console.log('pulled ' + transactionsResponse.transactions.length + ' transactions');

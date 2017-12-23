@@ -10,7 +10,7 @@ class Transaction extends Component {
 	render() {
 		return (
 			<div className='transaction'>
-				<h4>Name: {JSON.stringify(this.props.transaction.name)}</h4>
+				<h4>{JSON.parse(JSON.stringify(this.props.transaction.name))}</h4>
 				<p>Amount: {JSON.stringify(this.props.transaction.amount)}</p>
 				<p>Date: {JSON.stringify(this.props.transaction.date)}</p>
 			</div>

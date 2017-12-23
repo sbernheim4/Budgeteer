@@ -35,7 +35,6 @@ class AccountsContainer extends Component {
 	render() {
 		return (
 			<div className='accounts'>
-				
 				<div className='accounts--btns'>
 					<button onClick={() => {this.handleClick("all")}}>View All Transactions</button>
 					{this.props.accounts.map( (a, index) => (
