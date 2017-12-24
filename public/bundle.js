@@ -8233,14 +8233,10 @@ var Budget = function (_Component) {
 
     (0, _createClass3.default)(Budget, [{
         key: 'componentDidMount',
-        value: function componentDidMount() {
-            console.log("THIS.STATE.DATA");
-            console.log(this.state.data);
-        }
+        value: function componentDidMount() {}
     }, {
         key: 'handleChange',
         value: function handleChange(event) {
-            console.log(event.target.value.trim());
             // Update the state variable
             this.setState({ monthlyBudget: event.target.value.trim() });
 
@@ -57690,7 +57686,7 @@ exports.push([module.i, ".navbar {\n  display: flex;\n  flex-direction: row; }\n
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _getPrototypeOf = __webpack_require__(22);
@@ -57721,179 +57717,227 @@ var _TransactionContainer = __webpack_require__(71);
 
 var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
 
+__webpack_require__(464);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import '../scss/categoryContainer.scss'
-
 var CategoryContainer = function (_Component) {
-    (0, _inherits3.default)(CategoryContainer, _Component);
+	(0, _inherits3.default)(CategoryContainer, _Component);
 
-    function CategoryContainer(props) {
-        (0, _classCallCheck3.default)(this, CategoryContainer);
+	function CategoryContainer(props) {
+		(0, _classCallCheck3.default)(this, CategoryContainer);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (CategoryContainer.__proto__ || (0, _getPrototypeOf2.default)(CategoryContainer)).call(this, props));
+		var _this = (0, _possibleConstructorReturn3.default)(this, (CategoryContainer.__proto__ || (0, _getPrototypeOf2.default)(CategoryContainer)).call(this, props));
 
-        _this.getCategory = _this.getCategory.bind(_this);
+		_this.getCategory = _this.getCategory.bind(_this);
 
-        _this.state = {
-            categoryTransactions: []
-        };
+		_this.state = {
+			categoryTransactions: []
+		};
 
-        return _this;
-    }
+		return _this;
+	}
 
-    (0, _createClass3.default)(CategoryContainer, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            console.log("NUM TRANSACTIONS IN TOTAL");
-            console.log(this.props.transactions.length);
-        }
-    }, {
-        key: 'getCategory',
-        value: function getCategory(categoryString) {
-            var releventTransactions = [];
+	(0, _createClass3.default)(CategoryContainer, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {}
+	}, {
+		key: 'getCategory',
+		value: function getCategory(categoryString) {
+			var releventTransactions = [];
 
-            if (categoryString === 'Other') {
-                this.props.transactions.forEach(function (t) {
-                    if (t.category === null) {
-                        releventTransactions.push(t);
-                    }
-                });
-            } else {
-                this.props.transactions.forEach(function (t) {
-                    if (t.category !== null && t.category.includes(categoryString)) {
-                        releventTransactions.push(t);
-                    }
-                });
-            }
+			if (categoryString === 'Other') {
+				this.props.transactions.forEach(function (t) {
+					if (t.category === null) {
+						releventTransactions.push(t);
+					}
+				});
+			} else {
+				this.props.transactions.forEach(function (t) {
+					if (t.category !== null && t.category.includes(categoryString)) {
+						releventTransactions.push(t);
+					}
+				});
+			}
 
-            this.setState({ categoryTransactions: releventTransactions });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var _this2 = this;
+			this.setState({ categoryTransactions: releventTransactions });
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
 
-            var container = null;
-            if (this.state.categoryTransactions.length === 0) {
-                container = '';
-            } else {
-                container = _react2.default.createElement(_TransactionContainer2.default, { className: 'category--transactions', transactions: this.state.categoryTransactions });
-            }
+			var container = null;
+			if (this.state.categoryTransactions.length === 0) {
+				container = '';
+			} else {
+				container = _react2.default.createElement(_TransactionContainer2.default, { className: 'category--transactions', transactions: this.state.categoryTransactions });
+			}
 
-            return _react2.default.createElement(
-                'div',
-                { className: 'categories' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'category--btns' },
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Food and Drink');
-                            } },
-                        'Food and Drink'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Travel');
-                            } },
-                        'Travel'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Shops');
-                            } },
-                        'Shops'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Recreation');
-                            } },
-                        'Recreation'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Service');
-                            } },
-                        'Service'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Community');
-                            } },
-                        'Community'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Healthcare');
-                            } },
-                        'Healthcare'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Other');
-                            } },
-                        'Other'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Bank Fees');
-                            } },
-                        'Bank Fees'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Cash Advance');
-                            } },
-                        'Cash Advance'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Interest');
-                            } },
-                        'Interest'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Payment');
-                            } },
-                        'Payment'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Tax');
-                            } },
-                        'Tax'
-                    ),
-                    _react2.default.createElement(
-                        'button',
-                        { className: 'home--category-btns', onClick: function onClick() {
-                                _this2.getCategory('Transfer');
-                            } },
-                        'Transfer'
-                    )
-                ),
-                container
-            );
-        }
-    }]);
-    return CategoryContainer;
+			return _react2.default.createElement(
+				'div',
+				{ className: 'category' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'category--btns' },
+					_react2.default.createElement(
+						'h3',
+						null,
+						'Sort by Categories'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Food and Drink');
+							} },
+						'Food and Drink'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Travel');
+							} },
+						'Travel'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Shops');
+							} },
+						'Shops'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Recreation');
+							} },
+						'Recreation'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Service');
+							} },
+						'Service'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Community');
+							} },
+						'Community'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Healthcare');
+							} },
+						'Healthcare'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Other');
+							} },
+						'Other'
+					),
+					_react2.default.createElement('br', null),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Bank Fees');
+							} },
+						'Bank Fees'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Cash Advance');
+							} },
+						'Cash Advance'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Interest');
+							} },
+						'Interest'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Payment');
+							} },
+						'Payment'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Tax');
+							} },
+						'Tax'
+					),
+					_react2.default.createElement(
+						'button',
+						{ className: 'home--category-btns', onClick: function onClick() {
+								_this2.getCategory('Transfer');
+							} },
+						'Transfer'
+					)
+				),
+				container
+			);
+		}
+	}]);
+	return CategoryContainer;
 }(_react.Component);
 
 exports.default = CategoryContainer;
+
+/***/ }),
+/* 464 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(465);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(21)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./categoryContainer.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./categoryContainer.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 465 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(20)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".category--btns {\n  display: flex;\n  flex-direction: column; }\n  .category--btns button {\n    width: 70px;\n    margin: 5px;\n    padding: 15px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
+
+// exports
+
 
 /***/ })
 /******/ ]);

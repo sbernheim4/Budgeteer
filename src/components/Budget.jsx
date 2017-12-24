@@ -15,12 +15,9 @@ class Budget extends Component {
     }
 
     componentDidMount() {
-        console.log("THIS.STATE.DATA");
-        console.log(this.state.data);
     }
 
     handleChange(event) {
-        console.log(event.target.value.trim());
         // Update the state variable
         this.setState({ monthlyBudget: event.target.value.trim() });
 

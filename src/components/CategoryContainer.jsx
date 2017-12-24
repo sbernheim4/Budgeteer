@@ -1,79 +1,79 @@
 import React, { Component } from 'react';
 import TransactionContainer from './TransactionContainer.jsx';
-// import '../scss/categoryContainer.scss'
+import '../scss/categoryContainer.scss'
 
 class CategoryContainer extends Component {
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.getCategory = this.getCategory.bind(this);
+		this.getCategory = this.getCategory.bind(this);
 
-        this.state = {
-            categoryTransactions: []
-        };
-        
-    }
+		this.state = {
+			categoryTransactions: []
+		};
+		
+	}
 
-    componentDidMount() {
-        console.log("NUM TRANSACTIONS IN TOTAL");
-        console.log(this.props.transactions.length);
-    }
+	componentDidMount() {
 
-    getCategory(categoryString) {
-        let releventTransactions = [];
+	}
 
-        if (categoryString === 'Other') {
-            this.props.transactions.forEach(t => {
-                if (t.category === null) {
-                    releventTransactions.push(t);
-                }
-            });
-        } else {
-            this.props.transactions.forEach(t => {
-                if (t.category !== null && t.category.includes(categoryString)) {
-                    releventTransactions.push(t);
-                }
-            });
-        }
+	getCategory(categoryString) {
+		let releventTransactions = [];
 
-        this.setState({ categoryTransactions: releventTransactions })
-    }
+		if (categoryString === 'Other') {
+			this.props.transactions.forEach(t => {
+				if (t.category === null) {
+					releventTransactions.push(t);
+				}
+			});
+		} else {
+			this.props.transactions.forEach(t => {
+				if (t.category !== null && t.category.includes(categoryString)) {
+					releventTransactions.push(t);
+				}
+			});
+		}
 
-    render() {
-        let container = null
-        if (this.state.categoryTransactions.length === 0) {
-            container = '';
-        } else {
-            container = <TransactionContainer className='category--transactions' transactions={this.state.categoryTransactions} />;
-        }
+		this.setState({ categoryTransactions: releventTransactions })
+	}
 
-        return (
-            <div className='categories'>
-                <div className='category--btns'>
+	render() {
+		let container = null
+		if (this.state.categoryTransactions.length === 0) {
+			container = '';
+		} else {
+			container = <TransactionContainer className='category--transactions' transactions={this.state.categoryTransactions} />;
+		}
 
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Food and Drink') }}>Food and Drink</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Travel') }}>Travel</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Shops') }}>Shops</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Recreation') }}>Recreation</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Service') }}>Service</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Community') }}>Community</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Healthcare') }}>Healthcare</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Other') }}>Other</button>
+		return (
+			<div className='category'>
+				<div className='category--btns'>
+					<h3>Sort by Categories</h3>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Food and Drink') }}>Food and Drink</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Travel') }}>Travel</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Shops') }}>Shops</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Recreation') }}>Recreation</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Service') }}>Service</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Community') }}>Community</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Healthcare') }}>Healthcare</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Other') }}>Other</button>
 
-                    {/* TODO: These categories should be in a do more section */}
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Bank Fees') }}>Bank Fees</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Cash Advance') }}>Cash Advance</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Interest') }}>Interest</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Payment') }}>Payment</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Tax') }}>Tax</button>
-                    <button className='home--category-btns' onClick={() => { this.getCategory('Transfer') }}>Transfer</button>
-                </div>
+					<br />
+					{/* TODO: These categories should be in a do more section */}
+					<button className='home--category-btns' onClick={() => { this.getCategory('Bank Fees') }}>Bank Fees</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Cash Advance') }}>Cash Advance</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Interest') }}>Interest</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Payment') }}>Payment</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Tax') }}>Tax</button>
+					<button className='home--category-btns' onClick={() => { this.getCategory('Transfer') }}>Transfer</button>
+				</div>
 
-                {container}
+				{container}
 
-            </div>
-        );
-    }
+			</div>
+		);
+	}
 }
 
 export default CategoryContainer;
