@@ -1,15 +1,29 @@
 .budget {
+	margin: 20px;
+	// display: flex;
+	// justify-content: center;
+	// align-items: center;
 
-	h1 {
-		height: 38px;
+	&--total-spent {
+
 	}
 
 	&--form {
+		
 		label {
+			font-size: 20px;
+			font-weight: bold;
+			display: flex;
+			align-items: center;
 
 			input {
 				margin-left: 10px;
+				width: 200px;
+				padding: 10px;
 				border: 1px solid black;
+				border-radius: 5px;
+				font-size: 15px;
+				box-sizing: border-box;
 			}
 		}
 	}
@@ -17,7 +31,7 @@
 	&--graph{
 		width: 300px;
 		height: 20px;
-		background-color: white;
+		background-color: rgb(77,153,114);
 		border: 1px solid black;
 		border-radius: 5px;
 		
@@ -25,7 +39,15 @@
 
 			width: 0%;
 			height: inherit;
-			background-color: red;
+			background-color: rgb(212,99,99);
 		}
 	}
+
+	&--percent {
+
+	}
+}
+
+.budget > * {
+	margin: 5px;
 }

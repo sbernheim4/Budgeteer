@@ -65,8 +65,8 @@ section {
  */
 
 h1 {
-	font-size: 2em;
 	margin: 0.67em 0;
+	font-size: 2em;
 }
 
 /* Grouping content
@@ -198,9 +198,9 @@ small {
 
 sub,
 sup {
+	position: relative;
 	font-size: 75%;
 	line-height: 0;
-	position: relative;
 	vertical-align: baseline;
 }
 
@@ -262,10 +262,10 @@ input,
 optgroup,
 select,
 textarea {
+	margin: 0; /* 2 */
 	font-family: sans-serif; /* 1 */
 	font-size: 100%; /* 1 */
 	line-height: 1.15; /* 1 */
-	margin: 0; /* 2 */
 }
 
 /**
@@ -340,11 +340,11 @@ fieldset {
  */
 
 legend {
+	max-width: 100%; /* 1 */
+	padding: 0; /* 3 */
 	box-sizing: border-box; /* 1 */
 	color: inherit; /* 2 */
 	display: table; /* 1 */
-	max-width: 100%; /* 1 */
-	padding: 0; /* 3 */
 	white-space: normal; /* 1 */
 }
 

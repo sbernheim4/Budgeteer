@@ -69,7 +69,6 @@ class Home extends Component {
 				this.storeTransactions(data.transactions);
 				this.storeAccounts(data.accounts);
 			}
-
 		});
 	}
 
