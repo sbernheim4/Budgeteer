@@ -7,6 +7,8 @@ class AccountsContainer extends Component {
 		super(props)
 
 		this.state = {
+			// this state variable is used to keep track of transactions the 
+			// user wants to see based on account type
 			transactions: []
 		};
 
@@ -19,7 +21,6 @@ class AccountsContainer extends Component {
 		if (account_id === "all") {
 			this.setState({transactions: allTransactions});
 		} else {
-
 			let releventTransactions = [];
 			
 			allTransactions.map( (transaction) => {
@@ -27,7 +28,9 @@ class AccountsContainer extends Component {
 					releventTransactions.push(transaction);
 				}
 			});
-
+			
+			// Set the state of transactions to only those transactions with 
+			// the same account id as what the user selected
 			this.setState({transactions: releventTransactions});
 		}
 	}
@@ -35,10 +38,11 @@ class AccountsContainer extends Component {
 	render() {
 		return (
 			<div className='accounts'>
+				
 				<div className='accounts--btns'>
-					<button onClick={() => {this.handleClick("all")}}>View All Transactions</button>
+					<button onClick={() => {this.handleClick("all")}}>All Transactions</button>
 					{this.props.accounts.map( (a, index) => (
-						<button onClick={() => {this.handleClick(a.account_id)}}>{a.name}</button>
+						<button key={index} onClick={() => {this.handleClick(a.account_id)}}>{a.name}</button>
 					))}
 				</div>
 

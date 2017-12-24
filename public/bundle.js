@@ -1829,6 +1829,8 @@ var AccountsContainer = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (AccountsContainer.__proto__ || (0, _getPrototypeOf2.default)(AccountsContainer)).call(this, props));
 
 		_this.state = {
+			// this state variable is used to keep track of transactions the 
+			// user wants to see based on account type
 			transactions: []
 		};
 
@@ -1844,7 +1846,6 @@ var AccountsContainer = function (_Component) {
 			if (account_id === "all") {
 				this.setState({ transactions: allTransactions });
 			} else {
-
 				var releventTransactions = [];
 
 				allTransactions.map(function (transaction) {
@@ -1853,6 +1854,8 @@ var AccountsContainer = function (_Component) {
 					}
 				});
 
+				// Set the state of transactions to only those transactions with 
+				// the same account id as what the user selected
 				this.setState({ transactions: releventTransactions });
 			}
 		}
@@ -1872,12 +1875,12 @@ var AccountsContainer = function (_Component) {
 						{ onClick: function onClick() {
 								_this2.handleClick("all");
 							} },
-						'View All Transactions'
+						'All Transactions'
 					),
 					this.props.accounts.map(function (a, index) {
 						return _react2.default.createElement(
 							'button',
-							{ onClick: function onClick() {
+							{ key: index, onClick: function onClick() {
 									_this2.handleClick(a.account_id);
 								} },
 							a.name
@@ -2236,6 +2239,8 @@ var _Transaction = __webpack_require__(68);
 
 var _Transaction2 = _interopRequireDefault(_Transaction);
 
+__webpack_require__(157);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var TransactionContainer = function (_Component) {
@@ -2255,7 +2260,7 @@ var TransactionContainer = function (_Component) {
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
-				{ className: 'transactions' },
+				{ className: 'transaction-container' },
 				this.props.transactions.map(function (t, index) {
 					return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
 				})
@@ -2318,13 +2323,32 @@ var Transaction = function (_Component) {
 
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Transaction.__proto__ || (0, _getPrototypeOf2.default)(Transaction)).call(this, props));
 
-		_this.state = {};
+		_this.state = {
+			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+		};
 		return _this;
 	}
 
 	(0, _createClass3.default)(Transaction, [{
+		key: 'formatDate',
+		value: function formatDate(date) {
+			var monthNumber = parseInt(date.slice(date.indexOf('-') + 1, date.indexOf('-') + 3));
+			var day = date.slice(date.length - 3, date.length - 1);
+			var year = date.slice(1, 5);
+
+			return this.state.months[monthNumber - 1] + " " + day + " " + year;
+		}
+	}, {
+		key: 'formatAmount',
+		value: function formatAmount(amt) {
+			return (Math.round(amt * 100) / 100).toFixed(2);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
+			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
+			var amount = this.formatAmount(this.props.transaction.amount);
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'transaction' },
@@ -2336,14 +2360,13 @@ var Transaction = function (_Component) {
 				_react2.default.createElement(
 					'p',
 					null,
-					'Amount: ',
-					(0, _stringify2.default)(this.props.transaction.amount)
+					'$',
+					amount
 				),
 				_react2.default.createElement(
 					'p',
 					null,
-					'Date: ',
-					(0, _stringify2.default)(this.props.transaction.date)
+					date
 				)
 			);
 		}
@@ -2395,6 +2418,10 @@ var _react2 = _interopRequireDefault(_react);
 var _AccountsContainer = __webpack_require__(49);
 
 var _AccountsContainer2 = _interopRequireDefault(_AccountsContainer);
+
+var _Budget = __webpack_require__(159);
+
+var _Budget2 = _interopRequireDefault(_Budget);
 
 __webpack_require__(141);
 
@@ -2535,8 +2562,8 @@ var Home = function (_Component) {
 				total += transaction.amount;
 			});
 
-			// Round total to two decimal places
-			total = Math.round(total * 100) / 100;
+			// Round total to two decimal places and ensure trailing 0s appear
+			total = (Math.round(total * 100) / 100).toFixed(2);
 			return total;
 		}
 	}, {
@@ -2551,12 +2578,7 @@ var Home = function (_Component) {
 				totalSpent = '';
 			} else {
 				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, { transactions: this.state.transactions, accounts: this.state.accounts });
-				totalSpent = _react2.default.createElement(
-					'h3',
-					{ className: 'home--total-spent' },
-					'Total Spent since: $',
-					this.getTotalSpent()
-				);
+				totalSpent = _react2.default.createElement(_Budget2.default, { transactions: this.state.transactions });
 			}
 
 			return _react2.default.createElement(
@@ -5153,9 +5175,17 @@ if(false) {
 
 /***/ }),
 /* 118 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open '/Users/samuelbernheim/Github-Projects/MoneySaver/src/scss/transaction.scss'\n    at Error (native)");
+exports = module.exports = __webpack_require__(22)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".transaction {\n  margin: 10px;\n  min-width: 280px;\n  height: 100px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #fffdf7e0; }\n", ""]);
+
+// exports
+
 
 /***/ }),
 /* 119 */
@@ -5854,7 +5884,7 @@ exports = module.exports = __webpack_require__(22)(undefined);
 
 
 // module
-exports.push([module.i, ".home {\n  margin: 0 30px; }\n  .home--error {\n    margin: 15px auto;\n    width: 350px;\n    height: 30px;\n    background-color: #f33c3c;\n    border-radius: 10px;\n    opacity: 0;\n    transition: opacity .2s ease;\n    display: flex;\n    justify-content: center; }\n  .home--error__display {\n    opacity: 1; }\n  .home--btns__blue {\n    background-color: #085aa6; }\n  .home--btns__green {\n    margin-left: 10px;\n    background-color: #09924d; }\n  .home--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    color: white;\n    font-size: 20px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".home {\n  margin: 0 30px; }\n  .home--error {\n    margin: 15px auto;\n    width: 350px;\n    height: 30px;\n    background-color: #d46363;\n    border-radius: 10px;\n    opacity: 0;\n    transition: opacity .2s ease;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n  .home--error__display {\n    opacity: 1; }\n  .home--btns__blue {\n    background-color: #346ca1; }\n  .home--btns__green {\n    margin-left: 10px;\n    background-color: #4d9972; }\n  .home--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -21828,7 +21858,7 @@ exports = module.exports = __webpack_require__(22)(undefined);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Lato);", ""]);
 
 // module
-exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n  overflow-x: hidden;\n  font-family: 'Lato', sans-serif; }\n", ""]);
+exports.push([module.i, "/**************************************************************************/\n/* My Stuff */\n* {\n  margin: 0;\n  padding: 0;\n  overflow-x: hidden;\n  font-family: 'Lato', sans-serif;\n  border: none;\n  border-radius: 0; }\n\n/**************************************************************************/\n/*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */\n/* Document\n\t ========================================================================== */\n/**\n * 1. Correct the line height in all browsers.\n * 2. Prevent adjustments of font size after orientation changes in\n *    IE on Windows Phone and in iOS.\n */\nhtml {\n  line-height: 1.15;\n  /* 1 */\n  -ms-text-size-adjust: 100%;\n  /* 2 */\n  -webkit-text-size-adjust: 100%;\n  /* 2 */ }\n\n/* Sections\n\t ========================================================================== */\n/**\n * Remove the margin in all browsers (opinionated).\n */\nbody {\n  margin: 0; }\n\n/**\n * Add the correct display in IE 9-.\n */\narticle,\naside,\nfooter,\nheader,\nnav,\nsection {\n  display: block; }\n\n/**\n * Correct the font size and margin on `h1` elements within `section` and\n * `article` contexts in Chrome, Firefox, and Safari.\n */\nh1 {\n  font-size: 2em;\n  margin: 0.67em 0; }\n\n/* Grouping content\n\t ========================================================================== */\n/**\n * Add the correct display in IE 9-.\n * 1. Add the correct display in IE.\n */\nfigcaption,\nfigure,\nmain {\n  /* 1 */\n  display: block; }\n\n/**\n * Add the correct margin in IE 8.\n */\nfigure {\n  margin: 1em 40px; }\n\n/**\n * 1. Add the correct box sizing in Firefox.\n * 2. Show the overflow in Edge and IE.\n */\nhr {\n  box-sizing: content-box;\n  /* 1 */\n  height: 0;\n  /* 1 */\n  overflow: visible;\n  /* 2 */ }\n\n/**\n * 1. Correct the inheritance and scaling of font size in all browsers.\n * 2. Correct the odd `em` font sizing in all browsers.\n */\npre {\n  font-family: monospace, monospace;\n  /* 1 */\n  font-size: 1em;\n  /* 2 */ }\n\n/* Text-level semantics\n\t ========================================================================== */\n/**\n * 1. Remove the gray background on active links in IE 10.\n * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.\n */\na {\n  background-color: transparent;\n  /* 1 */\n  -webkit-text-decoration-skip: objects;\n  /* 2 */ }\n\n/**\n * 1. Remove the bottom border in Chrome 57- and Firefox 39-.\n * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.\n */\nabbr[title] {\n  border-bottom: none;\n  /* 1 */\n  text-decoration: underline;\n  /* 2 */\n  text-decoration: underline dotted;\n  /* 2 */ }\n\n/**\n * Prevent the duplicate application of `bolder` by the next rule in Safari 6.\n */\nb,\nstrong {\n  font-weight: inherit; }\n\n/**\n * Add the correct font weight in Chrome, Edge, and Safari.\n */\nb,\nstrong {\n  font-weight: bolder; }\n\n/**\n * 1. Correct the inheritance and scaling of font size in all browsers.\n * 2. Correct the odd `em` font sizing in all browsers.\n */\ncode,\nkbd,\nsamp {\n  font-family: monospace, monospace;\n  /* 1 */\n  font-size: 1em;\n  /* 2 */ }\n\n/**\n * Add the correct font style in Android 4.3-.\n */\ndfn {\n  font-style: italic; }\n\n/**\n * Add the correct background and color in IE 9-.\n */\nmark {\n  background-color: #ff0;\n  color: #000; }\n\n/**\n * Add the correct font size in all browsers.\n */\nsmall {\n  font-size: 80%; }\n\n/**\n * Prevent `sub` and `sup` elements from affecting the line height in\n * all browsers.\n */\nsub,\nsup {\n  font-size: 75%;\n  line-height: 0;\n  position: relative;\n  vertical-align: baseline; }\n\nsub {\n  bottom: -0.25em; }\n\nsup {\n  top: -0.5em; }\n\n/* Embedded content\n\t ========================================================================== */\n/**\n * Add the correct display in IE 9-.\n */\naudio,\nvideo {\n  display: inline-block; }\n\n/**\n * Add the correct display in iOS 4-7.\n */\naudio:not([controls]) {\n  display: none;\n  height: 0; }\n\n/**\n * Remove the border on images inside links in IE 10-.\n */\nimg {\n  border-style: none; }\n\n/**\n * Hide the overflow in IE.\n */\nsvg:not(:root) {\n  overflow: hidden; }\n\n/* Forms\n\t ========================================================================== */\n/**\n * 1. Change the font styles in all browsers (opinionated).\n * 2. Remove the margin in Firefox and Safari.\n */\nbutton,\ninput,\noptgroup,\nselect,\ntextarea {\n  font-family: sans-serif;\n  /* 1 */\n  font-size: 100%;\n  /* 1 */\n  line-height: 1.15;\n  /* 1 */\n  margin: 0;\n  /* 2 */ }\n\n/**\n * Show the overflow in IE.\n * 1. Show the overflow in Edge.\n */\nbutton,\ninput {\n  /* 1 */\n  overflow: visible; }\n\n/**\n * Remove the inheritance of text transform in Edge, Firefox, and IE.\n * 1. Remove the inheritance of text transform in Firefox.\n */\nbutton,\nselect {\n  /* 1 */\n  text-transform: none; }\n\n/**\n * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`\n *    controls in Android 4.\n * 2. Correct the inability to style clickable types in iOS and Safari.\n */\nbutton,\nhtml [type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n  /* 2 */ }\n\n/**\n * Remove the inner border and padding in Firefox.\n */\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0; }\n\n/**\n * Restore the focus styles unset by the previous rule.\n */\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText; }\n\n/**\n * Correct the padding in Firefox.\n */\nfieldset {\n  padding: 0.35em 0.75em 0.625em; }\n\n/**\n * 1. Correct the text wrapping in Edge and IE.\n * 2. Correct the color inheritance from `fieldset` elements in IE.\n * 3. Remove the padding so developers are not caught out when they zero out\n *    `fieldset` elements in all browsers.\n */\nlegend {\n  box-sizing: border-box;\n  /* 1 */\n  color: inherit;\n  /* 2 */\n  display: table;\n  /* 1 */\n  max-width: 100%;\n  /* 1 */\n  padding: 0;\n  /* 3 */\n  white-space: normal;\n  /* 1 */ }\n\n/**\n * 1. Add the correct display in IE 9-.\n * 2. Add the correct vertical alignment in Chrome, Firefox, and Opera.\n */\nprogress {\n  display: inline-block;\n  /* 1 */\n  vertical-align: baseline;\n  /* 2 */ }\n\n/**\n * Remove the default vertical scrollbar in IE.\n */\ntextarea {\n  overflow: auto; }\n\n/**\n * 1. Add the correct box sizing in IE 10-.\n * 2. Remove the padding in IE 10-.\n */\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box;\n  /* 1 */\n  padding: 0;\n  /* 2 */ }\n\n/**\n * Correct the cursor style of increment and decrement buttons in Chrome.\n */\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto; }\n\n/**\n * 1. Correct the odd appearance in Chrome and Safari.\n * 2. Correct the outline style in Safari.\n */\n[type=\"search\"] {\n  -webkit-appearance: textfield;\n  /* 1 */\n  outline-offset: -2px;\n  /* 2 */ }\n\n/**\n * Remove the inner padding and cancel buttons in Chrome and Safari on macOS.\n */\n[type=\"search\"]::-webkit-search-cancel-button,\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none; }\n\n/**\n * 1. Correct the inability to style clickable types in iOS and Safari.\n * 2. Change font properties to `inherit` in Safari.\n */\n::-webkit-file-upload-button {\n  -webkit-appearance: button;\n  /* 1 */\n  font: inherit;\n  /* 2 */ }\n\n/* Interactive\n\t ========================================================================== */\n/*\n * Add the correct display in IE 9-.\n * 1. Add the correct display in Edge, IE, and Firefox.\n */\ndetails,\nmenu {\n  display: block; }\n\n/*\n * Add the correct display in all browsers.\n */\nsummary {\n  display: list-item; }\n\n/* Scripting\n\t ========================================================================== */\n/**\n * Add the correct display in IE 9-.\n */\ncanvas {\n  display: inline-block; }\n\n/**\n * Add the correct display in IE.\n */\ntemplate {\n  display: none; }\n\n/* Hidden\n\t ========================================================================== */\n/**\n * Add the correct display in IE 10-.\n */\n[hidden] {\n  display: none; }\n", ""]);
 
 // exports
 
@@ -21874,6 +21904,223 @@ exports = module.exports = __webpack_require__(22)(undefined);
 
 // module
 exports.push([module.i, ".navbar {\n  display: flex;\n  flex-direction: row; }\n  .navbar p {\n    margin: 15px; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 157 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(158);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(23)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactionContainer.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactionContainer.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 158 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(22)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".transaction-container {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 159 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _getPrototypeOf = __webpack_require__(16);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(17);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(18);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(19);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(21);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(9);
+
+var _react2 = _interopRequireDefault(_react);
+
+__webpack_require__(160);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Budget = function (_Component) {
+    (0, _inherits3.default)(Budget, _Component);
+
+    function Budget(props) {
+        (0, _classCallCheck3.default)(this, Budget);
+
+        var _this = (0, _possibleConstructorReturn3.default)(this, (Budget.__proto__ || (0, _getPrototypeOf2.default)(Budget)).call(this, props));
+
+        _this.state = {
+            monthlyBudget: ''
+        };
+
+        _this.handleChange = _this.handleChange.bind(_this);
+        return _this;
+    }
+
+    (0, _createClass3.default)(Budget, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            this.getTotalSpent();
+        }
+    }, {
+        key: 'getTotalSpent',
+        value: function getTotalSpent() {
+            var total = 0;
+            // Sum up the prices of each transaction 
+            this.props.transactions.forEach(function (transaction) {
+                total += transaction.amount;
+            });
+
+            // Round total to two decimal places and ensure trailing 0s appear
+            total = (Math.round(total * 100) / 100).toFixed(2);
+
+            this.setState({ totalSpent: totalSpent, total: total });
+            return total;
+        }
+    }, {
+        key: 'handleChange',
+        value: function handleChange(event) {
+            this.setState({ monthlyBudget: event.target.value });
+            var graph = document.querySelector('.budget--graph > div');
+
+            var percentage = this.props.totalSpent / event.target.value * 100;
+
+            graph.style.width = percentage + "%";
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'budget' },
+                _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Total Spent: ',
+                    this.props.totalSpent
+                ),
+                _react2.default.createElement(
+                    'form',
+                    { className: 'budget--form' },
+                    _react2.default.createElement(
+                        'label',
+                        null,
+                        'Monthly Budget:',
+                        _react2.default.createElement('input', { placeholder: 'Enter your budget', type: 'number', name: 'name', value: this.state.value, onChange: this.handleChange })
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'budget--graph' },
+                    _react2.default.createElement('div', null)
+                ),
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    this.state.totalSpent / this.state.monthlyBudget * 100 || 0,
+                    '%'
+                )
+            );
+        }
+    }]);
+    return Budget;
+}(_react.Component);
+
+exports.default = Budget;
+
+/***/ }),
+/* 160 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(161);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(23)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./budget.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./budget.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 161 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(22)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".budget h1 {\n  height: 38px; }\n\n.budget--form label input {\n  margin-left: 10px;\n  border: 1px solid black; }\n\n.budget--graph {\n  width: 300px;\n  height: 20px;\n  background-color: white;\n  border: 1px solid black;\n  border-radius: 5px; }\n  .budget--graph div {\n    width: 0%;\n    height: inherit;\n    background-color: red; }\n", ""]);
 
 // exports
 

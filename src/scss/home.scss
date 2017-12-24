@@ -5,12 +5,13 @@
 		margin: 15px auto;
 		width: 350px;
 		height: 30px; 
-		background-color: #f33c3c;
+		background-color: rgb(212,99,99);
 		border-radius: 10px;
 		opacity: 0;
 		transition: opacity .2s ease; 
 		display: flex; 
 		justify-content: center;
+		align-items: center;
 
 		p {
 
@@ -24,20 +25,21 @@
 	&--btns {
 
 		&__blue {
-			background-color: rgb(8, 90, 166);
+			background-color: rgb(52,108,161);
 		}
 
 		&__green {
 			margin-left: 10px;
-			background-color: rgb(9, 146, 77);
+			background-color: rgb(77,153,114);
 		}
 
 		button {
 			margin-top: 10px;
 			padding: 15px;
-			color: white;
-			font-size: 20px;
+			border: 1px solid black;
 			border-radius: 5px;
+			font-size: 20px;
+			color: white;
 			cursor: pointer;
 		}
 	}

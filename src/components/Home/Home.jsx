@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
+import Budget from '../Budget.jsx';
 
 import '../../scss/home.scss';
 
@@ -122,8 +123,8 @@ class Home extends Component {
 			total += transaction.amount;
 		})
 
-		// Round total to two decimal places
-		total = Math.round(total * 100) / 100
+		// Round total to two decimal places and ensure trailing 0s appear
+		total = (Math.round(total * 100) / 100).toFixed(2);
 		return total;
 	}
 
@@ -137,7 +138,7 @@ class Home extends Component {
 			totalSpent = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
-			totalSpent = <h3 className='home--total-spent'>Total Spent since: ${this.getTotalSpent()}</h3>
+			totalSpent = <Budget transactions={this.state.transactions} />
 		}
 
 		return (
@@ -149,7 +150,6 @@ class Home extends Component {
 				</div>
 
 				{totalSpent}
-
 				{accountsContainer}
 
 				<div className='home--error'>
