@@ -1,20 +1,41 @@
 .budget {
 	margin: 20px;
-	// display: flex;
-	// justify-content: center;
-	// align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 
-	&--total-spent {
+	@media all and (max-width: 930px) {
+		flex-direction: column;
+	}
 
+	&--totals {
+		width: 270px;
+
+		@media all and (max-width: 930px) {
+			width: auto;
+		}
+
+		h2 {
+			
+		}
 	}
 
 	&--form {
+
+		@media all and (max-width: 930px) {
+			margin: 10px 0;
+		}
 		
 		label {
 			font-size: 20px;
 			font-weight: bold;
 			display: flex;
+			flex-direction: column;
 			align-items: center;
+
+			span {
+
+			}
 
 			input {
 				margin-left: 10px;
@@ -24,6 +45,10 @@
 				border-radius: 5px;
 				font-size: 15px;
 				box-sizing: border-box;
+
+				@media all and (max-width: 930px) {
+					margin-left: 0;
+				}
 			}
 		}
 	}
@@ -45,14 +70,9 @@
 	&--percent {
 
 	}
-}
 
-.budget > * {
-	margin: 5px;
-}
-
-canvas {
-	width: 300px;
-	height: 300px;
-	pointer-events: none !important;
+	&--doughnut-chart {
+		width: 300px !important;
+		pointer-events: none !important;
+	}
 }

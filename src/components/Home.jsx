@@ -148,6 +148,8 @@ class Home extends Component {
 					<button className='home--btns__green' onClick={this.getTransactions.bind(this)}>Get Transactions</button>
 				</div>
 
+				{/* TODO: REMOVE THIS */}
+				<Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
 				{budget}
 				{accountsContainer}
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import '../scss/budget.scss';
+import { Doughnut } from 'react-chartjs-2';
 
-import Chart from 'chart.js';
+import '../scss/budget.scss';
 
 class Budget extends Component {
     constructor(props){
@@ -11,17 +11,23 @@ class Budget extends Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.updateChart = this.generateChart.bind(this);
+        // this.generateChart = this.generateChart.bind(this);
+    }
+
+    componentDidMount() {
+        console.log("THIS.STATE.DATA");
+        console.log(this.state.data);
     }
 
     handleChange(event) {
+        console.log(event.target.value.trim());
         // Update the state variable
-        this.setState({ monthlyBudget: event.target.value });
+        this.setState({ monthlyBudget: event.target.value.trim() });
 
-        // Update the percentage calculator
-        const graph = document.querySelector('.budget--graph > div');
-        let percentage = (this.props.totalSpent / event.target.value) * 100;
-        graph.style.width = percentage + "%";
+        // // Update the percentage calculator
+        // const graph = document.querySelector('.budget--graph > div');
+        // let percentage = (this.props.totalSpent / event.target.value) * 100;
+        // graph.style.width = percentage + "%";
 
         const spent = this.props.totalSpent;
         let remaining = (event.target.value - this.props.totalSpent).toFixed(2);
@@ -29,39 +35,32 @@ class Budget extends Component {
             remaining = 0;
         }
 
+        const data = {
+            labels: [
+                'Spent',
+                'Remaining'
+            ],
+            datasets: [{
+                data: [spent, remaining],
+                backgroundColor: [
+                    'rgb(212,99,99)',
+                    'rgb(77, 153, 114)'
+                ],
+                hoverBackgroundColor: [
+                    '#D46363',
+                    '#007255'
+                ]
+            }]
+        };
+
+        this.setState({data: data})
+
         // Update the pie chart
-        this.generateChart(spent, remaining);
+        // this.generateChart(spent, remaining);
     }
     
     numberWithCommas(number) {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    generateChart(totalSpent, totalRemaining) {
-        console.log("totalSpent: ", totalSpent);
-        console.log("totalRemaining: ", totalRemaining);
-
-        const ctx = document.querySelector('#myChart');
-
-        let myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ["Spent", "Remaining"],
-                datasets: [{
-                    backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
-                    data: [
-                        totalSpent,
-                        totalRemaining
-                    ]
-                }]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: "This Month's Budget"
-                }
-            }
-        });
     }
 
     render() {
@@ -74,23 +73,24 @@ class Budget extends Component {
         return (
             <div className='budget'>
 
-                <h2 className='budget--total-spent'>Spent: ${spent}</h2>
-                <h2 className='budget--total-left'>Remaining: ${remaining}</h2>
+                <div className='budget--totals'>
+                    <h2>Spent: ${spent}</h2>
+                    <h2>Remaining: ${remaining}</h2>
+                </div>
 
                 <form className='budget--form'>
                     <label>
-                        <span>Monthly Budget:</span>
-                        <input placeholder='Enter your budget' type='number' name='budget' value={this.state.monthlyBudget} onChange={this.handleChange} />
+                        <span>Monthly Budget</span>
+                        <input placeholder='Enter your budget' type='text' name='budget' value={this.state.monthlyBudget} onChange={this.handleChange} />
                     </label>
                 </form>
 
-                <p className='budget--percent'>{((this.props.totalSpent / this.state.monthlyBudget)*100).toFixed(2) || 0}% spent</p>
 
-                <div className='budget--graph'>
-                    <div></div>
+                {/* <p className='budget--percent'>{((this.props.totalSpent / this.state.monthlyBudget)*100).toFixed(2) || 0}% spent</p> */}
+
+                <div className='budget--doughnut-chart'>
+                    <Doughnut data={this.state.data} />
                 </div>
-                
-                <canvas className='budget--pie-char' id="myChart"></canvas>
 
             </div>
         );
