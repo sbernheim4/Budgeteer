@@ -3756,6 +3756,10 @@ var _AccountsContainer = __webpack_require__(70);
 
 var _AccountsContainer2 = _interopRequireDefault(_AccountsContainer);
 
+var _TransactionContainer = __webpack_require__(87);
+
+var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
+
 var _Budget = __webpack_require__(89);
 
 var _Budget2 = _interopRequireDefault(_Budget);
@@ -3775,11 +3779,14 @@ var Home = function (_Component) {
 		var setOne = new _set2.default();
 		var setTwo = new _set2.default();
 
+		// this.getCategory = this.getCategory.bind(this);
+
 		_this.state = {
 			transactions: [],
 			accounts: [],
 			account_ids: setOne,
-			transaction_ids: setTwo
+			transaction_ids: setTwo,
+			categoryTransactions: []
 		};
 		return _this;
 	}
@@ -3904,18 +3911,38 @@ var Home = function (_Component) {
 			return total;
 		}
 	}, {
+		key: 'getCategory',
+		value: function getCategory(categoryString) {
+			// create an array with all the transactions that have categoryString as an element in their categories array
+			// return a TransactionContainer passing in this array of transactions as a property
+
+			var releventTransactions = [];
+
+			this.state.transactions.forEach(function (t) {
+				if (t.category !== null && t.category.includes(categoryString)) {
+					releventTransactions.push(t);
+				}
+			});
+
+			this.setState({ categoryTransactions: releventTransactions });
+		}
+	}, {
 		key: 'render',
 		value: function render() {
+			var _this6 = this;
 
 			// Conditional Rendering 
 			var accountsContainer = null;
 			var budget = null;
+			var categoryTransactions = null;
 			if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 				accountsContainer = '';
 				budget = '';
+				categoryTransactions = '';
 			} else {
 				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, { transactions: this.state.transactions, accounts: this.state.accounts });
 				budget = _react2.default.createElement(_Budget2.default, { totalSpent: this.getTotalSpent(), transactions: this.state.transactions });
+				categoryTransactions = _react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions });
 			}
 
 			return _react2.default.createElement(
@@ -3937,6 +3964,98 @@ var Home = function (_Component) {
 				),
 				budget,
 				accountsContainer,
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Bank Fees');
+						} },
+					'Bank Fees'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Cash Advance');
+						} },
+					'Cash Advance'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Community');
+						} },
+					'Community'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Food and Drink');
+						} },
+					'Food and Drink'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Healthcare');
+						} },
+					'Healthcare'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Interest');
+						} },
+					'Interest'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Payment');
+						} },
+					'Payment'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Recreation');
+						} },
+					'Recreation'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Service');
+						} },
+					'Service'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Shops');
+						} },
+					'Shops'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Tax');
+						} },
+					'Tax'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Transfer');
+						} },
+					'Transfer'
+				),
+				_react2.default.createElement(
+					'button',
+					{ className: 'home--category-btns', onClick: function onClick() {
+							_this6.getCategory('Travel');
+						} },
+					'Travel'
+				),
+				categoryTransactions,
 				_react2.default.createElement(
 					'div',
 					{ className: 'home--error' },
@@ -10859,7 +10978,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 270px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
+exports.push([module.i, ".budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 333px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
 
 // exports
 

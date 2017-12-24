@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+
 import AccountsContainer from './AccountsContainer.jsx';
+import TransactionContainer from './TransactionContainer.jsx';
 import Budget from './Budget.jsx';
 
 import '../scss/home.scss';
@@ -11,11 +13,14 @@ class Home extends Component {
 		let setOne = new Set();
 		let setTwo = new Set();
 
+		// this.getCategory = this.getCategory.bind(this);
+
 		this.state = {
 			transactions: [],
 			accounts: [],
 			account_ids: setOne,
-			transaction_ids: setTwo
+			transaction_ids: setTwo,
+			categoryTransactions: []
 		};
 	}
 
@@ -127,17 +132,35 @@ class Home extends Component {
 		return total;
 	}
 
+	getCategory(categoryString) {
+		// create an array with all the transactions that have categoryString as an element in their categories array
+		// return a TransactionContainer passing in this array of transactions as a property
+
+		let releventTransactions = [];
+		
+		this.state.transactions.forEach( t => {
+			if (t.category !== null && t.category.includes(categoryString)) {
+				releventTransactions.push(t);
+			}
+		});
+
+		this.setState({ categoryTransactions: releventTransactions})
+	}
+
 	render() {
 
 		// Conditional Rendering 
 		let accountsContainer = null;
 		let budget = null;
+		let categoryTransactions = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = '';
 			budget = '';
+			categoryTransactions = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
 			budget = <Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
+			categoryTransactions = <TransactionContainer transactions={this.state.categoryTransactions} />
 		}
 
 		return (
@@ -150,6 +173,22 @@ class Home extends Component {
 
 				{budget}
 				{accountsContainer}
+
+				<button className='home--category-btns' onClick={() => { this.getCategory('Bank Fees') }}>Bank Fees</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Cash Advance') }}>Cash Advance</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Community') }}>Community</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Food and Drink') }}>Food and Drink</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Healthcare') }}>Healthcare</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Interest') }}>Interest</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Payment') }}>Payment</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Recreation') }}>Recreation</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Service') }}>Service</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Shops') }}>Shops</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Tax') }}>Tax</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Transfer') }}>Transfer</button>
+				<button className='home--category-btns' onClick={() => { this.getCategory('Travel') }}>Travel</button>
+
+				{categoryTransactions}
 
 				<div className='home--error'>
 					<p>Please first link an account</p>
