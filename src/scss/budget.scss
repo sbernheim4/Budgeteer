@@ -1,7 +1,6 @@
 .budget {
-	margin: 20px;
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	align-items: center;
 
 	@media all and (max-width: 930px) {
@@ -9,14 +8,16 @@
 	}
 
 	&--totals {
+		margin: 20px 0;
 		width: 270px;
+		text-align: center;
 
 		@media all and (max-width: 930px) {
 			width: auto;
 		}
 
 		h2 {
-			
+			overflow-y: hidden;
 		}
 	}
 
@@ -38,8 +39,8 @@
 			}
 
 			input {
-				margin-left: 10px;
-				width: 200px;
+				max-width: 90%;
+				width: 250px;
 				padding: 10px;
 				border: 1px solid black;
 				border-radius: 5px;
@@ -73,6 +74,5 @@
 
 	&--doughnut-chart {
 		width: 300px !important;
-		pointer-events: none !important;
 	}
 }

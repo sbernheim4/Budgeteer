@@ -1,16 +1,19 @@
 .transaction{
 	margin: 10px;
+	width: 280px;
 	min-width: 280px;
 	height: 100px;
+	padding: 5px;
 	background-color: #fffdf7;
 	border: 1px solid gray;
 	cursor: pointer;
+	text-align: center;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 
 	&:hover {
-		background-color: #fffdf7e0;
+		background-color: #efeade;;
 	}
 }

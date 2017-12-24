@@ -3935,7 +3935,6 @@ var Home = function (_Component) {
 						'Get Transactions'
 					)
 				),
-				_react2.default.createElement(_Budget2.default, { totalSpent: this.getTotalSpent(), transactions: this.state.transactions }),
 				budget,
 				accountsContainer,
 				_react2.default.createElement(
@@ -6502,7 +6501,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".transaction {\n  margin: 10px;\n  min-width: 280px;\n  height: 100px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #fffdf7e0; }\n", ""]);
+exports.push([module.i, ".transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #efeade; }\n", ""]);
 
 // exports
 
@@ -6642,7 +6641,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".transaction-container {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap; }\n", ""]);
+exports.push([module.i, ".transaction-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: center;\n  flex-wrap: wrap; }\n", ""]);
 
 // exports
 
@@ -10860,7 +10859,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".budget {\n  margin: 20px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    width: 270px; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      margin-left: 10px;\n      width: 200px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important;\n    pointer-events: none !important; }\n", ""]);
+exports.push([module.i, ".budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 270px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
 
 // exports
 
@@ -11422,7 +11421,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".home {\n  margin: 0 30px; }\n  .home--error {\n    margin: 15px auto;\n    width: 350px;\n    height: 30px;\n    background-color: #d46363;\n    border-radius: 10px;\n    opacity: 0;\n    transition: opacity .2s ease;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n  .home--error__display {\n    opacity: 1; }\n  .home--btns {\n    display: flex;\n    flex-direction: row; }\n    @media all and (max-width: 408px) {\n      .home--btns {\n        justify-content: center;\n        flex-direction: column; } }\n    .home--btns__blue {\n      background-color: #346ca1; }\n    .home--btns__green {\n      margin-left: 5px;\n      background-color: #4d9972; }\n      @media all and (max-width: 408px) {\n        .home--btns__green {\n          margin-left: 0; } }\n    .home--btns button {\n      margin-top: 10px;\n      padding: 15px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
+exports.push([module.i, ".home--error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.home--error__display {\n  opacity: 1; }\n\n.home--btns {\n  margin-left: 20px;\n  display: flex;\n  flex-direction: row; }\n  @media all and (max-width: 408px) {\n    .home--btns {\n      margin: 0 auto;\n      max-width: 75%;\n      flex-direction: column;\n      justify-content: center; } }\n  .home--btns__blue {\n    background-color: #346ca1; }\n  .home--btns__green {\n    margin-left: 5px;\n    background-color: #4d9972; }\n    @media all and (max-width: 408px) {\n      .home--btns__green {\n        margin-left: 0; } }\n  .home--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
