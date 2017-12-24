@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
-import Budget from '../Budget.jsx';
+import AccountsContainer from './AccountsContainer.jsx';
+import Budget from './Budget.jsx';
 
-import '../../scss/home.scss';
+import '../scss/home.scss';
 
 class Home extends Component {
 	constructor(props) {

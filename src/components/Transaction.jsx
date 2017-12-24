@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import '../../scss/transaction.scss';
+import '../scss/transaction.scss';
 
 class Transaction extends Component {
 	constructor(props) {

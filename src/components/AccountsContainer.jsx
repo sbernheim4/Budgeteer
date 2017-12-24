@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import TransactionContainer from '../TransactionContainer/TransactionContainer.jsx';
-import '../../scss/accountsContainer.scss'
+import TransactionContainer from './TransactionContainer.jsx';
+import '../scss/accountsContainer.scss'
 
 class AccountsContainer extends Component {
 	constructor(props) {

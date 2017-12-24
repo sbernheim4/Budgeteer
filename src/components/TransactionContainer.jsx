@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Transaction from '../Transaction/Transaction.jsx'
+import Transaction from './Transaction.jsx'
 
-import '../../scss/transactionContainer.scss'
+import '../scss/transactionContainer.scss'
 
 class TransactionContainer extends Component {
 	constructor(props) {

@@ -9,10 +9,6 @@ class Budget extends Component {
 
         this.handleChange = this.handleChange.bind(this);
     }
-    
-    componentDidMount() {
-        console.log("TOTAL SPENT FROM PROPS:", this.props.totalSpent);
-    }
 
     handleChange(event) {
         this.setState({ monthlyBudget: event.target.value });
