@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import AccountsContainer from './AccountsContainer.jsx';
 import TransactionContainer from './TransactionContainer.jsx';
+import CategoryContainer from './CategoryContainer.jsx';
 import Budget from './Budget.jsx';
 
 import '../scss/home.scss';
@@ -12,8 +13,6 @@ class Home extends Component {
 
 		let setOne = new Set();
 		let setTwo = new Set();
-
-		// this.getCategory = this.getCategory.bind(this);
 
 		this.state = {
 			transactions: [],
@@ -160,7 +159,7 @@ class Home extends Component {
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
 			budget = <Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
-			categoryTransactions = <TransactionContainer transactions={this.state.categoryTransactions} />
+			categoryTransactions = <CategoryContainer transactions={this.state.transactions} />
 		}
 
 		return (
@@ -173,21 +172,6 @@ class Home extends Component {
 
 				{budget}
 				{accountsContainer}
-
-				<button className='home--category-btns' onClick={() => { this.getCategory('Bank Fees') }}>Bank Fees</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Cash Advance') }}>Cash Advance</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Community') }}>Community</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Food and Drink') }}>Food and Drink</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Healthcare') }}>Healthcare</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Interest') }}>Interest</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Payment') }}>Payment</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Recreation') }}>Recreation</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Service') }}>Service</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Shops') }}>Shops</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Tax') }}>Tax</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Transfer') }}>Transfer</button>
-				<button className='home--category-btns' onClick={() => { this.getCategory('Travel') }}>Travel</button>
-
 				{categoryTransactions}
 
 				<div className='home--error'>
