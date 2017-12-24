@@ -132,13 +132,13 @@ class Home extends Component {
 
 		// Conditional Rendering 
 		let accountsContainer = null;
-		let totalSpent = null;
+		let budget = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = '';
-			totalSpent = '';
+			budget = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
-			totalSpent = <Budget transactions={this.state.transactions} />
+			budget = <Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
 		}
 
 		return (
@@ -149,7 +149,7 @@ class Home extends Component {
 					<button className='home--btns__green' onClick={this.getTransactions.bind(this)}>Get Transactions</button>
 				</div>
 
-				{totalSpent}
+				{budget}
 				{accountsContainer}
 
 				<div className='home--error'>

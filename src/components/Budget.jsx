@@ -11,21 +11,7 @@ class Budget extends Component {
     }
     
     componentDidMount() {
-        this.getTotalSpent();
-    }
-
-    getTotalSpent() {
-        let total = 0;
-        // Sum up the prices of each transaction 
-        this.props.transactions.forEach(transaction => {
-            total += transaction.amount;
-        })
-
-        // Round total to two decimal places and ensure trailing 0s appear
-        total = (Math.round(total * 100) / 100).toFixed(2);
-        
-        this.setState({totalSpent, total});
-        return total;
+        console.log("TOTAL SPENT FROM PROPS:", this.props.totalSpent);
     }
 
     handleChange(event) {
@@ -51,10 +37,10 @@ class Budget extends Component {
                 </form>
 
                 <div className='budget--graph'>
-                    <div>
-                    </div>
+                    <div></div>
                 </div>
-                <p>{(this.state.totalSpent / this.state.monthlyBudget)*100 || 0}%</p>
+                
+                <p>{(this.props.totalSpent / this.state.monthlyBudget)*100 || 0}%</p>
 
             </div>
         );
