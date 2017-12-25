@@ -21,7 +21,6 @@ class Transaction extends Component {
 	formatAmount(amt) {
 		return (Math.round(amt * 100) / 100).toFixed(2);
 	}
-	
 
 	render() {
 		let date = this.formatDate(JSON.stringify(this.props.transaction.date));

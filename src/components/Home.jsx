@@ -61,12 +61,12 @@ class Home extends Component {
 	getTransactions() {
 		$.post('/plaid-api/transactions', data => {
 			if (!data.transactions || !data.accounts) {
-				
+
 				const errorMessage = document.querySelector('.home--error');
 				errorMessage.classList.add('home--error__display');
-				
-				setTimeout( () => { 
-					errorMessage.classList.remove('home--error__display') 
+
+				setTimeout( () => {
+					errorMessage.classList.remove('home--error__display')
 				}, 4000)
 
 			} else {
@@ -109,7 +109,7 @@ class Home extends Component {
 				currentTransactions.push(t);
 			}
 		})
-		
+
 		// Sort the transactions based on account_id
 		currentTransactions = currentTransactions.sort((a, b) => {
 			return a.account_id - b.account_id;
@@ -121,7 +121,7 @@ class Home extends Component {
 
 	getTotalSpent() {
 		let total = 0;
-		// Sum up the prices of each transaction 
+		// Sum up the prices of each transaction
 		this.state.transactions.forEach( transaction => {
 			total += transaction.amount;
 		})
@@ -136,7 +136,7 @@ class Home extends Component {
 		// return a TransactionContainer passing in this array of transactions as a property
 
 		let releventTransactions = [];
-		
+
 		this.state.transactions.forEach( t => {
 			if (t.category !== null && t.category.includes(categoryString)) {
 				releventTransactions.push(t);
@@ -148,7 +148,7 @@ class Home extends Component {
 
 	render() {
 
-		// Conditional Rendering 
+		// Conditional Rendering
 		let accountsContainer = null;
 		let budget = null;
 		let categoryTransactions = null;

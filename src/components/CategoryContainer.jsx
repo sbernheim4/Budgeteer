@@ -11,7 +11,7 @@ class CategoryContainer extends Component {
 		this.state = {
 			categoryTransactions: []
 		};
-		
+
 	}
 
 	componentDidMount() {
