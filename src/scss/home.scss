@@ -1,10 +1,12 @@
+@import '/global.scss';
+
 .home {
 
 	&--error {
 		margin: 15px auto;
 		width: 350px;
 		height: 30px; 
-		background-color: rgb(212,99,99);
+		background-color: $red;
 		border-radius: 10px;
 		opacity: 0;
 		transition: opacity .2s ease; 
@@ -34,12 +36,12 @@
 		}
 
 		&__blue {
-			background-color: rgb(52,108,161);
+			background-color: $blue;
 		}
 
 		&__green {
 			margin-left: 5px;
-			background-color: rgb(77,153,114);
+			background-color: $green;
 
 			@media all and (max-width: 408px) {
 				margin-left: 0;

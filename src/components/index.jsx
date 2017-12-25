@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 // Global Style Sheet
-import '../scss/index.scss';
+import '../scss/reset.scss';
 
 import Home from './Home.jsx';
 import Navbar from './Navbar.jsx';
