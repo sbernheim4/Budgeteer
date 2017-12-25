@@ -7767,7 +7767,10 @@ var AccountsContainer = function (_Component) {
 		_this.state = {
 			// this state variable is used to keep track of transactions the
 			// user wants to see
-			transactions: []
+			transactions: [],
+			// Stores how the user is currently sorting their transactions
+			categoryType: '',
+			categoryTotal: 0
 		};
 
 		_this.getAccountTransactions = _this.getAccountTransactions.bind(_this);
@@ -7780,27 +7783,49 @@ var AccountsContainer = function (_Component) {
 		value: function getAccountTransactions(account_id) {
 			var allTransactions = this.props.transactions;
 
-			if (account_id === "all") {
-				this.setState({ transactions: allTransactions });
-			} else {
-				var releventTransactions = [];
+			var releventTransactions = [];
+			var type = void 0;
+			var total = 0;
 
+			if (account_id === 'none') {
+				releventTransactions = [];
+				type = '';
+			} else if (account_id === "all") {
+				releventTransactions = allTransactions;
+				type = 'All Categories';
+			} else {
 				allTransactions.map(function (transaction) {
 					if (transaction.account_id === account_id) {
 						releventTransactions.push(transaction);
 					}
 				});
-
-				// Set the state of transactions to only those transactions with
-				// the same account id as what the user selected
-				this.setState({ transactions: releventTransactions });
 			}
+
+			releventTransactions.forEach(function (transaction) {
+				total += transaction.amount;
+			});
+			total = (Math.round(total * 100) / 100).toFixed(2);
+
+			// Update the state with the relevent transactions and how the user is sorting them
+			this.props.accounts.forEach(function (account) {
+				if (account.account_id === account_id) {
+					type = account.name;
+					return;
+				}
+			});
+
+			this.setState({
+				transactions: releventTransactions,
+				categoryType: type,
+				categoryTotal: total
+			});
 		}
 	}, {
 		key: 'getCategoryTransactions',
 		value: function getCategoryTransactions(categoryString) {
 			var releventTransactions = [];
 
+			// Other displays transactions with a category of null
 			if (categoryString === 'Other') {
 				this.props.transactions.forEach(function (t) {
 					if (t.category === null) {
@@ -7815,7 +7840,19 @@ var AccountsContainer = function (_Component) {
 				});
 			}
 
-			this.setState({ transactions: releventTransactions });
+			// Get the total spent for the current Category
+			var total = 0;
+			releventTransactions.forEach(function (transaction) {
+				total += transaction.amount;
+			});
+			total = (Math.round(total * 100) / 100).toFixed(2);
+
+			// Update the state with the relevent transactions and how the user is sorting them
+			this.setState({
+				transactions: releventTransactions,
+				categoryType: categoryString,
+				categoryTotal: total
+			});
 		}
 	}, {
 		key: 'render',
@@ -7827,7 +7864,7 @@ var AccountsContainer = function (_Component) {
 				{ className: 'accounts' },
 				_react2.default.createElement(
 					'h3',
-					null,
+					{ className: 'accounts--sort-options' },
 					'Sort by Account Type'
 				),
 				_react2.default.createElement(
@@ -7859,7 +7896,7 @@ var AccountsContainer = function (_Component) {
 				),
 				_react2.default.createElement(
 					'h3',
-					null,
+					{ className: 'accounts--sort-options' },
 					'Sort by Categories'
 				),
 				_react2.default.createElement(
@@ -7921,6 +7958,17 @@ var AccountsContainer = function (_Component) {
 							} },
 						'Other'
 					)
+				),
+				_react2.default.createElement(
+					'h2',
+					{ className: 'accounts--totals' },
+					'Total spent on: ',
+					this.state.categoryType
+				),
+				_react2.default.createElement(
+					'h2',
+					{ className: 'accounts--totals' },
+					this.state.categoryTotal
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.transactions })
 			);
@@ -8373,7 +8421,6 @@ var Budget = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-
 			var spent = this.numberWithCommas(this.props.totalSpent);
 
 			var remaining = (this.state.monthlyBudget - this.props.totalSpent).toFixed(2);
@@ -23970,7 +24017,7 @@ exports = module.exports = __webpack_require__(20)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.accounts h3 {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

@@ -2,8 +2,12 @@
 
 .accounts {
 
-	h3 {
+	&--totals {
 		text-align: center; 
+	}
+
+	&--sort-options {
+		text-align: center;
 	}
 
 	&--btns {

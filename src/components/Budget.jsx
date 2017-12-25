@@ -62,7 +62,6 @@ class Budget extends Component {
 	}
 
 	render() {
-
 		let spent = this.numberWithCommas(this.props.totalSpent);
 
 		let remaining = (this.state.monthlyBudget - this.props.totalSpent).toFixed(2);
