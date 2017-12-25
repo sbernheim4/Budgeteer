@@ -7,7 +7,8 @@ class Budget extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			monthlyBudget: ''
+			monthlyBudget: '',
+			data: {}
 		};
 
 		this.handleChange = this.handleChange.bind(this);

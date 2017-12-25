@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import AccountsContainer from './AccountsContainer.jsx';
 import TransactionContainer from './TransactionContainer.jsx';
-import CategoryContainer from './CategoryContainer.jsx';
 import Budget from './Budget.jsx';
 
 import '../scss/home.scss';
@@ -18,8 +17,7 @@ class Home extends Component {
 			transactions: [],
 			accounts: [],
 			account_ids: setOne,
-			transaction_ids: setTwo,
-			categoryTransactions: []
+			transaction_ids: setTwo
 		};
 	}
 
@@ -131,35 +129,17 @@ class Home extends Component {
 		return total;
 	}
 
-	getCategory(categoryString) {
-		// create an array with all the transactions that have categoryString as an element in their categories array
-		// return a TransactionContainer passing in this array of transactions as a property
-
-		let releventTransactions = [];
-
-		this.state.transactions.forEach( t => {
-			if (t.category !== null && t.category.includes(categoryString)) {
-				releventTransactions.push(t);
-			}
-		});
-
-		this.setState({ categoryTransactions: releventTransactions})
-	}
-
 	render() {
 
 		// Conditional Rendering
 		let accountsContainer = null;
 		let budget = null;
-		let categoryTransactions = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = '';
 			budget = '';
-			categoryTransactions = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
 			budget = <Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
-			categoryTransactions = <CategoryContainer transactions={this.state.transactions} />
 		}
 
 		return (
@@ -172,7 +152,6 @@ class Home extends Component {
 
 				{budget}
 				{accountsContainer}
-				{categoryTransactions}
 
 				<div className='home--error'>
 					<p>Please first link an account</p>

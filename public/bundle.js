@@ -7765,18 +7765,19 @@ var AccountsContainer = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (AccountsContainer.__proto__ || (0, _getPrototypeOf2.default)(AccountsContainer)).call(this, props));
 
 		_this.state = {
-			// this state variable is used to keep track of transactions the 
-			// user wants to see based on account type
+			// this state variable is used to keep track of transactions the
+			// user wants to see
 			transactions: []
 		};
 
-		_this.handleClick = _this.handleClick.bind(_this);
+		_this.getAccountTransactions = _this.getAccountTransactions.bind(_this);
+		_this.getCategoryTransactions = _this.getCategoryTransactions.bind(_this);
 		return _this;
 	}
 
 	(0, _createClass3.default)(AccountsContainer, [{
-		key: 'handleClick',
-		value: function handleClick(account_id) {
+		key: 'getAccountTransactions',
+		value: function getAccountTransactions(account_id) {
 			var allTransactions = this.props.transactions;
 
 			if (account_id === "all") {
@@ -7790,10 +7791,31 @@ var AccountsContainer = function (_Component) {
 					}
 				});
 
-				// Set the state of transactions to only those transactions with 
+				// Set the state of transactions to only those transactions with
 				// the same account id as what the user selected
 				this.setState({ transactions: releventTransactions });
 			}
+		}
+	}, {
+		key: 'getCategoryTransactions',
+		value: function getCategoryTransactions(categoryString) {
+			var releventTransactions = [];
+
+			if (categoryString === 'Other') {
+				this.props.transactions.forEach(function (t) {
+					if (t.category === null) {
+						releventTransactions.push(t);
+					}
+				});
+			} else {
+				this.props.transactions.forEach(function (t) {
+					if (t.category !== null && t.category.includes(categoryString)) {
+						releventTransactions.push(t);
+					}
+				});
+			}
+
+			this.setState({ transactions: releventTransactions });
 		}
 	}, {
 		key: 'render',
@@ -7804,12 +7826,17 @@ var AccountsContainer = function (_Component) {
 				'div',
 				{ className: 'accounts' },
 				_react2.default.createElement(
+					'h3',
+					null,
+					'Sort by Account Type'
+				),
+				_react2.default.createElement(
 					'div',
 					{ className: 'accounts--btns' },
 					_react2.default.createElement(
 						'button',
 						{ onClick: function onClick() {
-								_this2.handleClick("all");
+								_this2.getAccountTransactions("all");
 							} },
 						'All Transactions'
 					),
@@ -7817,11 +7844,83 @@ var AccountsContainer = function (_Component) {
 						return _react2.default.createElement(
 							'button',
 							{ key: index, onClick: function onClick() {
-									_this2.handleClick(a.account_id);
+									_this2.getAccountTransactions(a.account_id);
 								} },
 							a.name
 						);
-					})
+					}),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getAccountTransactions('none');
+							} },
+						'Hide Transactions'
+					)
+				),
+				_react2.default.createElement(
+					'h3',
+					null,
+					'Sort by Categories'
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'accounts--btns' },
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Food and Drink');
+							} },
+						'Food and Drink'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Travel');
+							} },
+						'Travel'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Shops');
+							} },
+						'Shops'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Recreation');
+							} },
+						'Recreation'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Service');
+							} },
+						'Service'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Community');
+							} },
+						'Community'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Healthcare');
+							} },
+						'Healthcare'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: function onClick() {
+								_this2.getCategoryTransactions('Other');
+							} },
+						'Other'
+					)
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.transactions })
 			);
@@ -8181,7 +8280,7 @@ exports.default = Transaction;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _getPrototypeOf = __webpack_require__(22);
@@ -8215,112 +8314,113 @@ __webpack_require__(426);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Budget = function (_Component) {
-    (0, _inherits3.default)(Budget, _Component);
+	(0, _inherits3.default)(Budget, _Component);
 
-    function Budget(props) {
-        (0, _classCallCheck3.default)(this, Budget);
+	function Budget(props) {
+		(0, _classCallCheck3.default)(this, Budget);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (Budget.__proto__ || (0, _getPrototypeOf2.default)(Budget)).call(this, props));
+		var _this = (0, _possibleConstructorReturn3.default)(this, (Budget.__proto__ || (0, _getPrototypeOf2.default)(Budget)).call(this, props));
 
-        _this.state = {
-            monthlyBudget: ''
-        };
+		_this.state = {
+			monthlyBudget: '',
+			data: {}
+		};
 
-        _this.handleChange = _this.handleChange.bind(_this);
-        // this.generateChart = this.generateChart.bind(this);
-        return _this;
-    }
+		_this.handleChange = _this.handleChange.bind(_this);
+		// this.generateChart = this.generateChart.bind(this);
+		return _this;
+	}
 
-    (0, _createClass3.default)(Budget, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
-    }, {
-        key: 'handleChange',
-        value: function handleChange(event) {
-            // Update the state variable
-            this.setState({ monthlyBudget: event.target.value.trim() });
+	(0, _createClass3.default)(Budget, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {}
+	}, {
+		key: 'handleChange',
+		value: function handleChange(event) {
+			// Update the state variable
+			this.setState({ monthlyBudget: event.target.value.trim() });
 
-            // // Update the percentage calculator
-            // const graph = document.querySelector('.budget--graph > div');
-            // let percentage = (this.props.totalSpent / event.target.value) * 100;
-            // graph.style.width = percentage + "%";
+			// // Update the percentage calculator
+			// const graph = document.querySelector('.budget--graph > div');
+			// let percentage = (this.props.totalSpent / event.target.value) * 100;
+			// graph.style.width = percentage + "%";
 
-            var spent = this.props.totalSpent;
-            var remaining = (event.target.value - this.props.totalSpent).toFixed(2);
-            if (remaining <= 0) {
-                remaining = 0;
-            }
+			var spent = this.props.totalSpent;
+			var remaining = (event.target.value - this.props.totalSpent).toFixed(2);
+			if (remaining <= 0) {
+				remaining = 0;
+			}
 
-            var data = {
-                labels: ['Spent', 'Remaining'],
-                datasets: [{
-                    data: [spent, remaining],
-                    backgroundColor: ['rgb(212,99,99)', 'rgb(77, 153, 114)'],
-                    hoverBackgroundColor: ['#D46363', '#007255']
-                }]
-            };
+			var data = {
+				labels: ['Spent', 'Remaining'],
+				datasets: [{
+					data: [spent, remaining],
+					backgroundColor: ['rgb(212,99,99)', 'rgb(77, 153, 114)'],
+					hoverBackgroundColor: ['#D46363', '#007255']
+				}]
+			};
 
-            this.setState({ data: data });
+			this.setState({ data: data });
 
-            // Update the pie chart
-            // this.generateChart(spent, remaining);
-        }
-    }, {
-        key: 'numberWithCommas',
-        value: function numberWithCommas(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-    }, {
-        key: 'render',
-        value: function render() {
+			// Update the pie chart
+			// this.generateChart(spent, remaining);
+		}
+	}, {
+		key: 'numberWithCommas',
+		value: function numberWithCommas(number) {
+			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+	}, {
+		key: 'render',
+		value: function render() {
 
-            var spent = this.numberWithCommas(this.props.totalSpent);
+			var spent = this.numberWithCommas(this.props.totalSpent);
 
-            var remaining = (this.state.monthlyBudget - this.props.totalSpent).toFixed(2);
-            remaining = this.numberWithCommas(remaining);
+			var remaining = (this.state.monthlyBudget - this.props.totalSpent).toFixed(2);
+			remaining = this.numberWithCommas(remaining);
 
-            return _react2.default.createElement(
-                'div',
-                { className: 'budget' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'budget--totals' },
-                    _react2.default.createElement(
-                        'h2',
-                        null,
-                        'Spent: $',
-                        spent
-                    ),
-                    _react2.default.createElement(
-                        'h2',
-                        null,
-                        'Remaining: $',
-                        remaining
-                    )
-                ),
-                _react2.default.createElement(
-                    'form',
-                    { className: 'budget--form' },
-                    _react2.default.createElement(
-                        'label',
-                        null,
-                        _react2.default.createElement(
-                            'span',
-                            null,
-                            'Monthly Budget'
-                        ),
-                        _react2.default.createElement('input', { placeholder: 'Enter your budget', type: 'text', name: 'budget', value: this.state.monthlyBudget, onChange: this.handleChange })
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'budget--doughnut-chart' },
-                    _react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
-                )
-            );
-        }
-    }]);
-    return Budget;
+			return _react2.default.createElement(
+				'div',
+				{ className: 'budget' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'budget--totals' },
+					_react2.default.createElement(
+						'h2',
+						null,
+						'Spent: $',
+						spent
+					),
+					_react2.default.createElement(
+						'h2',
+						null,
+						'Remaining: $',
+						remaining
+					)
+				),
+				_react2.default.createElement(
+					'form',
+					{ className: 'budget--form' },
+					_react2.default.createElement(
+						'label',
+						null,
+						_react2.default.createElement(
+							'span',
+							null,
+							'Monthly Budget'
+						),
+						_react2.default.createElement('input', { placeholder: 'Enter your budget', type: 'text', name: 'budget', value: this.state.monthlyBudget, onChange: this.handleChange })
+					)
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'budget--doughnut-chart' },
+					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
+				)
+			);
+		}
+	}]);
+	return Budget;
 }(_react.Component);
 
 exports.default = Budget;
@@ -20940,10 +21040,6 @@ var _TransactionContainer = __webpack_require__(71);
 
 var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
 
-var _CategoryContainer = __webpack_require__(463);
-
-var _CategoryContainer2 = _interopRequireDefault(_CategoryContainer);
-
 var _Budget = __webpack_require__(97);
 
 var _Budget2 = _interopRequireDefault(_Budget);
@@ -20967,8 +21063,7 @@ var Home = function (_Component) {
 			transactions: [],
 			accounts: [],
 			account_ids: setOne,
-			transaction_ids: setTwo,
-			categoryTransactions: []
+			transaction_ids: setTwo
 		};
 		return _this;
 	}
@@ -21083,7 +21178,7 @@ var Home = function (_Component) {
 		key: 'getTotalSpent',
 		value: function getTotalSpent() {
 			var total = 0;
-			// Sum up the prices of each transaction 
+			// Sum up the prices of each transaction
 			this.state.transactions.forEach(function (transaction) {
 				total += transaction.amount;
 			});
@@ -21093,37 +21188,18 @@ var Home = function (_Component) {
 			return total;
 		}
 	}, {
-		key: 'getCategory',
-		value: function getCategory(categoryString) {
-			// create an array with all the transactions that have categoryString as an element in their categories array
-			// return a TransactionContainer passing in this array of transactions as a property
-
-			var releventTransactions = [];
-
-			this.state.transactions.forEach(function (t) {
-				if (t.category !== null && t.category.includes(categoryString)) {
-					releventTransactions.push(t);
-				}
-			});
-
-			this.setState({ categoryTransactions: releventTransactions });
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 
-			// Conditional Rendering 
+			// Conditional Rendering
 			var accountsContainer = null;
 			var budget = null;
-			var categoryTransactions = null;
 			if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 				accountsContainer = '';
 				budget = '';
-				categoryTransactions = '';
 			} else {
 				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, { transactions: this.state.transactions, accounts: this.state.accounts });
 				budget = _react2.default.createElement(_Budget2.default, { totalSpent: this.getTotalSpent(), transactions: this.state.transactions });
-				categoryTransactions = _react2.default.createElement(_CategoryContainer2.default, { transactions: this.state.transactions });
 			}
 
 			return _react2.default.createElement(
@@ -21145,7 +21221,6 @@ var Home = function (_Component) {
 				),
 				budget,
 				accountsContainer,
-				categoryTransactions,
 				_react2.default.createElement(
 					'div',
 					{ className: 'home--error' },
@@ -23895,7 +23970,7 @@ exports = module.exports = __webpack_require__(20)(undefined);
 
 
 // module
-exports.push([module.i, ".accounts--btns {\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, ".accounts h3 {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -57674,267 +57749,6 @@ exports = module.exports = __webpack_require__(20)(undefined);
 
 // module
 exports.push([module.i, ".navbar {\n  display: flex;\n  flex-direction: row; }\n  .navbar p {\n    margin: 15px; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 463 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _getPrototypeOf = __webpack_require__(22);
-
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = __webpack_require__(25);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(26);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _possibleConstructorReturn2 = __webpack_require__(27);
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = __webpack_require__(29);
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-var _react = __webpack_require__(11);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _TransactionContainer = __webpack_require__(71);
-
-var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
-
-__webpack_require__(464);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var CategoryContainer = function (_Component) {
-	(0, _inherits3.default)(CategoryContainer, _Component);
-
-	function CategoryContainer(props) {
-		(0, _classCallCheck3.default)(this, CategoryContainer);
-
-		var _this = (0, _possibleConstructorReturn3.default)(this, (CategoryContainer.__proto__ || (0, _getPrototypeOf2.default)(CategoryContainer)).call(this, props));
-
-		_this.getCategory = _this.getCategory.bind(_this);
-
-		_this.state = {
-			categoryTransactions: []
-		};
-
-		return _this;
-	}
-
-	(0, _createClass3.default)(CategoryContainer, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {}
-	}, {
-		key: 'getCategory',
-		value: function getCategory(categoryString) {
-			var releventTransactions = [];
-
-			if (categoryString === 'Other') {
-				this.props.transactions.forEach(function (t) {
-					if (t.category === null) {
-						releventTransactions.push(t);
-					}
-				});
-			} else {
-				this.props.transactions.forEach(function (t) {
-					if (t.category !== null && t.category.includes(categoryString)) {
-						releventTransactions.push(t);
-					}
-				});
-			}
-
-			this.setState({ categoryTransactions: releventTransactions });
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			var container = null;
-			if (this.state.categoryTransactions.length === 0) {
-				container = '';
-			} else {
-				container = _react2.default.createElement(_TransactionContainer2.default, { className: 'category--transactions', transactions: this.state.categoryTransactions });
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'category' },
-				_react2.default.createElement(
-					'div',
-					{ className: 'category--btns' },
-					_react2.default.createElement(
-						'h3',
-						null,
-						'Sort by Categories'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Food and Drink');
-							} },
-						'Food and Drink'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Travel');
-							} },
-						'Travel'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Shops');
-							} },
-						'Shops'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Recreation');
-							} },
-						'Recreation'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Service');
-							} },
-						'Service'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Community');
-							} },
-						'Community'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Healthcare');
-							} },
-						'Healthcare'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Other');
-							} },
-						'Other'
-					),
-					_react2.default.createElement('br', null),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Bank Fees');
-							} },
-						'Bank Fees'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Cash Advance');
-							} },
-						'Cash Advance'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Interest');
-							} },
-						'Interest'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Payment');
-							} },
-						'Payment'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Tax');
-							} },
-						'Tax'
-					),
-					_react2.default.createElement(
-						'button',
-						{ className: 'home--category-btns', onClick: function onClick() {
-								_this2.getCategory('Transfer');
-							} },
-						'Transfer'
-					)
-				),
-				container
-			);
-		}
-	}]);
-	return CategoryContainer;
-}(_react.Component);
-
-exports.default = CategoryContainer;
-
-/***/ }),
-/* 464 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(465);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(21)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./categoryContainer.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./categoryContainer.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 465 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(20)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, ".category--btns {\n  display: flex;\n  flex-direction: column; }\n  .category--btns button {\n    width: 70px;\n    margin: 5px;\n    padding: 15px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
