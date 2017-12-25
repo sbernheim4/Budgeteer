@@ -27,7 +27,7 @@ let client = new plaid.Client(
 	PLAID_SECRET,
 	PLAID_PUBLIC_KEY,
 	plaid.environments[PLAID_ENV]
-	);
+);
 
 app.use(bodyParser.urlencoded({
 	extended: false
@@ -69,6 +69,8 @@ app.post('/get-access-token', function(req, res, next) {
 		ITEM_ID = tokenResponse.item_id;
 
 		console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
+		console.log(ACCESS_TOKEN);
+		console.log(ITEM_ID);
 
 	});
 });
