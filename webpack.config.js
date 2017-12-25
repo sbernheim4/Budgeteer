@@ -68,15 +68,15 @@ module.exports = {
 		new StyleLintPlugin({
 			configFile: './.stylelintrc',
 			files: './src/scss/*.scss'
-		}),
+		})//,
 
-		// used for automatic reloading of the page on changes
-		new BrowserSyncPlugin({
-			notify: false,
-			host: 'localhost',
-			port: 3000,
-			server: { baseDir: ['public'] }
-		})
+		// // used for automatic reloading of the page on changes
+		// new BrowserSyncPlugin({
+		// 	notify: false,
+		// 	host: 'localhost',
+		// 	port: 3000,
+		// 	server: { baseDir: ['public'] }
+		// })
 	]
 };
 
