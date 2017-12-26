@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import AccountsContainer from './AccountsContainer.jsx';
 import TransactionContainer from './TransactionContainer.jsx';
 import Budget from './Budget.jsx';
+import Statistics from './Statistics.jsx';
 
 import '../scss/home.scss';
 
@@ -96,13 +97,16 @@ class Home extends Component {
 	}
 
 	storeTransactions(transactions) {
-		// Determine if any transactions already exist in the state
+
 		let currentTransactions = this.state.transactions;
 
 		// Add all the transactions for the new bank the user just selected
-		transactions.forEach((t) => {
+		transactions.forEach( (t) => {
 			if (!this.state.transaction_ids.has(t.transaction_id)) {
-
+				
+				// TODO: the state should not be modified directly --> Use 
+				// setState instead later on and store all the new 
+				// transaction_ids in a temporary array
 				this.state.transaction_ids.add(t.transaction_id);
 				currentTransactions.push(t);
 			}
@@ -134,12 +138,15 @@ class Home extends Component {
 		// Conditional Rendering
 		let accountsContainer = null;
 		let budget = null;
+		let stats = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = '';
 			budget = '';
+			stats = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
 			budget = <Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
+			stats = <Statistics transactions={this.state.transactions} />
 		}
 
 		return (
@@ -152,6 +159,7 @@ class Home extends Component {
 
 				{budget}
 				{accountsContainer}
+				{stats}
 
 				<div className='home--error'>
 					<p>Please first link an account</p>

@@ -12,10 +12,6 @@ class Budget extends Component {
 		};
 
 		this.handleChange = this.handleChange.bind(this);
-		// this.generateChart = this.generateChart.bind(this);
-	}
-
-	componentDidMount() {
 	}
 
 	handleChange(event) {
