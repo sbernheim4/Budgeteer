@@ -8371,7 +8371,14 @@ var Budget = function (_Component) {
 
 		_this.state = {
 			monthlyBudget: '',
-			data: {}
+			data: {
+				labels: ['Spent', 'Remaining'],
+				datasets: [{
+					data: [0, 1],
+					backgroundColor: ['rgb(212,99,99)', 'rgb(77, 153, 114)'],
+					hoverBackgroundColor: ['#D46363', '#007255']
+				}]
+			}
 		};
 
 		_this.handleChange = _this.handleChange.bind(_this);
@@ -57814,7 +57821,7 @@ exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.navbar {\n  
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _getPrototypeOf = __webpack_require__(22);
@@ -57846,112 +57853,93 @@ var _reactChartjs = __webpack_require__(286);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Statistics = function (_Component) {
-    (0, _inherits3.default)(Statistics, _Component);
+	(0, _inherits3.default)(Statistics, _Component);
 
-    function Statistics(props) {
-        (0, _classCallCheck3.default)(this, Statistics);
+	function Statistics(props) {
+		(0, _classCallCheck3.default)(this, Statistics);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (Statistics.__proto__ || (0, _getPrototypeOf2.default)(Statistics)).call(this, props));
+		var _this = (0, _possibleConstructorReturn3.default)(this, (Statistics.__proto__ || (0, _getPrototypeOf2.default)(Statistics)).call(this, props));
 
-        _this.state = {
-            data: {}
-        };
-        return _this;
-    }
+		_this.state = {
+			data: {}
+		};
+		return _this;
+	}
 
-    (0, _createClass3.default)(Statistics, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            this.generateChart();
-        }
-    }, {
-        key: 'calculateAmounts',
-        value: function calculateAmounts() {
-            // Initialize a new array of size 14 and fill it with 0s initially
-            var amts = new Array(14);
-            amts.fill(0);
+	(0, _createClass3.default)(Statistics, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.generateChart();
+		}
+	}, {
+		key: 'calculateAmounts',
+		value: function calculateAmounts() {
+			// Initialize a new array of size 14 and fill it with 0s initially
+			var amts = new Array(8);
+			amts.fill(0);
 
-            this.props.transactions.forEach(function (t) {
-                if (t.category !== null) {
-                    var category = t.category[0];
-                    var amount = t.amount;
+			this.props.transactions.forEach(function (t) {
+				if (t.category !== null && t.amount > 0) {
+					var category = t.category[0];
+					var amount = t.amount;
 
-                    // Update the right value in the array based on category
-                    switch (category) {
-                        case 'Food and Drink':
-                            amts[0] += amount;
-                            break;
-                        case 'Travel':
-                            amts[1] += amount;
-                            break;
-                        case 'Shops':
-                            amts[2] += amount;
-                            break;
-                        case 'Recreation':
-                            amts[3] += amount;
-                            break;
-                        case 'Service':
-                            amts[4] += amount;
-                            break;
-                        case 'Community':
-                            amts[5] += amount;
-                            break;
-                        case 'Healthcare':
-                            amts[6] += amount;
-                            break;
-                        case 'Other':
-                            amts[7] += amount;
-                            break;
-                        case 'Bank Fees':
-                            amts[8] += amount;
-                            break;
-                        case 'Cash Advance':
-                            amts[9] += amount;
-                            break;
-                        case 'Interest':
-                            amts[10] += amount;
-                            break;
-                        case 'Payment':
-                            amts[11] += amount;
-                            break;
-                        case 'Tax':
-                            amts[12] += amount;
-                            break;
-                        case 'Transfer':
-                            amts[13] += amount;
-                            break;
-                    }
-                }
-            });
+					switch (category) {
+						case 'Food and Drink':
+							amts[0] += amount;
+							break;
+						case 'Travel':
+							amts[1] += amount;
+							break;
+						case 'Shops':
+							amts[2] += amount;
+							break;
+						case 'Recreation':
+							amts[3] += amount;
+							break;
+						case 'Service':
+							amts[4] += amount;
+							break;
+						case 'Community':
+							amts[5] += amount;
+							break;
+						case 'Healthcare':
+							amts[6] += amount;
+							break;
+						default:
+							amts[7] += amount;
+							break;
+					}
+				}
+			});
 
-            return amts;
-        }
-    }, {
-        key: 'generateChart',
-        value: function generateChart() {
-            var amounts = this.calculateAmounts();
+			return amts;
+		}
+	}, {
+		key: 'generateChart',
+		value: function generateChart() {
+			var amounts = this.calculateAmounts();
 
-            var data = {
-                labels: ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Other', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer'],
-                datasets: [{
-                    data: amounts,
-                    backgroundColor: ['#578CA9', '#F6D155', '#004B8D', '#F2552C', '#95DEE3', '#EDCDC2', '#CE3175', '#5A7247', '#CFB095', '#4C6A92', '#92B6D5', '#838487', '#B93A32', '#D8AE47']
-                }]
-            };
+			var data = {
+				labels: ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Other'],
+				datasets: [{
+					data: amounts,
+					backgroundColor: ['#578CA9', '#F6D155', '#004B8D', '#F2552C', '#95DEE3', '#CE3175', '#5A7247', '#CFB095']
+				}]
+			};
 
-            this.setState({ data: data });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return (
+			this.setState({ data: data });
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			return (
 
-                // Render a doughnut chart for categorical spending
-                _react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
-            );
-        }
-    }]);
-    return Statistics;
+				// Render a doughnut chart for categorical spending
+				_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
+			);
+		}
+	}]);
+	return Statistics;
 }(_react.Component);
 
 exports.default = Statistics;

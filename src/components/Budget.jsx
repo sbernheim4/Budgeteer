@@ -8,7 +8,23 @@ class Budget extends Component {
 		super(props);
 		this.state = {
 			monthlyBudget: '',
-			data: {}
+			data: {
+				labels: [
+					'Spent',
+					'Remaining'
+				],
+				datasets: [{
+					data: [0, 1],
+					backgroundColor: [
+						'rgb(212,99,99)',
+						'rgb(77, 153, 114)'
+					],
+					hoverBackgroundColor: [
+						'#D46363',
+						'#007255'
+					]
+				}]
+			}
 		};
 
 		this.handleChange = this.handleChange.bind(this);
