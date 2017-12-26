@@ -55,10 +55,6 @@ class Budget extends Component {
 				backgroundColor: [
 					'rgb(212,99,99)',
 					'rgb(77, 153, 114)'
-				],
-				hoverBackgroundColor: [
-					'#D46363',
-					'#007255'
 				]
 			}]
 		};

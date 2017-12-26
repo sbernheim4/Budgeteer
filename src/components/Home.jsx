@@ -31,6 +31,8 @@ class Home extends Component {
 			return res;
 		}).then( res => {
 
+			// TODO: Change the onSuccess to use fetch instead of jquery
+
 			const plaid = Plaid.create({
 				apiVersion: 'v2',
 				clientName: 'Plaid Walkthrough Demo',
@@ -58,13 +60,14 @@ class Home extends Component {
 	}
 
 	getTransactions() {
-		$.post('/plaid-api/transactions', data => {
+		fetch('http://localhost:5000/plaid-api/transactions', { method: 'post', body: 30 })
+		.then (daata => {
 			if (!data.transactions || !data.accounts) {
 
 				const errorMessage = document.querySelector('.home--error');
 				errorMessage.classList.add('home--error__display');
 
-				setTimeout( () => {
+				setTimeout(() => {
 					errorMessage.classList.remove('home--error__display')
 				}, 4000)
 
@@ -72,6 +75,8 @@ class Home extends Component {
 				this.storeTransactions(data.transactions);
 				this.storeAccounts(data.accounts);
 			}
+		}).catch( err => {
+			console.error(err);
 		});
 	}
 
@@ -97,7 +102,6 @@ class Home extends Component {
 	}
 
 	storeTransactions(transactions) {
-
 		let currentTransactions = this.state.transactions;
 
 		// Add all the transactions for the new bank the user just selected

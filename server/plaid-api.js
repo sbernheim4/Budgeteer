@@ -76,8 +76,11 @@ app.post('/get-access-token', function(req, res, next) {
 });
 
 app.post('/transactions', function(req, res, next) {
+
+	const days = req.body.days || 30;
+
 	// Pull transactions for the Item for the last 30 days
-	const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+	const startDate = moment().subtract(days, 'days').format('YYYY-MM-DD');
 	const endDate = moment().format('YYYY-MM-DD');
 
 	client.getTransactions(ACCESS_TOKEN, startDate, endDate, {

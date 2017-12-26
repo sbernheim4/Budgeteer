@@ -9,7 +9,7 @@ class AccountsContainer extends Component {
 		this.state = {
 			// this state variable is used to keep track of transactions the
 			// user wants to see
-			transactions: [],
+			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
 			categoryType: '',
 			categoryTotal: 0
@@ -54,7 +54,7 @@ class AccountsContainer extends Component {
 		});
 
 		this.setState({
-			transactions: releventTransactions,
+			categoryTransactions: releventTransactions,
 			categoryType: type,
 			categoryTotal: total
 		});
@@ -67,13 +67,13 @@ class AccountsContainer extends Component {
 		// Other displays transactions with a category of null
 		if (categoryString === 'Other') {
 			this.props.transactions.forEach(t => {
-				if (t.category === null) {
+				if (t.category === null || t.category[0] === 'Bank Fees' || t.category[0] === 'Cash Advance' || t.category[0] === 'Interest' || t.category[0] === 'Payment' || t.category[0] === 'Tax' || t.category[0] === 'Transfer') {
 					releventTransactions.push(t);
 				}
 			});
 		} else {
 			this.props.transactions.forEach(t => {
-				if (t.category !== null && t.category.includes(categoryString)) {
+				if (t.category !== null && t.category[0] === categoryString) {
 					releventTransactions.push(t);
 				}
 			});
@@ -88,7 +88,7 @@ class AccountsContainer extends Component {
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.setState({ 
-			transactions: releventTransactions, 
+			categoryTransactions: releventTransactions, 
 			categoryType: categoryString,
 			categoryTotal: total
 		});
@@ -123,20 +123,12 @@ class AccountsContainer extends Component {
 					<button onClick={() => { this.getCategoryTransactions('Community') }}>Community</button>
 					<button onClick={() => { this.getCategoryTransactions('Healthcare') }}>Healthcare</button>
 					<button onClick={() => { this.getCategoryTransactions('Other') }}>Other</button>
-
-					{/* TODO: These categories should be in a do more section */}
-					{/* <button onClick={() => { this.getCategoryTransactions('Bank Fees') }}>Bank Fees</button>
-					<button onClick={() => { this.getCategoryTransactions('Cash Advance') }}>Cash Advance</button>
-					<button onClick={() => { this.getCategoryTransactions('Interest') }}>Interest</button>
-					<button onClick={() => { this.getCategoryTransactions('Payment') }}>Payment</button>
-					<button onClick={() => { this.getCategoryTransactions('Tax') }}>Tax</button>
-					<button onClick={() => { this.getCategoryTransactions('Transfer') }}>Transfer</button> */}
 				</div>
 
-				<h2 className='accounts--totals'>Total spent on: {this.state.categoryType}</h2>
+				<h2 className='accounts--totals'>Total spent on {this.state.categoryType}</h2>
 				<h2 className='accounts--totals'>{this.state.categoryTotal}</h2>
 
-				<TransactionContainer transactions={this.state.transactions} />
+				<TransactionContainer transactions={this.state.categoryTransactions} />
 
 			</div>
 			);
