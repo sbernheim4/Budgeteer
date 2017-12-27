@@ -1,20 +1,37 @@
 import React, { Component } from 'react';
 import { Doughnut, Line, Bar } from 'react-chartjs-2';
 
+import endOfWeek from 'date-fns/end_of_week';
+import startOfWeek from 'date-fns/start_of_week';
+import subWeeks from 'date-fns/sub_weeks';
+import isWithinRange from 'date-fns/is_within_range';
+
 import '../scss/statistics.scss';
 
 class Statistics extends Component {
 	constructor(props){
 		super(props);
+
 		this.state = {
 			categoryDoughnutData: {},
-			totalLineData: {}
+			lineChartData: {},
+			transaction_ids: new Set(),
+			yearlyTransactions: [],
+			weeklyAmounts: [],
+			lineChartLabels: []
 		}
 	}
 
 	componentDidMount() {
+		// Line Chart stuff
+		this.getYearlyData();
+		
+		// Doughnut Chart stuff
 		this.generateDoughnutChart();
+		
+		this.getLineChartData();
 		this.generateLineChart();
+		
 	}
 
 	calculateDoughnutAmounts() {
@@ -98,20 +115,101 @@ class Statistics extends Component {
 	}
 
 	generateLineChart() {
+		let amounts = this.state.weeklyAmounts;
+		let labels = this.state.labels;
 
-		// Get the past year's worth of data
+		const data = {
+			labels: this.state.lineChartLabels,
+			datasets: [{
+				data: this.state.weeklyAmounts,
+			}],
+			options: {
+				responsive: false
+			}
+		};
 
-		// Sum up total spending amounts for each week 
-		// Dynamically create labels array
-		// Dynamically create data array
+		this.setState({ lineChartData: data });		
+	}
 
+	getLineChartData() {
 
-		// Sort the transactions based on date
-		let sortedTransactions = this.props.transactions.sort( (a, b) => {
+		// Make an array of size 52, each index represents a week and the value
+		// at that index the amount spent in that week
+		let amounts = new Array(52);
+		amounts.fill(0);
+
+		let mostRecentDate = this.state.yearlyTransactions[0];
+		let year = mostRecentDate.slice(0,4);
+		let month = mostRecentDate.slice(5, 7);
+		let day = mostRecentDate.slice(8);
+		
+		// Most recent transaction's date
+		let x = new Date(year, month, day);
+		let i = 0;
+
+		this.state.yearlyTransactions.forEach(t => {
+			transactionDate = new Date(t.date.slice(0,4), t.date.slice(5,7), t.date.slice(8));
+
+			if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x) )) {
+				amounts[i] += t.amount;
+			} else {
+				i++;
+				// I've moved beyond the current range
+
+				// Go back one week
+				x = subWeeks(x, 1);
+
+				amounts[i] += t.amount;
+			}
+		});
+
+		this.setState({ 
+			weeklyAmounts: amounts, 
+			lineChartLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52] 
+		});
+	}
+
+	getYearlyData() {
+		$.post('/plaid-api/transactions', { days: 365 },  data => {
+			if (!data.transactions || !data.accounts) {
+
+				const errorMessage = document.querySelector('.home--error');
+				errorMessage.classList.add('home--error__display');
+
+				setTimeout(() => {
+					errorMessage.classList.remove('home--error__display')
+				}, 4000)
+
+			} else {
+				this.storeTransactions(data.transactions);
+			}
+		});
+	}
+
+	storeTransactions(transactions) {
+		let currentTransactions = [];
+
+		// Add all the transactions for the new bank the user just selected
+		transactions.forEach((t) => {
+			if (!this.state.transaction_ids.has(t.transaction_id)) {
+
+				// TODO: the state should not be modified directly --> Use 
+				// setState instead later on and store all the new 
+				// transaction_ids in a temporary array
+				this.state.transaction_ids.add(t.transaction_id);
+				currentTransactions.push(t);
+			}
+		})
+
+		// Sort the transactions by date
+		currentTransactions = currentTransactions.sort((a, b) => {
 			return a.date - b.date;
 		});
 
-		sortedTransactions.reverse();
+		currentTransactions.forEach(t => console.log(t.date));
+
+		// Update yearlyTransactions state variable
+		this.setState({ yearlyTransactions: currentTransactions });
 	}
 
 	render() {
@@ -123,7 +221,7 @@ class Statistics extends Component {
 
 					{/* Render a doughnut chart for categorical spending */}
 					<Doughnut data={this.state.categoryDoughnutData} />
-					{/* <Bar data={this.state.categoryDoughnutData} /> */}
+					<Bar data={this.state.lineChartData} />
 
 				</div>
 			</div>

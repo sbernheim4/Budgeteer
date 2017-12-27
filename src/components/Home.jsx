@@ -60,8 +60,7 @@ class Home extends Component {
 	}
 
 	getTransactions() {
-		fetch('http://localhost:5000/plaid-api/transactions', { method: 'post', body: 30 })
-		.then (daata => {
+		$.post('/plaid-api/transactions', data => {
 			if (!data.transactions || !data.accounts) {
 
 				const errorMessage = document.querySelector('.home--error');
@@ -75,8 +74,6 @@ class Home extends Component {
 				this.storeTransactions(data.transactions);
 				this.storeAccounts(data.accounts);
 			}
-		}).catch( err => {
-			console.error(err);
 		});
 	}
 
