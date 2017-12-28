@@ -17,21 +17,21 @@ class Statistics extends Component {
 			lineChartData: {},
 			transaction_ids: new Set(),
 			yearlyTransactions: [],
-			weeklyAmounts: [],
-			lineChartLabels: []
+			lineChartBlob: [],
+			lineChartLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52]
 		}
 	}
 
+	componentDidUpdate
+
 	componentDidMount() {
-		// Line Chart stuff
-		this.getYearlyData();
-		
 		// Doughnut Chart stuff
 		this.generateDoughnutChart();
-		
-		this.getLineChartData();
+		this.generateLineChart();	
+	}
+
+	componentWillUpdate() {
 		this.generateLineChart();
-		
 	}
 
 	calculateDoughnutAmounts() {
@@ -114,14 +114,15 @@ class Statistics extends Component {
 		this.setState({ categoryDoughnutData: data} );
 	}
 
-	generateLineChart() {
-		let amounts = this.state.weeklyAmounts;
-		let labels = this.state.labels;
+	async generateLineChart() {
+
+		// Line Chart stuff
+		await this.getYearlyData()
 
 		const data = {
 			labels: this.state.lineChartLabels,
 			datasets: [{
-				data: this.state.weeklyAmounts,
+				data: this.state.lineChartBlob
 			}],
 			options: {
 				responsive: false
@@ -131,86 +132,92 @@ class Statistics extends Component {
 		this.setState({ lineChartData: data });		
 	}
 
-	getLineChartData() {
-
-		// Make an array of size 52, each index represents a week and the value
-		// at that index the amount spent in that week
-		let amounts = new Array(52);
-		amounts.fill(0);
-
-		let mostRecentDate = this.state.yearlyTransactions[0];
-		let year = mostRecentDate.slice(0,4);
-		let month = mostRecentDate.slice(5, 7);
-		let day = mostRecentDate.slice(8);
+	async getYearlyData() {
 		
-		// Most recent transaction's date
-		let x = new Date(year, month, day);
-		let i = 0;
-
-		this.state.yearlyTransactions.forEach(t => {
-			transactionDate = new Date(t.date.slice(0,4), t.date.slice(5,7), t.date.slice(8));
-
-			if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x) )) {
-				amounts[i] += t.amount;
-			} else {
-				i++;
-				// I've moved beyond the current range
-
-				// Go back one week
-				x = subWeeks(x, 1);
-
-				amounts[i] += t.amount;
+		/* Get transactions for the past 365 days */
+		$.post('/plaid-api/transactions', { days: 365 }, data => {
+			if (!data.transactions) {
+				console.error('-----------------------------');
+				throw Error('Invalid data from server');
 			}
-		});
 
-		this.setState({ 
-			weeklyAmounts: amounts, 
-			lineChartLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52] 
+			let allTransactions = data.transactions;
+						
+			/* Sort the transactions by date */
+			allTransactions = allTransactions.sort((a, b) => {
+				return a.date - b.date;
+			});
+
+			/* Sum up costs by week */
+			let amounts = new Array(52);
+			amounts.fill(0);
+
+			let mostRecentDate = allTransactions[0].date;
+			let year = mostRecentDate.slice(0, 4);
+			let month = mostRecentDate.slice(5, 7);
+			let day = mostRecentDate.slice(8);
+
+			// Most recent transaction's date
+			let x = new Date(year, month, day);
+			let i = 0;
+
+			allTransactions.forEach(t => {
+				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8));
+
+				if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x))) {
+					amounts[i] += t.amount;
+				} else {
+					i++;
+					// I've moved beyond the current range
+
+					// Go back one week
+					x = subWeeks(x, 1);
+
+					amounts[i] += t.amount;
+				}
+			});
+
+			this.setState({ lineChartBlob: amounts });
+
+			return amounts;
+
 		});
 	}
 
-	getYearlyData() {
-		$.post('/plaid-api/transactions', { days: 365 },  data => {
-			if (!data.transactions || !data.accounts) {
+	// async getLineChartData() {
+	// 	let sortedTransactions = this.state.yearlyTransactions
+	// 	// Make an array of size 52, each index represents a week and the value
+	// 	// at that index the amount spent in that week
+	// 	let amounts = new Array(52);
+	// 	amounts.fill(0);
 
-				const errorMessage = document.querySelector('.home--error');
-				errorMessage.classList.add('home--error__display');
+	// 	let mostRecentDate = sortedTransactions[0];
+	// 	let year = mostRecentDate.slice(0,4);
+	// 	let month = mostRecentDate.slice(5, 7);
+	// 	let day = mostRecentDate.slice(8);
+		
+	// 	// Most recent transaction's date
+	// 	let x = new Date(year, month, day);
+	// 	let i = 0;
 
-				setTimeout(() => {
-					errorMessage.classList.remove('home--error__display')
-				}, 4000)
+	// 	sortedTransactions.forEach(t => {
+	// 		let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5,7), t.date.slice(8));
 
-			} else {
-				this.storeTransactions(data.transactions);
-			}
-		});
-	}
+	// 		if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x) )) {
+	// 			amounts[i] += t.amount;
+	// 		} else {
+	// 			i++;
+	// 			// I've moved beyond the current range
 
-	storeTransactions(transactions) {
-		let currentTransactions = [];
+	// 			// Go back one week
+	// 			x = subWeeks(x, 1);
 
-		// Add all the transactions for the new bank the user just selected
-		transactions.forEach((t) => {
-			if (!this.state.transaction_ids.has(t.transaction_id)) {
+	// 			amounts[i] += t.amount;
+	// 		}
+	// 	});
 
-				// TODO: the state should not be modified directly --> Use 
-				// setState instead later on and store all the new 
-				// transaction_ids in a temporary array
-				this.state.transaction_ids.add(t.transaction_id);
-				currentTransactions.push(t);
-			}
-		})
-
-		// Sort the transactions by date
-		currentTransactions = currentTransactions.sort((a, b) => {
-			return a.date - b.date;
-		});
-
-		currentTransactions.forEach(t => console.log(t.date));
-
-		// Update yearlyTransactions state variable
-		this.setState({ yearlyTransactions: currentTransactions });
-	}
+	// 	return amounts;
+	// }
 
 	render() {
 		return (
