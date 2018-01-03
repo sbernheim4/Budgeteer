@@ -22,25 +22,13 @@ class Statistics extends Component {
 		}
 	}
 
-	componentDidUpdate
-
 	componentDidMount() {
 		// Doughnut Chart stuff
 		this.generateDoughnutChart();
-<<<<<<< HEAD
-		this.generateLineChart();	
-	}
-
-	componentWillUpdate() {
-=======
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
->>>>>>> master
 		this.generateLineChart();
 	}
 
+	/************************************* Doughnut Chart *************************************/
 
 	calculateDoughnutAmounts() {
 		// Initialize a new array of size 8 and fill it with 0s initially
@@ -97,6 +85,7 @@ class Statistics extends Component {
 			}
 		});
 
+		// Normalize each value to always have two decimals
 		amts = amts.map(val => {
 			return (Math.round(val * 100) / 100).toFixed(2);
 		})
@@ -105,59 +94,28 @@ class Statistics extends Component {
 	}
 
 	generateDoughnutChart() {
+		// get the data array
 		let amounts = this.calculateDoughnutAmounts();
+
+		// get the label array
 		let doughnutLabels = this.generateDoughnutLabels(amounts);
 
 		const data = {
 			labels: doughnutLabels,
 			datasets: [{
 				data: amounts,
-				backgroundColor: [
-					'#578CA9',
-					'#F6D155',
-					'#004B8D',
-					'#F2552C',
-					'#95DEE3',
-					'#CE3175',
-					'#5A7247',
-					'#CFB095',
-					'#578CA9',
-					'#f4d942',
-					'#afc47d',
-					'#558244',
-					'#347759',
-					'#2d7582'
-				]
+				backgroundColor: ['#578CA9', '#F6D155', '#004B8D', '#F2552C', '#95DEE3', '#CE3175', '#5A7247', '#CFB095', '#578CA9', '#f4d942', '#afc47d', '#558244', '#347759', '#2d7582']
 			}],
 			options: {
 				responsive: false
 			}
 		};
-
 		this.setState({ categoryDoughnutData: data });
 	}
 
-<<<<<<< HEAD
-	async generateLineChart() {
-=======
 	generateDoughnutLabels(amountsArray) {
 
-		let defaultLabelsArray = [
-			'Food and Drink',
-			'Travel',
-			'Shops',
-			'Recreation',
-			'Service',
-			'Community',
-			'Healthcare',
-			'Bank Fees',
-			'Cash Advance',
-			'Interest',
-			'Payment',
-			'Tax',
-			'Transfer',
-			'Other'
-		];
+		let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
 
 		let labelsArray = [];
 		for (let i = 0; i < amountsArray.length; i++) {
@@ -166,24 +124,13 @@ class Statistics extends Component {
 			}
 		}
 
-		console.log('labels array: ');
-		console.log(labelsArray);
-		console.log(labelsArray.length);
-
 		return labelsArray;
 	}
-
-<<<<<<< Updated upstream
-	generateLineChart() {
-=======
+	/************************************* End Doughnut Chart *************************************/
 
 
-
-
+	/************************************* Line Chart *************************************/
 	async generateLineChart() {
->>>>>>> Stashed changes
->>>>>>> master
-
 		// Line Chart stuff
 		await this.getYearlyData()
 
@@ -197,12 +144,6 @@ class Statistics extends Component {
 			}
 		};
 
-<<<<<<< HEAD
-		this.setState({ lineChartData: data });		
-	}
-=======
-<<<<<<< Updated upstream
-=======
 		this.setState({ lineChartData: data });
 	}
 
@@ -254,8 +195,8 @@ class Statistics extends Component {
 			this.setState({ lineChartBlob: amounts });
 
 			return amounts;
->>>>>>> Stashed changes
->>>>>>> master
+		});
+	}
 
 	async getYearlyData() {
 		
@@ -294,8 +235,7 @@ class Statistics extends Component {
 				} else {
 					i++;
 					// I've moved beyond the current range
-
-<<<<<<< HEAD
+					
 					// Go back one week
 					x = subWeeks(x, 1);
 
@@ -310,49 +250,8 @@ class Statistics extends Component {
 		});
 	}
 
-	// async getLineChartData() {
-	// 	let sortedTransactions = this.state.yearlyTransactions
-	// 	// Make an array of size 52, each index represents a week and the value
-	// 	// at that index the amount spent in that week
-	// 	let amounts = new Array(52);
-	// 	amounts.fill(0);
+	/************************************* End Line Chart *************************************/
 
-	// 	let mostRecentDate = sortedTransactions[0];
-	// 	let year = mostRecentDate.slice(0,4);
-	// 	let month = mostRecentDate.slice(5, 7);
-	// 	let day = mostRecentDate.slice(8);
-		
-	// 	// Most recent transaction's date
-	// 	let x = new Date(year, month, day);
-	// 	let i = 0;
-
-	// 	sortedTransactions.forEach(t => {
-	// 		let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5,7), t.date.slice(8));
-
-	// 		if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x) )) {
-	// 			amounts[i] += t.amount;
-	// 		} else {
-	// 			i++;
-	// 			// I've moved beyond the current range
-
-	// 			// Go back one week
-	// 			x = subWeeks(x, 1);
-
-	// 			amounts[i] += t.amount;
-	// 		}
-	// 	});
-
-	// 	return amounts;
-	// }
-
-=======
-<<<<<<< Updated upstream
-		sortedTransactions.reverse();
-	}
-
-=======
->>>>>>> Stashed changes
->>>>>>> master
 	render() {
 		return (
 
