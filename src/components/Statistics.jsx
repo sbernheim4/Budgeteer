@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Doughnut, Line, Bar } from 'react-chartjs-2';
 
-import endOfWeek from 'date-fns/end_of_week';
-import startOfWeek from 'date-fns/start_of_week';
-import subWeeks from 'date-fns/sub_weeks';
+// Date functions 
 import isWithinRange from 'date-fns/is_within_range';
+import subMonths from 'date-fns/sub_months';
+import startOfMonth from 'date-fns/start_of_month';
+import endOfMonth from 'date-fns/end_of_month';
 
 import '../scss/statistics.scss';
 
@@ -14,11 +15,7 @@ class Statistics extends Component {
 
 		this.state = {
 			categoryDoughnutData: {},
-			lineChartData: {},
-			transaction_ids: new Set(),
-			yearlyTransactions: [],
-			lineChartBlob: [],
-			lineChartLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52]
+			lineChartData: {}
 		}
 	}
 
@@ -37,10 +34,10 @@ class Statistics extends Component {
 
 		this.props.transactions.forEach(t => {
 
-			let category = t.category || [''];
+			let category = (t.category || [''])[0];
 			let amount = t.amount;
 
-			switch (category[0]) {
+			switch (category) {
 				case 'Food and Drink':
 					amts[0] += amount;
 					break;
@@ -90,7 +87,22 @@ class Statistics extends Component {
 			return (Math.round(val * 100) / 100).toFixed(2);
 		})
 
+		// TODO: remove 0 values from the amounts
 		return amts;
+	}
+
+	generateDoughnutLabels(amountsArray) {
+
+		let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+
+		let labelsArray = [];
+		for (let i = 0; i < amountsArray.length; i++) {
+			if (amountsArray[i] !== "0.00") {
+				labelsArray.push(defaultLabelsArray[i]);
+			}
+		}
+
+		return labelsArray;
 	}
 
 	generateDoughnutChart() {
@@ -113,41 +125,16 @@ class Statistics extends Component {
 		this.setState({ categoryDoughnutData: data });
 	}
 
-	generateDoughnutLabels(amountsArray) {
-
-		let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
-
-		let labelsArray = [];
-		for (let i = 0; i < amountsArray.length; i++) {
-			if (amountsArray[i] !== "0.00") {
-				labelsArray.push(defaultLabelsArray[i]);
-			}
-		}
-
-		return labelsArray;
-	}
 	/************************************* End Doughnut Chart *************************************/
 
 
+
 	/************************************* Line Chart *************************************/
-	async generateLineChart() {
-		// Line Chart stuff
-		await this.getYearlyData()
 
-		const data = {
-			labels: this.state.lineChartLabels,
-			datasets: [{
-				data: this.state.lineChartBlob
-			}],
-			options: {
-				responsive: false
-			}
-		};
-
-		this.setState({ lineChartData: data });
-	}
-
-	async getYearlyData() {
+	generateLineChart() {
+		/* Sum up costs by week */
+		let amounts = new Array(12);
+		amounts.fill(0);
 
 		/* Get transactions for the past 365 days */
 		$.post('/plaid-api/transactions', { days: 365 }, data => {
@@ -163,10 +150,6 @@ class Statistics extends Component {
 				return a.date - b.date;
 			});
 
-			/* Sum up costs by week */
-			let amounts = new Array(52);
-			amounts.fill(0);
-
 			let mostRecentDate = allTransactions[0].date;
 			let year = mostRecentDate.slice(0, 4);
 			let month = mostRecentDate.slice(5, 7);
@@ -179,74 +162,39 @@ class Statistics extends Component {
 			allTransactions.forEach(t => {
 				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8));
 
-				if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x))) {
+				if (isWithinRange(transactionDate, startOfMonth(x), endOfMonth(x))) {
 					amounts[i] += t.amount;
 				} else {
 					i++;
 					// I've moved beyond the current range
 
 					// Go back one week
-					x = subWeeks(x, 1);
+					x = subMonths(x, 1);
 
 					amounts[i] += t.amount;
 				}
 			});
 
-			this.setState({ lineChartBlob: amounts });
+			// Round the amounts to two decimals
+			amounts = amounts.map(val => {
+				return (Math.round(val * 100) / 100).toFixed(2);
+			})
 
-			return amounts;
-		});
-	}
+			// amounts is in reverse chrnological order 
+			//[0 weeks ago, 1 week ago, 2 weeks ago, 3 weeks ago, ... , 51 weeks ago, 52 weeks ago]
+			// this.setState({ lineChartBlob: amounts });
 
-	async getYearlyData() {
-		
-		/* Get transactions for the past 365 days */
-		$.post('/plaid-api/transactions', { days: 365 }, data => {
-			if (!data.transactions) {
-				console.error('-----------------------------');
-				throw Error('Invalid data from server');
-			}
-
-			let allTransactions = data.transactions;
-						
-			/* Sort the transactions by date */
-			allTransactions = allTransactions.sort((a, b) => {
-				return a.date - b.date;
-			});
-
-			/* Sum up costs by week */
-			let amounts = new Array(52);
-			amounts.fill(0);
-
-			let mostRecentDate = allTransactions[0].date;
-			let year = mostRecentDate.slice(0, 4);
-			let month = mostRecentDate.slice(5, 7);
-			let day = mostRecentDate.slice(8);
-
-			// Most recent transaction's date
-			let x = new Date(year, month, day);
-			let i = 0;
-
-			allTransactions.forEach(t => {
-				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8));
-
-				if (isWithinRange(transactionDate, startOfWeek(x), endOfWeek(x))) {
-					amounts[i] += t.amount;
-				} else {
-					i++;
-					// I've moved beyond the current range
-					
-					// Go back one week
-					x = subWeeks(x, 1);
-
-					amounts[i] += t.amount;
+			const lineData = {
+				labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], //13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
+				datasets: [{
+					data: amounts
+				}],
+				options: {
+					responsive: false
 				}
-			});
+			};
 
-			this.setState({ lineChartBlob: amounts });
-
-			return amounts;
-
+			this.setState({ lineChartData: lineData });
 		});
 	}
 
@@ -261,7 +209,7 @@ class Statistics extends Component {
 
 					{/* Render a doughnut chart for categorical spending */}
 					<Doughnut data={this.state.categoryDoughnutData} />
-					<Bar data={this.state.lineChartData} />
+					<Line data={this.state.lineChartData} />
 
 				</div>
 			</div>
