@@ -1,6 +1,6 @@
 'use strict'
 
-require('dotenv').config()
+require('dotenv').config();
 
 const express = require(`express`);
 const app = express();
@@ -10,10 +10,8 @@ const chalk = require('chalk');
 const port = process.env.PORT;
 const cacheTime = 31536000000;
 
-// Log all requests
-
 /******************  SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
-app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime} ));
+app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime } ));
 
 app.use('/plaid-api', require('./plaid-api.js'));
 
@@ -28,4 +26,4 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
 	console.log(chalk.green(`Listening on port ${port}`));
-})
+});
