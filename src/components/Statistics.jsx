@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Doughnut, Line, Bar } from 'react-chartjs-2';
+import { Doughnut, Line, Bar, Bubble } from 'react-chartjs-2';
+
+import getDay from 'date-fns/get_day';
 
 import '../scss/statistics.scss';
 
@@ -9,7 +11,8 @@ class Statistics extends Component {
 
 		this.state = {
 			categoryDoughnutData: {},
-			lineChartData: {}
+			lineChartData: {},
+			bubbleChartData: {}
 		}
 	}
 
@@ -17,6 +20,7 @@ class Statistics extends Component {
 		// Doughnut Chart stuff
 		this.generateDoughnutChart();
 		this.generateLineChart();
+		this.generateBubbleChart();
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -197,6 +201,45 @@ class Statistics extends Component {
 
 	/************************************* End Line Chart *************************************/
 
+
+
+	/************************************* Bubble Chart *************************************/
+
+	generateBubbleChart() {
+		let bubbleDataPoints = [];
+
+		this.props.transactions.forEach(t => {
+
+			let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5, 7), t.date.slice(8, 10));
+			let dayOfWeek = getDay(transactionDate);
+
+			let newPoint = { x: dayOfWeek, y: 12, r: t.amount};
+
+			bubbleDataPoints.push(newPoint);
+		});
+
+		// "2017-12-06"
+
+		// X ranges from 0 to 6 for the weekday, 
+		// Y ranges from 0:00 to 23:59 based on the time
+		// Z is the amount of the transaction 
+		const data = {
+			datasets: [
+				{
+					backgroundColor: "rgba(255,221,50,0.2)",
+					data: bubbleDataPoints
+				}
+			],
+			options: {
+				responsive: false
+			}
+		};
+
+		this.setState({ bubbleChartData: data });
+	}
+
+	/************************************* End Bubble Chart *************************************/
+
 	render() {
 		return (
 
@@ -210,6 +253,11 @@ class Statistics extends Component {
 				<div className='stats--line-chart'>
 					{/* Render a bar and line chart for monthly and avg spending */}
 					<Bar data={this.state.lineChartData} />
+				</div>
+
+				<div className='stats--bubble-chart'>
+					{/* Render a bar and line chart for monthly and avg spending */}
+					<Bubble data={this.state.bubbleChartData} />
 				</div>
 			</div>
 
