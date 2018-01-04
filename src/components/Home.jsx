@@ -104,9 +104,9 @@ class Home extends Component {
 		// Add all the transactions for the new bank the user just selected
 		transactions.forEach( (t) => {
 			if (!this.state.transaction_ids.has(t.transaction_id)) {
-				
-				// TODO: the state should not be modified directly --> Use 
-				// setState instead later on and store all the new 
+
+				// TODO: the state should not be modified directly --> Use
+				// setState instead later on and store all the new
 				// transaction_ids in a temporary array
 				this.state.transaction_ids.add(t.transaction_id);
 				currentTransactions.push(t);

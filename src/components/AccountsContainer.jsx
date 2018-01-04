@@ -21,7 +21,7 @@ class AccountsContainer extends Component {
 
 	getAccountTransactions(account_id) {
 		let allTransactions = this.props.transactions;
-		
+
 		let releventTransactions = [];
 		let type;
 		let total = 0;
@@ -39,7 +39,7 @@ class AccountsContainer extends Component {
 				}
 			});
 		}
-		
+
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
 		});
@@ -87,8 +87,8 @@ class AccountsContainer extends Component {
 		total = (Math.round(total * 100) / 100).toFixed(2);
 
 		// Update the state with the relevent transactions and how the user is sorting them
-		this.setState({ 
-			categoryTransactions: releventTransactions, 
+		this.setState({
+			categoryTransactions: releventTransactions,
 			categoryType: categoryString,
 			categoryTotal: total
 		});
@@ -103,12 +103,12 @@ class AccountsContainer extends Component {
 				<div className='accounts--btns'>
 					{/* Show All Transactions */}
 					<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
-					
+
 					{/* Generate a button for each type of account connected */}
 					{this.props.accounts.map( (a, index) => (
 						<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
 					))}
-					
+
 					{/* Hide All Transactions */}
 					<button onClick={() => { this.getAccountTransactions('none')}}>Hide Transactions</button>
 				</div>

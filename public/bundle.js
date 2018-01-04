@@ -6264,332 +6264,7 @@ module.exports = isObjectLike;
 
 
 /***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isDate = __webpack_require__(450)
-
-var MILLISECONDS_IN_HOUR = 3600000
-var MILLISECONDS_IN_MINUTE = 60000
-var DEFAULT_ADDITIONAL_DIGITS = 2
-
-var parseTokenDateTimeDelimeter = /[T ]/
-var parseTokenPlainTime = /:/
-
-// year tokens
-var parseTokenYY = /^(\d{2})$/
-var parseTokensYYY = [
-  /^([+-]\d{2})$/, // 0 additional digits
-  /^([+-]\d{3})$/, // 1 additional digit
-  /^([+-]\d{4})$/ // 2 additional digits
-]
-
-var parseTokenYYYY = /^(\d{4})/
-var parseTokensYYYYY = [
-  /^([+-]\d{4})/, // 0 additional digits
-  /^([+-]\d{5})/, // 1 additional digit
-  /^([+-]\d{6})/ // 2 additional digits
-]
-
-// date tokens
-var parseTokenMM = /^-(\d{2})$/
-var parseTokenDDD = /^-?(\d{3})$/
-var parseTokenMMDD = /^-?(\d{2})-?(\d{2})$/
-var parseTokenWww = /^-?W(\d{2})$/
-var parseTokenWwwD = /^-?W(\d{2})-?(\d{1})$/
-
-// time tokens
-var parseTokenHH = /^(\d{2}([.,]\d*)?)$/
-var parseTokenHHMM = /^(\d{2}):?(\d{2}([.,]\d*)?)$/
-var parseTokenHHMMSS = /^(\d{2}):?(\d{2}):?(\d{2}([.,]\d*)?)$/
-
-// timezone tokens
-var parseTokenTimezone = /([Z+-].*)$/
-var parseTokenTimezoneZ = /^(Z)$/
-var parseTokenTimezoneHH = /^([+-])(\d{2})$/
-var parseTokenTimezoneHHMM = /^([+-])(\d{2}):?(\d{2})$/
-
-/**
- * @category Common Helpers
- * @summary Convert the given argument to an instance of Date.
- *
- * @description
- * Convert the given argument to an instance of Date.
- *
- * If the argument is an instance of Date, the function returns its clone.
- *
- * If the argument is a number, it is treated as a timestamp.
- *
- * If an argument is a string, the function tries to parse it.
- * Function accepts complete ISO 8601 formats as well as partial implementations.
- * ISO 8601: http://en.wikipedia.org/wiki/ISO_8601
- *
- * If all above fails, the function passes the given argument to Date constructor.
- *
- * @param {Date|String|Number} argument - the value to convert
- * @param {Object} [options] - the object with options
- * @param {0 | 1 | 2} [options.additionalDigits=2] - the additional number of digits in the extended year format
- * @returns {Date} the parsed date in the local time zone
- *
- * @example
- * // Convert string '2014-02-11T11:30:30' to date:
- * var result = parse('2014-02-11T11:30:30')
- * //=> Tue Feb 11 2014 11:30:30
- *
- * @example
- * // Parse string '+02014101',
- * // if the additional number of digits in the extended year format is 1:
- * var result = parse('+02014101', {additionalDigits: 1})
- * //=> Fri Apr 11 2014 00:00:00
- */
-function parse (argument, dirtyOptions) {
-  if (isDate(argument)) {
-    // Prevent the date to lose the milliseconds when passed to new Date() in IE10
-    return new Date(argument.getTime())
-  } else if (typeof argument !== 'string') {
-    return new Date(argument)
-  }
-
-  var options = dirtyOptions || {}
-  var additionalDigits = options.additionalDigits
-  if (additionalDigits == null) {
-    additionalDigits = DEFAULT_ADDITIONAL_DIGITS
-  } else {
-    additionalDigits = Number(additionalDigits)
-  }
-
-  var dateStrings = splitDateString(argument)
-
-  var parseYearResult = parseYear(dateStrings.date, additionalDigits)
-  var year = parseYearResult.year
-  var restDateString = parseYearResult.restDateString
-
-  var date = parseDate(restDateString, year)
-
-  if (date) {
-    var timestamp = date.getTime()
-    var time = 0
-    var offset
-
-    if (dateStrings.time) {
-      time = parseTime(dateStrings.time)
-    }
-
-    if (dateStrings.timezone) {
-      offset = parseTimezone(dateStrings.timezone)
-    } else {
-      // get offset accurate to hour in timezones that change offset
-      offset = new Date(timestamp + time).getTimezoneOffset()
-      offset = new Date(timestamp + time + offset * MILLISECONDS_IN_MINUTE).getTimezoneOffset()
-    }
-
-    return new Date(timestamp + time + offset * MILLISECONDS_IN_MINUTE)
-  } else {
-    return new Date(argument)
-  }
-}
-
-function splitDateString (dateString) {
-  var dateStrings = {}
-  var array = dateString.split(parseTokenDateTimeDelimeter)
-  var timeString
-
-  if (parseTokenPlainTime.test(array[0])) {
-    dateStrings.date = null
-    timeString = array[0]
-  } else {
-    dateStrings.date = array[0]
-    timeString = array[1]
-  }
-
-  if (timeString) {
-    var token = parseTokenTimezone.exec(timeString)
-    if (token) {
-      dateStrings.time = timeString.replace(token[1], '')
-      dateStrings.timezone = token[1]
-    } else {
-      dateStrings.time = timeString
-    }
-  }
-
-  return dateStrings
-}
-
-function parseYear (dateString, additionalDigits) {
-  var parseTokenYYY = parseTokensYYY[additionalDigits]
-  var parseTokenYYYYY = parseTokensYYYYY[additionalDigits]
-
-  var token
-
-  // YYYY or ±YYYYY
-  token = parseTokenYYYY.exec(dateString) || parseTokenYYYYY.exec(dateString)
-  if (token) {
-    var yearString = token[1]
-    return {
-      year: parseInt(yearString, 10),
-      restDateString: dateString.slice(yearString.length)
-    }
-  }
-
-  // YY or ±YYY
-  token = parseTokenYY.exec(dateString) || parseTokenYYY.exec(dateString)
-  if (token) {
-    var centuryString = token[1]
-    return {
-      year: parseInt(centuryString, 10) * 100,
-      restDateString: dateString.slice(centuryString.length)
-    }
-  }
-
-  // Invalid ISO-formatted year
-  return {
-    year: null
-  }
-}
-
-function parseDate (dateString, year) {
-  // Invalid ISO-formatted year
-  if (year === null) {
-    return null
-  }
-
-  var token
-  var date
-  var month
-  var week
-
-  // YYYY
-  if (dateString.length === 0) {
-    date = new Date(0)
-    date.setUTCFullYear(year)
-    return date
-  }
-
-  // YYYY-MM
-  token = parseTokenMM.exec(dateString)
-  if (token) {
-    date = new Date(0)
-    month = parseInt(token[1], 10) - 1
-    date.setUTCFullYear(year, month)
-    return date
-  }
-
-  // YYYY-DDD or YYYYDDD
-  token = parseTokenDDD.exec(dateString)
-  if (token) {
-    date = new Date(0)
-    var dayOfYear = parseInt(token[1], 10)
-    date.setUTCFullYear(year, 0, dayOfYear)
-    return date
-  }
-
-  // YYYY-MM-DD or YYYYMMDD
-  token = parseTokenMMDD.exec(dateString)
-  if (token) {
-    date = new Date(0)
-    month = parseInt(token[1], 10) - 1
-    var day = parseInt(token[2], 10)
-    date.setUTCFullYear(year, month, day)
-    return date
-  }
-
-  // YYYY-Www or YYYYWww
-  token = parseTokenWww.exec(dateString)
-  if (token) {
-    week = parseInt(token[1], 10) - 1
-    return dayOfISOYear(year, week)
-  }
-
-  // YYYY-Www-D or YYYYWwwD
-  token = parseTokenWwwD.exec(dateString)
-  if (token) {
-    week = parseInt(token[1], 10) - 1
-    var dayOfWeek = parseInt(token[2], 10) - 1
-    return dayOfISOYear(year, week, dayOfWeek)
-  }
-
-  // Invalid ISO-formatted date
-  return null
-}
-
-function parseTime (timeString) {
-  var token
-  var hours
-  var minutes
-
-  // hh
-  token = parseTokenHH.exec(timeString)
-  if (token) {
-    hours = parseFloat(token[1].replace(',', '.'))
-    return (hours % 24) * MILLISECONDS_IN_HOUR
-  }
-
-  // hh:mm or hhmm
-  token = parseTokenHHMM.exec(timeString)
-  if (token) {
-    hours = parseInt(token[1], 10)
-    minutes = parseFloat(token[2].replace(',', '.'))
-    return (hours % 24) * MILLISECONDS_IN_HOUR +
-      minutes * MILLISECONDS_IN_MINUTE
-  }
-
-  // hh:mm:ss or hhmmss
-  token = parseTokenHHMMSS.exec(timeString)
-  if (token) {
-    hours = parseInt(token[1], 10)
-    minutes = parseInt(token[2], 10)
-    var seconds = parseFloat(token[3].replace(',', '.'))
-    return (hours % 24) * MILLISECONDS_IN_HOUR +
-      minutes * MILLISECONDS_IN_MINUTE +
-      seconds * 1000
-  }
-
-  // Invalid ISO-formatted time
-  return null
-}
-
-function parseTimezone (timezoneString) {
-  var token
-  var absoluteOffset
-
-  // Z
-  token = parseTokenTimezoneZ.exec(timezoneString)
-  if (token) {
-    return 0
-  }
-
-  // ±hh
-  token = parseTokenTimezoneHH.exec(timezoneString)
-  if (token) {
-    absoluteOffset = parseInt(token[2], 10) * 60
-    return (token[1] === '+') ? -absoluteOffset : absoluteOffset
-  }
-
-  // ±hh:mm or ±hhmm
-  token = parseTokenTimezoneHHMM.exec(timezoneString)
-  if (token) {
-    absoluteOffset = parseInt(token[2], 10) * 60 + parseInt(token[3], 10)
-    return (token[1] === '+') ? -absoluteOffset : absoluteOffset
-  }
-
-  return 0
-}
-
-function dayOfISOYear (isoYear, week, day) {
-  week = week || 0
-  day = day || 0
-  var date = new Date(0)
-  date.setUTCFullYear(isoYear, 0, 4)
-  var fourthOfJanuaryDay = date.getUTCDay() || 7
-  var diff = week * 7 + day + 1 - fourthOfJanuaryDay
-  date.setUTCDate(date.getUTCDate() + diff)
-  return date
-}
-
-module.exports = parse
-
-
-/***/ }),
+/* 37 */,
 /* 38 */
 /***/ (function(module, exports) {
 
@@ -22070,8 +21745,8 @@ var Home = function (_Component) {
 			transactions.forEach(function (t) {
 				if (!_this5.state.transaction_ids.has(t.transaction_id)) {
 
-					// TODO: the state should not be modified directly --> Use 
-					// setState instead later on and store all the new 
+					// TODO: the state should not be modified directly --> Use
+					// setState instead later on and store all the new
 					// transaction_ids in a temporary array
 					_this5.state.transaction_ids.add(t.transaction_id);
 					currentTransactions.push(t);
@@ -22229,6 +21904,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _defineProperty2 = __webpack_require__(474);
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
 var _getPrototypeOf = __webpack_require__(20);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -22254,22 +21933,6 @@ var _react = __webpack_require__(5);
 var _react2 = _interopRequireDefault(_react);
 
 var _reactChartjs = __webpack_require__(99);
-
-var _is_within_range = __webpack_require__(449);
-
-var _is_within_range2 = _interopRequireDefault(_is_within_range);
-
-var _sub_months = __webpack_require__(451);
-
-var _sub_months2 = _interopRequireDefault(_sub_months);
-
-var _start_of_month = __webpack_require__(454);
-
-var _start_of_month2 = _interopRequireDefault(_start_of_month);
-
-var _end_of_month = __webpack_require__(455);
-
-var _end_of_month2 = _interopRequireDefault(_end_of_month);
 
 __webpack_require__(456);
 
@@ -22301,8 +21964,8 @@ var Statistics = function (_Component) {
 		/************************************* Doughnut Chart *************************************/
 
 	}, {
-		key: 'calculateDoughnutAmounts',
-		value: function calculateDoughnutAmounts() {
+		key: 'calculateDoughnutInfo',
+		value: function calculateDoughnutInfo() {
 			// Initialize a new array of size 8 and fill it with 0s initially
 			var amts = new Array(14);
 			amts.fill(0);
@@ -22362,37 +22025,34 @@ var Statistics = function (_Component) {
 				return (Math.round(val * 100) / 100).toFixed(2);
 			});
 
-			// TODO: remove 0 values from the amounts
-			return amts;
-		}
-	}, {
-		key: 'generateDoughnutLabels',
-		value: function generateDoughnutLabels(amountsArray) {
+			var labelsArray = [];
+			var newAmts = [];
 
 			var defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
 
-			var labelsArray = [];
-			for (var i = 0; i < amountsArray.length; i++) {
-				if (amountsArray[i] !== "0.00") {
+			// Only keep amounts and labels for values that are not 0
+			for (var i = 0; i < amts.length; i++) {
+				if (amts[i] !== "0.00") {
 					labelsArray.push(defaultLabelsArray[i]);
+					newAmts.push(amts[i]);
 				}
 			}
 
-			return labelsArray;
+			return {
+				labels: labelsArray,
+				amounts: newAmts
+			};
 		}
 	}, {
 		key: 'generateDoughnutChart',
 		value: function generateDoughnutChart() {
 			// get the data array
-			var amounts = this.calculateDoughnutAmounts();
-
-			// get the label array
-			var doughnutLabels = this.generateDoughnutLabels(amounts);
+			var info = this.calculateDoughnutInfo();
 
 			var data = {
-				labels: doughnutLabels,
+				labels: info.labels,
 				datasets: [{
-					data: amounts,
+					data: info.amounts,
 					backgroundColor: ['#578CA9', '#F6D155', '#004B8D', '#F2552C', '#95DEE3', '#CE3175', '#5A7247', '#CFB095', '#578CA9', '#f4d942', '#afc47d', '#558244', '#347759', '#2d7582']
 				}],
 				options: {
@@ -22417,57 +22077,57 @@ var Statistics = function (_Component) {
 
 			/* Get transactions for the past 365 days */
 			$.post('/plaid-api/transactions', { days: 365 }, function (data) {
+				var _ref;
+
 				if (!data.transactions) {
 					console.error('-----------------------------');
 					throw Error('Invalid data from server');
 				}
 
-				var allTransactions = data.transactions;
+				var avg = 0;
+				data.transactions.forEach(function (t) {
 
-				/* Sort the transactions by date */
-				allTransactions = allTransactions.sort(function (a, b) {
-					return a.date - b.date;
+					// get the string value of the month from the transaction
+					var transactionMonth = t.date.slice(5, 7);
+
+					// convert it to an int and subtract one for array offset
+					transactionMonth = parseInt(transactionMonth) - 1;
+
+					// add the amount of the transaction to its corresponding index in the array
+					amounts[transactionMonth] += t.amount;
+
+					// Get the total sum to calculate avg
+					avg += t.amount;
 				});
 
-				var mostRecentDate = allTransactions[0].date;
-				var year = mostRecentDate.slice(0, 4);
-				var month = mostRecentDate.slice(5, 7);
-				var day = mostRecentDate.slice(8);
-
-				// Most recent transaction's date
-				var x = new Date(year, month, day);
-				var i = 0;
-
-				allTransactions.forEach(function (t) {
-					var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8));
-
-					if ((0, _is_within_range2.default)(transactionDate, (0, _start_of_month2.default)(x), (0, _end_of_month2.default)(x))) {
-						amounts[i] += t.amount;
-					} else {
-						i++;
-						// I've moved beyond the current range
-
-						// Go back one week
-						x = (0, _sub_months2.default)(x, 1);
-
-						amounts[i] += t.amount;
-					}
-				});
+				// Divide by 12 and round to two decimal places
+				avg = avg / 12;
+				avg = (Math.round(avg * 100) / 100).toFixed(2);
 
 				// Round the amounts to two decimals
 				amounts = amounts.map(function (val) {
 					return (Math.round(val * 100) / 100).toFixed(2);
 				});
 
-				// amounts is in reverse chrnological order 
-				//[0 weeks ago, 1 week ago, 2 weeks ago, 3 weeks ago, ... , 51 weeks ago, 52 weeks ago]
-				// this.setState({ lineChartBlob: amounts });
-
 				var lineData = {
-					labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], //13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
+					labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'], //13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
 					datasets: [{
-						data: amounts
-					}],
+						type: 'line',
+						data: new Array(12).fill(avg),
+						label: 'Average Spending',
+						borderColor: '#EC932F',
+						backgroundColor: '#EC932F',
+						pointBorderColor: '#EC932F',
+						pointBackgroundColor: '#EC932F',
+						pointHoverBackgroundColor: '#EC932F',
+						pointHoverBorderColor: '#EC932F',
+						fill: false
+					}, (_ref = {
+						type: 'bar',
+						data: amounts,
+						label: 'Monthly Spending',
+						backgroundColor: '#71B37C'
+					}, (0, _defineProperty3.default)(_ref, 'backgroundColor', '#71B37C'), (0, _defineProperty3.default)(_ref, 'borderColor', '#71B37C'), (0, _defineProperty3.default)(_ref, 'hoverBackgroundColor', '#71B37C'), (0, _defineProperty3.default)(_ref, 'hoverBorderColor', '#71B37C'), _ref)],
 					options: {
 						responsive: false
 					}
@@ -22488,17 +22148,18 @@ var Statistics = function (_Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'stats--doughnut' },
-					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData }),
-					_react2.default.createElement(_reactChartjs.Line, { data: this.state.lineChartData })
+					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData })
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'stats--line-chart' },
+					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.lineChartData })
 				)
 			);
 		}
 	}]);
 	return Statistics;
 }(_react.Component);
-
-// Date functions 
-
 
 exports.default = Statistics;
 
@@ -42362,249 +42023,13 @@ module.exports = function (COLLECTION) {
 
 
 /***/ }),
-/* 449 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(37)
-
-/**
- * @category Range Helpers
- * @summary Is the given date within the range?
- *
- * @description
- * Is the given date within the range?
- *
- * @param {Date|String|Number} date - the date to check
- * @param {Date|String|Number} startDate - the start of range
- * @param {Date|String|Number} endDate - the end of range
- * @returns {Boolean} the date is within the range
- * @throws {Error} startDate cannot be after endDate
- *
- * @example
- * // For the date within the range:
- * isWithinRange(
- *   new Date(2014, 0, 3), new Date(2014, 0, 1), new Date(2014, 0, 7)
- * )
- * //=> true
- *
- * @example
- * // For the date outside of the range:
- * isWithinRange(
- *   new Date(2014, 0, 10), new Date(2014, 0, 1), new Date(2014, 0, 7)
- * )
- * //=> false
- */
-function isWithinRange (dirtyDate, dirtyStartDate, dirtyEndDate) {
-  var time = parse(dirtyDate).getTime()
-  var startTime = parse(dirtyStartDate).getTime()
-  var endTime = parse(dirtyEndDate).getTime()
-
-  if (startTime > endTime) {
-    throw new Error('The start of the range cannot be after the end of the range')
-  }
-
-  return time >= startTime && time <= endTime
-}
-
-module.exports = isWithinRange
-
-
-/***/ }),
-/* 450 */
-/***/ (function(module, exports) {
-
-/**
- * @category Common Helpers
- * @summary Is the given argument an instance of Date?
- *
- * @description
- * Is the given argument an instance of Date?
- *
- * @param {*} argument - the argument to check
- * @returns {Boolean} the given argument is an instance of Date
- *
- * @example
- * // Is 'mayonnaise' a Date?
- * var result = isDate('mayonnaise')
- * //=> false
- */
-function isDate (argument) {
-  return argument instanceof Date
-}
-
-module.exports = isDate
-
-
-/***/ }),
-/* 451 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var addMonths = __webpack_require__(452)
-
-/**
- * @category Month Helpers
- * @summary Subtract the specified number of months from the given date.
- *
- * @description
- * Subtract the specified number of months from the given date.
- *
- * @param {Date|String|Number} date - the date to be changed
- * @param {Number} amount - the amount of months to be subtracted
- * @returns {Date} the new date with the months subtracted
- *
- * @example
- * // Subtract 5 months from 1 February 2015:
- * var result = subMonths(new Date(2015, 1, 1), 5)
- * //=> Mon Sep 01 2014 00:00:00
- */
-function subMonths (dirtyDate, dirtyAmount) {
-  var amount = Number(dirtyAmount)
-  return addMonths(dirtyDate, -amount)
-}
-
-module.exports = subMonths
-
-
-/***/ }),
-/* 452 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(37)
-var getDaysInMonth = __webpack_require__(453)
-
-/**
- * @category Month Helpers
- * @summary Add the specified number of months to the given date.
- *
- * @description
- * Add the specified number of months to the given date.
- *
- * @param {Date|String|Number} date - the date to be changed
- * @param {Number} amount - the amount of months to be added
- * @returns {Date} the new date with the months added
- *
- * @example
- * // Add 5 months to 1 September 2014:
- * var result = addMonths(new Date(2014, 8, 1), 5)
- * //=> Sun Feb 01 2015 00:00:00
- */
-function addMonths (dirtyDate, dirtyAmount) {
-  var date = parse(dirtyDate)
-  var amount = Number(dirtyAmount)
-  var desiredMonth = date.getMonth() + amount
-  var dateWithDesiredMonth = new Date(0)
-  dateWithDesiredMonth.setFullYear(date.getFullYear(), desiredMonth, 1)
-  dateWithDesiredMonth.setHours(0, 0, 0, 0)
-  var daysInMonth = getDaysInMonth(dateWithDesiredMonth)
-  // Set the last day of the new month
-  // if the original date was the last day of the longer month
-  date.setMonth(desiredMonth, Math.min(daysInMonth, date.getDate()))
-  return date
-}
-
-module.exports = addMonths
-
-
-/***/ }),
-/* 453 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(37)
-
-/**
- * @category Month Helpers
- * @summary Get the number of days in a month of the given date.
- *
- * @description
- * Get the number of days in a month of the given date.
- *
- * @param {Date|String|Number} date - the given date
- * @returns {Number} the number of days in a month
- *
- * @example
- * // How many days are in February 2000?
- * var result = getDaysInMonth(new Date(2000, 1))
- * //=> 29
- */
-function getDaysInMonth (dirtyDate) {
-  var date = parse(dirtyDate)
-  var year = date.getFullYear()
-  var monthIndex = date.getMonth()
-  var lastDayOfMonth = new Date(0)
-  lastDayOfMonth.setFullYear(year, monthIndex + 1, 0)
-  lastDayOfMonth.setHours(0, 0, 0, 0)
-  return lastDayOfMonth.getDate()
-}
-
-module.exports = getDaysInMonth
-
-
-/***/ }),
-/* 454 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(37)
-
-/**
- * @category Month Helpers
- * @summary Return the start of a month for the given date.
- *
- * @description
- * Return the start of a month for the given date.
- * The result will be in the local timezone.
- *
- * @param {Date|String|Number} date - the original date
- * @returns {Date} the start of a month
- *
- * @example
- * // The start of a month for 2 September 2014 11:55:00:
- * var result = startOfMonth(new Date(2014, 8, 2, 11, 55, 0))
- * //=> Mon Sep 01 2014 00:00:00
- */
-function startOfMonth (dirtyDate) {
-  var date = parse(dirtyDate)
-  date.setDate(1)
-  date.setHours(0, 0, 0, 0)
-  return date
-}
-
-module.exports = startOfMonth
-
-
-/***/ }),
-/* 455 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(37)
-
-/**
- * @category Month Helpers
- * @summary Return the end of a month for the given date.
- *
- * @description
- * Return the end of a month for the given date.
- * The result will be in the local timezone.
- *
- * @param {Date|String|Number} date - the original date
- * @returns {Date} the end of a month
- *
- * @example
- * // The end of a month for 2 September 2014 11:55:00:
- * var result = endOfMonth(new Date(2014, 8, 2, 11, 55, 0))
- * //=> Tue Sep 30 2014 23:59:59.999
- */
-function endOfMonth (dirtyDate) {
-  var date = parse(dirtyDate)
-  var month = date.getMonth()
-  date.setFullYear(date.getFullYear(), month + 1, 0)
-  date.setHours(23, 59, 59, 999)
-  return date
-}
-
-module.exports = endOfMonth
-
-
-/***/ }),
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
 /* 456 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42644,7 +42069,7 @@ exports = module.exports = __webpack_require__(16)(undefined);
 
 
 // module
-exports.push([module.i, ".stats--doughnut {\n  width: 500px; }\n", ""]);
+exports.push([module.i, ".stats--doughnut {\n  width: 500px; }\n\n.stats--line-chart {\n  width: 700px; }\n", ""]);
 
 // exports
 
@@ -58712,6 +58137,36 @@ exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.navbar {\n  
 
 // exports
 
+
+/***/ }),
+/* 474 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _defineProperty = __webpack_require__(251);
+
+var _defineProperty2 = _interopRequireDefault(_defineProperty);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (obj, key, value) {
+  if (key in obj) {
+    (0, _defineProperty2.default)(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+};
 
 /***/ })
 /******/ ]);

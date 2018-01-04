@@ -10,8 +10,6 @@ const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 const glob = require('glob');
 
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-
 module.exports = {
 	devtool: 'source-map', // Enables source maps for both JS(X) and (S)CSS
 	entry: glob.sync('./src/components/**/*.jsx'),
