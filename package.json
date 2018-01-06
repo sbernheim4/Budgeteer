@@ -1,8 +1,22 @@
 {
-  "scripts": {
-    "webpack-watch": "webpack -w",
-    "express-server": "nodemon ./server/index.js",
-    "start": "concurrently --kill-others \"npm run webpack-watch\" \"npm run express-server\""
+  "name": "money-saver",
+  "version": "0.1.0",
+  "engines": {
+    "node": "8.9.3"
+  },
+  "dependencies": {
+    "browser-sync-webpack-plugin": "^1.2.0",
+    "chart.js": "^2.7.1",
+    "compression": "^1.7.1",
+    "date-fns": "^1.29.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "moment": "^2.20.1",
+    "path": "^0.12.7",
+    "plaid": "^2.2.0",
+    "react": "^16.2.0",
+    "react-chartjs-2": "^2.6.4",
+    "react-dom": "^16.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.2.2",
@@ -29,18 +43,10 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
-  "dependencies": {
-    "browser-sync-webpack-plugin": "^1.2.0",
-    "chart.js": "^2.7.1",
-    "compression": "^1.7.1",
-    "date-fns": "^1.29.0",
-    "dotenv": "^4.0.0",
-    "express": "^4.16.2",
-    "moment": "^2.20.1",
-    "path": "^0.12.7",
-    "plaid": "^2.2.0",
-    "react": "^16.2.0",
-    "react-chartjs-2": "^2.6.4",
-    "react-dom": "^16.2.0"
+  "scripts": {
+    "express-server": "nodemon ./server/index.js",
+    "start": "npm run express-server",
+    "dev": "concurrently --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
+    "webpack-watch": "webpack -w"
   }
 }
