@@ -144,12 +144,17 @@ class Statistics extends Component {
 		let amounts = new Array(12);
 		amounts.fill(0);
 
-		$.post('/plaid-api/transactions', { days: 365 }, data => {
-			if (!data.transactions) {
+		fetch('/plaid-api/transactions', {
+			method: 'post',
+			body: JSON.stringify({
+				days: 365
+			})
+		}).then(data => {
+			if(!data.transactions) {
 				console.error('-----------------------------');
 				throw Error('Invalid data from server');
 			}
-
+			
 			let avg = 0;
 			data.transactions.forEach(t => {
 
@@ -205,6 +210,7 @@ class Statistics extends Component {
 			};
 
 			this.setState({ monthlyLineChartData: lineData });
+
 		});
 	}
 
@@ -265,7 +271,12 @@ class Statistics extends Component {
 	/************************************* Line Chart *************************************/
 
 	generateHorizontalBarChart() {
-		$.post('/plaid-api/transactions', { days: 365 }, data => {
+		fetch('/plaid-api/transactions', {
+			method: 'post',
+			body: JSON.stringify({				
+				days: 365
+			})
+		}).then(data => {
 			if (!data.transactions) {
 				console.error('-----------------------------');
 				throw Error('Invalid data from server');

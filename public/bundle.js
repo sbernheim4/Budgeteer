@@ -8767,8 +8767,11 @@ var Budget = function (_Component) {
 				method: 'post',
 				body: (0, _stringify2.default)(options)
 			}).then(function (data) {
-				console.log("data is");
-				console.log(data);
+				if (!data.transactions) {
+					console.error('-----------------------------');
+					throw Error('Invalid data from server');
+				}
+
 				_this2.getTotalSpent(data.transactions);
 			});
 		}
@@ -22264,6 +22267,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _stringify = __webpack_require__(98);
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _getPrototypeOf = __webpack_require__(21);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -22467,7 +22474,12 @@ var Statistics = function (_Component) {
 			var amounts = new Array(12);
 			amounts.fill(0);
 
-			$.post('/plaid-api/transactions', { days: 365 }, function (data) {
+			fetch('/plaid-api/transactions', {
+				method: 'post',
+				body: (0, _stringify2.default)({
+					days: 365
+				})
+			}).then(function (data) {
 				if (!data.transactions) {
 					console.error('-----------------------------');
 					throw Error('Invalid data from server');
@@ -22587,7 +22599,12 @@ var Statistics = function (_Component) {
 		value: function generateHorizontalBarChart() {
 			var _this3 = this;
 
-			$.post('/plaid-api/transactions', { days: 365 }, function (data) {
+			fetch('/plaid-api/transactions', {
+				method: 'post',
+				body: (0, _stringify2.default)({
+					days: 365
+				})
+			}).then(function (data) {
 				if (!data.transactions) {
 					console.error('-----------------------------');
 					throw Error('Invalid data from server');

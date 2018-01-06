@@ -69,8 +69,11 @@ class Budget extends Component {
 			method: 'post',
 			body: JSON.stringify(options)
 		}).then(data => {
-			console.log("data is");
-			console.log(data);
+			if (!data.transactions) {
+				console.error('-----------------------------');
+				throw Error('Invalid data from server');
+			}
+			
 			this.getTotalSpent(data.transactions);
 		});
 	}
