@@ -56,13 +56,21 @@ class Budget extends Component {
 
 		let now = new Date(); 
 		let currDayOfMonth = now.getDay();
-		console.log("currDayOfMonth:", currDayOfMonth);
 		
 		// TODO: Assumes people's spending cycle begins at the beginning of each month --> Could be any date
 		// Get transactions for the past currDayOfMonth days --> aka the past 
 		// 18 days if today is the 18th of whatever month
 		
-		$.post('/plaid-api/transactions', { days: currDayOfMonth }, data => {
+		let options = {
+			days: currDayOfMonth
+		};
+		
+		fetch('/plaid-api/transactions', { 
+			method: 'post',
+			body: JSON.stringify(options)
+		}).then(data => {
+			console.log("data is");
+			console.log(data);
 			this.getTotalSpent(data.transactions);
 		});
 	}
