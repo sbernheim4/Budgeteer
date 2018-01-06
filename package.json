@@ -1,9 +1,6 @@
 {
   "name": "money-saver",
   "version": "0.1.0",
-  "engines": {
-    "node": "8.9.3"
-  },
   "dependencies": {
     "browser-sync-webpack-plugin": "^1.2.0",
     "chart.js": "^2.7.1",
@@ -43,10 +40,14 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
+  "engines": {
+    "node": "8.9.3"
+  },
   "scripts": {
-    "express-server": "nodemon ./server/index.js",
-    "start": "node ./server/index.js",
     "dev": "concurrently --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
+    "express-server": "nodemon ./server/index.js",
+    "heroku-prebuild": "npm install --only-dev",
+    "start": "node ./server/index.js",
     "webpack-watch": "webpack -w"
   }
 }
