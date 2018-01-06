@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
-import { Doughnut, Line, Bar, Bubble } from 'react-chartjs-2';
+import { Doughnut, Line, Bar, Bubble, HorizontalBar } from 'react-chartjs-2';
+import Budget from './Budget.jsx';
 
 import getDay from 'date-fns/get_day';
+import isWeekend from 'date-fns/is_weekend';
+import isSameWeek from 'date-fns/is_same_week';
+import addWeeks from 'date-fns/add_weeks';
+import isAfter from 'date-fns/is_after';
+import differenceInWeeks from 'date-fns/difference_in_weeks';
 
 import '../scss/statistics.scss';
 
@@ -11,16 +17,18 @@ class Statistics extends Component {
 
 		this.state = {
 			categoryDoughnutData: {},
-			lineChartData: {},
-			bubbleChartData: {}
+			monthlyLineChartData: {},
+			bubbleChartData: {},
+			weekVsWeekend: {}
 		}
 	}
 
 	componentDidMount() {
 		// Doughnut Chart stuff
 		this.generateDoughnutChart();
-		this.generateLineChart();
+		this.generateMonthlyLineChart();
 		this.generateBubbleChart();
+		this.generateHorizontalBarChart();
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -127,12 +135,11 @@ class Statistics extends Component {
 
 	/************************************* Line Chart *************************************/
 
-	generateLineChart() {
+	generateMonthlyLineChart() {
 		/* Sum up costs by week */
 		let amounts = new Array(12);
 		amounts.fill(0);
 
-		/* Get transactions for the past 365 days */
 		$.post('/plaid-api/transactions', { days: 365 }, data => {
 			if (!data.transactions) {
 				console.error('-----------------------------');
@@ -165,37 +172,35 @@ class Statistics extends Component {
 			});
 
 			const lineData = {
-				labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'], //13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
-				datasets: [
-					{
+				labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+				datasets: [{
 					type: 'line',
 					data: new Array(12).fill(avg),
-					label: 'Average Spending',
+					label: 'Avg. Monthly Spending',
+					radius: 0,
 					borderColor: '#EC932F',
 					backgroundColor: '#EC932F',
 					pointBorderColor: '#EC932F',
 					pointBackgroundColor: '#EC932F',
 					pointHoverBackgroundColor: '#EC932F',
 					pointHoverBorderColor: '#EC932F',
-					fill: false,
+					fill: false
 				},
 				{
 					type: 'bar',
 					data: amounts,
 					label: 'Monthly Spending',
-					backgroundColor: '#71B37C',
-					backgroundColor: '#71B37C',
-					borderColor: '#71B37C',
-					hoverBackgroundColor: '#71B37C',
-					hoverBorderColor: '#71B37C',
-				}
-			],
+					backgroundColor: 'rgb(77, 153, 114)',
+					borderColor: 'rgb(77, 153, 114)',
+					hoverBorderColor: 'rgb(77, 153, 114)',
+					hoverBackgroundColor: 'rgb(60, 119, 89)'
+				}],
 				options: {
-					responsive: false
+					responsive: false,
 				}
 			};
 
-			this.setState({ lineChartData: lineData });
+			this.setState({ monthlyLineChartData: lineData });
 		});
 	}
 
@@ -208,19 +213,27 @@ class Statistics extends Component {
 	generateBubbleChart() {
 		let bubbleDataPoints = [];
 
+		let dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
+		let monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+
 		this.props.transactions.forEach(t => {
 			if (t.amount > 0){
 				let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5, 7), t.date.slice(8, 10));
-				let dayOfWeek = getDay(transactionDate);
+				
+				// Day of Week
+				let dayOfWeek = getDay(transactionDate); // 1 - 7
+				// dayOfWeek = dayConverter[dayOfWeek]; // Mon., Tues., Wed., etc
+				
+				// Month Name
+				let month = t.date.slice(5, 7); // 1 - 12
+				// month = monthConverter[month];
 	
 				// find a better scaling factor than Math.log
-				let newPoint = { x: dayOfWeek, y: 12, r: t.amount/20};
+				let newPoint = { x: dayOfWeek, y: month, r: t.amount/20};
 	
 				bubbleDataPoints.push(newPoint);
 			}
 		});
-
-		// "2017-12-06"
 
 		// X ranges from 0 to 6 for the weekday, 
 		// Y ranges from 0:00 to 23:59 based on the time
@@ -228,8 +241,9 @@ class Statistics extends Component {
 		const data = {
 			datasets: [
 				{
-					backgroundColor: "rgb(0, 0, 0)",
-					data: bubbleDataPoints
+					backgroundColor: "rgba(0, 0, 0, .5)",
+					data: bubbleDataPoints,
+					label: 'Spending by Week, Month, and Size',
 				}
 			],
 			options: {
@@ -242,10 +256,97 @@ class Statistics extends Component {
 
 	/************************************* End Bubble Chart *************************************/
 
+
+	/************************************* Line Chart *************************************/
+
+	generateHorizontalBarChart() {
+		$.post('/plaid-api/transactions', { days: 365 }, data => {
+			if (!data.transactions) {
+				console.error('-----------------------------');
+				throw Error('Invalid data from server');
+			}
+
+			let weekday = new Array(52).fill(0);
+			let weekend = new Array(52).fill(0);
+
+			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
+			data.transactions.sort((a, b) => {
+				// a and b are transactions
+				let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7), a.date.slice(8, 10));
+				let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7), b.date.slice(8, 10));
+				return isAfter(dateA, dateB);
+			});
+
+			let firstDate = data.transactions[0].date;
+			let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7), firstDate.slice(8, 10));
+			let beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
+			let counter = differenceInWeeks(currentWeek, beginningOfYear);
+			
+			console.log("currentWeek:", currentWeek)
+			console.log("beginningOfYear:", beginningOfYear);
+			console.log("counter:", counter);
+
+			data.transactions.forEach(t => {
+				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
+
+				if (isSameWeek(currentWeek, transactionDate)) {
+					if (isWeekend(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+				} else {
+					// I've moved to a different week so update counter index
+					counter += differenceInWeeks(transactionDate, currentWeek);
+
+					// Put the current transaction amount in the right array
+					if (isWeekend(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+
+					// update currentWeek
+					currentWeek = transactionDate;
+				}
+			});
+
+			const chartData = {
+				labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
+				datasets: [
+					{
+						data: weekday,
+						fill: false,
+						label: 'Weekday',
+						backgroundColor: "rgb(77, 153, 114)",
+						borderColor: "rgb(77, 153, 114)", 
+					},
+					{
+						data: weekend,
+						fill: false,
+						label: 'Weekend',
+						backgroundColor: "rgb(52, 108, 161)",
+						borderColor: "rgb(52, 108, 161)",
+					}
+				],
+				options: {
+					responsive: false
+				}
+			}
+
+			this.setState({ weekVsWeekend: chartData });
+
+		});
+	}
+
+	/************************************* End Line Chart *************************************/
+
 	render() {
 		return (
 
 			<div className='stats'>
+
+				<Budget />
 
 				<div className='stats--doughnut'>
 					{/* Render a doughnut chart for categorical spending */}
@@ -254,12 +355,16 @@ class Statistics extends Component {
 
 				<div className='stats--line-chart'>
 					{/* Render a bar and line chart for monthly and avg spending */}
-					<Bar data={this.state.lineChartData} />
+					<Bar data={this.state.monthlyLineChartData} />
 				</div>
 
 				<div className='stats--bubble-chart'>
 					{/* Render a bar and line chart for monthly and avg spending */}
 					<Bubble data={this.state.bubbleChartData} />
+				</div>
+
+				<div className='stats--week-weekend'>
+					<Line data={this.state.weekVsWeekend} />
 				</div>
 			</div>
 

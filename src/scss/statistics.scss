@@ -1,14 +1,23 @@
 .stats {
+	width: 100vw;
 
 	&--doughnut {
-		width: 500px;
+		margin: 0 auto;
+		max-width: 500px;
 	}
 
 	&--line-chart {
-		width: 700px;
+		margin: 0 auto;
+		max-width: 700px;
 	}
 
 	&--bubble-chart {
-		width: 700px;
+		margin: 0 auto;
+		max-width: 700px;
+	}
+
+	&--week-weekend {
+		margin: 0 auto;
+		max-width: 700px;
 	}
 }

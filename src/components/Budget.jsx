@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 
+import getDaysInMonth from 'date-fns/get_days_in_month';
+
 import '../scss/budget.scss';
 
 class Budget extends Component {
 	constructor(props){
 		super(props);
+
 		this.state = {
 			monthlyBudget: '',
+			spentThisMonth: 0,
+			
 			data: {
 				labels: [
 					'Spent',
@@ -30,21 +35,50 @@ class Budget extends Component {
 		this.handleChange = this.handleChange.bind(this);
 	}
 
+	componentDidMount() {
+		this.getThisMonthsData();
+	}
+
+	getTotalSpent(transactions) {
+		let total = 0;
+		// Sum up the prices of each transaction
+		transactions.forEach( transaction => {
+			total += transaction.amount;
+		})
+
+		// Round total to two decimal places and ensure trailing 0s appear
+		total = (Math.round(total * 100) / 100).toFixed(2);
+		this.setState({ spentThisMonth: total });
+	}
+
+	getThisMonthsData() {
+		// Get the total spent so far this month
+
+		let now = new Date(); 
+		let currDayOfMonth = now.getDay();
+		console.log("currDayOfMonth:", currDayOfMonth);
+		
+		// TODO: Assumes people's spending cycle begins at the beginning of each month --> Could be any date
+		// Get transactions for the past currDayOfMonth days --> aka the past 
+		// 18 days if today is the 18th of whatever month
+		
+		$.post('/plaid-api/transactions', { days: currDayOfMonth }, data => {
+			this.getTotalSpent(data.transactions);
+		});
+	}
+
 	handleChange(event) {
 		// Update the state variable
 		this.setState({ monthlyBudget: event.target.value.trim() });
 
-		// // Update the percentage calculator
-		// const graph = document.querySelector('.budget--graph > div');
-		// let percentage = (this.props.totalSpent / event.target.value) * 100;
-		// graph.style.width = percentage + "%";
-
-		const spent = this.props.totalSpent;
-		let remaining = (event.target.value - this.props.totalSpent).toFixed(2);
+		// Update the percentage calculator
+		const spent = this.state.spentThisMonth;
+		let remaining = (event.target.value - this.state.spentThisMonth).toFixed(2);
 		if (remaining <= 0) {
 			remaining = 0;
 		}
-
+		
+		// Update the chart
 		const data = {
 			labels: [
 				'Spent',
@@ -53,16 +87,17 @@ class Budget extends Component {
 			datasets: [{
 				data: [spent, remaining],
 				backgroundColor: [
-					'rgb(212,99,99)',
+					'rgb(212, 99, 99)',
 					'rgb(77, 153, 114)'
+				],
+				hoverBackgroundColor: [
+					'rgb(201, 59, 59)',
+					'rgb(60, 119, 89)'
 				]
 			}]
 		};
 
 		this.setState({data: data})
-
-		// Update the pie chart
-		// this.generateChart(spent, remaining);
 	}
 
 	numberWithCommas(number) {
@@ -70,9 +105,9 @@ class Budget extends Component {
 	}
 
 	render() {
-		let spent = this.numberWithCommas(this.props.totalSpent);
+		let spent = this.numberWithCommas(this.state.spentThisMonth);
 
-		let remaining = (this.state.monthlyBudget - this.props.totalSpent).toFixed(2);
+		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
 		remaining = this.numberWithCommas(remaining);
 
 		return (
@@ -90,8 +125,6 @@ class Budget extends Component {
 					</label>
 				</form>
 
-
-				{/* <p className='budget--percent'>{((this.props.totalSpent / this.state.monthlyBudget)*100).toFixed(2) || 0}% spent</p> */}
 
 				<div className='budget--doughnut-chart'>
 					<Doughnut data={this.state.data} />

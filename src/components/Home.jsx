@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import AccountsContainer from './AccountsContainer.jsx';
 import TransactionContainer from './TransactionContainer.jsx';
-import Budget from './Budget.jsx';
 import Statistics from './Statistics.jsx';
 
 import '../scss/home.scss';
@@ -60,7 +59,7 @@ class Home extends Component {
 	}
 
 	getTransactions() {
-		$.post('/plaid-api/transactions', data => {
+		$.post('/plaid-api/transactions', { days: 30 }, data => {
 			if (!data.transactions || !data.accounts) {
 
 				const errorMessage = document.querySelector('.home--error');
@@ -122,31 +121,16 @@ class Home extends Component {
 		this.setState({ transactions: currentTransactions });
 	}
 
-	getTotalSpent() {
-		let total = 0;
-		// Sum up the prices of each transaction
-		this.state.transactions.forEach( transaction => {
-			total += transaction.amount;
-		})
-
-		// Round total to two decimal places and ensure trailing 0s appear
-		total = (Math.round(total * 100) / 100).toFixed(2);
-		return total;
-	}
-
 	render() {
 
 		// Conditional Rendering
 		let accountsContainer = null;
-		let budget = null;
 		let stats = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = '';
-			budget = '';
 			stats = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
-			budget = <Budget totalSpent={this.getTotalSpent()} transactions={this.state.transactions} />
 			stats = <Statistics transactions={this.state.transactions} />
 		}
 
@@ -158,7 +142,6 @@ class Home extends Component {
 					<button className='home--btns__green' onClick={this.getTransactions.bind(this)}>Get Transactions</button>
 				</div>
 
-				{budget}
 				{accountsContainer}
 				{stats}
 
