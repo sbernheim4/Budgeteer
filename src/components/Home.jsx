@@ -22,7 +22,7 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		fetch('http://localhost:5000/plaid-api/key-and-env')
+		fetch('plaid-api/key-and-env')
 		.then(response => {
 			return response.json();
 		}).then(res => {

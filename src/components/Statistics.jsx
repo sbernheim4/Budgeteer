@@ -24,10 +24,11 @@ class Statistics extends Component {
 	}
 
 	componentDidMount() {
-		// Doughnut Chart stuff
+		// Generate all the charts when the component has loaded
+
 		this.generateDoughnutChart();
-		this.generateMonthlyLineChart();
-		this.generateBubbleChart();
+		this.generateMonthlyBarChart();
+		// this.generateBubbleChart();
 		this.generateHorizontalBarChart();
 	}
 
@@ -133,9 +134,12 @@ class Statistics extends Component {
 
 
 
-	/************************************* Line Chart *************************************/
+	/************************************* Bar Chart *************************************/
 
-	generateMonthlyLineChart() {
+	generateMonthlyBarChart() {
+		// TODO: NEED TO PAY MORE ATTENTION TO THE DATE 
+		// Ensure the order of the date is chronological not just based on jan - dec. 
+
 		/* Sum up costs by week */
 		let amounts = new Array(12);
 		amounts.fill(0);
@@ -204,7 +208,7 @@ class Statistics extends Component {
 		});
 	}
 
-	/************************************* End Line Chart *************************************/
+	/************************************* End Bar Chart *************************************/
 
 
 
@@ -257,6 +261,7 @@ class Statistics extends Component {
 	/************************************* End Bubble Chart *************************************/
 
 
+	
 	/************************************* Line Chart *************************************/
 
 	generateHorizontalBarChart() {
@@ -308,13 +313,14 @@ class Statistics extends Component {
 			});
 
 			const chartData = {
-				labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52],
-				datasets: [
-					{
-						data: weekday,
-						fill: false,
-						label: 'Weekday',
-						backgroundColor: "rgb(77, 153, 114)",
+				labels: [52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+				label: 'Week vs Weekend Spending for the past 52 Weeks',
+				datasets:  [
+ 					{
+						data:  weekday, 
+						fill:  false, 
+						label:  'Weekday',
+ 						backgroundColor:  "rgb( 77,  153, 114)",
 						borderColor: "rgb(77, 153, 114)", 
 					},
 					{
@@ -356,7 +362,7 @@ class Statistics extends Component {
 
 				<div className='stats--bubble-chart'>
 					{/* Render a bar and line chart for monthly and avg spending */}
-					<Bubble data={this.state.bubbleChartData} />
+					{/* <Bubble data={this.state.bubbleChartData} /> */}
 				</div>
 
 				<div className='stats--week-weekend'>
