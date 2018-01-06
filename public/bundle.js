@@ -8978,10 +8978,6 @@ var Statistics = function (_Component) {
 				var beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
 				var counter = (0, _difference_in_weeks2.default)(currentWeek, beginningOfYear);
 
-				console.log("currentWeek:", currentWeek);
-				console.log("beginningOfYear:", beginningOfYear);
-				console.log("counter:", counter);
-
 				data.transactions.forEach(function (t) {
 					var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
 

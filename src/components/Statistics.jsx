@@ -281,10 +281,6 @@ class Statistics extends Component {
 			let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7), firstDate.slice(8, 10));
 			let beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
 			let counter = differenceInWeeks(currentWeek, beginningOfYear);
-			
-			console.log("currentWeek:", currentWeek)
-			console.log("beginningOfYear:", beginningOfYear);
-			console.log("counter:", counter);
 
 			data.transactions.forEach(t => {
 				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
@@ -298,14 +294,14 @@ class Statistics extends Component {
 				} else if (t.amount > 0) {
 					// I've moved to a different week so update counter index
 					counter += differenceInWeeks(transactionDate, currentWeek);
-
+					
 					// Put the current transaction amount in the right array
 					if (isWeekend(transactionDate)) {
 						weekend[counter] += t.amount;
 					} else {
 						weekday[counter] += t.amount;
 					}
-
+					
 					// update currentWeek
 					currentWeek = transactionDate;
 				}
