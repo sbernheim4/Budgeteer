@@ -8985,13 +8985,13 @@ var Statistics = function (_Component) {
 				data.transactions.forEach(function (t) {
 					var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
 
-					if ((0, _is_same_week2.default)(currentWeek, transactionDate)) {
+					if ((0, _is_same_week2.default)(currentWeek, transactionDate) && t.amount > 0) {
 						if ((0, _is_weekend2.default)(transactionDate)) {
 							weekend[counter] += t.amount;
 						} else {
 							weekday[counter] += t.amount;
 						}
-					} else {
+					} else if (t.amount > 0) {
 						// I've moved to a different week so update counter index
 						counter += (0, _difference_in_weeks2.default)(transactionDate, currentWeek);
 

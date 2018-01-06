@@ -289,13 +289,13 @@ class Statistics extends Component {
 			data.transactions.forEach(t => {
 				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
 
-				if (isSameWeek(currentWeek, transactionDate)) {
+				if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
 					if (isWeekend(transactionDate)) {
 						weekend[counter] += t.amount;
 					} else {
 						weekday[counter] += t.amount;
 					}
-				} else {
+				} else if (t.amount > 0) {
 					// I've moved to a different week so update counter index
 					counter += differenceInWeeks(transactionDate, currentWeek);
 
