@@ -22059,10 +22059,17 @@ var Home = function (_Component) {
 					product: ['transactions'],
 					key: _this2.state.publicKey,
 					onSuccess: function onSuccess(public_token) {
-						$.post('/plaid-api/get-access-token', {
-							public_token: public_token,
-							client_id: "5a24ca6a4e95b836d37e37fe",
-							secret: "f07a761a591de3cbbc5ac3ba2f4301"
+						fetch('/plaid-api/get-access-token', {
+							method: 'post',
+							headers: {
+								'Accept': 'application/json',
+								'Content-Type': 'application/json'
+							},
+							body: (0, _stringify2.default)({
+								public_token: public_token,
+								client_id: "5a24ca6a4e95b836d37e37fe",
+								secret: "f07a761a591de3cbbc5ac3ba2f4301"
+							})
 						});
 					}
 				});
