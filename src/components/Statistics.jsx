@@ -209,13 +209,15 @@ class Statistics extends Component {
 		let bubbleDataPoints = [];
 
 		this.props.transactions.forEach(t => {
-
-			let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5, 7), t.date.slice(8, 10));
-			let dayOfWeek = getDay(transactionDate);
-
-			let newPoint = { x: dayOfWeek, y: 12, r: t.amount};
-
-			bubbleDataPoints.push(newPoint);
+			if (t.amount > 0){
+				let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5, 7), t.date.slice(8, 10));
+				let dayOfWeek = getDay(transactionDate);
+	
+				// find a better scaling factor than Math.log
+				let newPoint = { x: dayOfWeek, y: 12, r: t.amount/20};
+	
+				bubbleDataPoints.push(newPoint);
+			}
 		});
 
 		// "2017-12-06"
@@ -226,7 +228,7 @@ class Statistics extends Component {
 		const data = {
 			datasets: [
 				{
-					backgroundColor: "rgba(255,221,50,0.2)",
+					backgroundColor: "rgb(0, 0, 0)",
 					data: bubbleDataPoints
 				}
 			],
