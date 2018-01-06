@@ -45,7 +45,7 @@
   },
   "scripts": {
     "express-server": "nodemon ./server/index.js",
-    "start": "npm run express-server",
+    "start": "node ./server/index.js",
     "dev": "concurrently --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
     "webpack-watch": "webpack -w"
   }
