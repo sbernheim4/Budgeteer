@@ -59,21 +59,24 @@ class Home extends Component {
 	}
 
 	getTransactions() {
-		$.post('/plaid-api/transactions', { days: 30 }, data => {
+		fetch('/plaid-api/transactions', {
+			method: 'post',
+			body: JSON.stringify({
+				days: 30
+			})
+		}).then(data => {
 			if (!data.transactions || !data.accounts) {
-
 				const errorMessage = document.querySelector('.home--error');
 				errorMessage.classList.add('home--error__display');
 
 				setTimeout(() => {
 					errorMessage.classList.remove('home--error__display')
 				}, 4000)
-
 			} else {
 				this.storeTransactions(data.transactions);
 				this.storeAccounts(data.accounts);
 			}
-		});
+		})
 	}
 
 	storeAccounts(accounts) {

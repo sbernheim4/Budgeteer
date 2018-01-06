@@ -21967,6 +21967,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _stringify = __webpack_require__(98);
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _set = __webpack_require__(432);
 
 var _set2 = _interopRequireDefault(_set);
@@ -22075,9 +22079,13 @@ var Home = function (_Component) {
 		value: function getTransactions() {
 			var _this3 = this;
 
-			$.post('/plaid-api/transactions', { days: 30 }, function (data) {
+			fetch('/plaid-api/transactions', {
+				method: 'post',
+				body: (0, _stringify2.default)({
+					days: 30
+				})
+			}).then(function (data) {
 				if (!data.transactions || !data.accounts) {
-
 					var errorMessage = document.querySelector('.home--error');
 					errorMessage.classList.add('home--error__display');
 
