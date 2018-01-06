@@ -65,16 +65,19 @@ class Budget extends Component {
 			days: currDayOfMonth
 		};
 		
-		fetch('/plaid-api/transactions', { 
+		fetch('/plaid-api/transactions', {
 			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
 			body: JSON.stringify(options)
 		}).then(data => {
-			if (!data.transactions) {
-				console.error('-----------------------------');
-				throw Error('Invalid data from server');
-			}
-			
+			return data.json();
+		}).then(data => {
 			this.getTotalSpent(data.transactions);
+		}).catch(err => {
+			console.error(err);
 		});
 	}
 

@@ -61,9 +61,15 @@ class Home extends Component {
 	getTransactions() {
 		fetch('/plaid-api/transactions', {
 			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
 			body: JSON.stringify({
 				days: 30
 			})
+		}).then(data => {
+			return data.json();
 		}).then(data => {
 			if (!data.transactions || !data.accounts) {
 				const errorMessage = document.querySelector('.home--error');
@@ -76,7 +82,9 @@ class Home extends Component {
 				this.storeTransactions(data.transactions);
 				this.storeAccounts(data.accounts);
 			}
-		})
+		}).catch(err => {
+			console.error(err);
+		});
 	}
 
 	storeAccounts(accounts) {

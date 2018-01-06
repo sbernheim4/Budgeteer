@@ -144,11 +144,19 @@ class Statistics extends Component {
 		let amounts = new Array(12);
 		amounts.fill(0);
 
+		let options = {
+			days: 365
+		};
+
 		fetch('/plaid-api/transactions', {
 			method: 'post',
-			body: JSON.stringify({
-				days: 365
-			})
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(options)
+		}).then(data => {
+			return data.json();
 		}).then(data => {
 			if(!data.transactions) {
 				console.error('-----------------------------');
@@ -211,6 +219,8 @@ class Statistics extends Component {
 
 			this.setState({ monthlyLineChartData: lineData });
 
+		}).catch(err => {
+			console.error(err);
 		});
 	}
 
@@ -271,11 +281,18 @@ class Statistics extends Component {
 	/************************************* Line Chart *************************************/
 
 	generateHorizontalBarChart() {
+
 		fetch('/plaid-api/transactions', {
 			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
 			body: JSON.stringify({				
 				days: 365
 			})
+		}).then(data => {
+			return data.json();
 		}).then(data => {
 			if (!data.transactions) {
 				console.error('-----------------------------');
@@ -349,6 +366,8 @@ class Statistics extends Component {
 
 			this.setState({ weekVsWeekend: chartData });
 
+		}).catch(err => {
+			console.error(err);
 		});
 	}
 
