@@ -1,14 +1,14 @@
-'use strict'
 
-require('dotenv').config()
 
-const express = require(`express`);
+require("dotenv").config()
+
+const express = require("express");
 const app = express();
-const path = require('path');
-const chalk = require('chalk');
-const bodyParser = require('body-parser');
-const moment = require('moment');
-const plaid = require('plaid');
+const path = require("path");
+const chalk = require("chalk");
+const bodyParser = require("body-parser");
+const moment = require("moment");
+const plaid = require("plaid");
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
@@ -36,13 +36,13 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 
-app.all('*', (req, res, next) => {
+app.all("*", (req, res, next) => {
 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
 	next();
 })
 
 // Send back the public key and the environment to plaid
-app.get('/key-and-env', (req, res) => {
+app.get("/key-and-env", (req, res) => {
 	let jsonResponse = {
 		"publicKey": PLAID_PUBLIC_KEY.toString(),
 		"env": PLAID_ENV.toString()
@@ -51,14 +51,14 @@ app.get('/key-and-env', (req, res) => {
 	res.send(jsonResponse);
 })
 
-app.post('/get-access-token', function(req, res, next) {
+app.post("/get-access-token", function(req, res, next) {
 
 	PUBLIC_TOKEN = req.body.public_token;
 	client.exchangePublicToken(PUBLIC_TOKEN, function(error, tokenResponse) {
 
 		if (error != null) {
-			let msg = 'Could not exchange public_token!';
-			console.log(msg + '\n' + JSON.stringify(error));
+			let msg = "Could not exchange public_token!";
+			console.log(msg + "\n" + JSON.stringify(error));
 
 			return res.json({
 				error: msg
@@ -73,13 +73,13 @@ app.post('/get-access-token', function(req, res, next) {
 	});
 });
 
-app.post('/transactions', function(req, res, next) {
+app.post("/transactions", function(req, res, next) {
 
 	const days = req.body.days || 30;
 
 	// Pull transactions for the Item for the last 30 days
-	const startDate = moment().subtract(days, 'days').format('YYYY-MM-DD');
-	const endDate = moment().format('YYYY-MM-DD');
+	const startDate = moment().subtract(days, "days").format("YYYY-MM-DD");
+	const endDate = moment().format("YYYY-MM-DD");
 
 	client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
 		count: 250,
@@ -93,12 +93,12 @@ app.post('/transactions', function(req, res, next) {
 			});
 		}
 
-		console.log('pulled ' + transactionsResponse.transactions.length + ' transactions');
+		console.log("pulled " + transactionsResponse.transactions.length + " transactions");
 		res.json(transactionsResponse);
 	});
 });
 
-app.post('/institutions', (req, res) => {
+app.post("/institutions", (req, res) => {
 	client.getInstitutions()
 });
 

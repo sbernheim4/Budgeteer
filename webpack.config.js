@@ -1,22 +1,24 @@
 /* Used to extract the scss, compile it and write it to its own file */
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 /* Used to minify the css after it has been written to its output file */
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const nano = require('cssnano');
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const nano = require("cssnano");
 
 /* Used to ensure proper order of CSS */
-const StyleLintPlugin = require('stylelint-webpack-plugin');
+const StyleLintPlugin = require("stylelint-webpack-plugin");
 
-const glob = require('glob');
+const glob = require("glob");
+
+const path = require("path");
 
 module.exports = {
-	devtool: 'source-map', // Enables source maps for both JS(X) and (S)CSS
-	entry: glob.sync('./src/components/**/*.jsx'),
+	devtool: "source-map", // Enables source maps for both JS(X) and (S)CSS
+	entry: glob.sync("./src/components/**/*.jsx"),
 	output: {
 		// output build file to /public folder
-		path: __dirname + '/public',
-		filename: 'bundle.js'
+		path: __dirname + "/public",
+		filename: "bundle.js"
 	},
 	module: {
 		// use the babel-loader for all .jsx files
@@ -24,7 +26,7 @@ module.exports = {
 			{
 				test: /\.jsx$/,
 				exclude: /node_modules/,
-				use: ['babel-loader', 'eslint-loader']
+				use: ["babel-loader", "eslint-loader"]
 			},
 			// use sass-loader, css-loader, and style-loader for all scss files
 			// sass-loader converts scss to css
@@ -32,7 +34,7 @@ module.exports = {
 			// style-loader injects the css into the browser in a style tag
 			{
 				test: /\.scss$/,
-				use: ['style-loader', 'css-loader', 'sass-loader']
+				use: ["style-loader", "css-loader", "sass-loader"]
 			}
 			// UNCOMMENT THE FOLLOWING LINES TO PUT ALL THE SCSS INTO A SINGLE FILE
 			// ,
@@ -47,7 +49,7 @@ module.exports = {
 		]
 	},
 	resolve: {
-		extensions: ['*', '.js', 'jsx', '.scss']
+		extensions: ["*", ".js", "jsx", ".scss"]
 	},
 	plugins: [
 		// UNCOMMENT THE FOLLOWING LINES TO PUT ALL THE SCSS INTO A SINGLE FILE
@@ -64,8 +66,8 @@ module.exports = {
 
 		// CSS Linter based on rules set in the .stylelintrc file
 		new StyleLintPlugin({
-			configFile: './.stylelintrc',
-			files: './src/scss/*.scss'
+			configFile: "./.stylelintrc",
+			files: "./src/scss/*.scss"
 		})//,
 
 		// // used for automatic reloading of the page on changes
