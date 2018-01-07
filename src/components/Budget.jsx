@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 
 import getDaysInMonth from 'date-fns/get_days_in_month';
+import differenceInDays from 'date-fns/difference_in_days'
 
 import '../scss/budget.scss';
+import { differenceInCalendarDays } from 'date-fns';
 
 class Budget extends Component {
 	constructor(props){
@@ -52,18 +54,11 @@ class Budget extends Component {
 	}
 
 	getThisMonthsData() {
+		let numDays = this.numDaysPassedThisMonth();
+		console.log(`GETTING BUDGET DATA FOR THE PAST ${numDays} days`);
 		// Get the total spent so far this month
 
-		let now = new Date(); 
-		let currDayOfMonth = now.getDay();
-		
-		// TODO: Assumes people's spending cycle begins at the beginning of each month --> Could be any date
-		// Get transactions for the past currDayOfMonth days --> aka the past 
-		// 18 days if today is the 18th of whatever month
-		
-		let options = {
-			days: currDayOfMonth
-		};
+		// NOTE: This assumes people's spending cycle begins at the beginning of each month
 		
 		fetch('/plaid-api/transactions', {
 			method: 'post',
@@ -71,7 +66,9 @@ class Budget extends Component {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(options)
+			body: JSON.stringify({
+				days: this.numDaysPassedThisMonth()
+			})
 		}).then(data => {
 			return data.json();
 		}).then(data => {
@@ -116,6 +113,13 @@ class Budget extends Component {
 
 	numberWithCommas(number) {
 		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+
+	numDaysPassedThisMonth() {
+		let now = new Date();
+		let beginningOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+		return differenceInDays(now, beginningOfMonth); // Excludes today
 	}
 
 	render() {
