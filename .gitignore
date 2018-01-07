@@ -60,3 +60,5 @@ typings/
 # swap files from editors
 *.swp
 *.swo
+
+.DS_Store
