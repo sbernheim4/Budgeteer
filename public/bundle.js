@@ -22186,7 +22186,7 @@ var Home = function (_Component) {
 				stats = '';
 			} else {
 				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, { transactions: this.state.transactions, accounts: this.state.accounts });
-				stats = _react2.default.createElement(_Statistics2.default, { transactions: this.state.transactions });
+				stats = _react2.default.createElement(_Statistics2.default, null);
 			}
 
 			return _react2.default.createElement(
@@ -22403,78 +22403,93 @@ var Statistics = function (_Component) {
 			var amts = new Array(14);
 			amts.fill(0);
 
-			this.props.transactions.forEach(function (t) {
+			fetch('/plaid-api/transactions', {
+				method: 'post',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: (0, _stringify2.default)({
+					days: this.numDaysPassedFromBeginningOfYear()
+				})
+			}).then(function (data) {
+				return data.json();
+			}).then(function (data) {
+				data.transactions.forEach(function (t) {
 
-				var category = (t.category || [''])[0];
-				var amount = t.amount;
+					var category = (t.category || [''])[0];
+					var amount = t.amount;
 
-				switch (category) {
-					case 'Food and Drink':
-						amts[0] += amount;
-						break;
-					case 'Travel':
-						amts[1] += amount;
-						break;
-					case 'Shops':
-						amts[2] += amount;
-						break;
-					case 'Recreation':
-						amts[3] += amount;
-						break;
-					case 'Service':
-						amts[4] += amount;
-						break;
-					case 'Community':
-						amts[5] += amount;
-						break;
-					case 'Healthcare':
-						amts[6] += amount;
-						break;
-					case 'Bank Fees':
-						amts[7] += amount;
-						break;
-					case 'Cash Advance':
-						amts[8] += amount;
-						break;
-					case 'Interest':
-						amts[9] += amount;
-						break;
-					case 'Payment':
-						amts[10] += amount;
-						break;
-					case 'Tax':
-						amts[11] += amount;
-						break;
-					case 'Transfer':
-						amts[12] += amount;
-						break;
-					default:
-						amts[13] += amount;
+					switch (category) {
+						case 'Food and Drink':
+							amts[0] += amount;
+							break;
+						case 'Travel':
+							amts[1] += amount;
+							break;
+						case 'Shops':
+							amts[2] += amount;
+							break;
+						case 'Recreation':
+							amts[3] += amount;
+							break;
+						case 'Service':
+							amts[4] += amount;
+							break;
+						case 'Community':
+							amts[5] += amount;
+							break;
+						case 'Healthcare':
+							amts[6] += amount;
+							break;
+						case 'Bank Fees':
+							amts[7] += amount;
+							break;
+						case 'Cash Advance':
+							amts[8] += amount;
+							break;
+						case 'Interest':
+							amts[9] += amount;
+							break;
+						case 'Payment':
+							amts[10] += amount;
+							break;
+						case 'Tax':
+							amts[11] += amount;
+							break;
+						case 'Transfer':
+							amts[12] += amount;
+							break;
+						default:
+							amts[13] += amount;
+					}
+				});
+
+				// Normalize each value to always have two decimals
+				amts = amts.map(function (val) {
+					return (Math.round(val * 100) / 100).toFixed(2);
+				});
+
+				var labelsArray = [];
+				var newAmts = [];
+
+				var defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+
+				// Only keep amounts and labels for values that are not 0
+				for (var i = 0; i < amts.length; i++) {
+					if (amts[i] !== "0.00") {
+						labelsArray.push(defaultLabelsArray[i]);
+						newAmts.push(amts[i]);
+					}
 				}
+
+				return {
+					labels: labelsArray,
+					amounts: newAmts
+				};
+			}).catch(function (err) {
+				console.error(err);
 			});
-
-			// Normalize each value to always have two decimals
-			amts = amts.map(function (val) {
-				return (Math.round(val * 100) / 100).toFixed(2);
-			});
-
-			var labelsArray = [];
-			var newAmts = [];
-
-			var defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
-
-			// Only keep amounts and labels for values that are not 0
-			for (var i = 0; i < amts.length; i++) {
-				if (amts[i] !== "0.00") {
-					labelsArray.push(defaultLabelsArray[i]);
-					newAmts.push(amts[i]);
-				}
-			}
-
-			return {
-				labels: labelsArray,
-				amounts: newAmts
-			};
 		}
 	}, {
 		key: 'generateDoughnutChart',
@@ -22504,7 +22519,7 @@ var Statistics = function (_Component) {
 		value: function generateMonthlyBarChart() {
 			var _this2 = this;
 
-			// Ensure the order of the date is chronological not just based on jan - dec. 
+			// Ensure the order of the date is chronological not just based on jan - dec.
 
 			/* Sum up costs by week */
 			var amounts = new Array(12);
@@ -22587,54 +22602,6 @@ var Statistics = function (_Component) {
 		}
 
 		/************************************* End Bar Chart *************************************/
-
-		/************************************* Bubble Chart *************************************/
-
-	}, {
-		key: 'generateBubbleChart',
-		value: function generateBubbleChart() {
-			var bubbleDataPoints = [];
-
-			var dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
-			var monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
-
-			this.props.transactions.forEach(function (t) {
-				if (t.amount > 0) {
-					var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
-
-					// Day of Week
-					var dayOfWeek = (0, _get_day2.default)(transactionDate); // 1 - 7
-					// dayOfWeek = dayConverter[dayOfWeek]; // Mon., Tues., Wed., etc
-
-					// Month Name
-					var month = t.date.slice(5, 7); // 1 - 12
-					// month = monthConverter[month];
-
-					// find a better scaling factor than Math.log
-					var newPoint = { x: dayOfWeek, y: month, r: t.amount / 20 };
-
-					bubbleDataPoints.push(newPoint);
-				}
-			});
-
-			// X ranges from 0 to 6 for the weekday, 
-			// Y ranges from 0:00 to 23:59 based on the time
-			// Z is the amount of the transaction 
-			var data = {
-				datasets: [{
-					backgroundColor: "rgba(0, 0, 0, .5)",
-					data: bubbleDataPoints,
-					label: 'Spending by Week, Month, and Size'
-				}],
-				options: {
-					responsive: false
-				}
-			};
-
-			this.setState({ bubbleChartData: data });
-		}
-
-		/************************************* End Bubble Chart *************************************/
 
 		/************************************* Line Chart *************************************/
 
@@ -22787,6 +22754,55 @@ var Statistics = function (_Component) {
 				)
 			);
 		}
+
+		/************************************* Bubble Chart *************************************/
+
+	}, {
+		key: 'generateBubbleChart',
+		value: function generateBubbleChart() {
+			var bubbleDataPoints = [];
+
+			var dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
+			var monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+
+			this.props.transactions.forEach(function (t) {
+				if (t.amount > 0) {
+					var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
+
+					// Day of Week
+					var dayOfWeek = (0, _get_day2.default)(transactionDate); // 1 - 7
+					// dayOfWeek = dayConverter[dayOfWeek]; // Mon., Tues., Wed., etc
+
+					// Month Name
+					var month = t.date.slice(5, 7); // 1 - 12
+					// month = monthConverter[month];
+
+					// find a better scaling factor than Math.log
+					var newPoint = { x: dayOfWeek, y: month, r: t.amount / 20 };
+
+					bubbleDataPoints.push(newPoint);
+				}
+			});
+
+			// X ranges from 0 to 6 for the weekday,
+			// Y ranges from 0:00 to 23:59 based on the time
+			// Z is the amount of the transaction
+			var data = {
+				datasets: [{
+					backgroundColor: "rgba(0, 0, 0, .5)",
+					data: bubbleDataPoints,
+					label: 'Spending by Week, Month, and Size'
+				}],
+				options: {
+					responsive: false
+				}
+			};
+
+			this.setState({ bubbleChartData: data });
+		}
+
+		/************************************* End Bubble Chart *************************************/
+
 	}]);
 	return Statistics;
 }(_react.Component);

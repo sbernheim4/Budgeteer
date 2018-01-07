@@ -149,7 +149,7 @@ class Home extends Component {
 			stats = '';
 		} else {
 			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
-			stats = <Statistics transactions={this.state.transactions} />
+			stats = <Statistics />
 		}
 
 		return (

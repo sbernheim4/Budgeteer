@@ -40,78 +40,93 @@ class Statistics extends Component {
 		let amts = new Array(14);
 		amts.fill(0);
 
-		this.props.transactions.forEach(t => {
+		fetch('/plaid-api/transactions', {
+			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				days: this.numDaysPassedFromBeginningOfYear()
+			})
+		}).then(data => {
+			return data.json();
+		}).then(data => {
+			data.transactions.forEach(t => {
 
-			let category = (t.category || [''])[0];
-			let amount = t.amount;
+				let category = (t.category || [''])[0];
+				let amount = t.amount;
 
-			switch (category) {
-				case 'Food and Drink':
-					amts[0] += amount;
-					break;
-				case 'Travel':
-					amts[1] += amount;
-					break;
-				case 'Shops':
-					amts[2] += amount;
-					break;
-				case 'Recreation':
-					amts[3] += amount;
-					break;
-				case 'Service':
-					amts[4] += amount;
-					break;
-				case 'Community':
-					amts[5] += amount;
-					break;
-				case 'Healthcare':
-					amts[6] += amount;
-					break;
-				case 'Bank Fees':
-					amts[7] += amount;
-					break;
-				case 'Cash Advance':
-					amts[8] += amount;
-					break;
-				case 'Interest':
-					amts[9] += amount;
-					break;
-				case 'Payment':
-					amts[10] += amount;
-					break;
-				case 'Tax':
-					amts[11] += amount;
-					break;
-				case 'Transfer':
-					amts[12] += amount;
-					break;
-				default:
-					amts[13] += amount
+				switch (category) {
+					case 'Food and Drink':
+						amts[0] += amount;
+						break;
+					case 'Travel':
+						amts[1] += amount;
+						break;
+					case 'Shops':
+						amts[2] += amount;
+						break;
+					case 'Recreation':
+						amts[3] += amount;
+						break;
+					case 'Service':
+						amts[4] += amount;
+						break;
+					case 'Community':
+						amts[5] += amount;
+						break;
+					case 'Healthcare':
+						amts[6] += amount;
+						break;
+					case 'Bank Fees':
+						amts[7] += amount;
+						break;
+					case 'Cash Advance':
+						amts[8] += amount;
+						break;
+					case 'Interest':
+						amts[9] += amount;
+						break;
+					case 'Payment':
+						amts[10] += amount;
+						break;
+					case 'Tax':
+						amts[11] += amount;
+						break;
+					case 'Transfer':
+						amts[12] += amount;
+						break;
+					default:
+						amts[13] += amount
+				}
+			});
+
+			// Normalize each value to always have two decimals
+			amts = amts.map(val => {
+				return (Math.round(val * 100) / 100).toFixed(2);
+			});
+
+			let labelsArray = [];
+			let newAmts = [];
+
+			let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+
+			// Only keep amounts and labels for values that are not 0
+			for (let i = 0; i < amts.length; i++) {
+				if (amts[i] !== "0.00") {
+					labelsArray.push(defaultLabelsArray[i]);
+					newAmts.push(amts[i]);
+				}
 			}
+
+			return {
+				labels: labelsArray,
+				amounts: newAmts
+			};
+		}).catch(err => {
+			console.error(err);
 		});
-
-		// Normalize each value to always have two decimals
-		amts = amts.map(val => {
-			return (Math.round(val * 100) / 100).toFixed(2);
-		});
-
-		let labelsArray = [];
-		let newAmts = [];
-
-		let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
-
-		// Only keep amounts and labels for values that are not 0
-		for (let i = 0; i < amts.length; i++) {
-			if (amts[i] !== "0.00") {
-				labelsArray.push(defaultLabelsArray[i]);
-				newAmts.push(amts[i]);
-			}
-		}
-
-		return {
-			labels: labelsArray,
-			amounts: newAmts
-		};
 	}
 
 	generateDoughnutChart() {
@@ -134,11 +149,10 @@ class Statistics extends Component {
 	/************************************* End Doughnut Chart *************************************/
 
 
-
 	/************************************* Bar Chart *************************************/
 
 	generateMonthlyBarChart() {
-		// Ensure the order of the date is chronological not just based on jan - dec. 
+		// Ensure the order of the date is chronological not just based on jan - dec.
 
 		/* Sum up costs by week */
 		let amounts = new Array(12);
@@ -160,7 +174,7 @@ class Statistics extends Component {
 				console.error('-----------------------------');
 				throw Error('Invalid data from server');
 			}
-			
+
 			let avg = 0;
 			data.transactions.forEach(t => {
 
@@ -225,57 +239,6 @@ class Statistics extends Component {
 	/************************************* End Bar Chart *************************************/
 
 
-
-	/************************************* Bubble Chart *************************************/
-
-	generateBubbleChart() {
-		let bubbleDataPoints = [];
-
-		let dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
-		let monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
-
-		this.props.transactions.forEach(t => {
-			if (t.amount > 0){
-				let transactionDate = new Date(t.date.slice(0,4), t.date.slice(5, 7), t.date.slice(8, 10));
-				
-				// Day of Week
-				let dayOfWeek = getDay(transactionDate); // 1 - 7
-				// dayOfWeek = dayConverter[dayOfWeek]; // Mon., Tues., Wed., etc
-				
-				// Month Name
-				let month = t.date.slice(5, 7); // 1 - 12
-				// month = monthConverter[month];
-	
-				// find a better scaling factor than Math.log
-				let newPoint = { x: dayOfWeek, y: month, r: t.amount/20};
-	
-				bubbleDataPoints.push(newPoint);
-			}
-		});
-
-		// X ranges from 0 to 6 for the weekday, 
-		// Y ranges from 0:00 to 23:59 based on the time
-		// Z is the amount of the transaction 
-		const data = {
-			datasets: [
-				{
-					backgroundColor: "rgba(0, 0, 0, .5)",
-					data: bubbleDataPoints,
-					label: 'Spending by Week, Month, and Size',
-				}
-			],
-			options: {
-				responsive: false
-			}
-		};
-
-		this.setState({ bubbleChartData: data });
-	}
-
-	/************************************* End Bubble Chart *************************************/
-
-
-	
 	/************************************* Line Chart *************************************/
 
 	generateLineChart() {
@@ -286,7 +249,7 @@ class Statistics extends Component {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({				
+			body: JSON.stringify({
 				days: this.numDaysPassedFromBeginningOfYear()
 			})
 		}).then(data => {
@@ -330,14 +293,14 @@ class Statistics extends Component {
 					debugger;
 					// I've moved to a different week so update counter index
 					counter += differenceInWeeks(transactionDate, currentWeek);
-					
+
 					// Put the current transaction amount in the right array
 					if (isWeekend(transactionDate)) {
 						weekend[counter] += t.amount;
 					} else {
 						weekday[counter] += t.amount;
 					}
-					
+
 					// update currentWeek
 					currentWeek = transactionDate;
 				}
@@ -348,11 +311,11 @@ class Statistics extends Component {
 				label: 'Week vs Weekend Spending for the past 52 Weeks',
 				datasets:  [
  					{
-						data:  weekday, 
-						fill:  false, 
+						data:  weekday,
+						fill:  false,
 						label:  'Weekday',
  						backgroundColor:  "rgb( 77,  153, 114)",
-						borderColor: "rgb(77, 153, 114)", 
+						borderColor: "rgb(77, 153, 114)",
 					},
 					{
 						data: weekend,
@@ -428,6 +391,54 @@ class Statistics extends Component {
 
 		);
 	}
+
+	/************************************* Bubble Chart *************************************/
+
+	generateBubbleChart() {
+		let bubbleDataPoints = [];
+
+		let dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
+		let monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+
+		this.props.transactions.forEach(t => {
+			if (t.amount > 0) {
+				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
+
+				// Day of Week
+				let dayOfWeek = getDay(transactionDate); // 1 - 7
+				// dayOfWeek = dayConverter[dayOfWeek]; // Mon., Tues., Wed., etc
+
+				// Month Name
+				let month = t.date.slice(5, 7); // 1 - 12
+				// month = monthConverter[month];
+
+				// find a better scaling factor than Math.log
+				let newPoint = { x: dayOfWeek, y: month, r: t.amount / 20 };
+
+				bubbleDataPoints.push(newPoint);
+			}
+		});
+
+		// X ranges from 0 to 6 for the weekday,
+		// Y ranges from 0:00 to 23:59 based on the time
+		// Z is the amount of the transaction
+		const data = {
+			datasets: [
+				{
+					backgroundColor: "rgba(0, 0, 0, .5)",
+					data: bubbleDataPoints,
+					label: 'Spending by Week, Month, and Size',
+				}
+			],
+			options: {
+				responsive: false
+			}
+		};
+
+		this.setState({ bubbleChartData: data });
+	}
+
+	/************************************* End Bubble Chart *************************************/
 }
 
 export default Statistics;
