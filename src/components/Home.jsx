@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import AccountsContainer from './AccountsContainer.jsx';
-import TransactionContainer from './TransactionContainer.jsx';
-import Statistics from './Statistics.jsx';
+import AccountsContainer from "./AccountsContainer.jsx";
+import TransactionContainer from "./TransactionContainer.jsx";
+import Statistics from "./Statistics.jsx";
 
-import differenceInDays from 'date-fns/difference_in_days'
+import differenceInDays from "date-fns/difference_in_days"
 
-import '../scss/home.scss';
+import "../scss/home.scss";
 
 class Home extends Component {
 	constructor(props) {
@@ -24,7 +24,7 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		fetch('plaid-api/key-and-env')
+		fetch("plaid-api/key-and-env")
 		.then(response => {
 			return response.json();
 		}).then(res => {
@@ -35,17 +35,17 @@ class Home extends Component {
 			// TODO: Change the onSuccess to use fetch instead of jquery
 
 			const plaid = Plaid.create({
-				apiVersion: 'v2',
-				clientName: 'Plaid Walkthrough Demo',
+				apiVersion: "v2",
+				clientName: "Plaid Walkthrough Demo",
 				env: this.state.env,
-				product: ['transactions'],
+				product: ["transactions"],
 				key: this.state.publicKey,
 				onSuccess: function(public_token) {
-					fetch('/plaid-api/get-access-token', {
-						method: 'post',
+					fetch("/plaid-api/get-access-token", {
+						method: "post",
 						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
+							"Accept": "application/json",
+							"Content-Type": "application/json"
 						},
 						body: JSON.stringify({
 							public_token: public_token,
@@ -68,11 +68,11 @@ class Home extends Component {
 	}
 
 	getTransactions() {
-		fetch('/plaid-api/transactions', {
-			method: 'post',
+		fetch("/plaid-api/transactions", {
+			method: "post",
 			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
+				"Accept": "application/json",
+				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
 				days: this.numDaysPassedFromBeginningOfYear()
@@ -81,11 +81,11 @@ class Home extends Component {
 			return data.json();
 		}).then(data => {
 			if (!data.transactions || !data.accounts) {
-				const errorMessage = document.querySelector('.home--error');
-				errorMessage.classList.add('home--error__display');
+				const errorMessage = document.querySelector(".home--error");
+				errorMessage.classList.add("home--error__display");
 
 				setTimeout(() => {
-					errorMessage.classList.remove('home--error__display')
+					errorMessage.classList.remove("home--error__display")
 				}, 4000)
 			} else {
 				this.storeTransactions(data.transactions);
@@ -157,8 +157,8 @@ class Home extends Component {
 		let accountsContainer = null;
 		let stats = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
-			accountsContainer = '';
-			stats = '';
+			accountsContainer = "";
+			stats = "";
 		} else {
 			accountsContainer = <AccountsContainer 
 									transactions={this.state.transactions} 
@@ -169,17 +169,17 @@ class Home extends Component {
 		}
 
 		return (
-			<div className='home'>
+			<div className="home">
 
-				<div className='home--btns'>
-					<button className='home--btns__blue' onClick={this.addAccount.bind(this)}>Add Accounts</button>
-					<button className='home--btns__green' onClick={this.getTransactions.bind(this)}>Get Transactions</button>
+				<div className="home--btns">
+					<button className="home--btns__blue" onClick={this.addAccount.bind(this)}>Add Accounts</button>
+					<button className="home--btns__green" onClick={this.getTransactions.bind(this)}>Get Transactions</button>
 				</div>
 
 				{accountsContainer}
 				{stats}
 
-				<div className='home--error'>
+				<div className="home--error">
 					<p>Please first link an account</p>
 				</div>
 

@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
-import { Doughnut, Line, Bar, Bubble, HorizontalBar } from 'react-chartjs-2';
-import Budget from './Budget.jsx';
+import React, { Component } from "react";
+import { Doughnut, Line, Bar, Bubble, HorizontalBar } from "react-chartjs-2";
+import Budget from "./Budget.jsx";
 
-import getDay from 'date-fns/get_day';
-import isWeekend from 'date-fns/is_weekend';
-import isSameWeek from 'date-fns/is_same_week';
-import isAfter from 'date-fns/is_after';
-import differenceInDays from 'date-fns/difference_in_days'
-import differenceInWeeks from 'date-fns/difference_in_weeks';
-import differenceInCalendarWeeks from 'date-fns/difference_in_calendar_weeks'
+import getDay from "date-fns/get_day";
+import isWeekend from "date-fns/is_weekend";
+import isSameWeek from "date-fns/is_same_week";
+import isAfter from "date-fns/is_after";
+import differenceInDays from "date-fns/difference_in_days"
+import differenceInWeeks from "date-fns/difference_in_weeks";
+import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks"
 
-import '../scss/statistics.scss';
+import "../scss/statistics.scss";
 
 class Statistics extends Component {
 	constructor(props) {
@@ -42,47 +42,47 @@ class Statistics extends Component {
 
 		this.props.transactions.forEach(t => {
 
-			let category = (t.category || [''])[0];
+			let category = (t.category || [""])[0];
 			let amount = t.amount;
 
 			switch (category) {
-				case 'Food and Drink':
+				case "Food and Drink":
 					amts[0] += amount;
 					break;
-				case 'Travel':
+				case "Travel":
 					amts[1] += amount;
 					break;
-				case 'Shops':
+				case "Shops":
 					amts[2] += amount;
 					break;
-				case 'Recreation':
+				case "Recreation":
 					amts[3] += amount;
 					break;
-				case 'Service':
+				case "Service":
 					amts[4] += amount;
 					break;
-				case 'Community':
+				case "Community":
 					amts[5] += amount;
 					break;
-				case 'Healthcare':
+				case "Healthcare":
 					amts[6] += amount;
 					break;
-				case 'Bank Fees':
+				case "Bank Fees":
 					amts[7] += amount;
 					break;
-				case 'Cash Advance':
+				case "Cash Advance":
 					amts[8] += amount;
 					break;
-				case 'Interest':
+				case "Interest":
 					amts[9] += amount;
 					break;
-				case 'Payment':
+				case "Payment":
 					amts[10] += amount;
 					break;
-				case 'Tax':
+				case "Tax":
 					amts[11] += amount;
 					break;
-				case 'Transfer':
+				case "Transfer":
 					amts[12] += amount;
 					break;
 				default:
@@ -98,7 +98,7 @@ class Statistics extends Component {
 		let labelsArray = [];
 		let newAmts = [];
 
-		let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+		let defaultLabelsArray = ["Food and Drink", "Travel", "Shops", "Recreation", "Service", "Community", "Healthcare", "Bank Fees", "Cash Advance", "Interest", "Payment", "Tax", "Transfer", "Other"];
 
 		// Only keep amounts and labels for values that are not 0
 		for (let i = 0; i < amts.length; i++) {
@@ -122,7 +122,7 @@ class Statistics extends Component {
 			labels: info.labels,
 			datasets: [{
 				data: info.amounts,
-				backgroundColor: ['#578CA9', '#F6D155', '#004B8D', '#F2552C', '#95DEE3', '#CE3175', '#5A7247', '#CFB095', '#578CA9', '#f4d942', '#afc47d', '#558244', '#347759', '#2d7582']
+				backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
 			}],
 			options: {
 				responsive: false
@@ -169,28 +169,28 @@ class Statistics extends Component {
 		});
 
 		const lineData = {
-			labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+			labels: ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."],
 			datasets: [{
-				type: 'line',
+				type: "line",
 				data: new Array(12).fill(avg),
-				label: 'Avg. Monthly Spending',
+				label: "Avg. Monthly Spending",
 				radius: 0,
-				borderColor: '#EC932F',
-				backgroundColor: '#EC932F',
-				pointBorderColor: '#EC932F',
-				pointBackgroundColor: '#EC932F',
-				pointHoverBackgroundColor: '#EC932F',
-				pointHoverBorderColor: '#EC932F',
+				borderColor: "#EC932F",
+				backgroundColor: "#EC932F",
+				pointBorderColor: "#EC932F",
+				pointBackgroundColor: "#EC932F",
+				pointHoverBackgroundColor: "#EC932F",
+				pointHoverBorderColor: "#EC932F",
 				fill: false
 			},
 			{
-				type: 'bar',
+				type: "bar",
 				data: amounts,
-				label: 'Monthly Spending',
-				backgroundColor: 'rgb(77, 153, 114)',
-				borderColor: 'rgb(77, 153, 114)',
-				hoverBorderColor: 'rgb(77, 153, 114)',
-				hoverBackgroundColor: 'rgb(60, 119, 89)'
+				label: "Monthly Spending",
+				backgroundColor: "rgb(77, 153, 114)",
+				borderColor: "rgb(77, 153, 114)",
+				hoverBorderColor: "rgb(77, 153, 114)",
+				hoverBackgroundColor: "rgb(60, 119, 89)"
 			}],
 			options: {
 				responsive: false,
@@ -236,7 +236,7 @@ class Statistics extends Component {
 					weekday[counter] += t.amount;
 				}
 			} else if (t.amount > 0) {
-				// I've moved to a different week so update counter index
+				// I"ve moved to a different week so update counter index
 				counter += differenceInWeeks(transactionDate, currentWeek);
 
 				// Put the current transaction amount in the right array
@@ -253,19 +253,19 @@ class Statistics extends Component {
 
 		const chartData = {
 			labels: this.generateLineChartLabels(arrSize),
-			label: 'Week vs Weekend Spending for the past 52 Weeks',
+			label: "Week vs Weekend Spending for the past 52 Weeks",
 			datasets:  [
 				{
 					data:  weekday,
 					fill:  false,
-					label:  'Weekday',
+					label:  "Weekday",
 					backgroundColor:  "rgb( 77,  153, 114)",
 					borderColor: "rgb(77, 153, 114)",
 				},
 				{
 					data: weekend,
 					fill: false,
-					label: 'Weekend',
+					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
 					borderColor: "rgb(52, 108, 161)",
 				}
@@ -292,26 +292,26 @@ class Statistics extends Component {
 	render() {
 		return (
 
-			<div className='stats'>
+			<div className="stats">
 
 				<Budget transactions={this.props.transactions}/>
 
-				<div className='stats--doughnut'>
+				<div className="stats--doughnut">
 					{/* Render a doughnut chart for categorical spending */}
 					<Doughnut data={this.state.categoryDoughnutData} />
 				</div>
 
-				<div className='stats--line-chart'>
+				<div className="stats--line-chart">
 					{/* Render a bar and line chart for monthly and avg spending */}
 					<Bar data={this.state.monthlyLineChartData} />
 				</div>
 
-				<div className='stats--bubble-chart'>
+				<div className="stats--bubble-chart">
 					{/* Render a bar and line chart for monthly and avg spending */}
 					{/* <Bubble data={this.state.bubbleChartData} /> */}
 				</div>
 
-				<div className='stats--week-weekend'>
+				<div className="stats--week-weekend">
 					<Line data={this.state.weekVsWeekend} />
 				</div>
 			</div>
@@ -324,8 +324,8 @@ class Statistics extends Component {
 	generateBubbleChart() {
 		let bubbleDataPoints = [];
 
-		let dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
-		let monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+		let dayConverter = ["Mon", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat.", "Sun"];
+		let monthConverter = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
 
 		this.props.transactions.forEach(t => {
 			if (t.amount > 0) {
@@ -354,7 +354,7 @@ class Statistics extends Component {
 				{
 					backgroundColor: "rgba(0, 0, 0, .5)",
 					data: bubbleDataPoints,
-					label: 'Spending by Week, Month, and Size',
+					label: "Spending by Week, Month, and Size",
 				}
 			],
 			options: {

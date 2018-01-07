@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import '../scss/transaction.scss';
+import "../scss/transaction.scss";
 
 class Transaction extends Component {
 	constructor(props) {
@@ -11,7 +11,7 @@ class Transaction extends Component {
 	}
 
 	formatDate(date) {
-		let monthNumber = parseInt(date.slice(date.indexOf('-') + 1, date.indexOf('-') + 3));
+		let monthNumber = parseInt(date.slice(date.indexOf("-") + 1, date.indexOf("-") + 3));
 		let day = date.slice(date.length - 3, date.length - 1);
 		let year = date.slice(1, 5);
 
@@ -27,7 +27,7 @@ class Transaction extends Component {
 		let amount = this.formatAmount(this.props.transaction.amount);
 
 		return (
-			<div className='transaction'>
+			<div className="transaction">
 				<h4>{JSON.parse(JSON.stringify(this.props.transaction.name))}</h4>
 				<p>${amount}</p>
 				<p>{date}</p>

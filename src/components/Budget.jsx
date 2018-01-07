@@ -1,34 +1,34 @@
-import React, { Component } from 'react';
-import { Doughnut } from 'react-chartjs-2';
+import React, { Component } from "react";
+import { Doughnut } from "react-chartjs-2";
 
-import getDaysInMonth from 'date-fns/get_days_in_month';
-import differenceInDays from 'date-fns/difference_in_days'
+import getDaysInMonth from "date-fns/get_days_in_month";
+import differenceInDays from "date-fns/difference_in_days"
 
-import '../scss/budget.scss';
-import { differenceInCalendarDays } from 'date-fns';
+import "../scss/budget.scss";
+import { differenceInCalendarDays } from "date-fns";
 
 class Budget extends Component {
 	constructor(props){
 		super(props);
 
 		this.state = {
-			monthlyBudget: '',
+			monthlyBudget: "",
 			spentThisMonth: 0,
 			
 			data: {
 				labels: [
-					'Spent',
-					'Remaining'
+					"Spent",
+					"Remaining"
 				],
 				datasets: [{
 					data: [0, 1],
 					backgroundColor: [
-						'rgb(212,99,99)',
-						'rgb(77, 153, 114)'
+						"rgb(212,99,99)",
+						"rgb(77, 153, 114)"
 					],
 					hoverBackgroundColor: [
-						'#D46363',
-						'#007255'
+						"#D46363",
+						"#007255"
 					]
 				}]
 			}
@@ -67,18 +67,18 @@ class Budget extends Component {
 		// Update the chart
 		const data = {
 			labels: [
-				'Spent',
-				'Remaining'
+				"Spent",
+				"Remaining"
 			],
 			datasets: [{
 				data: [spent, remaining],
 				backgroundColor: [
-					'rgb(212, 99, 99)',
-					'rgb(77, 153, 114)'
+					"rgb(212, 99, 99)",
+					"rgb(77, 153, 114)"
 				],
 				hoverBackgroundColor: [
-					'rgb(201, 59, 59)',
-					'rgb(60, 119, 89)'
+					"rgb(201, 59, 59)",
+					"rgb(60, 119, 89)"
 				]
 			}]
 		};
@@ -104,22 +104,22 @@ class Budget extends Component {
 		remaining = this.numberWithCommas(remaining);
 
 		return (
-			<div className='budget'>
+			<div className="budget">
 
-				<div className='budget--totals'>
+				<div className="budget--totals">
 					<h2>Spent: ${spent}</h2>
 					<h2>Remaining: ${remaining}</h2>
 				</div>
 
-				<form className='budget--form'>
+				<form className="budget--form">
 					<label>
 						<span>Monthly Budget</span>
-						<input placeholder='Enter your budget' type='text' name='budget' value={this.state.monthlyBudget} onChange={this.handleChange} />
+						<input placeholder="Enter your budget" type="text" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
 					</label>
 				</form>
 
 
-				<div className='budget--doughnut-chart'>
+				<div className="budget--doughnut-chart">
 					<Doughnut data={this.state.data} />
 				</div>
 

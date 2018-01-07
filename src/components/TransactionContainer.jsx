@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import Transaction from './Transaction.jsx'
+import React, { Component } from "react";
+import Transaction from "./Transaction.jsx"
 
-import '../scss/transactionContainer.scss'
+import "../scss/transactionContainer.scss"
 
 class TransactionContainer extends Component {
 	constructor(props) {
@@ -11,7 +11,7 @@ class TransactionContainer extends Component {
 
 	render() {
 		return (
-			<div className='transaction-container'>
+			<div className="transaction-container">
 				{this.props.transactions.map( (t, index) => (
 					<Transaction key={index} transaction={t} />
 				))}

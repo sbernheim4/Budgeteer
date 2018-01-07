@@ -8354,11 +8354,11 @@ var TransactionContainer = function (_Component) {
 	}
 
 	(0, _createClass3.default)(TransactionContainer, [{
-		key: 'render',
+		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
-				'div',
-				{ className: 'transaction-container' },
+				"div",
+				{ className: "transaction-container" },
 				this.props.transactions.map(function (t, index) {
 					return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
 				})
@@ -8938,7 +8938,7 @@ var AccountsContainer = function (_Component) {
 			// user wants to see
 			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
-			categoryType: '',
+			categoryType: "",
 			categoryTotal: 0
 		};
 
@@ -8948,7 +8948,7 @@ var AccountsContainer = function (_Component) {
 	}
 
 	(0, _createClass3.default)(AccountsContainer, [{
-		key: 'getAccountTransactions',
+		key: "getAccountTransactions",
 		value: function getAccountTransactions(account_id) {
 			var allTransactions = this.props.transactions;
 
@@ -8956,12 +8956,12 @@ var AccountsContainer = function (_Component) {
 			var type = void 0;
 			var total = 0;
 
-			if (account_id === 'none') {
+			if (account_id === "none") {
 				releventTransactions = [];
-				type = '';
+				type = "";
 			} else if (account_id === "all") {
 				releventTransactions = allTransactions;
-				type = 'All Categories';
+				type = "All Categories";
 			} else {
 				allTransactions.map(function (transaction) {
 					if (transaction.account_id === account_id) {
@@ -8990,14 +8990,14 @@ var AccountsContainer = function (_Component) {
 			});
 		}
 	}, {
-		key: 'getCategoryTransactions',
+		key: "getCategoryTransactions",
 		value: function getCategoryTransactions(categoryString) {
 			var releventTransactions = [];
 
 			// Other displays transactions with a category of null
-			if (categoryString === 'Other') {
+			if (categoryString === "Other") {
 				this.props.transactions.forEach(function (t) {
-					if (t.category === null || t.category[0] === 'Bank Fees' || t.category[0] === 'Cash Advance' || t.category[0] === 'Interest' || t.category[0] === 'Payment' || t.category[0] === 'Tax' || t.category[0] === 'Transfer') {
+					if (t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Interest" || t.category[0] === "Payment" || t.category[0] === "Tax" || t.category[0] === "Transfer") {
 						releventTransactions.push(t);
 					}
 				});
@@ -9024,31 +9024,31 @@ var AccountsContainer = function (_Component) {
 			});
 		}
 	}, {
-		key: 'render',
+		key: "render",
 		value: function render() {
 			var _this2 = this;
 
 			return _react2.default.createElement(
-				'div',
-				{ className: 'accounts' },
+				"div",
+				{ className: "accounts" },
 				_react2.default.createElement(
-					'h3',
-					{ className: 'accounts--sort-options' },
-					'Sort by Account Type'
+					"h3",
+					{ className: "accounts--sort-options" },
+					"Sort by Account Type"
 				),
 				_react2.default.createElement(
-					'div',
-					{ className: 'accounts--btns' },
+					"div",
+					{ className: "accounts--btns" },
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
 								_this2.getAccountTransactions("all");
 							} },
-						'All Transactions'
+						"All Transactions"
 					),
 					this.props.accounts.map(function (a, index) {
 						return _react2.default.createElement(
-							'button',
+							"button",
 							{ key: index, onClick: function onClick() {
 									_this2.getAccountTransactions(a.account_id);
 								} },
@@ -9056,87 +9056,87 @@ var AccountsContainer = function (_Component) {
 						);
 					}),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getAccountTransactions('none');
+								_this2.getAccountTransactions("none");
 							} },
-						'Hide Transactions'
+						"Hide Transactions"
 					)
 				),
 				_react2.default.createElement(
-					'h3',
-					{ className: 'accounts--sort-options' },
-					'Sort by Categories'
+					"h3",
+					{ className: "accounts--sort-options" },
+					"Sort by Categories"
 				),
 				_react2.default.createElement(
-					'div',
-					{ className: 'accounts--btns' },
+					"div",
+					{ className: "accounts--btns" },
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Food and Drink');
+								_this2.getCategoryTransactions("Food and Drink");
 							} },
-						'Food and Drink'
+						"Food and Drink"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Travel');
+								_this2.getCategoryTransactions("Travel");
 							} },
-						'Travel'
+						"Travel"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Shops');
+								_this2.getCategoryTransactions("Shops");
 							} },
-						'Shops'
+						"Shops"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Recreation');
+								_this2.getCategoryTransactions("Recreation");
 							} },
-						'Recreation'
+						"Recreation"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Service');
+								_this2.getCategoryTransactions("Service");
 							} },
-						'Service'
+						"Service"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Community');
+								_this2.getCategoryTransactions("Community");
 							} },
-						'Community'
+						"Community"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Healthcare');
+								_this2.getCategoryTransactions("Healthcare");
 							} },
-						'Healthcare'
+						"Healthcare"
 					),
 					_react2.default.createElement(
-						'button',
+						"button",
 						{ onClick: function onClick() {
-								_this2.getCategoryTransactions('Other');
+								_this2.getCategoryTransactions("Other");
 							} },
-						'Other'
+						"Other"
 					)
 				),
 				_react2.default.createElement(
-					'h2',
-					{ className: 'accounts--totals' },
-					'Total spent on ',
+					"h2",
+					{ className: "accounts--totals" },
+					"Total spent on ",
 					this.state.categoryType
 				),
 				_react2.default.createElement(
-					'h2',
-					{ className: 'accounts--totals' },
+					"h2",
+					{ className: "accounts--totals" },
 					this.state.categoryTotal
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions })
@@ -9443,41 +9443,41 @@ var Transaction = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Transaction, [{
-		key: 'formatDate',
+		key: "formatDate",
 		value: function formatDate(date) {
-			var monthNumber = parseInt(date.slice(date.indexOf('-') + 1, date.indexOf('-') + 3));
+			var monthNumber = parseInt(date.slice(date.indexOf("-") + 1, date.indexOf("-") + 3));
 			var day = date.slice(date.length - 3, date.length - 1);
 			var year = date.slice(1, 5);
 
 			return this.state.months[monthNumber - 1] + " " + day + " " + year;
 		}
 	}, {
-		key: 'formatAmount',
+		key: "formatAmount",
 		value: function formatAmount(amt) {
 			return (Math.round(amt * 100) / 100).toFixed(2);
 		}
 	}, {
-		key: 'render',
+		key: "render",
 		value: function render() {
 			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
 			var amount = this.formatAmount(this.props.transaction.amount);
 
 			return _react2.default.createElement(
-				'div',
-				{ className: 'transaction' },
+				"div",
+				{ className: "transaction" },
 				_react2.default.createElement(
-					'h4',
+					"h4",
 					null,
 					JSON.parse((0, _stringify2.default)(this.props.transaction.name))
 				),
 				_react2.default.createElement(
-					'p',
+					"p",
 					null,
-					'$',
+					"$",
 					amount
 				),
 				_react2.default.createElement(
-					'p',
+					"p",
 					null,
 					date
 				)
@@ -9555,15 +9555,15 @@ var Budget = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Budget.__proto__ || (0, _getPrototypeOf2.default)(Budget)).call(this, props));
 
 		_this.state = {
-			monthlyBudget: '',
+			monthlyBudget: "",
 			spentThisMonth: 0,
 
 			data: {
-				labels: ['Spent', 'Remaining'],
+				labels: ["Spent", "Remaining"],
 				datasets: [{
 					data: [0, 1],
-					backgroundColor: ['rgb(212,99,99)', 'rgb(77, 153, 114)'],
-					hoverBackgroundColor: ['#D46363', '#007255']
+					backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
+					hoverBackgroundColor: ["#D46363", "#007255"]
 				}]
 			}
 		};
@@ -9573,12 +9573,12 @@ var Budget = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Budget, [{
-		key: 'componentDidMount',
+		key: "componentDidMount",
 		value: function componentDidMount() {
 			this.getTotalSpent(this.props.transactions);
 		}
 	}, {
-		key: 'getTotalSpent',
+		key: "getTotalSpent",
 		value: function getTotalSpent(transactions) {
 			var total = 0;
 			// Sum up the prices of each transaction
@@ -9591,7 +9591,7 @@ var Budget = function (_Component) {
 			this.setState({ spentThisMonth: total });
 		}
 	}, {
-		key: 'handleChange',
+		key: "handleChange",
 		value: function handleChange(event) {
 			// Update the state variable
 			this.setState({ monthlyBudget: event.target.value.trim() });
@@ -9605,23 +9605,23 @@ var Budget = function (_Component) {
 
 			// Update the chart
 			var data = {
-				labels: ['Spent', 'Remaining'],
+				labels: ["Spent", "Remaining"],
 				datasets: [{
 					data: [spent, remaining],
-					backgroundColor: ['rgb(212, 99, 99)', 'rgb(77, 153, 114)'],
-					hoverBackgroundColor: ['rgb(201, 59, 59)', 'rgb(60, 119, 89)']
+					backgroundColor: ["rgb(212, 99, 99)", "rgb(77, 153, 114)"],
+					hoverBackgroundColor: ["rgb(201, 59, 59)", "rgb(60, 119, 89)"]
 				}]
 			};
 
 			this.setState({ data: data });
 		}
 	}, {
-		key: 'numberWithCommas',
+		key: "numberWithCommas",
 		value: function numberWithCommas(number) {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
 	}, {
-		key: 'numDaysPassedThisMonth',
+		key: "numDaysPassedThisMonth",
 		value: function numDaysPassedThisMonth() {
 			var now = new Date();
 			var beginningOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -9629,7 +9629,7 @@ var Budget = function (_Component) {
 			return (0, _difference_in_days2.default)(now, beginningOfMonth); // Excludes today
 		}
 	}, {
-		key: 'render',
+		key: "render",
 		value: function render() {
 			var spent = this.numberWithCommas(this.state.spentThisMonth);
 
@@ -9637,41 +9637,41 @@ var Budget = function (_Component) {
 			remaining = this.numberWithCommas(remaining);
 
 			return _react2.default.createElement(
-				'div',
-				{ className: 'budget' },
+				"div",
+				{ className: "budget" },
 				_react2.default.createElement(
-					'div',
-					{ className: 'budget--totals' },
+					"div",
+					{ className: "budget--totals" },
 					_react2.default.createElement(
-						'h2',
+						"h2",
 						null,
-						'Spent: $',
+						"Spent: $",
 						spent
 					),
 					_react2.default.createElement(
-						'h2',
+						"h2",
 						null,
-						'Remaining: $',
+						"Remaining: $",
 						remaining
 					)
 				),
 				_react2.default.createElement(
-					'form',
-					{ className: 'budget--form' },
+					"form",
+					{ className: "budget--form" },
 					_react2.default.createElement(
-						'label',
+						"label",
 						null,
 						_react2.default.createElement(
-							'span',
+							"span",
 							null,
-							'Monthly Budget'
+							"Monthly Budget"
 						),
-						_react2.default.createElement('input', { placeholder: 'Enter your budget', type: 'text', name: 'budget', value: this.state.monthlyBudget, onChange: this.handleChange })
+						_react2.default.createElement("input", { placeholder: "Enter your budget", type: "text", name: "budget", value: this.state.monthlyBudget, onChange: this.handleChange })
 					)
 				),
 				_react2.default.createElement(
-					'div',
-					{ className: 'budget--doughnut-chart' },
+					"div",
+					{ className: "budget--doughnut-chart" },
 					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
 				)
 			);
@@ -24400,11 +24400,11 @@ var Home = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Home, [{
-		key: 'componentDidMount',
+		key: "componentDidMount",
 		value: function componentDidMount() {
 			var _this2 = this;
 
-			fetch('plaid-api/key-and-env').then(function (response) {
+			fetch("plaid-api/key-and-env").then(function (response) {
 				return response.json();
 			}).then(function (res) {
 				_this2.setState({ env: res.env, publicKey: res.publicKey });
@@ -24414,17 +24414,17 @@ var Home = function (_Component) {
 				// TODO: Change the onSuccess to use fetch instead of jquery
 
 				var plaid = Plaid.create({
-					apiVersion: 'v2',
-					clientName: 'Plaid Walkthrough Demo',
+					apiVersion: "v2",
+					clientName: "Plaid Walkthrough Demo",
 					env: _this2.state.env,
-					product: ['transactions'],
+					product: ["transactions"],
 					key: _this2.state.publicKey,
 					onSuccess: function onSuccess(public_token) {
-						fetch('/plaid-api/get-access-token', {
-							method: 'post',
+						fetch("/plaid-api/get-access-token", {
+							method: "post",
 							headers: {
-								'Accept': 'application/json',
-								'Content-Type': 'application/json'
+								"Accept": "application/json",
+								"Content-Type": "application/json"
 							},
 							body: (0, _stringify2.default)({
 								public_token: public_token,
@@ -24441,20 +24441,20 @@ var Home = function (_Component) {
 			});
 		}
 	}, {
-		key: 'addAccount',
+		key: "addAccount",
 		value: function addAccount() {
 			this.state.handler.open();
 		}
 	}, {
-		key: 'getTransactions',
+		key: "getTransactions",
 		value: function getTransactions() {
 			var _this3 = this;
 
-			fetch('/plaid-api/transactions', {
-				method: 'post',
+			fetch("/plaid-api/transactions", {
+				method: "post",
 				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
+					"Accept": "application/json",
+					"Content-Type": "application/json"
 				},
 				body: (0, _stringify2.default)({
 					days: this.numDaysPassedFromBeginningOfYear()
@@ -24463,11 +24463,11 @@ var Home = function (_Component) {
 				return data.json();
 			}).then(function (data) {
 				if (!data.transactions || !data.accounts) {
-					var errorMessage = document.querySelector('.home--error');
-					errorMessage.classList.add('home--error__display');
+					var errorMessage = document.querySelector(".home--error");
+					errorMessage.classList.add("home--error__display");
 
 					setTimeout(function () {
-						errorMessage.classList.remove('home--error__display');
+						errorMessage.classList.remove("home--error__display");
 					}, 4000);
 				} else {
 					_this3.storeTransactions(data.transactions);
@@ -24478,7 +24478,7 @@ var Home = function (_Component) {
 			});
 		}
 	}, {
-		key: 'storeAccounts',
+		key: "storeAccounts",
 		value: function storeAccounts(accounts) {
 			var _this4 = this;
 
@@ -24502,7 +24502,7 @@ var Home = function (_Component) {
 			this.setState({ accounts: currentAccounts });
 		}
 	}, {
-		key: 'storeTransactions',
+		key: "storeTransactions",
 		value: function storeTransactions(transactions) {
 			var _this5 = this;
 
@@ -24529,7 +24529,7 @@ var Home = function (_Component) {
 			this.setState({ transactions: currentTransactions });
 		}
 	}, {
-		key: 'numDaysPassedFromBeginningOfYear',
+		key: "numDaysPassedFromBeginningOfYear",
 		value: function numDaysPassedFromBeginningOfYear() {
 			var now = new Date();
 			var beginningOfYear = new Date(now.getFullYear(), 0, 1);
@@ -24540,15 +24540,15 @@ var Home = function (_Component) {
 			return (0, _difference_in_days2.default)(now, beginningOfYear);
 		}
 	}, {
-		key: 'render',
+		key: "render",
 		value: function render() {
 
 			// Conditional Rendering
 			var accountsContainer = null;
 			var stats = null;
 			if (this.state.transactions.length === 0 || this.state.accounts === 0) {
-				accountsContainer = '';
-				stats = '';
+				accountsContainer = "";
+				stats = "";
 			} else {
 				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, {
 					transactions: this.state.transactions,
@@ -24559,31 +24559,31 @@ var Home = function (_Component) {
 			}
 
 			return _react2.default.createElement(
-				'div',
-				{ className: 'home' },
+				"div",
+				{ className: "home" },
 				_react2.default.createElement(
-					'div',
-					{ className: 'home--btns' },
+					"div",
+					{ className: "home--btns" },
 					_react2.default.createElement(
-						'button',
-						{ className: 'home--btns__blue', onClick: this.addAccount.bind(this) },
-						'Add Accounts'
+						"button",
+						{ className: "home--btns__blue", onClick: this.addAccount.bind(this) },
+						"Add Accounts"
 					),
 					_react2.default.createElement(
-						'button',
-						{ className: 'home--btns__green', onClick: this.getTransactions.bind(this) },
-						'Get Transactions'
+						"button",
+						{ className: "home--btns__green", onClick: this.getTransactions.bind(this) },
+						"Get Transactions"
 					)
 				),
 				accountsContainer,
 				stats,
 				_react2.default.createElement(
-					'div',
-					{ className: 'home--error' },
+					"div",
+					{ className: "home--error" },
 					_react2.default.createElement(
-						'p',
+						"p",
 						null,
-						'Please first link an account'
+						"Please first link an account"
 					)
 				)
 			);
@@ -24749,7 +24749,7 @@ var Statistics = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Statistics, [{
-		key: 'componentDidMount',
+		key: "componentDidMount",
 		value: function componentDidMount() {
 			// Generate all the charts when the component has loaded
 
@@ -24762,7 +24762,7 @@ var Statistics = function (_Component) {
 		/************************************* Doughnut Chart *************************************/
 
 	}, {
-		key: 'calculateDoughnutInfo',
+		key: "calculateDoughnutInfo",
 		value: function calculateDoughnutInfo() {
 			// Initialize a new array of size 8 and fill it with 0s initially
 			var amts = new Array(14);
@@ -24770,47 +24770,47 @@ var Statistics = function (_Component) {
 
 			this.props.transactions.forEach(function (t) {
 
-				var category = (t.category || [''])[0];
+				var category = (t.category || [""])[0];
 				var amount = t.amount;
 
 				switch (category) {
-					case 'Food and Drink':
+					case "Food and Drink":
 						amts[0] += amount;
 						break;
-					case 'Travel':
+					case "Travel":
 						amts[1] += amount;
 						break;
-					case 'Shops':
+					case "Shops":
 						amts[2] += amount;
 						break;
-					case 'Recreation':
+					case "Recreation":
 						amts[3] += amount;
 						break;
-					case 'Service':
+					case "Service":
 						amts[4] += amount;
 						break;
-					case 'Community':
+					case "Community":
 						amts[5] += amount;
 						break;
-					case 'Healthcare':
+					case "Healthcare":
 						amts[6] += amount;
 						break;
-					case 'Bank Fees':
+					case "Bank Fees":
 						amts[7] += amount;
 						break;
-					case 'Cash Advance':
+					case "Cash Advance":
 						amts[8] += amount;
 						break;
-					case 'Interest':
+					case "Interest":
 						amts[9] += amount;
 						break;
-					case 'Payment':
+					case "Payment":
 						amts[10] += amount;
 						break;
-					case 'Tax':
+					case "Tax":
 						amts[11] += amount;
 						break;
-					case 'Transfer':
+					case "Transfer":
 						amts[12] += amount;
 						break;
 					default:
@@ -24826,7 +24826,7 @@ var Statistics = function (_Component) {
 			var labelsArray = [];
 			var newAmts = [];
 
-			var defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+			var defaultLabelsArray = ["Food and Drink", "Travel", "Shops", "Recreation", "Service", "Community", "Healthcare", "Bank Fees", "Cash Advance", "Interest", "Payment", "Tax", "Transfer", "Other"];
 
 			// Only keep amounts and labels for values that are not 0
 			for (var i = 0; i < amts.length; i++) {
@@ -24842,7 +24842,7 @@ var Statistics = function (_Component) {
 			};
 		}
 	}, {
-		key: 'generateDoughnutChart',
+		key: "generateDoughnutChart",
 		value: function generateDoughnutChart() {
 			// get the data array
 			var info = this.calculateDoughnutInfo();
@@ -24851,7 +24851,7 @@ var Statistics = function (_Component) {
 				labels: info.labels,
 				datasets: [{
 					data: info.amounts,
-					backgroundColor: ['#578CA9', '#F6D155', '#004B8D', '#F2552C', '#95DEE3', '#CE3175', '#5A7247', '#CFB095', '#578CA9', '#f4d942', '#afc47d', '#558244', '#347759', '#2d7582']
+					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
 				}],
 				options: {
 					responsive: false
@@ -24865,7 +24865,7 @@ var Statistics = function (_Component) {
 		/************************************* Bar Chart *************************************/
 
 	}, {
-		key: 'generateMonthlyBarChart',
+		key: "generateMonthlyBarChart",
 		value: function generateMonthlyBarChart() {
 			// Ensure the order of the date is chronological not just based on jan - dec.
 
@@ -24899,27 +24899,27 @@ var Statistics = function (_Component) {
 			});
 
 			var lineData = {
-				labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+				labels: ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."],
 				datasets: [{
-					type: 'line',
+					type: "line",
 					data: new Array(12).fill(avg),
-					label: 'Avg. Monthly Spending',
+					label: "Avg. Monthly Spending",
 					radius: 0,
-					borderColor: '#EC932F',
-					backgroundColor: '#EC932F',
-					pointBorderColor: '#EC932F',
-					pointBackgroundColor: '#EC932F',
-					pointHoverBackgroundColor: '#EC932F',
-					pointHoverBorderColor: '#EC932F',
+					borderColor: "#EC932F",
+					backgroundColor: "#EC932F",
+					pointBorderColor: "#EC932F",
+					pointBackgroundColor: "#EC932F",
+					pointHoverBackgroundColor: "#EC932F",
+					pointHoverBorderColor: "#EC932F",
 					fill: false
 				}, {
-					type: 'bar',
+					type: "bar",
 					data: amounts,
-					label: 'Monthly Spending',
-					backgroundColor: 'rgb(77, 153, 114)',
-					borderColor: 'rgb(77, 153, 114)',
-					hoverBorderColor: 'rgb(77, 153, 114)',
-					hoverBackgroundColor: 'rgb(60, 119, 89)'
+					label: "Monthly Spending",
+					backgroundColor: "rgb(77, 153, 114)",
+					borderColor: "rgb(77, 153, 114)",
+					hoverBorderColor: "rgb(77, 153, 114)",
+					hoverBackgroundColor: "rgb(60, 119, 89)"
 				}],
 				options: {
 					responsive: false
@@ -24934,7 +24934,7 @@ var Statistics = function (_Component) {
 		/************************************* Line Chart *************************************/
 
 	}, {
-		key: 'generateLineChart',
+		key: "generateLineChart",
 		value: function generateLineChart() {
 
 			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
@@ -24966,7 +24966,7 @@ var Statistics = function (_Component) {
 						weekday[counter] += t.amount;
 					}
 				} else if (t.amount > 0) {
-					// I've moved to a different week so update counter index
+					// I"ve moved to a different week so update counter index
 					counter += (0, _difference_in_weeks2.default)(transactionDate, currentWeek);
 
 					// Put the current transaction amount in the right array
@@ -24983,17 +24983,17 @@ var Statistics = function (_Component) {
 
 			var chartData = {
 				labels: this.generateLineChartLabels(arrSize),
-				label: 'Week vs Weekend Spending for the past 52 Weeks',
+				label: "Week vs Weekend Spending for the past 52 Weeks",
 				datasets: [{
 					data: weekday,
 					fill: false,
-					label: 'Weekday',
+					label: "Weekday",
 					backgroundColor: "rgb( 77,  153, 114)",
 					borderColor: "rgb(77, 153, 114)"
 				}, {
 					data: weekend,
 					fill: false,
-					label: 'Weekend',
+					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
 					borderColor: "rgb(52, 108, 161)"
 				}],
@@ -25005,7 +25005,7 @@ var Statistics = function (_Component) {
 			this.setState({ weekVsWeekend: chartData });
 		}
 	}, {
-		key: 'generateLineChartLabels',
+		key: "generateLineChartLabels",
 		value: function generateLineChartLabels(length) {
 			var arr = [];
 			for (var i = length; i > 0; i--) {
@@ -25018,26 +25018,26 @@ var Statistics = function (_Component) {
 		/************************************* End Line Chart *************************************/
 
 	}, {
-		key: 'render',
+		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
-				'div',
-				{ className: 'stats' },
+				"div",
+				{ className: "stats" },
 				_react2.default.createElement(_Budget2.default, { transactions: this.props.transactions }),
 				_react2.default.createElement(
-					'div',
-					{ className: 'stats--doughnut' },
+					"div",
+					{ className: "stats--doughnut" },
 					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData })
 				),
 				_react2.default.createElement(
-					'div',
-					{ className: 'stats--line-chart' },
+					"div",
+					{ className: "stats--line-chart" },
 					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.monthlyLineChartData })
 				),
-				_react2.default.createElement('div', { className: 'stats--bubble-chart' }),
+				_react2.default.createElement("div", { className: "stats--bubble-chart" }),
 				_react2.default.createElement(
-					'div',
-					{ className: 'stats--week-weekend' },
+					"div",
+					{ className: "stats--week-weekend" },
 					_react2.default.createElement(_reactChartjs.Line, { data: this.state.weekVsWeekend })
 				)
 			);
@@ -25046,12 +25046,12 @@ var Statistics = function (_Component) {
 		/************************************* Bubble Chart *************************************/
 
 	}, {
-		key: 'generateBubbleChart',
+		key: "generateBubbleChart",
 		value: function generateBubbleChart() {
 			var bubbleDataPoints = [];
 
-			var dayConverter = ['Mon', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun'];
-			var monthConverter = ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+			var dayConverter = ["Mon", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat.", "Sun"];
+			var monthConverter = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
 
 			this.props.transactions.forEach(function (t) {
 				if (t.amount > 0) {
@@ -25079,7 +25079,7 @@ var Statistics = function (_Component) {
 				datasets: [{
 					backgroundColor: "rgba(0, 0, 0, .5)",
 					data: bubbleDataPoints,
-					label: 'Spending by Week, Month, and Size'
+					label: "Spending by Week, Month, and Size"
 				}],
 				options: {
 					responsive: false
@@ -25451,25 +25451,25 @@ var Navbar = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Navbar, [{
-		key: 'render',
+		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
-				'div',
-				{ className: 'navbar' },
+				"div",
+				{ className: "navbar" },
 				_react2.default.createElement(
-					'p',
+					"p",
 					null,
-					'Home'
+					"Home"
 				),
 				_react2.default.createElement(
-					'p',
+					"p",
 					null,
-					'Sign Up'
+					"Sign Up"
 				),
 				_react2.default.createElement(
-					'p',
+					"p",
 					null,
-					'Sign In'
+					"Sign In"
 				)
 			);
 		}
@@ -49101,11 +49101,11 @@ var _Navbar2 = _interopRequireDefault(_Navbar);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_reactDom2.default.render(_react2.default.createElement(_Navbar2.default, null), document.querySelector('#nav'));
+_reactDom2.default.render(_react2.default.createElement(_Navbar2.default, null), document.querySelector("#nav"));
 
 // Global Style Sheet
 
-_reactDom2.default.render(_react2.default.createElement(_Home2.default, null), document.querySelector('#Home'));
+_reactDom2.default.render(_react2.default.createElement(_Home2.default, null), document.querySelector("#Home"));
 
 /***/ }),
 /* 612 */

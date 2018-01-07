@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import TransactionContainer from './TransactionContainer.jsx';
-import '../scss/accountsContainer.scss'
+import React, { Component } from "react";
+import TransactionContainer from "./TransactionContainer.jsx";
+import "../scss/accountsContainer.scss"
 
 class AccountsContainer extends Component {
 	constructor(props) {
@@ -11,7 +11,7 @@ class AccountsContainer extends Component {
 			// user wants to see
 			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
-			categoryType: '',
+			categoryType: "",
 			categoryTotal: 0
 		};
 
@@ -26,12 +26,12 @@ class AccountsContainer extends Component {
 		let type;
 		let total = 0;
 
-		if (account_id === 'none') {
+		if (account_id === "none") {
 			releventTransactions = [];
-			type = '';
+			type = "";
 		} else if (account_id === "all") {
 			releventTransactions = allTransactions;
-			type = 'All Categories';
+			type = "All Categories";
 		} else {
 			allTransactions.map( (transaction) => {
 				if (transaction.account_id === account_id) {
@@ -65,9 +65,9 @@ class AccountsContainer extends Component {
 		let releventTransactions = [];
 
 		// Other displays transactions with a category of null
-		if (categoryString === 'Other') {
+		if (categoryString === "Other") {
 			this.props.transactions.forEach(t => {
-				if (t.category === null || t.category[0] === 'Bank Fees' || t.category[0] === 'Cash Advance' || t.category[0] === 'Interest' || t.category[0] === 'Payment' || t.category[0] === 'Tax' || t.category[0] === 'Transfer') {
+				if (t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Interest" || t.category[0] === "Payment" || t.category[0] === "Tax" || t.category[0] === "Transfer") {
 					releventTransactions.push(t);
 				}
 			});
@@ -97,36 +97,36 @@ class AccountsContainer extends Component {
 	render() {
 
 		return (
-			<div className='accounts'>
+			<div className="accounts">
 
-				<h3 className='accounts--sort-options' >Sort by Account Type</h3>
-				<div className='accounts--btns'>
+				<h3 className="accounts--sort-options" >Sort by Account Type</h3>
+				<div className="accounts--btns">
 					{/* Show All Transactions */}
 					<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
 
 					{/* Generate a button for each type of account connected */}
-					{this.props.accounts.map( (a, index) => (
+					{this.props.accounts.map( (a, index) =>
 						<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
-					))}
+					)}
 
 					{/* Hide All Transactions */}
-					<button onClick={() => { this.getAccountTransactions('none')}}>Hide Transactions</button>
+					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
 				</div>
 
-				<h3 className='accounts--sort-options'>Sort by Categories</h3>
-				<div className='accounts--btns'>
-					<button onClick={() => { this.getCategoryTransactions('Food and Drink') }}>Food and Drink</button>
-					<button onClick={() => { this.getCategoryTransactions('Travel') }}>Travel</button>
-					<button onClick={() => { this.getCategoryTransactions('Shops') }}>Shops</button>
-					<button onClick={() => { this.getCategoryTransactions('Recreation') }}>Recreation</button>
-					<button onClick={() => { this.getCategoryTransactions('Service') }}>Service</button>
-					<button onClick={() => { this.getCategoryTransactions('Community') }}>Community</button>
-					<button onClick={() => { this.getCategoryTransactions('Healthcare') }}>Healthcare</button>
-					<button onClick={() => { this.getCategoryTransactions('Other') }}>Other</button>
+				<h3 className="accounts--sort-options">Sort by Categories</h3>
+				<div className="accounts--btns">
+					<button onClick={() => { this.getCategoryTransactions("Food and Drink") }}>Food and Drink</button>
+					<button onClick={() => { this.getCategoryTransactions("Travel") }}>Travel</button>
+					<button onClick={() => { this.getCategoryTransactions("Shops") }}>Shops</button>
+					<button onClick={() => { this.getCategoryTransactions("Recreation") }}>Recreation</button>
+					<button onClick={() => { this.getCategoryTransactions("Service") }}>Service</button>
+					<button onClick={() => { this.getCategoryTransactions("Community") }}>Community</button>
+					<button onClick={() => { this.getCategoryTransactions("Healthcare") }}>Healthcare</button>
+					<button onClick={() => { this.getCategoryTransactions("Other") }}>Other</button>
 				</div>
 
-				<h2 className='accounts--totals'>Total spent on {this.state.categoryType}</h2>
-				<h2 className='accounts--totals'>{this.state.categoryTotal}</h2>
+				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
+				<h2 className="accounts--totals">{this.state.categoryTotal}</h2>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 
