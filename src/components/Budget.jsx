@@ -54,8 +54,6 @@ class Budget extends Component {
 	}
 
 	getThisMonthsData() {
-		let numDays = this.numDaysPassedThisMonth();
-		console.log(`GETTING BUDGET DATA FOR THE PAST ${numDays} days`);
 		// Get the total spent so far this month
 
 		// NOTE: This assumes people's spending cycle begins at the beginning of each month

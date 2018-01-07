@@ -5,9 +5,10 @@ import Budget from './Budget.jsx';
 import getDay from 'date-fns/get_day';
 import isWeekend from 'date-fns/is_weekend';
 import isSameWeek from 'date-fns/is_same_week';
-import addWeeks from 'date-fns/add_weeks';
 import isAfter from 'date-fns/is_after';
+import differenceInDays from 'date-fns/difference_in_days'
 import differenceInWeeks from 'date-fns/difference_in_weeks';
+import differenceInCalendarWeeks from 'date-fns/difference_in_calendar_weeks'
 
 import '../scss/statistics.scss';
 
@@ -29,7 +30,7 @@ class Statistics extends Component {
 		this.generateDoughnutChart();
 		this.generateMonthlyBarChart();
 		// this.generateBubbleChart();
-		this.generateHorizontalBarChart();
+		this.generateLineChart();
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -137,16 +138,11 @@ class Statistics extends Component {
 	/************************************* Bar Chart *************************************/
 
 	generateMonthlyBarChart() {
-		// TODO: NEED TO PAY MORE ATTENTION TO THE DATE 
 		// Ensure the order of the date is chronological not just based on jan - dec. 
 
 		/* Sum up costs by week */
 		let amounts = new Array(12);
 		amounts.fill(0);
-
-		let options = {
-			days: 365
-		};
 
 		fetch('/plaid-api/transactions', {
 			method: 'post',
@@ -154,7 +150,9 @@ class Statistics extends Component {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(options)
+			body: JSON.stringify({
+				days: this.numDaysPassedFromBeginningOfYear()
+			})
 		}).then(data => {
 			return data.json();
 		}).then(data => {
@@ -280,7 +278,7 @@ class Statistics extends Component {
 	
 	/************************************* Line Chart *************************************/
 
-	generateHorizontalBarChart() {
+	generateLineChart() {
 
 		fetch('/plaid-api/transactions', {
 			method: 'post',
@@ -289,7 +287,7 @@ class Statistics extends Component {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({				
-				days: 365
+				days: this.numDaysPassedFromBeginningOfYear()
 			})
 		}).then(data => {
 			return data.json();
@@ -299,32 +297,37 @@ class Statistics extends Component {
 				throw Error('Invalid data from server');
 			}
 
-			let weekday = new Array(52).fill(0);
-			let weekend = new Array(52).fill(0);
-
 			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
 			data.transactions.sort((a, b) => {
 				// a and b are transactions
-				let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7), a.date.slice(8, 10));
-				let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7), b.date.slice(8, 10));
+				let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 				return isAfter(dateA, dateB);
 			});
 
 			let firstDate = data.transactions[0].date;
-			let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7), firstDate.slice(8, 10));
+			let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
 			let beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
 			let counter = differenceInWeeks(currentWeek, beginningOfYear);
 
+			// Arrays only need to be as large as how many weeks have passed in the year so far
+			// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
+			let arrSize = differenceInCalendarWeeks(new Date(), beginningOfYear);
+			let weekday = new Array(arrSize).fill(0);
+			let weekend = new Array(arrSize).fill(0);
+
 			data.transactions.forEach(t => {
-				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
+				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 				if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
+					debugger;
 					if (isWeekend(transactionDate)) {
 						weekend[counter] += t.amount;
 					} else {
 						weekday[counter] += t.amount;
 					}
 				} else if (t.amount > 0) {
+					debugger;
 					// I've moved to a different week so update counter index
 					counter += differenceInWeeks(transactionDate, currentWeek);
 					
@@ -341,7 +344,7 @@ class Statistics extends Component {
 			});
 
 			const chartData = {
-				labels: [52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+				labels: this.generateLineChartLabels(arrSize),
 				label: 'Week vs Weekend Spending for the past 52 Weeks',
 				datasets:  [
  					{
@@ -371,7 +374,30 @@ class Statistics extends Component {
 		});
 	}
 
+	generateLineChartLabels(length) {
+		let arr = [];
+		for (let i = length; i > 0; i--) {
+			arr.push(i);
+		}
+
+		return arr;
+	}
+
 	/************************************* End Line Chart *************************************/
+
+
+	numDaysPassedFromBeginningOfYear() {
+		let now = new Date();
+		let beginningOfYear = new Date(now.getFullYear(), 0, 1);
+
+		return differenceInDays(now, beginningOfYear);
+	}
+
+	// dateOne is the firt chronological date, dateTwo is the second
+	// aka dateTwo happens after dateOne
+	numDaysBetweenTwoDates(dateOne, dateTwo) {
+		return 1;
+	}
 
 	render() {
 		return (
