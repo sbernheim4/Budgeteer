@@ -24,7 +24,7 @@ module.exports = {
 			{
 				test: /\.jsx$/,
 				exclude: /node_modules/,
-				use: 'babel-loader'
+				use: ['babel-loader', 'eslint-loader']
 			},
 			// use sass-loader, css-loader, and style-loader for all scss files
 			// sass-loader converts scss to css
