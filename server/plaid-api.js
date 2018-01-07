@@ -57,7 +57,7 @@ app.post('/get-access-token', function(req, res, next) {
 	client.exchangePublicToken(PUBLIC_TOKEN, function(error, tokenResponse) {
 
 		if (error != null) {
-			var msg = 'Could not exchange public_token!';
+			let msg = 'Could not exchange public_token!';
 			console.log(msg + '\n' + JSON.stringify(error));
 
 			return res.json({
