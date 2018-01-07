@@ -15,7 +15,7 @@ class Transaction extends Component {
 		let day = date.slice(date.length - 3, date.length - 1);
 		let year = date.slice(1, 5);
 
-		return this.state.months[monthNumber-1] + " " + day + " " + year;
+		return this.state.months[monthNumber - 1] + " " + day + " " + year;
 	}
 
 	formatAmount(amt) {

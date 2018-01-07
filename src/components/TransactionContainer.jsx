@@ -12,9 +12,9 @@ class TransactionContainer extends Component {
 	render() {
 		return (
 			<div className="transaction-container">
-				{this.props.transactions.map( (t, index) => (
+				{this.props.transactions.map( (t, index) =>
 					<Transaction key={index} transaction={t} />
-				))}
+				)}
 			</div>
 		);
 	}

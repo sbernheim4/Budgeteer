@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
 import AccountsContainer from "./AccountsContainer.jsx";
-import TransactionContainer from "./TransactionContainer.jsx";
 import Statistics from "./Statistics.jsx";
 
 import differenceInDays from "date-fns/difference_in_days"
@@ -10,16 +9,13 @@ import "../scss/home.scss";
 
 class Home extends Component {
 	constructor(props) {
-		super(props)
-
-		let setOne = new Set();
-		let setTwo = new Set();
+		super(props);
 
 		this.state = {
 			transactions: [],
 			accounts: [],
-			account_ids: setOne,
-			transaction_ids: setTwo
+			account_ids: new Set(),
+			transaction_ids: new Set()
 		};
 	}
 
@@ -28,19 +24,14 @@ class Home extends Component {
 		.then(response => {
 			return response.json();
 		}).then(res => {
-			this.setState( {env: res.env, publicKey: res.publicKey} );
-			return res;
-		}).then( res => {
-
-			// TODO: Change the onSuccess to use fetch instead of jquery
 
 			const plaid = Plaid.create({
 				apiVersion: "v2",
 				clientName: "Plaid Walkthrough Demo",
-				env: this.state.env,
+				env: res.env,
 				product: ["transactions"],
-				key: this.state.publicKey,
-				onSuccess: function(public_token) {
+				key: res.publicKey,
+				onSuccess: function (public_token) {
 					fetch("/plaid-api/get-access-token", {
 						method: "post",
 						headers: {
@@ -56,8 +47,7 @@ class Home extends Component {
 				}
 			});
 
-			this.setState({handler: plaid});
-
+			this.setState({ handler: plaid });
 		}).catch(err => {
 			console.error(err)
 		});
@@ -92,7 +82,7 @@ class Home extends Component {
 				this.storeAccounts(data.accounts);
 			}
 		}).catch(err => {
-			console.error(err);
+			throw err;
 		});
 	}
 
@@ -144,9 +134,6 @@ class Home extends Component {
 	numDaysPassedFromBeginningOfYear() {
 		let now = new Date();
 		let beginningOfYear = new Date(now.getFullYear(), 0, 1);
-		
-		console.log("Days from beginning of year: ");
-		console.log(differenceInDays(now, beginningOfYear));
 
 		return differenceInDays(now, beginningOfYear);
 	}
@@ -160,9 +147,9 @@ class Home extends Component {
 			accountsContainer = "";
 			stats = "";
 		} else {
-			accountsContainer = <AccountsContainer 
-									transactions={this.state.transactions} 
-									accounts={this.state.accounts} 
+			accountsContainer = <AccountsContainer
+									transactions={this.state.transactions}
+									accounts={this.state.accounts}
 								/>
 
 			stats = <Statistics transactions={this.state.transactions} />

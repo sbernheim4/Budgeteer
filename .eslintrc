@@ -1,4 +1,8 @@
 {
+	"env": {
+		"es6": true,
+		"browser": true
+	},
 	"parserOptions": {
 		"ecmaFeatures": {
 			"jsx": true,
@@ -9,18 +13,16 @@
 	},
 
 	"globals": {
-		"require": true,
-		"process": true,
-		"__dirname": true,
-		"console": true,
-		"module": true
+		"React": true,
+		"Plaid": true
 	},
 
 	"rules": {
-		"no-unused-vars": 2,
-		"no-console": 1,
-		"no-undefined": 1,
+		"react/jsx-uses-vars": 2,
 		"camelcase": 1,
+		"no-unused-vars": 0,
+		"no-console": 0,
+		"no-undefined": 1,
 		"eqeqeq": 2,
 		"no-debugger": 2,
 		"no-extra-parens": 2,

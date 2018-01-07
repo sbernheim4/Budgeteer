@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
 
-import getDaysInMonth from "date-fns/get_days_in_month";
 import differenceInDays from "date-fns/difference_in_days"
 
 import "../scss/budget.scss";
-import { differenceInCalendarDays } from "date-fns";
 
 class Budget extends Component {
 	constructor(props){
@@ -14,7 +12,7 @@ class Budget extends Component {
 		this.state = {
 			monthlyBudget: "",
 			spentThisMonth: 0,
-			
+
 			data: {
 				labels: [
 					"Spent",
@@ -63,7 +61,7 @@ class Budget extends Component {
 		if (remaining <= 0) {
 			remaining = 0;
 		}
-		
+
 		// Update the chart
 		const data = {
 			labels: [

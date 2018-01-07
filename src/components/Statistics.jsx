@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import { Doughnut, Line, Bar, Bubble, HorizontalBar } from "react-chartjs-2";
+import { Doughnut, Line, Bar } from "react-chartjs-2";
 import Budget from "./Budget.jsx";
 
 import getDay from "date-fns/get_day";
 import isWeekend from "date-fns/is_weekend";
 import isSameWeek from "date-fns/is_same_week";
 import isAfter from "date-fns/is_after";
-import differenceInDays from "date-fns/difference_in_days"
 import differenceInWeeks from "date-fns/difference_in_weeks";
 import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks"
 
@@ -324,20 +323,15 @@ class Statistics extends Component {
 	generateBubbleChart() {
 		let bubbleDataPoints = [];
 
-		let dayConverter = ["Mon", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat.", "Sun"];
-		let monthConverter = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
-
 		this.props.transactions.forEach(t => {
 			if (t.amount > 0) {
 				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
 
 				// Day of Week
 				let dayOfWeek = getDay(transactionDate); // 1 - 7
-				// dayOfWeek = dayConverter[dayOfWeek]; // Mon., Tues., Wed., etc
 
 				// Month Name
 				let month = t.date.slice(5, 7); // 1 - 12
-				// month = monthConverter[month];
 
 				// find a better scaling factor than Math.log
 				let newPoint = { x: dayOfWeek, y: month, r: t.amount / 20 };
