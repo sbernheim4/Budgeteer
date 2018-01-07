@@ -40,93 +40,78 @@ class Statistics extends Component {
 		let amts = new Array(14);
 		amts.fill(0);
 
-		fetch('/plaid-api/transactions', {
-			method: 'post',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				days: this.numDaysPassedFromBeginningOfYear()
-			})
-		}).then(data => {
-			return data.json();
-		}).then(data => {
-			data.transactions.forEach(t => {
+		this.props.transactions.forEach(t => {
 
-				let category = (t.category || [''])[0];
-				let amount = t.amount;
+			let category = (t.category || [''])[0];
+			let amount = t.amount;
 
-				switch (category) {
-					case 'Food and Drink':
-						amts[0] += amount;
-						break;
-					case 'Travel':
-						amts[1] += amount;
-						break;
-					case 'Shops':
-						amts[2] += amount;
-						break;
-					case 'Recreation':
-						amts[3] += amount;
-						break;
-					case 'Service':
-						amts[4] += amount;
-						break;
-					case 'Community':
-						amts[5] += amount;
-						break;
-					case 'Healthcare':
-						amts[6] += amount;
-						break;
-					case 'Bank Fees':
-						amts[7] += amount;
-						break;
-					case 'Cash Advance':
-						amts[8] += amount;
-						break;
-					case 'Interest':
-						amts[9] += amount;
-						break;
-					case 'Payment':
-						amts[10] += amount;
-						break;
-					case 'Tax':
-						amts[11] += amount;
-						break;
-					case 'Transfer':
-						amts[12] += amount;
-						break;
-					default:
-						amts[13] += amount
-				}
-			});
-
-			// Normalize each value to always have two decimals
-			amts = amts.map(val => {
-				return (Math.round(val * 100) / 100).toFixed(2);
-			});
-
-			let labelsArray = [];
-			let newAmts = [];
-
-			let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
-
-			// Only keep amounts and labels for values that are not 0
-			for (let i = 0; i < amts.length; i++) {
-				if (amts[i] !== "0.00") {
-					labelsArray.push(defaultLabelsArray[i]);
-					newAmts.push(amts[i]);
-				}
+			switch (category) {
+				case 'Food and Drink':
+					amts[0] += amount;
+					break;
+				case 'Travel':
+					amts[1] += amount;
+					break;
+				case 'Shops':
+					amts[2] += amount;
+					break;
+				case 'Recreation':
+					amts[3] += amount;
+					break;
+				case 'Service':
+					amts[4] += amount;
+					break;
+				case 'Community':
+					amts[5] += amount;
+					break;
+				case 'Healthcare':
+					amts[6] += amount;
+					break;
+				case 'Bank Fees':
+					amts[7] += amount;
+					break;
+				case 'Cash Advance':
+					amts[8] += amount;
+					break;
+				case 'Interest':
+					amts[9] += amount;
+					break;
+				case 'Payment':
+					amts[10] += amount;
+					break;
+				case 'Tax':
+					amts[11] += amount;
+					break;
+				case 'Transfer':
+					amts[12] += amount;
+					break;
+				default:
+					amts[13] += amount
 			}
-
-			return {
-				labels: labelsArray,
-				amounts: newAmts
-			};
-		}).catch(err => {
-			console.error(err);
 		});
+
+		// Normalize each value to always have two decimals
+		amts = amts.map(val => {
+			return (Math.round(val * 100) / 100).toFixed(2);
+		});
+
+		let labelsArray = [];
+		let newAmts = [];
+
+		let defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+
+		// Only keep amounts and labels for values that are not 0
+		for (let i = 0; i < amts.length; i++) {
+			if (amts[i] !== "0.00") {
+				labelsArray.push(defaultLabelsArray[i]);
+				newAmts.push(amts[i]);
+			}
+		}
+
+		return {
+			labels: labelsArray,
+			amounts: newAmts
+		};
 	}
 
 	generateDoughnutChart() {
@@ -158,82 +143,61 @@ class Statistics extends Component {
 		let amounts = new Array(12);
 		amounts.fill(0);
 
-		fetch('/plaid-api/transactions', {
-			method: 'post',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				days: this.numDaysPassedFromBeginningOfYear()
-			})
-		}).then(data => {
-			return data.json();
-		}).then(data => {
-			if(!data.transactions) {
-				console.error('-----------------------------');
-				throw Error('Invalid data from server');
-			}
+		let avg = 0;
+		this.props.transactions.forEach(t => {
 
-			let avg = 0;
-			data.transactions.forEach(t => {
+			// get the string value of the month from the transaction
+			let transactionMonth = t.date.slice(5, 7);
 
-				// get the string value of the month from the transaction
-				let transactionMonth = t.date.slice(5, 7);
+			// convert it to an int and subtract one for array offset
+			transactionMonth = parseInt(transactionMonth) - 1;
 
-				// convert it to an int and subtract one for array offset
-				transactionMonth = parseInt(transactionMonth) - 1;
+			// add the amount of the transaction to its corresponding index in the array
+			amounts[transactionMonth] += t.amount;
 
-				// add the amount of the transaction to its corresponding index in the array
-				amounts[transactionMonth] += t.amount;
-
-				// Get the total sum to calculate avg
-				avg += t.amount;
-			});
-
-			// Divide by 12 and round to two decimal places
-			avg = avg / 12;
-			avg = (Math.round(avg * 100) / 100).toFixed(2);
-
-			// Round the amounts to two decimals
-			amounts = amounts.map(val => {
-				return (Math.round(val * 100) / 100).toFixed(2);
-			});
-
-			const lineData = {
-				labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
-				datasets: [{
-					type: 'line',
-					data: new Array(12).fill(avg),
-					label: 'Avg. Monthly Spending',
-					radius: 0,
-					borderColor: '#EC932F',
-					backgroundColor: '#EC932F',
-					pointBorderColor: '#EC932F',
-					pointBackgroundColor: '#EC932F',
-					pointHoverBackgroundColor: '#EC932F',
-					pointHoverBorderColor: '#EC932F',
-					fill: false
-				},
-				{
-					type: 'bar',
-					data: amounts,
-					label: 'Monthly Spending',
-					backgroundColor: 'rgb(77, 153, 114)',
-					borderColor: 'rgb(77, 153, 114)',
-					hoverBorderColor: 'rgb(77, 153, 114)',
-					hoverBackgroundColor: 'rgb(60, 119, 89)'
-				}],
-				options: {
-					responsive: false,
-				}
-			};
-
-			this.setState({ monthlyLineChartData: lineData });
-
-		}).catch(err => {
-			console.error(err);
+			// Get the total sum to calculate avg
+			avg += t.amount;
 		});
+
+		// Divide by 12 and round to two decimal places
+		avg = avg / 12;
+		avg = (Math.round(avg * 100) / 100).toFixed(2);
+
+		// Round the amounts to two decimals
+		amounts = amounts.map(val => {
+			return (Math.round(val * 100) / 100).toFixed(2);
+		});
+
+		const lineData = {
+			labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+			datasets: [{
+				type: 'line',
+				data: new Array(12).fill(avg),
+				label: 'Avg. Monthly Spending',
+				radius: 0,
+				borderColor: '#EC932F',
+				backgroundColor: '#EC932F',
+				pointBorderColor: '#EC932F',
+				pointBackgroundColor: '#EC932F',
+				pointHoverBackgroundColor: '#EC932F',
+				pointHoverBorderColor: '#EC932F',
+				fill: false
+			},
+			{
+				type: 'bar',
+				data: amounts,
+				label: 'Monthly Spending',
+				backgroundColor: 'rgb(77, 153, 114)',
+				borderColor: 'rgb(77, 153, 114)',
+				hoverBorderColor: 'rgb(77, 153, 114)',
+				hoverBackgroundColor: 'rgb(60, 119, 89)'
+			}],
+			options: {
+				responsive: false,
+			}
+		};
+
+		this.setState({ monthlyLineChartData: lineData });
 	}
 
 	/************************************* End Bar Chart *************************************/
@@ -243,98 +207,77 @@ class Statistics extends Component {
 
 	generateLineChart() {
 
-		fetch('/plaid-api/transactions', {
-			method: 'post',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				days: this.numDaysPassedFromBeginningOfYear()
-			})
-		}).then(data => {
-			return data.json();
-		}).then(data => {
-			if (!data.transactions) {
-				console.error('-----------------------------');
-				throw Error('Invalid data from server');
-			}
-
-			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
-			data.transactions.sort((a, b) => {
-				// a and b are transactions
-				let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-				let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
-				return isAfter(dateA, dateB);
-			});
-
-			let firstDate = data.transactions[0].date;
-			let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
-			let beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
-			let counter = differenceInWeeks(currentWeek, beginningOfYear);
-
-			// Arrays only need to be as large as how many weeks have passed in the year so far
-			// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
-			let arrSize = differenceInCalendarWeeks(new Date(), beginningOfYear);
-			let weekday = new Array(arrSize).fill(0);
-			let weekend = new Array(arrSize).fill(0);
-
-			data.transactions.forEach(t => {
-				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-				if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
-					debugger;
-					if (isWeekend(transactionDate)) {
-						weekend[counter] += t.amount;
-					} else {
-						weekday[counter] += t.amount;
-					}
-				} else if (t.amount > 0) {
-					debugger;
-					// I've moved to a different week so update counter index
-					counter += differenceInWeeks(transactionDate, currentWeek);
-
-					// Put the current transaction amount in the right array
-					if (isWeekend(transactionDate)) {
-						weekend[counter] += t.amount;
-					} else {
-						weekday[counter] += t.amount;
-					}
-
-					// update currentWeek
-					currentWeek = transactionDate;
-				}
-			});
-
-			const chartData = {
-				labels: this.generateLineChartLabels(arrSize),
-				label: 'Week vs Weekend Spending for the past 52 Weeks',
-				datasets:  [
- 					{
-						data:  weekday,
-						fill:  false,
-						label:  'Weekday',
- 						backgroundColor:  "rgb( 77,  153, 114)",
-						borderColor: "rgb(77, 153, 114)",
-					},
-					{
-						data: weekend,
-						fill: false,
-						label: 'Weekend',
-						backgroundColor: "rgb(52, 108, 161)",
-						borderColor: "rgb(52, 108, 161)",
-					}
-				],
-				options: {
-					responsive: false
-				}
-			}
-
-			this.setState({ weekVsWeekend: chartData });
-
-		}).catch(err => {
-			console.error(err);
+		// Sort the transactions from oldest to newest --> [oldest, ..., newest]
+		this.props.transactions.sort((a, b) => {
+			// a and b are transactions
+			let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			return isAfter(dateA, dateB);
 		});
+
+		let firstDate = this.props.transactions[0].date;
+		let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
+		let beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
+		let counter = differenceInWeeks(currentWeek, beginningOfYear);
+
+		// Arrays only need to be as large as how many weeks have passed in the year so far
+		// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
+		let arrSize = differenceInCalendarWeeks(new Date(), beginningOfYear);
+		let weekday = new Array(arrSize).fill(0);
+		let weekend = new Array(arrSize).fill(0);
+
+		this.props.transactions.forEach(t => {
+			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+			if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
+				debugger;
+				if (isWeekend(transactionDate)) {
+					weekend[counter] += t.amount;
+				} else {
+					weekday[counter] += t.amount;
+				}
+			} else if (t.amount > 0) {
+				debugger;
+				// I've moved to a different week so update counter index
+				counter += differenceInWeeks(transactionDate, currentWeek);
+
+				// Put the current transaction amount in the right array
+				if (isWeekend(transactionDate)) {
+					weekend[counter] += t.amount;
+				} else {
+					weekday[counter] += t.amount;
+				}
+
+				// update currentWeek
+				currentWeek = transactionDate;
+			}
+		});
+
+		const chartData = {
+			labels: this.generateLineChartLabels(arrSize),
+			label: 'Week vs Weekend Spending for the past 52 Weeks',
+			datasets:  [
+				{
+					data:  weekday,
+					fill:  false,
+					label:  'Weekday',
+					backgroundColor:  "rgb( 77,  153, 114)",
+					borderColor: "rgb(77, 153, 114)",
+				},
+				{
+					data: weekend,
+					fill: false,
+					label: 'Weekend',
+					backgroundColor: "rgb(52, 108, 161)",
+					borderColor: "rgb(52, 108, 161)",
+				}
+			],
+			options: {
+				responsive: false
+			}
+		}
+
+		this.setState({ weekVsWeekend: chartData });
 	}
 
 	generateLineChartLabels(length) {
@@ -347,20 +290,6 @@ class Statistics extends Component {
 	}
 
 	/************************************* End Line Chart *************************************/
-
-
-	numDaysPassedFromBeginningOfYear() {
-		let now = new Date();
-		let beginningOfYear = new Date(now.getFullYear(), 0, 1);
-
-		return differenceInDays(now, beginningOfYear);
-	}
-
-	// dateOne is the firt chronological date, dateTwo is the second
-	// aka dateTwo happens after dateOne
-	numDaysBetweenTwoDates(dateOne, dateTwo) {
-		return 1;
-	}
 
 	render() {
 		return (

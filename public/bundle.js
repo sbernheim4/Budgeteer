@@ -22021,6 +22021,10 @@ var _Statistics = __webpack_require__(240);
 
 var _Statistics2 = _interopRequireDefault(_Statistics);
 
+var _difference_in_days = __webpack_require__(459);
+
+var _difference_in_days2 = _interopRequireDefault(_difference_in_days);
+
 __webpack_require__(465);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -22103,7 +22107,7 @@ var Home = function (_Component) {
 					'Content-Type': 'application/json'
 				},
 				body: (0, _stringify2.default)({
-					days: 30
+					days: this.numDaysPassedFromBeginningOfYear()
 				})
 			}).then(function (data) {
 				return data.json();
@@ -22175,6 +22179,17 @@ var Home = function (_Component) {
 			this.setState({ transactions: currentTransactions });
 		}
 	}, {
+		key: 'numDaysPassedFromBeginningOfYear',
+		value: function numDaysPassedFromBeginningOfYear() {
+			var now = new Date();
+			var beginningOfYear = new Date(now.getFullYear(), 0, 1);
+
+			console.log("Days from beginning of year: ");
+			console.log((0, _difference_in_days2.default)(now, beginningOfYear));
+
+			return (0, _difference_in_days2.default)(now, beginningOfYear);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 
@@ -22185,8 +22200,14 @@ var Home = function (_Component) {
 				accountsContainer = '';
 				stats = '';
 			} else {
-				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, { transactions: this.state.transactions, accounts: this.state.accounts });
-				stats = _react2.default.createElement(_Statistics2.default, null);
+				accountsContainer = _react2.default.createElement(_AccountsContainer2.default, {
+					transactions: this.state.transactions,
+					accounts: this.state.accounts
+				});
+
+				stats = _react2.default.createElement(_Statistics2.default, {
+					transactions: this.state.transactions
+				});
 			}
 
 			return _react2.default.createElement(
@@ -22300,10 +22321,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _stringify = __webpack_require__(44);
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
 var _getPrototypeOf = __webpack_require__(21);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -22403,93 +22420,78 @@ var Statistics = function (_Component) {
 			var amts = new Array(14);
 			amts.fill(0);
 
-			fetch('/plaid-api/transactions', {
-				method: 'post',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: (0, _stringify2.default)({
-					days: this.numDaysPassedFromBeginningOfYear()
-				})
-			}).then(function (data) {
-				return data.json();
-			}).then(function (data) {
-				data.transactions.forEach(function (t) {
+			this.props.transactions.forEach(function (t) {
 
-					var category = (t.category || [''])[0];
-					var amount = t.amount;
+				var category = (t.category || [''])[0];
+				var amount = t.amount;
 
-					switch (category) {
-						case 'Food and Drink':
-							amts[0] += amount;
-							break;
-						case 'Travel':
-							amts[1] += amount;
-							break;
-						case 'Shops':
-							amts[2] += amount;
-							break;
-						case 'Recreation':
-							amts[3] += amount;
-							break;
-						case 'Service':
-							amts[4] += amount;
-							break;
-						case 'Community':
-							amts[5] += amount;
-							break;
-						case 'Healthcare':
-							amts[6] += amount;
-							break;
-						case 'Bank Fees':
-							amts[7] += amount;
-							break;
-						case 'Cash Advance':
-							amts[8] += amount;
-							break;
-						case 'Interest':
-							amts[9] += amount;
-							break;
-						case 'Payment':
-							amts[10] += amount;
-							break;
-						case 'Tax':
-							amts[11] += amount;
-							break;
-						case 'Transfer':
-							amts[12] += amount;
-							break;
-						default:
-							amts[13] += amount;
-					}
-				});
-
-				// Normalize each value to always have two decimals
-				amts = amts.map(function (val) {
-					return (Math.round(val * 100) / 100).toFixed(2);
-				});
-
-				var labelsArray = [];
-				var newAmts = [];
-
-				var defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
-
-				// Only keep amounts and labels for values that are not 0
-				for (var i = 0; i < amts.length; i++) {
-					if (amts[i] !== "0.00") {
-						labelsArray.push(defaultLabelsArray[i]);
-						newAmts.push(amts[i]);
-					}
+				switch (category) {
+					case 'Food and Drink':
+						amts[0] += amount;
+						break;
+					case 'Travel':
+						amts[1] += amount;
+						break;
+					case 'Shops':
+						amts[2] += amount;
+						break;
+					case 'Recreation':
+						amts[3] += amount;
+						break;
+					case 'Service':
+						amts[4] += amount;
+						break;
+					case 'Community':
+						amts[5] += amount;
+						break;
+					case 'Healthcare':
+						amts[6] += amount;
+						break;
+					case 'Bank Fees':
+						amts[7] += amount;
+						break;
+					case 'Cash Advance':
+						amts[8] += amount;
+						break;
+					case 'Interest':
+						amts[9] += amount;
+						break;
+					case 'Payment':
+						amts[10] += amount;
+						break;
+					case 'Tax':
+						amts[11] += amount;
+						break;
+					case 'Transfer':
+						amts[12] += amount;
+						break;
+					default:
+						amts[13] += amount;
 				}
-
-				return {
-					labels: labelsArray,
-					amounts: newAmts
-				};
-			}).catch(function (err) {
-				console.error(err);
 			});
+
+			// Normalize each value to always have two decimals
+			amts = amts.map(function (val) {
+				return (Math.round(val * 100) / 100).toFixed(2);
+			});
+
+			var labelsArray = [];
+			var newAmts = [];
+
+			var defaultLabelsArray = ['Food and Drink', 'Travel', 'Shops', 'Recreation', 'Service', 'Community', 'Healthcare', 'Bank Fees', 'Cash Advance', 'Interest', 'Payment', 'Tax', 'Transfer', 'Other'];
+
+			// Only keep amounts and labels for values that are not 0
+			for (var i = 0; i < amts.length; i++) {
+				if (amts[i] !== "0.00") {
+					labelsArray.push(defaultLabelsArray[i]);
+					newAmts.push(amts[i]);
+				}
+			}
+
+			return {
+				labels: labelsArray,
+				amounts: newAmts
+			};
 		}
 	}, {
 		key: 'generateDoughnutChart',
@@ -22517,88 +22519,66 @@ var Statistics = function (_Component) {
 	}, {
 		key: 'generateMonthlyBarChart',
 		value: function generateMonthlyBarChart() {
-			var _this2 = this;
-
 			// Ensure the order of the date is chronological not just based on jan - dec.
 
 			/* Sum up costs by week */
 			var amounts = new Array(12);
 			amounts.fill(0);
 
-			fetch('/plaid-api/transactions', {
-				method: 'post',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: (0, _stringify2.default)({
-					days: this.numDaysPassedFromBeginningOfYear()
-				})
-			}).then(function (data) {
-				return data.json();
-			}).then(function (data) {
-				if (!data.transactions) {
-					console.error('-----------------------------');
-					throw Error('Invalid data from server');
-				}
+			var avg = 0;
+			this.props.transactions.forEach(function (t) {
 
-				var avg = 0;
-				data.transactions.forEach(function (t) {
+				// get the string value of the month from the transaction
+				var transactionMonth = t.date.slice(5, 7);
 
-					// get the string value of the month from the transaction
-					var transactionMonth = t.date.slice(5, 7);
+				// convert it to an int and subtract one for array offset
+				transactionMonth = parseInt(transactionMonth) - 1;
 
-					// convert it to an int and subtract one for array offset
-					transactionMonth = parseInt(transactionMonth) - 1;
+				// add the amount of the transaction to its corresponding index in the array
+				amounts[transactionMonth] += t.amount;
 
-					// add the amount of the transaction to its corresponding index in the array
-					amounts[transactionMonth] += t.amount;
-
-					// Get the total sum to calculate avg
-					avg += t.amount;
-				});
-
-				// Divide by 12 and round to two decimal places
-				avg = avg / 12;
-				avg = (Math.round(avg * 100) / 100).toFixed(2);
-
-				// Round the amounts to two decimals
-				amounts = amounts.map(function (val) {
-					return (Math.round(val * 100) / 100).toFixed(2);
-				});
-
-				var lineData = {
-					labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
-					datasets: [{
-						type: 'line',
-						data: new Array(12).fill(avg),
-						label: 'Avg. Monthly Spending',
-						radius: 0,
-						borderColor: '#EC932F',
-						backgroundColor: '#EC932F',
-						pointBorderColor: '#EC932F',
-						pointBackgroundColor: '#EC932F',
-						pointHoverBackgroundColor: '#EC932F',
-						pointHoverBorderColor: '#EC932F',
-						fill: false
-					}, {
-						type: 'bar',
-						data: amounts,
-						label: 'Monthly Spending',
-						backgroundColor: 'rgb(77, 153, 114)',
-						borderColor: 'rgb(77, 153, 114)',
-						hoverBorderColor: 'rgb(77, 153, 114)',
-						hoverBackgroundColor: 'rgb(60, 119, 89)'
-					}],
-					options: {
-						responsive: false
-					}
-				};
-
-				_this2.setState({ monthlyLineChartData: lineData });
-			}).catch(function (err) {
-				console.error(err);
+				// Get the total sum to calculate avg
+				avg += t.amount;
 			});
+
+			// Divide by 12 and round to two decimal places
+			avg = avg / 12;
+			avg = (Math.round(avg * 100) / 100).toFixed(2);
+
+			// Round the amounts to two decimals
+			amounts = amounts.map(function (val) {
+				return (Math.round(val * 100) / 100).toFixed(2);
+			});
+
+			var lineData = {
+				labels: ['Jan.', 'Feb.', 'Mar.', 'Apirl', 'May', 'June', 'July', 'Aug. ', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+				datasets: [{
+					type: 'line',
+					data: new Array(12).fill(avg),
+					label: 'Avg. Monthly Spending',
+					radius: 0,
+					borderColor: '#EC932F',
+					backgroundColor: '#EC932F',
+					pointBorderColor: '#EC932F',
+					pointBackgroundColor: '#EC932F',
+					pointHoverBackgroundColor: '#EC932F',
+					pointHoverBorderColor: '#EC932F',
+					fill: false
+				}, {
+					type: 'bar',
+					data: amounts,
+					label: 'Monthly Spending',
+					backgroundColor: 'rgb(77, 153, 114)',
+					borderColor: 'rgb(77, 153, 114)',
+					hoverBorderColor: 'rgb(77, 153, 114)',
+					hoverBackgroundColor: 'rgb(60, 119, 89)'
+				}],
+				options: {
+					responsive: false
+				}
+			};
+
+			this.setState({ monthlyLineChartData: lineData });
 		}
 
 		/************************************* End Bar Chart *************************************/
@@ -22608,96 +22588,75 @@ var Statistics = function (_Component) {
 	}, {
 		key: 'generateLineChart',
 		value: function generateLineChart() {
-			var _this3 = this;
 
-			fetch('/plaid-api/transactions', {
-				method: 'post',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: (0, _stringify2.default)({
-					days: this.numDaysPassedFromBeginningOfYear()
-				})
-			}).then(function (data) {
-				return data.json();
-			}).then(function (data) {
-				if (!data.transactions) {
-					console.error('-----------------------------');
-					throw Error('Invalid data from server');
-				}
-
-				// Sort the transactions from oldest to newest --> [oldest, ..., newest]
-				data.transactions.sort(function (a, b) {
-					// a and b are transactions
-					var dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-					var dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
-					return (0, _is_after2.default)(dateA, dateB);
-				});
-
-				var firstDate = data.transactions[0].date;
-				var currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
-				var beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
-				var counter = (0, _difference_in_weeks2.default)(currentWeek, beginningOfYear);
-
-				// Arrays only need to be as large as how many weeks have passed in the year so far
-				// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
-				var arrSize = (0, _difference_in_calendar_weeks2.default)(new Date(), beginningOfYear);
-				var weekday = new Array(arrSize).fill(0);
-				var weekend = new Array(arrSize).fill(0);
-
-				data.transactions.forEach(function (t) {
-					var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-					if ((0, _is_same_week2.default)(currentWeek, transactionDate) && t.amount > 0) {
-						debugger;
-						if ((0, _is_weekend2.default)(transactionDate)) {
-							weekend[counter] += t.amount;
-						} else {
-							weekday[counter] += t.amount;
-						}
-					} else if (t.amount > 0) {
-						debugger;
-						// I've moved to a different week so update counter index
-						counter += (0, _difference_in_weeks2.default)(transactionDate, currentWeek);
-
-						// Put the current transaction amount in the right array
-						if ((0, _is_weekend2.default)(transactionDate)) {
-							weekend[counter] += t.amount;
-						} else {
-							weekday[counter] += t.amount;
-						}
-
-						// update currentWeek
-						currentWeek = transactionDate;
-					}
-				});
-
-				var chartData = {
-					labels: _this3.generateLineChartLabels(arrSize),
-					label: 'Week vs Weekend Spending for the past 52 Weeks',
-					datasets: [{
-						data: weekday,
-						fill: false,
-						label: 'Weekday',
-						backgroundColor: "rgb( 77,  153, 114)",
-						borderColor: "rgb(77, 153, 114)"
-					}, {
-						data: weekend,
-						fill: false,
-						label: 'Weekend',
-						backgroundColor: "rgb(52, 108, 161)",
-						borderColor: "rgb(52, 108, 161)"
-					}],
-					options: {
-						responsive: false
-					}
-				};
-
-				_this3.setState({ weekVsWeekend: chartData });
-			}).catch(function (err) {
-				console.error(err);
+			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
+			this.props.transactions.sort(function (a, b) {
+				// a and b are transactions
+				var dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				var dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+				return (0, _is_after2.default)(dateA, dateB);
 			});
+
+			var firstDate = this.props.transactions[0].date;
+			var currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
+			var beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
+			var counter = (0, _difference_in_weeks2.default)(currentWeek, beginningOfYear);
+
+			// Arrays only need to be as large as how many weeks have passed in the year so far
+			// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
+			var arrSize = (0, _difference_in_calendar_weeks2.default)(new Date(), beginningOfYear);
+			var weekday = new Array(arrSize).fill(0);
+			var weekend = new Array(arrSize).fill(0);
+
+			this.props.transactions.forEach(function (t) {
+				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+				if ((0, _is_same_week2.default)(currentWeek, transactionDate) && t.amount > 0) {
+					debugger;
+					if ((0, _is_weekend2.default)(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+				} else if (t.amount > 0) {
+					debugger;
+					// I've moved to a different week so update counter index
+					counter += (0, _difference_in_weeks2.default)(transactionDate, currentWeek);
+
+					// Put the current transaction amount in the right array
+					if ((0, _is_weekend2.default)(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+
+					// update currentWeek
+					currentWeek = transactionDate;
+				}
+			});
+
+			var chartData = {
+				labels: this.generateLineChartLabels(arrSize),
+				label: 'Week vs Weekend Spending for the past 52 Weeks',
+				datasets: [{
+					data: weekday,
+					fill: false,
+					label: 'Weekday',
+					backgroundColor: "rgb( 77,  153, 114)",
+					borderColor: "rgb(77, 153, 114)"
+				}, {
+					data: weekend,
+					fill: false,
+					label: 'Weekend',
+					backgroundColor: "rgb(52, 108, 161)",
+					borderColor: "rgb(52, 108, 161)"
+				}],
+				options: {
+					responsive: false
+				}
+			};
+
+			this.setState({ weekVsWeekend: chartData });
 		}
 	}, {
 		key: 'generateLineChartLabels',
@@ -22712,23 +22671,6 @@ var Statistics = function (_Component) {
 
 		/************************************* End Line Chart *************************************/
 
-	}, {
-		key: 'numDaysPassedFromBeginningOfYear',
-		value: function numDaysPassedFromBeginningOfYear() {
-			var now = new Date();
-			var beginningOfYear = new Date(now.getFullYear(), 0, 1);
-
-			return (0, _difference_in_days2.default)(now, beginningOfYear);
-		}
-
-		// dateOne is the firt chronological date, dateTwo is the second
-		// aka dateTwo happens after dateOne
-
-	}, {
-		key: 'numDaysBetweenTwoDates',
-		value: function numDaysBetweenTwoDates(dateOne, dateTwo) {
-			return 1;
-		}
 	}, {
 		key: 'render',
 		value: function render() {

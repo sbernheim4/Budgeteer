@@ -4,6 +4,8 @@ import AccountsContainer from './AccountsContainer.jsx';
 import TransactionContainer from './TransactionContainer.jsx';
 import Statistics from './Statistics.jsx';
 
+import differenceInDays from 'date-fns/difference_in_days'
+
 import '../scss/home.scss';
 
 class Home extends Component {
@@ -73,7 +75,7 @@ class Home extends Component {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				days: 30
+				days: this.numDaysPassedFromBeginningOfYear()
 			})
 		}).then(data => {
 			return data.json();
@@ -139,6 +141,16 @@ class Home extends Component {
 		this.setState({ transactions: currentTransactions });
 	}
 
+	numDaysPassedFromBeginningOfYear() {
+		let now = new Date();
+		let beginningOfYear = new Date(now.getFullYear(), 0, 1);
+		
+		console.log("Days from beginning of year: ");
+		console.log(differenceInDays(now, beginningOfYear));
+
+		return differenceInDays(now, beginningOfYear);
+	}
+
 	render() {
 
 		// Conditional Rendering
@@ -148,8 +160,14 @@ class Home extends Component {
 			accountsContainer = '';
 			stats = '';
 		} else {
-			accountsContainer = <AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
-			stats = <Statistics />
+			accountsContainer = <AccountsContainer 
+									transactions={this.state.transactions} 
+									accounts={this.state.accounts} 
+								/>
+
+			stats = <Statistics 
+						transactions={this.state.transactions}
+					/>
 		}
 
 		return (
