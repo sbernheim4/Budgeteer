@@ -165,9 +165,7 @@ class Home extends Component {
 									accounts={this.state.accounts} 
 								/>
 
-			stats = <Statistics 
-						transactions={this.state.transactions}
-					/>
+			stats = <Statistics transactions={this.state.transactions} />
 		}
 
 		return (

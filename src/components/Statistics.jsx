@@ -296,7 +296,7 @@ class Statistics extends Component {
 
 			<div className='stats'>
 
-				<Budget />
+				<Budget transactions={this.props.transactions}/>
 
 				<div className='stats--doughnut'>
 					{/* Render a doughnut chart for categorical spending */}

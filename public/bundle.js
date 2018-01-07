@@ -8663,10 +8663,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _stringify = __webpack_require__(44);
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
 var _getPrototypeOf = __webpack_require__(21);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -8736,7 +8732,7 @@ var Budget = function (_Component) {
 	(0, _createClass3.default)(Budget, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			this.getThisMonthsData();
+			this.getTotalSpent(this.props.transactions);
 		}
 	}, {
 		key: 'getTotalSpent',
@@ -8750,32 +8746,6 @@ var Budget = function (_Component) {
 			// Round total to two decimal places and ensure trailing 0s appear
 			total = (Math.round(total * 100) / 100).toFixed(2);
 			this.setState({ spentThisMonth: total });
-		}
-	}, {
-		key: 'getThisMonthsData',
-		value: function getThisMonthsData() {
-			var _this2 = this;
-
-			// Get the total spent so far this month
-
-			// NOTE: This assumes people's spending cycle begins at the beginning of each month
-
-			fetch('/plaid-api/transactions', {
-				method: 'post',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: (0, _stringify2.default)({
-					days: this.numDaysPassedThisMonth()
-				})
-			}).then(function (data) {
-				return data.json();
-			}).then(function (data) {
-				_this2.getTotalSpent(data.transactions);
-			}).catch(function (err) {
-				console.error(err);
-			});
 		}
 	}, {
 		key: 'handleChange',
@@ -22205,9 +22175,7 @@ var Home = function (_Component) {
 					accounts: this.state.accounts
 				});
 
-				stats = _react2.default.createElement(_Statistics2.default, {
-					transactions: this.state.transactions
-				});
+				stats = _react2.default.createElement(_Statistics2.default, { transactions: this.state.transactions });
 			}
 
 			return _react2.default.createElement(
@@ -22677,7 +22645,7 @@ var Statistics = function (_Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'stats' },
-				_react2.default.createElement(_Budget2.default, null),
+				_react2.default.createElement(_Budget2.default, { transactions: this.props.transactions }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'stats--doughnut' },

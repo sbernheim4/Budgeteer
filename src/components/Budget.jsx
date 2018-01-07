@@ -38,7 +38,7 @@ class Budget extends Component {
 	}
 
 	componentDidMount() {
-		this.getThisMonthsData();
+		this.getTotalSpent(this.props.transactions);
 	}
 
 	getTotalSpent(transactions) {
@@ -51,29 +51,6 @@ class Budget extends Component {
 		// Round total to two decimal places and ensure trailing 0s appear
 		total = (Math.round(total * 100) / 100).toFixed(2);
 		this.setState({ spentThisMonth: total });
-	}
-
-	getThisMonthsData() {
-		// Get the total spent so far this month
-
-		// NOTE: This assumes people's spending cycle begins at the beginning of each month
-		
-		fetch('/plaid-api/transactions', {
-			method: 'post',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				days: this.numDaysPassedThisMonth()
-			})
-		}).then(data => {
-			return data.json();
-		}).then(data => {
-			this.getTotalSpent(data.transactions);
-		}).catch(err => {
-			console.error(err);
-		});
 	}
 
 	handleChange(event) {
