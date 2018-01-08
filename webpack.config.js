@@ -12,6 +12,12 @@ const glob = require("glob");
 
 const path = require("path");
 
+/* Used to uglify bundle.js */
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
+/* Used to obfuscate JS code so it is unreadable */
+const WebpackJsObfuscator = require('webpack-js-obfuscator');
+
 module.exports = {
 	devtool: "source-map", // Enables source maps for both JS(X) and (S)CSS
 	entry: glob.sync("./src/components/**/*.jsx"),
@@ -67,7 +73,13 @@ module.exports = {
 		new StyleLintPlugin({
 			configFile: "./.stylelintrc",
 			files: "./src/scss/*.scss"
-		})//,
+        }),
+        new UglifyJsPlugin({
+            sourceMap: true
+        }),
+        new WebpackJsObfuscator(
+            {}, ['excluded_bundle_name.js']
+        )//,
 
 		// // used for automatic reloading of the page on changes
 		// new BrowserSyncPlugin({
