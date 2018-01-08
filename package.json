@@ -1,5 +1,5 @@
 {
-  "name": "money-saver",
+  "name": "budgeteer",
   "version": "0.1.0",
   "dependencies": {
     "chart.js": "^2.7.1",
