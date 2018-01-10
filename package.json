@@ -12,8 +12,7 @@
     "plaid": "^2.2.0",
     "react": "^16.2.0",
     "react-chartjs-2": "^2.6.4",
-    "react-dom": "^16.2.0",
-    "webpack-js-obfuscator": "^0.0.5"
+    "react-dom": "^16.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.2.2",
@@ -42,7 +41,8 @@
     "stylelint-webpack-plugin": "^0.9.0",
     "uglifyjs-webpack-plugin": "^1.1.6",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7"
+    "webpack-dev-server": "^2.9.7",
+    "webpack-js-obfuscator": "^0.0.5"
   },
   "engines": {
     "node": "8.9.3"
