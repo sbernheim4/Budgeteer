@@ -136,7 +136,7 @@ class Home extends Component {
 		let beginningOfYear = new Date(now.getFullYear(), 0, 1);
 
 		return differenceInDays(now, beginningOfYear);
-	}
+    }
 
 	render() {
 
@@ -163,12 +163,12 @@ class Home extends Component {
 					<button className="home--btns__green" onClick={this.getTransactions.bind(this)}>Get Transactions</button>
 				</div>
 
-				{accountsContainer}
-				{stats}
-
 				<div className="home--error">
 					<p>Please first link an account</p>
 				</div>
+
+				{accountsContainer}
+                {stats}
 
 			</div>
 		);

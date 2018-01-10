@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+
+import Networth from "./Networth.jsx";
+
 import { Doughnut, Line, Bar } from "react-chartjs-2";
 import Budget from "./Budget.jsx";
 
@@ -19,7 +22,8 @@ class Statistics extends Component {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-			weekVsWeekend: {}
+            weekVsWeekend: {},
+            netWorth: 0
 		}
 	}
 
@@ -29,7 +33,9 @@ class Statistics extends Component {
 		this.generateDoughnutChart();
 		this.generateMonthlyBarChart();
 		// this.generateBubbleChart();
-		this.generateLineChart();
+        this.generateLineChart();
+
+        this.getNetWorth();
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -286,7 +292,21 @@ class Statistics extends Component {
 		return arr;
 	}
 
-	/************************************* End Line Chart *************************************/
+    /************************************* End Line Chart *************************************/
+
+
+    getNetWorth() {
+        fetch("/plaid-api/balance", {
+            method: "post"
+        }).then(data => {
+            return data.json();
+        }).then(data => {
+            this.setState({ netWorth: data.netWorth });
+        }).catch(err => {
+            console.error(err);
+        });
+    }
+
 
 	render() {
 		return (
@@ -313,6 +333,8 @@ class Statistics extends Component {
 				<div className="stats--week-weekend">
 					<Line data={this.state.weekVsWeekend} />
 				</div>
+
+                <Networth netWorth={this.state.netWorth} />
 			</div>
 
 		);

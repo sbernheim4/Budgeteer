@@ -13,6 +13,9 @@
 	},
 
 	"globals": {
+		"module": true,
+		"process": true,
+		"require": true,
 		"React": true,
 		"Plaid": true
 	},

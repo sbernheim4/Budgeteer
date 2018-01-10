@@ -56,7 +56,7 @@ app.post("/get-access-token", function(req, res, next) {
 	PUBLIC_TOKEN = req.body.public_token;
 	client.exchangePublicToken(PUBLIC_TOKEN, function(error, tokenResponse) {
 
-		if (error != null) {
+		if (error !== null) {
 			let msg = "Could not exchange public_token!";
 			console.log(msg + "\n" + JSON.stringify(error));
 
@@ -86,7 +86,7 @@ app.post("/transactions", function(req, res, next) {
 		offset: 0,
 	}, function(error, transactionsResponse) {
 
-		if (error != null) {
+		if (error !== null) {
 			console.log(JSON.stringify(error));
 			return res.json({
 				error: error
@@ -100,6 +100,28 @@ app.post("/transactions", function(req, res, next) {
 
 app.post("/institutions", (req, res) => {
 	client.getInstitutions()
+});
+
+app.post ("/balance", (req, res, next) => {
+	let netWorth = 0;
+
+	client.getBalance(ACCESS_TOKEN).then(res => {
+
+		// Sum up balances for each linked account
+		res.accounts.forEach(acct => {
+			if (acct.balances.available !== null) {
+				netWorth += acct.balances.available;
+			}
+		});
+		return netWorth;
+	}).then( netWorth => {
+		res.json({
+			"netWorth": netWorth
+		});
+	}).catch(err => {
+		console.error(err);
+	});
+
 });
 
 

@@ -73,21 +73,19 @@ module.exports = {
 		new StyleLintPlugin({
 			configFile: "./.stylelintrc",
 			files: "./src/scss/*.scss"
-        }),
-        new UglifyJsPlugin({
-            sourceMap: true
-        }),
-        new WebpackJsObfuscator(
-            {}, ['excluded_bundle_name.js']
-        )//,
+        })//,
 
-		// // used for automatic reloading of the page on changes
-		// new BrowserSyncPlugin({
-		// 	notify: false,
-		// 	host: 'localhost',
-		// 	port: 3000,
-		// 	server: { baseDir: ['public'] }
-		// })
+        // Uglify js
+        // new UglifyJsPlugin({
+        //     sourceMap: true
+        // })
+
+        // Obfuscate js so its unreadable
+
+        //,
+        // new WebpackJsObfuscator(
+        //     {}, ['excluded_bundle_name.js']
+        // )
 	]
 };
 
