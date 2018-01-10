@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 
-import Networth from "./Networth.jsx";
-
 import { Doughnut, Line, Bar } from "react-chartjs-2";
 import Budget from "./Budget.jsx";
 
@@ -22,8 +20,7 @@ class Statistics extends Component {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-            weekVsWeekend: {},
-            netWorth: 0
+            weekVsWeekend: {}
 		}
 	}
 
@@ -32,10 +29,7 @@ class Statistics extends Component {
 
 		this.generateDoughnutChart();
 		this.generateMonthlyBarChart();
-		// this.generateBubbleChart();
         this.generateLineChart();
-
-        this.getNetWorth();
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -295,19 +289,6 @@ class Statistics extends Component {
     /************************************* End Line Chart *************************************/
 
 
-    getNetWorth() {
-        fetch("/plaid-api/balance", {
-            method: "post"
-        }).then(data => {
-            return data.json();
-        }).then(data => {
-            this.setState({ netWorth: data.netWorth });
-        }).catch(err => {
-            console.error(err);
-        });
-    }
-
-
 	render() {
 		return (
 
@@ -325,63 +306,14 @@ class Statistics extends Component {
 					<Bar data={this.state.monthlyLineChartData} />
 				</div>
 
-				<div className="stats--bubble-chart">
-					{/* Render a bar and line chart for monthly and avg spending */}
-					{/* <Bubble data={this.state.bubbleChartData} /> */}
-				</div>
-
 				<div className="stats--week-weekend">
 					<Line data={this.state.weekVsWeekend} />
 				</div>
 
-                <Networth netWorth={this.state.netWorth} />
 			</div>
 
 		);
-	}
-
-	/************************************* Bubble Chart *************************************/
-
-	generateBubbleChart() {
-		let bubbleDataPoints = [];
-
-		this.props.transactions.forEach(t => {
-			if (t.amount > 0) {
-				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7), t.date.slice(8, 10));
-
-				// Day of Week
-				let dayOfWeek = getDay(transactionDate); // 1 - 7
-
-				// Month Name
-				let month = t.date.slice(5, 7); // 1 - 12
-
-				// find a better scaling factor than Math.log
-				let newPoint = { x: dayOfWeek, y: month, r: t.amount / 20 };
-
-				bubbleDataPoints.push(newPoint);
-			}
-		});
-
-		// X ranges from 0 to 6 for the weekday,
-		// Y ranges from 0:00 to 23:59 based on the time
-		// Z is the amount of the transaction
-		const data = {
-			datasets: [
-				{
-					backgroundColor: "rgba(0, 0, 0, .5)",
-					data: bubbleDataPoints,
-					label: "Spending by Week, Month, and Size",
-				}
-			],
-			options: {
-				responsive: false
-			}
-		};
-
-		this.setState({ bubbleChartData: data });
-	}
-
-	/************************************* End Bubble Chart *************************************/
+    }
 }
 
 export default Statistics;

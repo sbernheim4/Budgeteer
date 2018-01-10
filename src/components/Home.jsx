@@ -2,6 +2,9 @@ import React, { Component } from "react";
 
 import AccountsContainer from "./AccountsContainer.jsx";
 import Statistics from "./Statistics.jsx";
+import Networth from "./Networth.jsx";
+
+import helpers from "./helpers.js";
 
 import differenceInDays from "date-fns/difference_in_days"
 
@@ -15,42 +18,45 @@ class Home extends Component {
 			transactions: [],
 			accounts: [],
 			account_ids: new Set(),
-			transaction_ids: new Set()
+            transaction_ids: new Set(),
+            netWorth: 0
 		};
-	}
+    }
+
+    componentWillMount() {
+        fetch("plaid-api/key-and-env").then(response => {
+            return response.json();
+        }).then(res => {
+            const plaid = Plaid.create({
+                apiVersion: "v2",
+                clientName: "Plaid Walkthrough Demo",
+                env: res.env,
+                product: ["transactions"],
+                key: res.publicKey,
+                onSuccess: function (public_token) {
+                    fetch("/plaid-api/get-access-token", {
+                        method: "post",
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            public_token: public_token,
+                            client_id: "5a24ca6a4e95b836d37e37fe",
+                            secret: "f07a761a591de3cbbc5ac3ba2f4301"
+                        })
+                    });
+                }
+            });
+
+            this.setState({ handler: plaid });
+        }).catch(err => {
+            console.error(err)
+        });
+    }
 
 	componentDidMount() {
-		fetch("plaid-api/key-and-env")
-		.then(response => {
-			return response.json();
-		}).then(res => {
 
-			const plaid = Plaid.create({
-				apiVersion: "v2",
-				clientName: "Plaid Walkthrough Demo",
-				env: res.env,
-				product: ["transactions"],
-				key: res.publicKey,
-				onSuccess: function (public_token) {
-					fetch("/plaid-api/get-access-token", {
-						method: "post",
-						headers: {
-							"Accept": "application/json",
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							public_token: public_token,
-							client_id: "5a24ca6a4e95b836d37e37fe",
-							secret: "f07a761a591de3cbbc5ac3ba2f4301"
-						})
-					});
-				}
-			});
-
-			this.setState({ handler: plaid });
-		}).catch(err => {
-			console.error(err)
-		});
 	}
 
 	addAccount() {
@@ -142,10 +148,12 @@ class Home extends Component {
 
 		// Conditional Rendering
 		let accountsContainer = null;
-		let stats = null;
+        let stats = null;
+        let networth = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = "";
-			stats = "";
+            stats = "";
+            networth = "";
 		} else {
 			accountsContainer = <AccountsContainer
 									transactions={this.state.transactions}
@@ -153,6 +161,7 @@ class Home extends Component {
 								/>
 
 			stats = <Statistics transactions={this.state.transactions} />
+            networth = <Networth />
 		}
 
 		return (
@@ -167,6 +176,8 @@ class Home extends Component {
 					<p>Please first link an account</p>
 				</div>
 
+
+                {networth}
 				{accountsContainer}
                 {stats}
 

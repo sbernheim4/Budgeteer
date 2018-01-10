@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
 
+import helpers from "./helpers.js";
+
 import differenceInDays from "date-fns/difference_in_days"
 
 import "../scss/budget.scss";
@@ -84,10 +86,6 @@ class Budget extends Component {
 		this.setState({data: data})
 	}
 
-	numberWithCommas(number) {
-		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	}
-
 	numDaysPassedThisMonth() {
 		let now = new Date();
 		let beginningOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -96,10 +94,10 @@ class Budget extends Component {
 	}
 
 	render() {
-		let spent = this.numberWithCommas(this.state.spentThisMonth);
+		let spent = helpers.numberWithCommas(this.state.spentThisMonth);
 
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
-		remaining = this.numberWithCommas(remaining);
+        remaining = helpers.numberWithCommas(remaining);
 
 		return (
 			<div className="budget">
