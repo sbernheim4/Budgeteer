@@ -176,7 +176,6 @@ class Home extends Component {
 					<p>Please first link an account</p>
 				</div>
 
-
                 {networth}
 				{accountsContainer}
                 {stats}

@@ -10,8 +10,6 @@ const StyleLintPlugin = require("stylelint-webpack-plugin");
 
 const glob = require("glob");
 
-const path = require("path");
-
 /* Used to uglify bundle.js */
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
@@ -26,7 +24,16 @@ module.exports = {
         path: __dirname + "/public",
 
 		filename: "bundle.js"
-	},
+    },
+    devServer: {
+        contentBase: __dirname + "/public",
+        proxy: {
+            '/plaid-api': {
+                target: 'http://localhost:8080',
+                secure: false
+            }
+        }
+    },
 	module: {
 		// use the babel-loader for all .jsx files
 		rules: [

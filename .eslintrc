@@ -22,7 +22,7 @@
 
 	"rules": {
 		"react/jsx-uses-vars": 2,
-		"camelcase": 1,
+		"camelcase": 0,
 		"no-unused-vars": 0,
 		"no-console": 0,
 		"no-undefined": 1,
