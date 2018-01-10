@@ -29,7 +29,7 @@ module.exports = {
         contentBase: __dirname + "/public",
         proxy: {
             '/plaid-api': {
-                target: 'http://localhost:8080',
+                target: 'http://localhost:5000',
                 secure: false
             }
         }

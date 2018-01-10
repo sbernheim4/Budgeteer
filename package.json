@@ -49,10 +49,10 @@
   },
   "scripts": {
 
-    "dev": "concurrently --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
-    "express-server": "nodemon ./server/index.js",
+
+    "es": "nodemon ./server/index.js",
     "heroku-prebuild": "npm install --only-dev",
     "start": "node ./server/index.js",
-    "webpack-watch": "webpack-dev-server --hot --inline"
+    "wp": "webpack-dev-server --hot --inline"
   }
 }
