@@ -23,7 +23,8 @@ module.exports = {
 	entry: glob.sync("./src/components/**/*.jsx"),
 	output: {
 		// output build file to /public folder
-		path: __dirname + "/public",
+        path: __dirname + "/public",
+
 		filename: "bundle.js"
 	},
 	module: {
