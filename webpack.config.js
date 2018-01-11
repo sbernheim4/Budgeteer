@@ -22,11 +22,11 @@ module.exports = {
 	output: {
 		// output build file to /public folder
         path: __dirname + "/public",
-
 		filename: "bundle.js"
     },
     devServer: {
         contentBase: __dirname + "/public",
+        port: 3000,
         proxy: {
             '/plaid-api': {
                 target: 'http://localhost:5000',
@@ -65,11 +65,6 @@ module.exports = {
 		extensions: ["*", ".js", "jsx", ".scss"]
 	},
 	plugins: [
-		// UNCOMMENT THE FOLLOWING LINES TO PUT ALL THE SCSS INTO A SINGLE FILE
-		// new ExtractTextPlugin({
-		// 	filename: 'index.css'
-		// }),
-
 		// Optimizes css by minifying it and removing comments
 		new OptimizeCssAssetsPlugin({
 			cssProcessor: nano,
@@ -81,12 +76,12 @@ module.exports = {
 		new StyleLintPlugin({
 			configFile: "./.stylelintrc",
 			files: "./src/scss/*.scss"
-        })//,
+        }),
 
-        // Uglify js
-        // new UglifyJsPlugin({
-        //     sourceMap: true
-        // })
+        // Uglify JS
+        new UglifyJsPlugin({
+            sourceMap: true
+        })
 
         // Obfuscate js so its unreadable
 
