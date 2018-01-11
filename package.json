@@ -48,8 +48,6 @@
     "node": "8.9.3"
   },
   "scripts": {
-
-
     "es": "nodemon ./server/index.js",
     "heroku-prebuild": "npm install --only-dev",
     "start": "node ./server/index.js",
