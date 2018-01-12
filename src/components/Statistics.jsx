@@ -8,7 +8,8 @@ import isWeekend from "date-fns/is_weekend";
 import isSameWeek from "date-fns/is_same_week";
 import isAfter from "date-fns/is_after";
 import differenceInWeeks from "date-fns/difference_in_weeks";
-import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks"
+import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
+import isSameMonth from "date-fns/is_same_month";
 
 import "../scss/statistics.scss";
 
@@ -40,53 +41,56 @@ class Statistics extends Component {
 		amts.fill(0);
 
 		this.props.transactions.forEach(t => {
+            let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-			let category = (t.category || [""])[0];
-			let amount = t.amount;
+            if (isSameMonth(transactionDate, new Date)) {
+                let category = (t.category || [""])[0];
+                let amount = t.amount;
 
-			switch (category) {
-				case "Food and Drink":
-					amts[0] += amount;
-					break;
-				case "Travel":
-					amts[1] += amount;
-					break;
-				case "Shops":
-					amts[2] += amount;
-					break;
-				case "Recreation":
-					amts[3] += amount;
-					break;
-				case "Service":
-					amts[4] += amount;
-					break;
-				case "Community":
-					amts[5] += amount;
-					break;
-				case "Healthcare":
-					amts[6] += amount;
-					break;
-				case "Bank Fees":
-					amts[7] += amount;
-					break;
-				case "Cash Advance":
-					amts[8] += amount;
-					break;
-				case "Interest":
-					amts[9] += amount;
-					break;
-				case "Payment":
-					amts[10] += amount;
-					break;
-				case "Tax":
-					amts[11] += amount;
-					break;
-				case "Transfer":
-					amts[12] += amount;
-					break;
-				default:
-					amts[13] += amount
-			}
+                switch (category) {
+                    case "Food and Drink":
+                        amts[0] += amount;
+                        break;
+                    case "Travel":
+                        amts[1] += amount;
+                        break;
+                    case "Shops":
+                        amts[2] += amount;
+                        break;
+                    case "Recreation":
+                        amts[3] += amount;
+                        break;
+                    case "Service":
+                        amts[4] += amount;
+                        break;
+                    case "Community":
+                        amts[5] += amount;
+                        break;
+                    case "Healthcare":
+                        amts[6] += amount;
+                        break;
+                    case "Bank Fees":
+                        amts[7] += amount;
+                        break;
+                    case "Cash Advance":
+                        amts[8] += amount;
+                        break;
+                    case "Interest":
+                        amts[9] += amount;
+                        break;
+                    case "Payment":
+                        amts[10] += amount;
+                        break;
+                    case "Tax":
+                        amts[11] += amount;
+                        break;
+                    case "Transfer":
+                        amts[12] += amount;
+                        break;
+                    default:
+                        amts[13] += amount
+                }
+            }
 		});
 
 		// Normalize each value to always have two decimals
@@ -165,10 +169,25 @@ class Statistics extends Component {
 		// Round the amounts to two decimals
 		amounts = amounts.map(val => {
 			return (Math.round(val * 100) / 100).toFixed(2);
-		});
+        });
+
+        let monthsDefault = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
+        let currMonth = new Date().getMonth(); // 0
+
+
+        // Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
+        let orderedLabels = [];
+        for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
+            orderedLabels.push(monthsDefault[i % 12]);
+        }
+
+        let orderedAmounts = [];
+        for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
+            orderedAmounts.push(amounts[i % 12]);
+        }
 
 		const lineData = {
-			labels: ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."],
+			labels: orderedLabels,
 			datasets: [{
 				type: "line",
 				data: new Array(12).fill(avg),
@@ -184,7 +203,7 @@ class Statistics extends Component {
 			},
 			{
 				type: "bar",
-				data: amounts,
+                data: orderedAmounts,
 				label: "Monthly Spending",
 				backgroundColor: "rgb(77, 153, 114)",
 				borderColor: "rgb(77, 153, 114)",

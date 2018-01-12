@@ -44,8 +44,8 @@
 		"eol-last": 2,
 		"no-nested-ternary": 1,
 		"no-trailing-spaces": 1,
-		"quotes": 2,
-		"space-infix-ops": 2,
+		"quotes": 1,
+		"space-infix-ops": 1,
 		"no-var": 2
 	},
 	"plugins": [

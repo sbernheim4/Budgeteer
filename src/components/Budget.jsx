@@ -3,7 +3,8 @@ import { Doughnut } from "react-chartjs-2";
 
 import helpers from "./helpers.js";
 
-import differenceInDays from "date-fns/difference_in_days"
+import differenceInDays from "date-fns/difference_in_days";
+import isSameMonth from "date-fns/is_same_month";
 
 import "../scss/budget.scss";
 
@@ -44,8 +45,13 @@ class Budget extends Component {
 	getTotalSpent(transactions) {
 		let total = 0;
 		// Sum up the prices of each transaction
-		transactions.forEach( transaction => {
-			total += transaction.amount;
+		transactions.forEach( t => {
+            let today = new Date();
+            let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+            if (isSameMonth(transactionDate, today)) {
+                total += t.amount;
+            }
 		})
 
 		// Round total to two decimal places and ensure trailing 0s appear

@@ -6,7 +6,11 @@ import Networth from "./Networth.jsx";
 
 import helpers from "./helpers.js";
 
-import differenceInDays from "date-fns/difference_in_days"
+import differenceInDays from "date-fns/difference_in_days";
+import startOfWeek from "date-fns/start_of_week";
+import addWeeks from "date-fns/add_weeks";
+import addMonths from "date-fns/add_months";
+import startOfMonth from "date-fns/start_of_month";
 
 import "../scss/home.scss";
 
@@ -64,14 +68,23 @@ class Home extends Component {
 	}
 
 	getTransactions() {
+        let now = new Date(); // Jan. 12th 2018
+
+        let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+        prev = addMonths(prev, 1); // Feb. 12th 2017
+        prev = startOfMonth(prev); // Returns Feb 1st 2017
+
+        let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
+        console.log("Getting data for the past " + numDays + " days");
+
 		fetch("/plaid-api/transactions", {
 			method: "post",
 			headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json"
-			},
+            },
 			body: JSON.stringify({
-				days: this.numDaysPassedFromBeginningOfYear()
+				days: numDays
 			})
 		}).then(data => {
 			return data.json();
