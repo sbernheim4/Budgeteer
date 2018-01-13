@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import TransactionContainer from "./TransactionContainer.jsx";
 import "../scss/accountsContainer.scss"
 
+import helpers from './helpers';
+
 class AccountsContainer extends Component {
 	constructor(props) {
 		super(props)
@@ -42,8 +44,10 @@ class AccountsContainer extends Component {
 
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
-		});
-		total = (Math.round(total * 100) / 100).toFixed(2);
+        });
+
+        total = helpers.formatAmount(total);
+        total = helpers.numberWithCommas(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.props.accounts.forEach(account => {
@@ -51,7 +55,8 @@ class AccountsContainer extends Component {
 				type = account.name;
 				return;
 			}
-		});
+        });
+
 
 		this.setState({
 			categoryTransactions: releventTransactions,
@@ -83,8 +88,10 @@ class AccountsContainer extends Component {
 		let total = 0;
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
-		});
-		total = (Math.round(total * 100) / 100).toFixed(2);
+        });
+
+        total = helpers.formatAmount(total);
+        total = helpers.numberWithCommas(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.setState({
@@ -131,9 +138,8 @@ class AccountsContainer extends Component {
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 
 			</div>
-			);
+		);
 	}
-
 }
 
 export default AccountsContainer;

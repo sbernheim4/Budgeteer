@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import helpers from './helpers';
+
 import "../scss/transaction.scss";
 
 class Transaction extends Component {
@@ -18,13 +20,9 @@ class Transaction extends Component {
 		return this.state.months[monthNumber - 1] + " " + day + " " + year;
 	}
 
-	formatAmount(amt) {
-		return (Math.round(amt * 100) / 100).toFixed(2);
-	}
-
 	render() {
 		let date = this.formatDate(JSON.stringify(this.props.transaction.date));
-		let amount = this.formatAmount(this.props.transaction.amount);
+		let amount = helpers.formatAmount(this.props.transaction.amount);
 
 		return (
 			<div className="transaction">
@@ -35,6 +33,5 @@ class Transaction extends Component {
 		);
 	}
 }
-
 
 export default Transaction;

@@ -55,7 +55,7 @@ class Budget extends Component {
 		})
 
 		// Round total to two decimal places and ensure trailing 0s appear
-		total = (Math.round(total * 100) / 100).toFixed(2);
+		total = helpers.formatAmount(total);
 		this.setState({ spentThisMonth: total });
 	}
 

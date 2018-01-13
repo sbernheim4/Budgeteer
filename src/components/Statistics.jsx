@@ -3,13 +3,17 @@ import React, { Component } from "react";
 import { Doughnut, Line, Bar } from "react-chartjs-2";
 import Budget from "./Budget.jsx";
 
-import getDay from "date-fns/get_day";
 import isWeekend from "date-fns/is_weekend";
 import isSameWeek from "date-fns/is_same_week";
-import isAfter from "date-fns/is_after";
-import differenceInWeeks from "date-fns/difference_in_weeks";
 import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
 import isSameMonth from "date-fns/is_same_month";
+import startOfWeek from "date-fns/start_of_week";
+import addWeeks from "date-fns/add_weeks";
+import subWeeks from "date-fns/sub_weeks";
+import isBefore from 'date-fns/is_before';
+import isAfter from "date-fns/is_after";
+
+import helpers from './helpers';
 
 import "../scss/statistics.scss";
 
@@ -46,6 +50,9 @@ class Statistics extends Component {
             if (isSameMonth(transactionDate, new Date)) {
                 let category = (t.category || [""])[0];
                 let amount = t.amount;
+
+                // TODO: Try cleaning up the switch statements to something like this
+                // amts[t.category] += t.amount;
 
                 switch (category) {
                     case "Food and Drink":
@@ -95,7 +102,7 @@ class Statistics extends Component {
 
 		// Normalize each value to always have two decimals
 		amts = amts.map(val => {
-			return (Math.round(val * 100) / 100).toFixed(2);
+			return helpers.formatAmount(val);
 		});
 
 		let labelsArray = [];
@@ -164,11 +171,11 @@ class Statistics extends Component {
 
 		// Divide by 12 and round to two decimal places
 		avg = avg / 12;
-		avg = (Math.round(avg * 100) / 100).toFixed(2);
+		avg = helpers.formatAmount(avg);
 
 		// Round the amounts to two decimals
 		amounts = amounts.map(val => {
-			return (Math.round(val * 100) / 100).toFixed(2);
+			return helpers.formatAmount(val);
         });
 
         let monthsDefault = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
@@ -223,50 +230,83 @@ class Statistics extends Component {
 
 	/************************************* Line Chart *************************************/
 
+
+    // TODO: MATH NEEDS TO BE REDONE SINCE I AM NOW GOING AS FAR BACK AS ONE YEAR
 	generateLineChart() {
 
 		// Sort the transactions from oldest to newest --> [oldest, ..., newest]
-		this.props.transactions.sort((a, b) => {
+		let pastSixMonths = this.props.transactions.sort((a, b) => {
 			// a and b are transactions
 			let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
 			let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
-			return isAfter(dateA, dateB);
-		});
+			return dateA - dateB;
+        });
+        // Only really care about the past 6 months, not a full year
+        pastSixMonths = pastSixMonths.slice(this.props.transactions.length / 2);
 
-		let firstDate = this.props.transactions[0].date;
-		let currentWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
-		let beginningOfYear = new Date(currentWeek.getFullYear(), 0, 1);
-		let counter = differenceInWeeks(currentWeek, beginningOfYear);
+
+        console.log(`pastSixMonths: `);
+        pastSixMonths.forEach(o => console.log(o.date));
+
+
+        // Start date is the Monday following the first transaction
+        let firstDate = pastSixMonths[0].date;
+        let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
+        // startWeek = addWeeks(startWeek, 1);
+        startWeek = startOfWeek(startWeek, { weekStartsOn: 1 });
+
+        // End week is always the current week - 1 --> This is because data for
+        // the current week is definitionally incomplete so I can only get
+        // complete information for last week
+        let endWeek = new Date();
+        endWeek = startOfWeek(endWeek, { weekStartsOn: 1 });
+
+        console.log(`endWeek: ${endWeek}`);
+
 
 		// Arrays only need to be as large as how many weeks have passed in the year so far
 		// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
-		let arrSize = differenceInCalendarWeeks(new Date(), beginningOfYear);
+        let arrSize = differenceInCalendarWeeks(endWeek, startWeek);
+        console.log(`arrSize: ${arrSize}`);
 		let weekday = new Array(arrSize).fill(0);
 		let weekend = new Array(arrSize).fill(0);
 
-		this.props.transactions.forEach(t => {
-			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+        let counter = 0;
 
-			if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
-				if (isWeekend(transactionDate)) {
-					weekend[counter] += t.amount;
-				} else {
-					weekday[counter] += t.amount;
-				}
-			} else if (t.amount > 0) {
-				// I"ve moved to a different week so update counter index
-				counter += differenceInWeeks(transactionDate, currentWeek);
+        pastSixMonths.forEach(t => {
+            let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+            console.log('--------------------------------------------');
+            console.log(`Start Week: ${startWeek.toLocaleDateString()}`);
+            console.log(`Transaction Date: ${transactionDate.toLocaleDateString()}`);
+            console.log(`Is Same Week: ${isSameWeek(startWeek, transactionDate)}`);
 
-				// Put the current transaction amount in the right array
-				if (isWeekend(transactionDate)) {
-					weekend[counter] += t.amount;
-				} else {
-					weekday[counter] += t.amount;
-				}
 
-				// update currentWeek
-				currentWeek = transactionDate;
-			}
+            if (isBefore(transactionDate, endWeek)) {
+                if (isSameWeek(startWeek, transactionDate) && t.amount > 0) {
+                    if (isWeekend(transactionDate)) {
+                        weekend[counter] += t.amount;
+                    } else {
+                        weekday[counter] += t.amount;
+                    }
+                } else if (t.amount > 0) {
+                    console.log(differenceInCalendarWeeks(transactionDate, startWeek));
+                    // I"ve moved to a different week so update counter index
+                    counter += differenceInCalendarWeeks(transactionDate, startWeek);
+
+
+                    // Put the current transaction amount in the right array
+                    if (isWeekend(transactionDate)) {
+                        weekend[counter] += t.amount;
+                    } else {
+                        weekday[counter] += t.amount;
+                    }
+
+                    // update currentWeek
+                    startWeek = transactionDate;
+                }
+            }
+
+            console.log(`Counter: ${counter}`);
 		});
 
 		const chartData = {
@@ -277,15 +317,17 @@ class Statistics extends Component {
 					data:  weekday,
 					fill:  false,
 					label:  "Weekday",
-					backgroundColor:  "rgb( 77,  153, 114)",
-					borderColor: "rgb(77, 153, 114)",
+					backgroundColor: "rgba(77,  153, 114, .7)",
+                    borderColor: "rgba(77, 153, 114, .7)",
+                    fill: 'origin'
 				},
 				{
 					data: weekend,
 					fill: false,
 					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
-					borderColor: "rgb(52, 108, 161)",
+                    borderColor: "rgb(52, 108, 161)",
+                    fill: 'origin'
 				}
 			],
 			options: {
