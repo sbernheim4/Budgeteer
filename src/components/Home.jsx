@@ -150,13 +150,6 @@ class Home extends Component {
 		this.setState({ transactions: currentTransactions });
 	}
 
-	numDaysPassedFromBeginningOfYear() {
-		let now = new Date();
-		let beginningOfYear = new Date(now.getFullYear(), 0, 1);
-
-		return differenceInDays(now, beginningOfYear);
-    }
-
 	render() {
 
 		// Conditional Rendering
