@@ -256,13 +256,9 @@ class Statistics extends Component {
         let endWeek = new Date();
         endWeek = startOfWeek(endWeek, { weekStartsOn: 1 });
 
-        console.log(`endWeek: ${endWeek}`);
-
-
 		// Arrays only need to be as large as how many weeks have passed in the year so far
 		// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
         let arrSize = differenceInCalendarWeeks(endWeek, startWeek);
-        console.log(`arrSize: ${arrSize}`);
 		let weekday = new Array(arrSize).fill(0);
 		let weekend = new Array(arrSize).fill(0);
 
@@ -304,7 +300,7 @@ class Statistics extends Component {
                     stack: "Stack 0",
 					data:  weekday,
 					fill:  false,
-					label:  "Weekday",
+					label:  "Week",
 					backgroundColor: "rgb(77,  153, 114)",
                     borderColor: "rgb(77, 153, 114)",
 				},
