@@ -1,3 +1,6 @@
+/* Used to ensure proper order of CSS */
+const StyleLintPlugin = require("stylelint-webpack-plugin");
+
 module.exports = {
 	devtool: "source-map", // Enables source maps for both JS(X) and (S)CSS
 	entry: "./src/components/index.jsx",
@@ -37,6 +40,12 @@ module.exports = {
 	resolve: {
 		extensions: ["*", ".js", "jsx", ".scss"]
 	},
-	plugins: []
+	plugins: [
+        // CSS Linter based on rules set in the .stylelintrc file
+        new StyleLintPlugin({
+            configFile: "./.stylelintrc",
+            files: "./src/scss/*.scss"
+        })
+    ]
 };
 
