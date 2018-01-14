@@ -25,7 +25,7 @@ class Statistics extends Component {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-            weekVsWeekend: {}
+			weekVsWeekend: {}
 		}
 	}
 
@@ -34,7 +34,7 @@ class Statistics extends Component {
 
 		this.generateDoughnutChart();
 		this.generateMonthlyBarChart();
-        this.generateLineChart();
+		this.generateLineChart();
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -45,59 +45,59 @@ class Statistics extends Component {
 		amts.fill(0);
 
 		this.props.transactions.forEach(t => {
-            let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-            if (isSameMonth(transactionDate, new Date)) {
-                let category = (t.category || [""])[0];
-                let amount = t.amount;
+			if (isSameMonth(transactionDate, new Date)) {
+				let category = (t.category || [""])[0];
+				let amount = t.amount;
 
-                // TODO: Try cleaning up the switch statements to something like this
-                // amts[t.category] += t.amount;
+				// TODO: Try cleaning up the switch statements to something like this
+				// amts[t.category] += t.amount;
 
-                switch (category) {
-                    case "Food and Drink":
-                        amts[0] += amount;
-                        break;
-                    case "Travel":
-                        amts[1] += amount;
-                        break;
-                    case "Shops":
-                        amts[2] += amount;
-                        break;
-                    case "Recreation":
-                        amts[3] += amount;
-                        break;
-                    case "Service":
-                        amts[4] += amount;
-                        break;
-                    case "Community":
-                        amts[5] += amount;
-                        break;
-                    case "Healthcare":
-                        amts[6] += amount;
-                        break;
-                    case "Bank Fees":
-                        amts[7] += amount;
-                        break;
-                    case "Cash Advance":
-                        amts[8] += amount;
-                        break;
-                    case "Interest":
-                        amts[9] += amount;
-                        break;
-                    case "Payment":
-                        amts[10] += amount;
-                        break;
-                    case "Tax":
-                        amts[11] += amount;
-                        break;
-                    case "Transfer":
-                        amts[12] += amount;
-                        break;
-                    default:
-                        amts[13] += amount
-                }
-            }
+				switch (category) {
+					case "Food and Drink":
+						amts[0] += amount;
+						break;
+					case "Travel":
+						amts[1] += amount;
+						break;
+					case "Shops":
+						amts[2] += amount;
+						break;
+					case "Recreation":
+						amts[3] += amount;
+						break;
+					case "Service":
+						amts[4] += amount;
+						break;
+					case "Community":
+						amts[5] += amount;
+						break;
+					case "Healthcare":
+						amts[6] += amount;
+						break;
+					case "Bank Fees":
+						amts[7] += amount;
+						break;
+					case "Cash Advance":
+						amts[8] += amount;
+						break;
+					case "Interest":
+						amts[9] += amount;
+						break;
+					case "Payment":
+						amts[10] += amount;
+						break;
+					case "Tax":
+						amts[11] += amount;
+						break;
+					case "Transfer":
+						amts[12] += amount;
+						break;
+					default:
+						amts[13] += amount
+				}
+			}
 		});
 
 		// Normalize each value to always have two decimals
@@ -176,22 +176,22 @@ class Statistics extends Component {
 		// Round the amounts to two decimals
 		amounts = amounts.map(val => {
 			return helpers.formatAmount(val);
-        });
+		});
 
-        let monthsDefault = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
-        let currMonth = new Date().getMonth(); // 0
+		let monthsDefault = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
+		let currMonth = new Date().getMonth(); // 0
 
 
-        // Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
-        let orderedLabels = [];
-        for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
-            orderedLabels.push(monthsDefault[i % 12]);
-        }
+		// Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
+		let orderedLabels = [];
+		for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
+			orderedLabels.push(monthsDefault[i % 12]);
+		}
 
-        let orderedAmounts = [];
-        for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
-            orderedAmounts.push(amounts[i % 12]);
-        }
+		let orderedAmounts = [];
+		for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
+			orderedAmounts.push(amounts[i % 12]);
+		}
 
 		const lineData = {
 			labels: orderedLabels,
@@ -210,7 +210,7 @@ class Statistics extends Component {
 			},
 			{
 				type: "bar",
-                data: orderedAmounts,
+				data: orderedAmounts,
 				label: "Monthly Spending",
 				backgroundColor: "rgb(77, 153, 114)",
 				borderColor: "rgb(77, 153, 114)",
@@ -231,7 +231,7 @@ class Statistics extends Component {
 	/************************************* Line Chart *************************************/
 
 
-    // TODO: MATH NEEDS TO BE REDONE SINCE I AM NOW GOING AS FAR BACK AS ONE YEAR
+	// TODO: MATH NEEDS TO BE REDONE SINCE I AM NOW GOING AS FAR BACK AS ONE YEAR
 	generateLineChart() {
 
 		// Sort the transactions from oldest to newest --> [oldest, ..., newest]
@@ -240,56 +240,56 @@ class Statistics extends Component {
 			let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
 			let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateA - dateB;
-        });
-        // Only really care about the past 6 months, not a full year
-        pastSixMonths = pastSixMonths.slice(this.props.transactions.length / 2);
+		});
+		// Only really care about the past 6 months, not a full year
+		pastSixMonths = pastSixMonths.slice(this.props.transactions.length / 2);
 
-        // Start date is the Monday following the first transaction
-        let firstDate = pastSixMonths[0].date;
-        let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
-        // startWeek = addWeeks(startWeek, 1);
-        startWeek = startOfWeek(startWeek, { weekStartsOn: 1 });
+		// Start date is the Monday following the first transaction
+		let firstDate = pastSixMonths[0].date;
+		let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
+		// startWeek = addWeeks(startWeek, 1);
+		startWeek = startOfWeek(startWeek, { weekStartsOn: 1 });
 
-        // End week is always the current week - 1 --> This is because data for
-        // the current week is definitionally incomplete so I can only get
-        // complete information for last week
-        let endWeek = new Date();
-        endWeek = startOfWeek(endWeek, { weekStartsOn: 1 });
+		// End week is always the current week - 1 --> This is because data for
+		// the current week is definitionally incomplete so I can only get
+		// complete information for last week
+		let endWeek = new Date();
+		endWeek = startOfWeek(endWeek, { weekStartsOn: 1 });
 
 		// Arrays only need to be as large as how many weeks have passed in the year so far
 		// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
-        let arrSize = differenceInCalendarWeeks(endWeek, startWeek);
+		let arrSize = differenceInCalendarWeeks(endWeek, startWeek);
 		let weekday = new Array(arrSize).fill(0);
 		let weekend = new Array(arrSize).fill(0);
 
-        let counter = 0;
+		let counter = 0;
 
-        pastSixMonths.forEach(t => {
-            let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+		pastSixMonths.forEach(t => {
+			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-            if (isBefore(transactionDate, endWeek)) {
-                if (isSameWeek(startWeek, transactionDate) && t.amount > 0) {
-                    if (isWeekend(transactionDate)) {
-                        weekend[counter] += t.amount;
-                    } else {
-                        weekday[counter] += t.amount;
-                    }
-                } else if (t.amount > 0) {
-                    // I"ve moved to a different week so update counter index
-                    counter += differenceInCalendarWeeks(transactionDate, startWeek);
+			if (isBefore(transactionDate, endWeek)) {
+				if (isSameWeek(startWeek, transactionDate) && t.amount > 0) {
+					if (isWeekend(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+				} else if (t.amount > 0) {
+					// I"ve moved to a different week so update counter index
+					counter += differenceInCalendarWeeks(transactionDate, startWeek);
 
 
-                    // Put the current transaction amount in the right array
-                    if (isWeekend(transactionDate)) {
-                        weekend[counter] += t.amount;
-                    } else {
-                        weekday[counter] += t.amount;
-                    }
+					// Put the current transaction amount in the right array
+					if (isWeekend(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
 
-                    // update currentWeek
-                    startWeek = transactionDate;
-                }
-            }
+					// update currentWeek
+					startWeek = transactionDate;
+				}
+			}
 		});
 
 		const chartData = {
@@ -297,34 +297,33 @@ class Statistics extends Component {
 			label: "Week vs Weekend Spending for the past 52 Weeks",
 			datasets:  [
 				{
-                    stack: "Stack 0",
+					stack: "Stack 0",
 					data:  weekday,
 					fill:  false,
 					label:  "Week",
 					backgroundColor: "rgb(77,  153, 114)",
-                    borderColor: "rgb(77, 153, 114)",
+					borderColor: "rgb(77, 153, 114)",
 				},
 				{
-                    stack: "Stack 0",
+					stack: "Stack 0",
 					data: weekend,
 					fill: false,
 					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
-                    borderColor: "rgb(52, 108, 161)",
+					borderColor: "rgb(52, 108, 161)",
 				}
 			],
 			options: {
-                title: {
-                    display: true,
-                    text: "Week vs Weekend Spending"
-                },
-
-                responsive: false,
-                scales: {
-                    xAxes: [{
-                        stacked: true
-                    }]
-                }
+				title: {
+					display: true,
+					text: "Week vs Weekend Spending"
+				},
+				responsive: false,
+				scales: {
+					xAxes: [{
+						stacked: true
+					}]
+				}
 			}
 		}
 
@@ -340,7 +339,7 @@ class Statistics extends Component {
 		return arr;
 	}
 
-    /************************************* End Line Chart *************************************/
+	/************************************* End Line Chart *************************************/
 
 
 	render() {
@@ -367,7 +366,7 @@ class Statistics extends Component {
 			</div>
 
 		);
-    }
+	}
 }
 
 export default Statistics;
