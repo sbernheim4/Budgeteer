@@ -4,9 +4,12 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const chalk = require("chalk");
+const compression = require('compression');
 
 const port = process.env.PORT;
 const cacheTime = 31536000000;
+
+app.use(compression());
 
 /******************  SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
 app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } ));
