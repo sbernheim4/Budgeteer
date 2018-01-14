@@ -48,12 +48,12 @@
     "node": "8.9.3"
   },
   "scripts": {
-    "es": "nodemon ./server/index.js",
-    "heroku-prebuild": "npm install --only=dev",
-    "heroku-postbuild": "npx webpack --config webpack.prod.js",
-    "start": "node ./server/index.js",
-    "wds": "webpack-dev-server --hot --inline --config webpack.dev.js",
     "build:dev": "webpack --config webpack.dev.js",
-	  "build:prod": "webpack --config webpack.prod.js"
+    "build:prod": "webpack --config webpack.prod.js",
+    "es": "nodemon ./server/index.js",
+    "heroku-postbuild": "npx webpack --config webpack.prod.js",
+    "heroku-prebuild": "npm install --only=dev",
+    "start": "node ./server/index.js",
+    "wds": "webpack-dev-server --hot --inline --config webpack.dev.js"
   }
 }
