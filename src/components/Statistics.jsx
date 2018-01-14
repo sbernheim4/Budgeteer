@@ -244,11 +244,6 @@ class Statistics extends Component {
         // Only really care about the past 6 months, not a full year
         pastSixMonths = pastSixMonths.slice(this.props.transactions.length / 2);
 
-
-        console.log(`pastSixMonths: `);
-        pastSixMonths.forEach(o => console.log(o.date));
-
-
         // Start date is the Monday following the first transaction
         let firstDate = pastSixMonths[0].date;
         let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
@@ -275,11 +270,6 @@ class Statistics extends Component {
 
         pastSixMonths.forEach(t => {
             let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-            console.log('--------------------------------------------');
-            console.log(`Start Week: ${startWeek.toLocaleDateString()}`);
-            console.log(`Transaction Date: ${transactionDate.toLocaleDateString()}`);
-            console.log(`Is Same Week: ${isSameWeek(startWeek, transactionDate)}`);
-
 
             if (isBefore(transactionDate, endWeek)) {
                 if (isSameWeek(startWeek, transactionDate) && t.amount > 0) {
@@ -289,7 +279,6 @@ class Statistics extends Component {
                         weekday[counter] += t.amount;
                     }
                 } else if (t.amount > 0) {
-                    console.log(differenceInCalendarWeeks(transactionDate, startWeek));
                     // I"ve moved to a different week so update counter index
                     counter += differenceInCalendarWeeks(transactionDate, startWeek);
 
@@ -305,8 +294,6 @@ class Statistics extends Component {
                     startWeek = transactionDate;
                 }
             }
-
-            console.log(`Counter: ${counter}`);
 		});
 
 		const chartData = {
@@ -314,24 +301,34 @@ class Statistics extends Component {
 			label: "Week vs Weekend Spending for the past 52 Weeks",
 			datasets:  [
 				{
+                    stack: "Stack 0",
 					data:  weekday,
 					fill:  false,
 					label:  "Weekday",
-					backgroundColor: "rgba(77,  153, 114, .7)",
-                    borderColor: "rgba(77, 153, 114, .7)",
-                    fill: 'origin'
+					backgroundColor: "rgb(77,  153, 114)",
+                    borderColor: "rgb(77, 153, 114)",
 				},
 				{
+                    stack: "Stack 0",
 					data: weekend,
 					fill: false,
 					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
                     borderColor: "rgb(52, 108, 161)",
-                    fill: 'origin'
 				}
 			],
 			options: {
-				responsive: false
+                title: {
+                    display: true,
+                    text: "Week vs Weekend Spending"
+                },
+
+                responsive: false,
+                scales: {
+                    xAxes: [{
+                        stacked: true
+                    }]
+                }
 			}
 		}
 
@@ -368,7 +365,7 @@ class Statistics extends Component {
 				</div>
 
 				<div className="stats--week-weekend">
-					<Line data={this.state.weekVsWeekend} />
+					<Bar data={this.state.weekVsWeekend} />
 				</div>
 
 			</div>
