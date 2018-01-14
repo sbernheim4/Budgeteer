@@ -24,12 +24,13 @@ module.exports = {
                 use: ["babel-loader"],
             },
             // use sass-loader, css-loader, and style-loader for all scss files
-            // sass-loader converts scss to css
-            // css-loader allows for using import or require statements in the css
-            // style-loader injects the css into the browser in a style tag
+            //    sass-loader - converts scss to css
+            // postcss-loader - runs postcss using postcss.config.js to handle external tools like autoprefixer
+            //     css-loader - allows for using import or require statements in the css
+            //   style-loader - injects the css into the browser in a style tag
             {
                 test: /\.scss$/,
-                use: ["style-loader", "css-loader", "sass-loader"]
+                use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
             }
         ]
     },
