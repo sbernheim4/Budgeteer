@@ -22,42 +22,42 @@ class Home extends Component {
 			transactions: [],
 			accounts: [],
 			account_ids: new Set(),
-            transaction_ids: new Set(),
-            netWorth: 0
+			transaction_ids: new Set(),
+			netWorth: 0
 		};
-    }
+	}
 
-    componentWillMount() {
-        fetch("plaid-api/key-and-env").then(response => {
-            return response.json();
-        }).then(res => {
-            const plaid = Plaid.create({
-                apiVersion: "v2",
-                clientName: "Plaid Walkthrough Demo",
-                env: res.env,
-                product: ["transactions"],
-                key: res.publicKey,
-                onSuccess: function (public_token) {
-                    fetch("/plaid-api/get-access-token", {
-                        method: "post",
-                        headers: {
-                            "Accept": "application/json",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            public_token: public_token,
-                            client_id: "5a24ca6a4e95b836d37e37fe",
-                            secret: "f07a761a591de3cbbc5ac3ba2f4301"
-                        })
-                    });
-                }
-            });
+	componentWillMount() {
+		fetch("plaid-api/key-and-env").then(response => {
+			return response.json();
+		}).then(res => {
+			const plaid = Plaid.create({
+				apiVersion: "v2",
+				clientName: "Plaid Walkthrough Demo",
+				env: res.env,
+				product: ["transactions"],
+				key: res.publicKey,
+				onSuccess: function (public_token) {
+					fetch("/plaid-api/get-access-token", {
+						method: "post",
+						headers: {
+							"Accept": "application/json",
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							public_token: public_token,
+							client_id: "5a24ca6a4e95b836d37e37fe",
+							secret: "f07a761a591de3cbbc5ac3ba2f4301"
+						})
+					});
+				}
+			});
 
-            this.setState({ handler: plaid });
-        }).catch(err => {
-            console.error(err)
-        });
-    }
+			this.setState({ handler: plaid });
+		}).catch(err => {
+			console.error(err)
+		});
+	}
 
 	componentDidMount() {
 
@@ -68,21 +68,21 @@ class Home extends Component {
 	}
 
 	getTransactions() {
-        let now = new Date(); // Jan. 12th 2018
+		let now = new Date(); // Jan. 12th 2018
 
-        let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-        prev = addMonths(prev, 1); // Feb. 12th 2017
-        prev = startOfMonth(prev); // Returns Feb 1st 2017
+		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+		prev = addMonths(prev, 1); // Feb. 12th 2017
+		prev = startOfMonth(prev); // Returns Feb 1st 2017
 
-        let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
-        console.log("Getting data for the past " + numDays + " days");
+		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
+		console.log("Getting data for the past " + numDays + " days");
 
 		fetch("/plaid-api/transactions", {
 			method: "post",
 			headers: {
 				"Accept": "application/json",
 				"Content-Type": "application/json"
-            },
+			},
 			body: JSON.stringify({
 				days: numDays
 			})
@@ -154,20 +154,20 @@ class Home extends Component {
 
 		// Conditional Rendering
 		let accountsContainer = null;
-        let stats = null;
-        let networth = null;
+		let stats = null;
+		let networth = null;
 		if (this.state.transactions.length === 0 || this.state.accounts === 0) {
 			accountsContainer = "";
-            stats = "";
-            networth = "";
+			stats = "";
+			networth = "";
 		} else {
 			accountsContainer = <AccountsContainer
-									transactions={this.state.transactions}
-									accounts={this.state.accounts}
-								/>
+				transactions={this.state.transactions}
+				accounts={this.state.accounts}
+			/>
 
-			stats = <Statistics transactions={this.state.transactions} />
-            networth = <Networth />
+		stats = <Statistics transactions={this.state.transactions} />
+		networth = <Networth />
 		}
 
 		return (
@@ -182,9 +182,9 @@ class Home extends Component {
 					<p>Please first link an account</p>
 				</div>
 
-                {networth}
+				{networth}
 				{accountsContainer}
-                {stats}
+				{stats}
 
 			</div>
 		);
