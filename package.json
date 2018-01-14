@@ -50,7 +50,10 @@
   "scripts": {
     "es": "nodemon ./server/index.js",
     "heroku-prebuild": "npm install --only-dev",
+    "heroku-postbuild": "npm run build:prod",
     "start": "node ./server/index.js",
-    "wp": "webpack-dev-server --hot --inline"
+    "wds": "webpack-dev-server --hot --inline --config webpack.dev.js",
+    "build:dev": "webpack --config webpack.dev.js",
+	  "build:prod": "webpack --config webpack.prod.js"
   }
 }
