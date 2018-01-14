@@ -18,7 +18,9 @@ class AccountsContainer extends Component {
 		};
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
-		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
+        this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
+        this.getDate = this.getDate.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	getAccountTransactions(account_id) {
@@ -99,7 +101,43 @@ class AccountsContainer extends Component {
 			categoryType: categoryString,
 			categoryTotal: total
 		});
-	}
+    }
+
+    getDate(e, val) {
+        this.setState({ [val]: e.target.value });
+    }
+
+    handleSubmit(e) {
+
+        // TODO: Need additional validation if using forms to get data
+        // Ensure month is between 1 and 12
+        // Ensure the day given is between 1 - 30, 1 -31, 1 - 28 or 1 - 29 based on the month and year
+        // Don't allow a range greater than 5 years.
+
+        e.preventDefault();
+        let dateOne = new Date(this.state.yearOne, this.state.monthOne - 1, this.state.dayOne);
+        let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
+
+        fetch('/plaid-api/transactions', {
+            method: 'post',
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                startDate: dateOne,
+                endDate: dateTwo
+            })
+        }).then(data => {
+            return data.json();
+        }).then(data => {
+            console.log(data);
+
+            // TODO: Need a setState for the transactions in data
+        }).catch(err => {
+            console.error(err);
+        });
+    }
 
 	render() {
 
@@ -131,6 +169,51 @@ class AccountsContainer extends Component {
 					<button onClick={() => { this.getCategoryTransactions("Healthcare") }}>Healthcare</button>
 					<button onClick={() => { this.getCategoryTransactions("Other") }}>Other</button>
 				</div>
+
+
+
+                <div className="accounts--date-picker">
+
+                     <form onSubmit={this.handleSubmit}>
+
+                        <div>
+                            <p>Begin Date</p>
+                            <label>Month
+                                <input type="text" vale={this.state.monthOne} onChange={(e) => {this.getDate(e, 'monthOne') }} />
+                            </label>
+
+                            <label>Day
+                                <input type="text" vale={this.state.dayOne} onChange={(e) => { this.getDate(e, 'dayOne') }} />
+                            </label>
+
+                            <label>Year
+                                <input type="text" vale={this.state.yearOne} onChange={(e) => { this.getDate(e, 'yearOne') }} />
+                            </label>
+                        </div>
+
+
+                        <div>
+                            <p>End Date</p>
+                            <label>Month
+                                <input type="text" vale={this.state.monthTwo} onChange={(e) => { this.getDate(e, 'monthTwo') }} />
+                            </label>
+
+                            <label>Day
+                                <input type="text" vale={this.state.dayTwo} onChange={(e) => { this.getDate(e, 'dayTwo') }} />
+                            </label>
+
+                            <label>Year
+                                <input type="text" vale={this.state.YearTwo} onChange={(e) => { this.getDate(e, 'yearTwo') }} />
+                            </label>
+                        </div>
+
+                        <br />
+                        <input type="submit" value="Submit"/>
+
+                    </form>
+
+
+                </div>
 
 				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
 				<h2 className="accounts--totals">{this.state.categoryTotal}</h2>

@@ -75,13 +75,25 @@ app.post("/get-access-token", function(req, res, next) {
 
 app.post("/transactions", function(req, res, next) {
 
-	const days = req.body.days || 30;
+    // Default to past 30 days if no specific date is specified
+    const days = req.body.days || 30;
 
-	// Pull transactions for the Item for the last 30 days
-	const startDate = moment().subtract(days, "days").format("YYYY-MM-DD");
-	const endDate = moment().format("YYYY-MM-DD");
+    let tempStartDate;
+    let tempEndDate;
+    if (req.body.startDate && req.body.endDate) {
+        tempStartDate = moment(new Date(req.body.startDate)).format("YYYY-MM-DD");
+        tempEndDate = moment(new Date(req.body.endDate)).format("YYYY-MM-DD");
+    }
 
-	client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
+    // Default to having today being the start date if no start date or end date were specified
+    const startDate = tempStartDate || moment().subtract(days, "days").format("YYYY-MM-DD");
+    const endDate = tempEndDate || moment().format("YYYY-MM-DD");
+
+    console.log(startDate);
+    console.log(endDate);
+
+
+    client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
 		count: 250,
 		offset: 0,
 	}, function(error, transactionsResponse) {

@@ -23,4 +23,34 @@
 			cursor: pointer;
 		}
 	}
+
+	&--date-picker {
+
+		form {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+
+			div {
+				margin: 10px;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: flex-end;
+
+				p {
+					margin-bottom: 5px;
+				}
+
+				label {
+
+					input {
+						margin-left: 10px;
+						width: 100px;
+						border: 1px solid black;
+					}
+				}
+			}
+		}
+	}
 }

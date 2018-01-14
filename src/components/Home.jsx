@@ -75,7 +75,6 @@ class Home extends Component {
 		prev = startOfMonth(prev); // Returns Feb 1st 2017
 
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
-		console.log("Getting data for the past " + numDays + " days");
 
 		fetch("/plaid-api/transactions", {
 			method: "post",
