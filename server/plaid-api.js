@@ -33,7 +33,6 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-
 app.all("*", (req, res, next) => {
 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
 	next();
@@ -41,7 +40,7 @@ app.all("*", (req, res, next) => {
 
 // Send back the public key and the environment to plaid
 app.get("/key-and-env", (req, res) => {
-	let jsonResponse = {
+	const jsonResponse = {
 		"publicKey": PLAID_PUBLIC_KEY.toString(),
 		"env": PLAID_ENV.toString()
 	}
@@ -50,25 +49,21 @@ app.get("/key-and-env", (req, res) => {
 })
 
 app.post("/get-access-token", function(req, res, next) {
+    PUBLIC_TOKEN = req.body.public_token;
 
-	PUBLIC_TOKEN = req.body.public_token;
-	client.exchangePublicToken(PUBLIC_TOKEN, function(error, tokenResponse) {
-
-		if (error !== null) {
-			let msg = "Could not exchange public_token!";
-			console.log(msg + "\n" + JSON.stringify(error));
-
-			return res.json({
-				error: msg
-			});
-		}
-
-		ACCESS_TOKEN = tokenResponse.access_token;
-		ITEM_ID = tokenResponse.item_id;
-
-		console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
-
-	});
+    client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
+        ACCESS_TOKEN = tokenResponse.access_token;
+        ITEM_ID = tokenResponse.item_id;
+        console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
+    }).catch(err => {
+        if (error !== null) {
+            let msg = "Could not exchange public_token!";
+            console.log(msg + "\n" + JSON.stringify(error));
+            return res.json({
+                error: msg
+            });
+        }
+    });
 });
 
 app.post("/transactions", function(req, res, next) {
@@ -78,6 +73,7 @@ app.post("/transactions", function(req, res, next) {
 
     let tempStartDate;
     let tempEndDate;
+
     if (req.body.startDate && req.body.endDate) {
         tempStartDate = moment(new Date(req.body.startDate)).format("YYYY-MM-DD");
         tempEndDate = moment(new Date(req.body.endDate)).format("YYYY-MM-DD");
@@ -87,25 +83,21 @@ app.post("/transactions", function(req, res, next) {
     const startDate = tempStartDate || moment().subtract(days, "days").format("YYYY-MM-DD");
     const endDate = tempEndDate || moment().format("YYYY-MM-DD");
 
-    console.log(startDate);
-    console.log(endDate);
-
-
     client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
-		count: 250,
-		offset: 0,
-	}, function(error, transactionsResponse) {
-
-		if (error !== null) {
-			console.log(JSON.stringify(error));
-			return res.json({
-				error: error
-			});
-		}
-
-		console.log("pulled " + transactionsResponse.transactions.length + " transactions");
-		res.json(transactionsResponse);
-	});
+        count: 250,
+        offset: 0,
+    }).then(data => {
+        console.log("pulled " + data.transactions.length + " transactions");
+        res.json(data)
+    }).catch(err => {
+        if (err !== null) {
+            console.log("ERROR");
+            console.log(JSON.stringify(err));
+            return res.json({
+                error: err
+            });
+        }
+    });
 });
 
 app.post("/institutions", (req, res) => {
@@ -113,7 +105,7 @@ app.post("/institutions", (req, res) => {
 });
 
 app.post ("/balance", (req, res, next) => {
-	let netWorth = 0;
+    let netWorth = 0;
 
 	client.getBalance(ACCESS_TOKEN).then(res => {
 

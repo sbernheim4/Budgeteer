@@ -38381,7 +38381,6 @@ var Home = function (_Component) {
 			prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
 
 			var numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
-			console.log("Getting data for the past " + numDays + " days");
 
 			fetch("/plaid-api/transactions", {
 				method: "post",
@@ -38550,6 +38549,8 @@ var _helpers2 = _interopRequireDefault(_helpers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -38575,6 +38576,8 @@ var AccountsContainer = function (_Component) {
 
 		_this.getAccountTransactions = _this.getAccountTransactions.bind(_this);
 		_this.getCategoryTransactions = _this.getCategoryTransactions.bind(_this);
+		_this.getDate = _this.getDate.bind(_this);
+		_this.handleSubmit = _this.handleSubmit.bind(_this);
 		return _this;
 	}
 
@@ -38656,6 +38659,44 @@ var AccountsContainer = function (_Component) {
 				categoryTransactions: releventTransactions,
 				categoryType: categoryString,
 				categoryTotal: total
+			});
+		}
+	}, {
+		key: "getDate",
+		value: function getDate(e, val) {
+			this.setState(_defineProperty({}, val, e.target.value));
+		}
+	}, {
+		key: "handleSubmit",
+		value: function handleSubmit(e) {
+
+			// TODO: Need additional validation if using forms to get data
+			// Ensure month is between 1 and 12
+			// Ensure the day given is between 1 - 30, 1 -31, 1 - 28 or 1 - 29 based on the month and year
+			// Don't allow a range greater than 5 years.
+
+			e.preventDefault();
+			var dateOne = new Date(this.state.yearOne, this.state.monthOne - 1, this.state.dayOne);
+			var dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
+
+			fetch('/plaid-api/transactions', {
+				method: 'post',
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					startDate: dateOne,
+					endDate: dateTwo
+				})
+			}).then(function (data) {
+				return data.json();
+			}).then(function (data) {
+				console.log(data);
+
+				// TODO: Need a setState for the transactions in data
+			}).catch(function (err) {
+				console.error(err);
 			});
 		}
 	}, {
@@ -38761,6 +38802,82 @@ var AccountsContainer = function (_Component) {
 								_this2.getCategoryTransactions("Other");
 							} },
 						"Other"
+					)
+				),
+				_react2.default.createElement(
+					"div",
+					{ className: "accounts--date-picker" },
+					_react2.default.createElement(
+						"form",
+						{ onSubmit: this.handleSubmit },
+						_react2.default.createElement(
+							"div",
+							null,
+							_react2.default.createElement(
+								"p",
+								null,
+								"Begin Date"
+							),
+							_react2.default.createElement(
+								"label",
+								null,
+								"Month",
+								_react2.default.createElement("input", { type: "text", vale: this.state.monthOne, onChange: function onChange(e) {
+										_this2.getDate(e, 'monthOne');
+									} })
+							),
+							_react2.default.createElement(
+								"label",
+								null,
+								"Day",
+								_react2.default.createElement("input", { type: "text", vale: this.state.dayOne, onChange: function onChange(e) {
+										_this2.getDate(e, 'dayOne');
+									} })
+							),
+							_react2.default.createElement(
+								"label",
+								null,
+								"Year",
+								_react2.default.createElement("input", { type: "text", vale: this.state.yearOne, onChange: function onChange(e) {
+										_this2.getDate(e, 'yearOne');
+									} })
+							)
+						),
+						_react2.default.createElement(
+							"div",
+							null,
+							_react2.default.createElement(
+								"p",
+								null,
+								"End Date"
+							),
+							_react2.default.createElement(
+								"label",
+								null,
+								"Month",
+								_react2.default.createElement("input", { type: "text", vale: this.state.monthTwo, onChange: function onChange(e) {
+										_this2.getDate(e, 'monthTwo');
+									} })
+							),
+							_react2.default.createElement(
+								"label",
+								null,
+								"Day",
+								_react2.default.createElement("input", { type: "text", vale: this.state.dayTwo, onChange: function onChange(e) {
+										_this2.getDate(e, 'dayTwo');
+									} })
+							),
+							_react2.default.createElement(
+								"label",
+								null,
+								"Year",
+								_react2.default.createElement("input", { type: "text", vale: this.state.YearTwo, onChange: function onChange(e) {
+										_this2.getDate(e, 'yearTwo');
+									} })
+							)
+						),
+						_react2.default.createElement("br", null),
+						_react2.default.createElement("input", { type: "submit", value: "Submit" })
 					)
 				),
 				_react2.default.createElement(
@@ -39063,7 +39180,7 @@ exports = module.exports = __webpack_require__(9)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n\n.accounts--date-picker form {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker form div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker form div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker form div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black; }\n", ""]);
 
 // exports
 
