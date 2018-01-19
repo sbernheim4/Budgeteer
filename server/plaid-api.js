@@ -113,7 +113,6 @@ app.post("/transactions", function(req, res, next) {
     res.json(totalData)
     */
 
-
     client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
         count: 250,
         offset: 0,

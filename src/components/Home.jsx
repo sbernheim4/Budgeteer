@@ -91,13 +91,12 @@ class Home extends Component {
 
         try {
 
-            const response = await fetch("/plaid-api/transactions", fetchOptions);
-            const data = await response.json();
-            console.log(data);
-            await this.storeAccounts(data.accounts);
-            await this.storeTransactions(data.transactions);
+            const response = await fetch("/plaid-api/transactions", fetchOptions); // Fetch transaction info
+            const data = await response.json(); // convert data to json
 
-            this.getNetWorth();
+            await this.storeAccounts(data.accounts); // Store account info
+            await this.storeTransactions(data.transactions); // store transaction info
+            this.getNetWorth(); // store networth
 
         } catch(err) {
             const errorMessage = document.querySelector(".home--error");
@@ -118,12 +117,10 @@ class Home extends Component {
         // Add all the transactions for the new bank the user just selected
         transactions.forEach((t) => {
             if (!currentTransactionIds.has(t.transaction_id)) {
-
                 currentTransactionIds.add(t.transaction_id);
                 currentTransactions.push(t);
             }
         })
-
 
         // Sort the transactions based on account_id
         currentTransactions = currentTransactions.sort((a, b) => {
@@ -139,11 +136,8 @@ class Home extends Component {
         // Get all the connected accounts so far
         let currentAccounts = this.state.accounts;
 
-        console.log(this.state.account_ids);
-
         // Add all the accounts for the new bank the user just selected
         accounts.forEach(acct => {
-            console.log(acct.account_id);
             if (!this.state.account_ids.has(acct.account_id)) {
                 this.state.account_ids.add(acct.account_id);
                 currentAccounts.push(acct);
@@ -166,10 +160,9 @@ class Home extends Component {
             if(acct.balances.available !== null) {
                 netWorth += acct.balances.available;
             }
-        })
-        console.log(`Updated Networth: ${netWorth}`);
-        this.setState({ netWorth: netWorth });
+        });
 
+        this.setState({ netWorth: netWorth });
     }
 
 	render() {
