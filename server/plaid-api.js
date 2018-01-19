@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.all("*", (req, res, next) => {
 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
 	next();
-})
+});
 
 // Send back the public key and the environment to plaid
 app.get("/key-and-env", (req, res) => {
@@ -46,7 +46,7 @@ app.get("/key-and-env", (req, res) => {
 	}
 
 	res.send(jsonResponse);
-})
+});
 
 app.post("/get-access-token", function(req, res, next) {
     PUBLIC_TOKEN = req.body.public_token;
@@ -54,6 +54,7 @@ app.post("/get-access-token", function(req, res, next) {
     client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
         ACCESS_TOKEN = tokenResponse.access_token;
         ITEM_ID = tokenResponse.item_id;
+
         console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
     }).catch(err => {
         if (error !== null) {
@@ -82,6 +83,36 @@ app.post("/transactions", function(req, res, next) {
     // Default to having today being the start date if no start date or end date were specified
     const startDate = tempStartDate || moment().subtract(days, "days").format("YYYY-MM-DD");
     const endDate = tempEndDate || moment().format("YYYY-MM-DD");
+
+    /*
+    Below is an example of how to get data from multiple accounts for a user
+    based on storing access_tokens for their accounts
+
+    // Store access tokens in an array
+    accessTokens = ["access-sandbox-c872291a-38a4-490b-bece-b5d6fe91b75d",
+                    "access-sandbox-1bec78b6-a879-4ea0-8034-67f71ce9413a"
+    ]
+
+    // For each token make a request and log the data to the console
+    // Really it should join all the data together and then send that to the browser
+    data is just a JS object {}
+
+    let totalData = {}
+    accessTokens.forEach(token => {
+        client.getTransactions(token, startDate, endDate, {
+            count: 250,
+            offset: 0,
+        }).then(data => {
+            console.log("------------ NEW DATA ------------");
+            console.log(data)
+            Object.assign(totalData, data)
+            console.log("------------ END DATA ------------");
+        })
+    });
+
+    res.json(totalData)
+    */
+
 
     client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
         count: 250,
@@ -114,7 +145,9 @@ app.post ("/balance", (req, res, next) => {
 			if (acct.balances.available !== null) {
 				netWorth += acct.balances.available;
 			}
-		});
+        });
+
+        console.log("netWorth:", netWorth);
 		return netWorth;
 	}).then( netWorth => {
 		res.json({

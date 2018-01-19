@@ -16,15 +16,21 @@ import "../scss/home.scss";
 
 class Home extends Component {
 	constructor(props) {
-		super(props);
+        super(props);
+
+        let x = new Set();
+        let y = new Set()
 
 		this.state = {
 			transactions: [],
 			accounts: [],
-			account_ids: new Set(),
-			transaction_ids: new Set(),
+			account_ids: x,
+			transaction_ids: y,
 			netWorth: 0
-		};
+        };
+
+        this.addAccount = this.addAccount.bind(this);
+        this.getTransactions = this.getTransactions.bind(this);
 	}
 
 	componentWillMount() {
@@ -59,95 +65,112 @@ class Home extends Component {
 		});
 	}
 
-	componentDidMount() {
-
-	}
-
 	addAccount() {
 		this.state.handler.open();
-	}
+    }
 
-	getTransactions() {
+    async getTransactions() {
+
+        // Setup info for fetch call
 		let now = new Date(); // Jan. 12th 2018
-
 		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
 		prev = addMonths(prev, 1); // Feb. 12th 2017
 		prev = startOfMonth(prev); // Returns Feb 1st 2017
-
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
-		fetch("/plaid-api/transactions", {
-			method: "post",
-			headers: {
-				"Accept": "application/json",
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				days: numDays
-			})
-		}).then(data => {
-			return data.json();
-		}).then(data => {
-			if (!data.transactions || !data.accounts) {
-				const errorMessage = document.querySelector(".home--error");
-				errorMessage.classList.add("home--error__display");
+        let fetchOptions = {
+            method: "post",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                days: numDays
+            })
+        };
 
-				setTimeout(() => {
-					errorMessage.classList.remove("home--error__display")
-				}, 4000)
-			} else {
-				this.storeTransactions(data.transactions);
-				this.storeAccounts(data.accounts);
-			}
-		}).catch(err => {
-			throw err;
-		});
+        try {
+
+            const response = await fetch("/plaid-api/transactions", fetchOptions);
+            const data = await response.json();
+            console.log(data);
+            await this.storeAccounts(data.accounts);
+            await this.storeTransactions(data.transactions);
+
+            this.getNetWorth();
+
+        } catch(err) {
+            const errorMessage = document.querySelector(".home--error");
+            errorMessage.classList.add("home--error__display");
+
+            setTimeout(() => {
+                errorMessage.classList.remove("home--error__display")
+            }, 4000)
+
+            console.error(err);
+        }
 	}
 
-	storeAccounts(accounts) {
-		// Determine if any accounts already exist in the state
-		let currentAccounts = this.state.accounts;
+    async storeTransactions(transactions) {
+        let currentTransactions = this.state.transactions;
+        let currentTransactionIds = this.state.transaction_ids;
 
-		// Add all the accounts for the new bank the user just selected
-		accounts.forEach( acct => {
-			if (!this.state.account_ids.has(acct.account_id)) {
-				this.state.account_ids.add(acct.account_id);
-				currentAccounts.push(acct);
-			}
-		});
+        // Add all the transactions for the new bank the user just selected
+        transactions.forEach((t) => {
+            if (!currentTransactionIds.has(t.transaction_id)) {
 
-		// Sort the accounts based on account_id
-		currentAccounts = currentAccounts.sort( (a, b) => {
-			return a.account_id - b.account_id
-		});
+                currentTransactionIds.add(t.transaction_id);
+                currentTransactions.push(t);
+            }
+        })
 
-		// Update accounts state variable
-		this.setState({accounts: currentAccounts})
-	}
 
-	storeTransactions(transactions) {
-		let currentTransactions = this.state.transactions;
+        // Sort the transactions based on account_id
+        currentTransactions = currentTransactions.sort((a, b) => {
+            return a.account_id - b.account_id;
+        });
 
-		// Add all the transactions for the new bank the user just selected
-		transactions.forEach( (t) => {
-			if (!this.state.transaction_ids.has(t.transaction_id)) {
+        // Update transactions state variable
+        this.setState({ transaction_ids: currentTransactionIds });
+        this.setState({ transactions: currentTransactions });
+    }
 
-				// TODO: the state should not be modified directly --> Use
-				// setState instead later on and store all the new
-				// transaction_ids in a temporary array
-				this.state.transaction_ids.add(t.transaction_id);
-				currentTransactions.push(t);
-			}
-		})
+    async storeAccounts(accounts) {
+        // Get all the connected accounts so far
+        let currentAccounts = this.state.accounts;
 
-		// Sort the transactions based on account_id
-		currentTransactions = currentTransactions.sort((a, b) => {
-			return a.account_id - b.account_id;
-		});
+        console.log(this.state.account_ids);
 
-		// Update transactions state variable
-		this.setState({ transactions: currentTransactions });
-	}
+        // Add all the accounts for the new bank the user just selected
+        accounts.forEach(acct => {
+            console.log(acct.account_id);
+            if (!this.state.account_ids.has(acct.account_id)) {
+                this.state.account_ids.add(acct.account_id);
+                currentAccounts.push(acct);
+            }
+        });
+
+        // Sort the accounts based on account_id
+        currentAccounts = currentAccounts.sort((a, b) => {
+            return a.account_id - b.account_id
+        });
+
+        // Update accounts state variable
+        this.setState({ accounts: currentAccounts })
+    }
+
+    getNetWorth() {
+        let netWorth = 0;
+
+        this.state.accounts.forEach(acct => {
+            if(acct.balances.available !== null) {
+                netWorth += acct.balances.available;
+            }
+        })
+        console.log(`Updated Networth: ${netWorth}`);
+        this.setState({ netWorth: netWorth });
+
+    }
 
 	render() {
 
@@ -165,16 +188,16 @@ class Home extends Component {
 				accounts={this.state.accounts}
 			/>
 
-		stats = <Statistics transactions={this.state.transactions} />
-		networth = <Networth />
+            stats = <Statistics transactions={this.state.transactions} />
+            networth = <Networth netWorth={this.state.netWorth}/>
 		}
 
 		return (
 			<div className="home">
 
 				<div className="home--btns">
-					<button className="home--btns__blue" onClick={this.addAccount.bind(this)}>Add Accounts</button>
-					<button className="home--btns__green" onClick={this.getTransactions.bind(this)}>Get Transactions</button>
+					<button className="home--btns__blue" onClick={this.addAccount}>Add Accounts</button>
+                    <button className="home--btns__green" onClick={this.getTransactions}>Get Transactions</button>
 				</div>
 
 				<div className="home--error">
