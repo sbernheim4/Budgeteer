@@ -16,11 +16,9 @@ const PLAID_SECRET = process.env.PLAID_SECRET;
 const PLAID_PUBLIC_KEY = process.env.PLAID_PUBLIC_KEY;
 const PLAID_ENV = process.env.PLAID_ENV
 
-// TODO:
-// We store the access_token in memory - in production, store it in a secure persistent data store
-let ACCESS_TOKEN = null;
+let ACCESS_TOKENS = null;
 let PUBLIC_TOKEN = null;
-let ITEM_ID = null;
+let ITEM_IDS = null;
 
 // Initialize the Plaid client
 let client = new plaid.Client(
@@ -36,6 +34,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+// Log All Requests
 app.all("*", (req, res, next) => {
 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
     next();
@@ -51,46 +50,57 @@ app.get("/key-and-env", (req, res) => {
 	res.send(jsonResponse);
 });
 
-app.post("/get-access-token", function(req, res, next) {
-
-    user.find({}, function (err, data) {
-        if (err) {
-            console.log(err)
-        } else if (data.length === 0) {
-            // no user previously found
-
-            PUBLIC_TOKEN = req.body.public_token;
-
-            client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
-                ACCESS_TOKEN = tokenResponse.access_token;
-                ITEM_ID = tokenResponse.item_id;
-
-                user.create({
-                    accessTokens: [ACCESS_TOKEN],
-                    itemID: [ITEM_ID]
-                });
-                console.log("USER CREATED");
-
-            }).catch(err => {
-                if (error !== null) {
-                    let msg = "Could not exchange public_token!";
-                    console.log(msg + "\n" + JSON.stringify(error));
-                    return res.json({
-                        error: msg
-                    });
-                }
-            });
+app.post('/set-stored-access-token', (req, res, next) => {
+    user.find({}).then(data => {
+        if (data.length === 0) {
+            res.send("NOT SET");
         } else {
+            console.log("USER FOUND\n");
             // user already exists so get their info from the result of the DB call
-            ACCESS_TOKEN = data[0].accessTokens[0];
-            ITEM_ID = data[0].itemID[0];
+            ACCESS_TOKENS = data[0].accessTokens;
+            ITEM_IDS = data[0].itemID;
+            console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
+            res.json({
+                "SET": true
+            })
         }
-    });
-
-    console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
-
+    })
 });
 
+// Get Access Tokens and Item IDs from Plaid
+app.post("/get-access-token", function(req, res, next) {
+
+    // If ACCESS_TOKENS and ITEM_IDS are not null then return
+    if (ACCESS_TOKENS !== null && ITEM_IDS !== null ) {
+        return;
+    }
+
+    // Otherwise set them
+    PUBLIC_TOKEN = req.body.public_token;
+
+    client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
+        ACCESS_TOKENS = [tokenResponse.access_token];
+        ITEM_IDS = [tokenResponse.item_id];
+
+        user.create({
+            accessTokens: [tokenResponse.access_token],
+            itemID: [tokenResponse.item_id]
+        });
+
+        console.log("USER CREATED");
+        console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
+    }).catch(err => {
+        if (error !== null) {
+            let msg = "Could not exchange public_token!";
+            console.log(msg + "\n" + JSON.stringify(error));
+            return res.json({
+                error: msg
+            });
+        }
+    });
+});
+
+// Get Transaction information
 app.post("/transactions", function(req, res, next) {
 
     // Default to past 30 days if no specific date is specified
@@ -108,79 +118,60 @@ app.post("/transactions", function(req, res, next) {
     const startDate = tempStartDate || moment().subtract(days, "days").format("YYYY-MM-DD");
     const endDate = tempEndDate || moment().format("YYYY-MM-DD");
 
-    /*
-    Below is an example of how to get data from multiple accounts for a user
-    based on storing access_tokens for their accounts
-
-    // Store access tokens in an array
-    accessTokens = ["access-sandbox-c872291a-38a4-490b-bece-b5d6fe91b75d",
-                    "access-sandbox-1bec78b6-a879-4ea0-8034-67f71ce9413a"
-    ]
-
-    // For each token make a request and log the data to the console
-    // Really it should join all the data together and then send that to the browser
-    data is just a JS object {}
-
     let totalData = {}
-    accessTokens.forEach(token => {
+    ACCESS_TOKENS.forEach(token => {
         client.getTransactions(token, startDate, endDate, {
             count: 250,
             offset: 0,
         }).then(data => {
-            console.log("------------ NEW DATA ------------");
-            console.log(data)
             Object.assign(totalData, data)
-            console.log("------------ END DATA ------------");
-        })
+        }).catch(err => {
+            if (err !== null) {
+                console.log("TRANSACTIONS ERROR");
+                console.log(JSON.stringify(err));
+                return res.json({
+                    error: err
+                });
+            }
+        });
     });
 
+    //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
+    // Maybe put it in its own async function and do an await call
     res.json(totalData)
-    */
-
-    client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
-        count: 250,
-        offset: 0,
-    }).then(data => {
-        console.log("pulled " + data.transactions.length + " transactions");
-        res.json(data)
-    }).catch(err => {
-        if (err !== null) {
-            console.log("ERROR");
-            console.log(JSON.stringify(err));
-            return res.json({
-                error: err
-            });
-        }
-    });
 });
 
-app.post("/institutions", (req, res) => {
-	client.getInstitutions()
-});
+// app.post("/institutions", (req, res) => {
+// 	client.getInstitutions()
+// });
 
+// Get Balances
 app.post ("/balance", (req, res, next) => {
     let netWorth = 0;
 
-	client.getBalance(ACCESS_TOKEN).then(res => {
+    ACCESS_TOKENS.forEach(token => {
+        client.getBalance(token).then(res => {
+            // Sum up balances for each linked account
+            res.accounts.forEach(acct => {
+                if (acct.balances.available !== null) {
+                    netWorth += acct.balances.available;
+                }
+            });
+        }).catch(err => {
+            console.log("BALANCE ERROR");
+            console.log(JSON.stringify(err));
 
-		// Sum up balances for each linked account
-		res.accounts.forEach(acct => {
-			if (acct.balances.available !== null) {
-				netWorth += acct.balances.available;
-			}
+            return res.json({
+                error: err
+            });
         });
+    });
 
-        console.log("netWorth:", netWorth);
-		return netWorth;
-	}).then( netWorth => {
-		res.json({
-			"netWorth": netWorth
-		});
-	}).catch(err => {
-		console.error(err);
-	});
-
+    //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
+    // Maybe put it in its own async function and do an await call
+    res.json({
+        "netWorth": netWorth
+    })
 });
-
 
 module.exports = app;

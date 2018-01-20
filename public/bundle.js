@@ -39519,7 +39519,7 @@ module.exports = function (css) {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _regenerator = __webpack_require__(270);
@@ -39603,307 +39603,320 @@ __webpack_require__(499);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Home = function (_Component) {
-  (0, _inherits3.default)(Home, _Component);
+    (0, _inherits3.default)(Home, _Component);
 
-  function Home(props) {
-    (0, _classCallCheck3.default)(this, Home);
+    function Home(props) {
+        (0, _classCallCheck3.default)(this, Home);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (Home.__proto__ || (0, _getPrototypeOf2.default)(Home)).call(this, props));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (Home.__proto__ || (0, _getPrototypeOf2.default)(Home)).call(this, props));
 
-    var x = new _set2.default();
-    var y = new _set2.default();
+        var x = new _set2.default();
+        var y = new _set2.default();
 
-    _this.state = {
-      transactions: [],
-      accounts: [],
-      account_ids: x,
-      transaction_ids: y,
-      netWorth: 0
-    };
+        _this.state = {
+            transactions: [],
+            accounts: [],
+            account_ids: x,
+            transaction_ids: y,
+            netWorth: 0
+        };
 
-    _this.addAccount = _this.addAccount.bind(_this);
-    _this.getTransactions = _this.getTransactions.bind(_this);
-    return _this;
-  }
-
-  (0, _createClass3.default)(Home, [{
-    key: "componentWillMount",
-    value: function componentWillMount() {
-      var _this2 = this;
-
-      fetch("plaid-api/key-and-env").then(function (response) {
-        return response.json();
-      }).then(function (res) {
-        var plaid = Plaid.create({
-          apiVersion: "v2",
-          clientName: "Plaid Walkthrough Demo",
-          env: res.env,
-          product: ["transactions"],
-          key: res.publicKey,
-          onSuccess: function onSuccess(public_token) {
-            fetch("/plaid-api/get-access-token", {
-              method: "post",
-              headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-              },
-              body: (0, _stringify2.default)({
-                public_token: public_token,
-                client_id: "5a24ca6a4e95b836d37e37fe",
-                secret: "f07a761a591de3cbbc5ac3ba2f4301"
-              })
-            });
-          }
-        });
-
-        _this2.setState({ handler: plaid });
-      }).catch(function (err) {
-        console.error(err);
-      });
+        _this.addAccount = _this.addAccount.bind(_this);
+        _this.getTransactions = _this.getTransactions.bind(_this);
+        return _this;
     }
-  }, {
-    key: "addAccount",
-    value: function addAccount() {
-      this.state.handler.open();
-    }
-  }, {
-    key: "getTransactions",
-    value: function () {
-      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-        var now, prev, numDays, fetchOptions, response, data, errorMessage;
-        return _regenerator2.default.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
 
-                // Setup info for fetch call
-                now = new Date(); // Jan. 12th 2018
+    (0, _createClass3.default)(Home, [{
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            var _this2 = this;
 
-                prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-
-                prev = (0, _add_months2.default)(prev, 1); // Feb. 12th 2017
-                prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
-                numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
-
-                fetchOptions = {
-                  method: "post",
-                  headers: {
+            // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
+            fetch("plaid-api/set-stored-access-token", {
+                method: "POST",
+                headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json"
-                  },
-                  body: (0, _stringify2.default)({
-                    days: numDays
-                  })
-                };
-                _context.prev = 6;
-                _context.next = 9;
-                return fetch("/plaid-api/transactions", fetchOptions);
-
-              case 9:
-                response = _context.sent;
-                _context.next = 12;
+                }
+            }).then(function (res) {
+                return res.json();
+            }).then(function (res) {
+                console.log(res.SET);
+                if (res.SET) throw new Error("SET");
+                fetch("plaid-api/key-and-env");
+            }).then(function (response) {
                 return response.json();
-
-              case 12:
-                data = _context.sent;
-                _context.next = 15;
-                return this.storeAccounts(data.accounts);
-
-              case 15:
-                _context.next = 17;
-                return this.storeTransactions(data.transactions);
-
-              case 17:
-                // store transaction info
-                this.getNetWorth(); // store networth
-
-                _context.next = 26;
-                break;
-
-              case 20:
-                _context.prev = 20;
-                _context.t0 = _context["catch"](6);
-                errorMessage = document.querySelector(".home--error");
-
-                errorMessage.classList.add("home--error__display");
-
-                setTimeout(function () {
-                  errorMessage.classList.remove("home--error__display");
-                }, 4000);
-
-                console.error(_context.t0);
-
-              case 26:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this, [[6, 20]]);
-      }));
-
-      function getTransactions() {
-        return _ref.apply(this, arguments);
-      }
-
-      return getTransactions;
-    }()
-  }, {
-    key: "storeTransactions",
-    value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(transactions) {
-        var currentTransactions, currentTransactionIds;
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                currentTransactions = this.state.transactions;
-                currentTransactionIds = this.state.transaction_ids;
-
-                // Add all the transactions for the new bank the user just selected
-
-                transactions.forEach(function (t) {
-                  if (!currentTransactionIds.has(t.transaction_id)) {
-                    currentTransactionIds.add(t.transaction_id);
-                    currentTransactions.push(t);
-                  }
+            }).then(function (res) {
+                var plaid = Plaid.create({
+                    apiVersion: "v2",
+                    clientName: "Plaid Walkthrough Demo",
+                    env: res.env,
+                    product: ["transactions"],
+                    key: res.publicKey,
+                    onSuccess: function onSuccess(public_token) {
+                        fetch("/plaid-api/get-access-token", {
+                            method: "post",
+                            headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/json"
+                            },
+                            body: (0, _stringify2.default)({
+                                public_token: public_token,
+                                client_id: "5a24ca6a4e95b836d37e37fe",
+                                secret: "f07a761a591de3cbbc5ac3ba2f4301"
+                            })
+                        });
+                    }
                 });
 
-                // Sort the transactions based on account_id
-                currentTransactions = currentTransactions.sort(function (a, b) {
-                  return a.account_id - b.account_id;
-                });
-
-                // Update transactions state variable
-                this.setState({ transaction_ids: currentTransactionIds });
-                this.setState({ transactions: currentTransactions });
-
-              case 6:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-
-      function storeTransactions(_x) {
-        return _ref2.apply(this, arguments);
-      }
-
-      return storeTransactions;
-    }()
-  }, {
-    key: "storeAccounts",
-    value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(accounts) {
-        var _this3 = this;
-
-        var currentAccounts;
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                // Get all the connected accounts so far
-                currentAccounts = this.state.accounts;
-
-                // Add all the accounts for the new bank the user just selected
-
-                accounts.forEach(function (acct) {
-                  if (!_this3.state.account_ids.has(acct.account_id)) {
-                    _this3.state.account_ids.add(acct.account_id);
-                    currentAccounts.push(acct);
-                  }
-                });
-
-                // Sort the accounts based on account_id
-                currentAccounts = currentAccounts.sort(function (a, b) {
-                  return a.account_id - b.account_id;
-                });
-
-                // Update accounts state variable
-                this.setState({ accounts: currentAccounts });
-
-              case 4:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      function storeAccounts(_x2) {
-        return _ref3.apply(this, arguments);
-      }
-
-      return storeAccounts;
-    }()
-  }, {
-    key: "getNetWorth",
-    value: function getNetWorth() {
-      var netWorth = 0;
-
-      this.state.accounts.forEach(function (acct) {
-        if (acct.balances.available !== null) {
-          netWorth += acct.balances.available;
+                _this2.setState({ handler: plaid });
+            }).catch(function (err) {
+                console.error(err);
+            });
         }
-      });
+    }, {
+        key: "addAccount",
+        value: function addAccount() {
+            this.state.handler.open();
+        }
+    }, {
+        key: "getTransactions",
+        value: function () {
+            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+                var now, prev, numDays, fetchOptions, response, data, errorMessage;
+                return _regenerator2.default.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
 
-      this.setState({ netWorth: netWorth });
-    }
-  }, {
-    key: "render",
-    value: function render() {
+                                // Setup info for fetch call
+                                now = new Date(); // Jan. 12th 2018
 
-      // Conditional Rendering
-      var accountsContainer = null;
-      var stats = null;
-      var networth = null;
-      if (this.state.transactions.length === 0 || this.state.accounts === 0) {
-        accountsContainer = "";
-        stats = "";
-        networth = "";
-      } else {
-        accountsContainer = _react2.default.createElement(_AccountsContainer2.default, {
-          transactions: this.state.transactions,
-          accounts: this.state.accounts
-        });
+                                prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
 
-        stats = _react2.default.createElement(_Statistics2.default, { transactions: this.state.transactions });
-        networth = _react2.default.createElement(_Networth2.default, { netWorth: this.state.netWorth });
-      }
+                                prev = (0, _add_months2.default)(prev, 1); // Feb. 12th 2017
+                                prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
+                                numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
 
-      return _react2.default.createElement(
-        "div",
-        { className: "home" },
-        _react2.default.createElement(
-          "div",
-          { className: "home--btns" },
-          _react2.default.createElement(
-            "button",
-            { className: "home--btns__blue", onClick: this.addAccount },
-            "Add Accounts"
-          ),
-          _react2.default.createElement(
-            "button",
-            { className: "home--btns__green", onClick: this.getTransactions },
-            "Get Transactions"
-          )
-        ),
-        _react2.default.createElement(
-          "div",
-          { className: "home--error" },
-          _react2.default.createElement(
-            "p",
-            null,
-            "Please first link an account"
-          )
-        ),
-        networth,
-        accountsContainer,
-        stats
-      );
-    }
-  }]);
-  return Home;
+                                fetchOptions = {
+                                    method: "post",
+                                    headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: (0, _stringify2.default)({
+                                        days: numDays
+                                    })
+                                };
+                                _context.prev = 6;
+                                _context.next = 9;
+                                return fetch("/plaid-api/transactions", fetchOptions);
+
+                            case 9:
+                                response = _context.sent;
+                                _context.next = 12;
+                                return response.json();
+
+                            case 12:
+                                data = _context.sent;
+                                _context.next = 15;
+                                return this.storeAccounts(data.accounts);
+
+                            case 15:
+                                _context.next = 17;
+                                return this.storeTransactions(data.transactions);
+
+                            case 17:
+                                // store transaction info
+                                this.getNetWorth(); // store networth
+
+                                _context.next = 26;
+                                break;
+
+                            case 20:
+                                _context.prev = 20;
+                                _context.t0 = _context["catch"](6);
+                                errorMessage = document.querySelector(".home--error");
+
+                                errorMessage.classList.add("home--error__display");
+
+                                setTimeout(function () {
+                                    errorMessage.classList.remove("home--error__display");
+                                }, 4000);
+
+                                console.error(_context.t0);
+
+                            case 26:
+                            case "end":
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this, [[6, 20]]);
+            }));
+
+            function getTransactions() {
+                return _ref.apply(this, arguments);
+            }
+
+            return getTransactions;
+        }()
+    }, {
+        key: "storeTransactions",
+        value: function () {
+            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(transactions) {
+                var currentTransactions, currentTransactionIds;
+                return _regenerator2.default.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                currentTransactions = this.state.transactions;
+                                currentTransactionIds = this.state.transaction_ids;
+
+                                // Add all the transactions for the new bank the user just selected
+
+                                transactions.forEach(function (t) {
+                                    if (!currentTransactionIds.has(t.transaction_id)) {
+                                        currentTransactionIds.add(t.transaction_id);
+                                        currentTransactions.push(t);
+                                    }
+                                });
+
+                                // Sort the transactions based on account_id
+                                currentTransactions = currentTransactions.sort(function (a, b) {
+                                    return a.account_id - b.account_id;
+                                });
+
+                                // Update transactions state variable
+                                this.setState({ transaction_ids: currentTransactionIds });
+                                this.setState({ transactions: currentTransactions });
+
+                            case 6:
+                            case "end":
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, this);
+            }));
+
+            function storeTransactions(_x) {
+                return _ref2.apply(this, arguments);
+            }
+
+            return storeTransactions;
+        }()
+    }, {
+        key: "storeAccounts",
+        value: function () {
+            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(accounts) {
+                var _this3 = this;
+
+                var currentAccounts;
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                // Get all the connected accounts so far
+                                currentAccounts = this.state.accounts;
+
+                                // Add all the accounts for the new bank the user just selected
+
+                                accounts.forEach(function (acct) {
+                                    if (!_this3.state.account_ids.has(acct.account_id)) {
+                                        _this3.state.account_ids.add(acct.account_id);
+                                        currentAccounts.push(acct);
+                                    }
+                                });
+
+                                // Sort the accounts based on account_id
+                                currentAccounts = currentAccounts.sort(function (a, b) {
+                                    return a.account_id - b.account_id;
+                                });
+
+                                // Update accounts state variable
+                                this.setState({ accounts: currentAccounts });
+
+                            case 4:
+                            case "end":
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function storeAccounts(_x2) {
+                return _ref3.apply(this, arguments);
+            }
+
+            return storeAccounts;
+        }()
+    }, {
+        key: "getNetWorth",
+        value: function getNetWorth() {
+            var netWorth = 0;
+
+            this.state.accounts.forEach(function (acct) {
+                if (acct.balances.available !== null) {
+                    netWorth += acct.balances.available;
+                }
+            });
+
+            this.setState({ netWorth: netWorth });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+
+            // Conditional Rendering
+            var accountsContainer = null;
+            var stats = null;
+            var networth = null;
+            if (this.state.transactions.length === 0 || this.state.accounts === 0) {
+                accountsContainer = "";
+                stats = "";
+                networth = "";
+            } else {
+                accountsContainer = _react2.default.createElement(_AccountsContainer2.default, {
+                    transactions: this.state.transactions,
+                    accounts: this.state.accounts
+                });
+
+                stats = _react2.default.createElement(_Statistics2.default, { transactions: this.state.transactions });
+                networth = _react2.default.createElement(_Networth2.default, { netWorth: this.state.netWorth });
+            }
+
+            return _react2.default.createElement(
+                "div",
+                { className: "home" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "home--btns" },
+                    _react2.default.createElement(
+                        "button",
+                        { className: "home--btns__blue", onClick: this.addAccount },
+                        "Add Accounts"
+                    ),
+                    _react2.default.createElement(
+                        "button",
+                        { className: "home--btns__green", onClick: this.getTransactions },
+                        "Get Transactions"
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "home--error" },
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Please first link an account"
+                    )
+                ),
+                networth,
+                accountsContainer,
+                stats
+            );
+        }
+    }]);
+    return Home;
 }(_react.Component);
 
 exports.default = Home;

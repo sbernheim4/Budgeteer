@@ -34,7 +34,21 @@ class Home extends Component {
 	}
 
 	componentWillMount() {
-		fetch("plaid-api/key-and-env").then(response => {
+
+        // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
+        fetch("plaid-api/set-stored-access-token", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        }).then( res => {
+            return res.json()
+        }).then(res => {
+            console.log(res.SET);
+            if (res.SET) throw new Error("SET");
+            fetch("plaid-api/key-and-env");
+        }).then(response => {
 			return response.json();
 		}).then(res => {
 			const plaid = Plaid.create({
@@ -55,7 +69,7 @@ class Home extends Component {
 							client_id: "5a24ca6a4e95b836d37e37fe",
 							secret: "f07a761a591de3cbbc5ac3ba2f4301"
 						})
-					});
+                    });
 				}
 			});
 
