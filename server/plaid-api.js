@@ -8,6 +8,9 @@ const bodyParser = require("body-parser");
 const moment = require("moment");
 const plaid = require("plaid");
 
+const mongoose = require('mongoose');
+const user = mongoose.model('User');
+
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
 const PLAID_PUBLIC_KEY = process.env.PLAID_PUBLIC_KEY;
@@ -35,7 +38,7 @@ app.use(bodyParser.json());
 
 app.all("*", (req, res, next) => {
 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
-	next();
+    next();
 });
 
 // Send back the public key and the environment to plaid
@@ -49,22 +52,43 @@ app.get("/key-and-env", (req, res) => {
 });
 
 app.post("/get-access-token", function(req, res, next) {
-    PUBLIC_TOKEN = req.body.public_token;
 
-    client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
-        ACCESS_TOKEN = tokenResponse.access_token;
-        ITEM_ID = tokenResponse.item_id;
+    user.find({}, function (err, data) {
+        if (err) {
+            console.log(err)
+        } else if (data.length === 0) {
+            // no user previously found
 
-        console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
-    }).catch(err => {
-        if (error !== null) {
-            let msg = "Could not exchange public_token!";
-            console.log(msg + "\n" + JSON.stringify(error));
-            return res.json({
-                error: msg
+            PUBLIC_TOKEN = req.body.public_token;
+
+            client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
+                ACCESS_TOKEN = tokenResponse.access_token;
+                ITEM_ID = tokenResponse.item_id;
+
+                user.create({
+                    accessTokens: [ACCESS_TOKEN],
+                    itemID: [ITEM_ID]
+                });
+                console.log("USER CREATED");
+
+            }).catch(err => {
+                if (error !== null) {
+                    let msg = "Could not exchange public_token!";
+                    console.log(msg + "\n" + JSON.stringify(error));
+                    return res.json({
+                        error: msg
+                    });
+                }
             });
+        } else {
+            // user already exists so get their info from the result of the DB call
+            ACCESS_TOKEN = data[0].accessTokens[0];
+            ITEM_ID = data[0].itemID[0];
         }
     });
+
+    console.log(chalk.green("✓✓✓ ACCESS_TOKEN and ITEM_ID have been set ✓✓✓"));
+
 });
 
 app.post("/transactions", function(req, res, next) {
