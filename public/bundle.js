@@ -39720,11 +39720,11 @@ var Home = function (_Component) {
                             case 12:
                                 data = _context.sent;
                                 _context.next = 15;
-                                return this.storeAccounts(data.accounts);
+                                return this.storeAccounts(data[0].accounts);
 
                             case 15:
                                 _context.next = 17;
-                                return this.storeTransactions(data.transactions);
+                                return this.storeTransactions(data[0].transactions);
 
                             case 17:
                                 // store transaction info

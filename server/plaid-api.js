@@ -101,7 +101,7 @@ app.post("/get-access-token", function(req, res, next) {
 });
 
 // Get Transaction information
-app.post("/transactions", function(req, res, next) {
+app.post("/transactions", async function(req, res, next) {
 
     // Default to past 30 days if no specific date is specified
     const days = req.body.days || 30;
@@ -118,28 +118,43 @@ app.post("/transactions", function(req, res, next) {
     const startDate = tempStartDate || moment().subtract(days, "days").format("YYYY-MM-DD");
     const endDate = tempEndDate || moment().format("YYYY-MM-DD");
 
-    let totalData = {}
-    ACCESS_TOKENS.forEach(token => {
-        client.getTransactions(token, startDate, endDate, {
-            count: 250,
-            offset: 0,
-        }).then(data => {
-            Object.assign(totalData, data)
-        }).catch(err => {
-            if (err !== null) {
-                console.log("TRANSACTIONS ERROR");
-                console.log(JSON.stringify(err));
-                return res.json({
-                    error: err
-                });
-            }
+    try {
+        const promiseArray = ACCESS_TOKENS.map((token) => {
+            const content = client.getTransactions(token, startDate, endDate, {
+                count: 250,
+                offset: 0,
+            })
+            return content;
         });
-    });
+
+        let totalData = await Promise.all(promiseArray);
+        console.log(totalData);
+        res.json(totalData);
+
+    } catch (err) {
+        if (err !== null) {
+            console.log("TRANSACTIONS ERROR");
+            console.log(JSON.stringify(err));
+            console.log(err);
+            return res.json({
+                error: err
+            });
+        }
+    }
+
+    // .then(data => {
+    //     Object.assign(totalData, data)
+    // }).catch(err => {
+    //
+    //     }
+    // });
 
     //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
     // Maybe put it in its own async function and do an await call
-    res.json(totalData)
+
 });
+
+
 
 // app.post("/institutions", (req, res) => {
 // 	client.getInstitutions()
