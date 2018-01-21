@@ -112,7 +112,6 @@ class Home extends Component {
         try {
             const response = await fetch("/plaid-api/transactions", fetchOptions); // Fetch transaction info
             const data = await response.json(); // convert data to json
-            console.log(data);
 
             // TODO: Might need to have a foreach loop if the way it gets
             // aggregated is in a new index of the array

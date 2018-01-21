@@ -39746,29 +39746,23 @@ var Home = function (_Component) {
 
                             case 12:
                                 data = _context2.sent;
-                                // convert data to json
-                                console.log(data);
-
-                                // TODO: Might need to have a foreach loop if the way it gets
-                                // aggregated is in a new index of the array
-
-                                _context2.next = 16;
+                                _context2.next = 15;
                                 return this.storeAccounts(data);
 
-                            case 16:
-                                _context2.next = 18;
+                            case 15:
+                                _context2.next = 17;
                                 return this.storeTransactions(data);
 
-                            case 18:
+                            case 17:
                                 // store transaction info
 
                                 this.getNetWorth(); // store networth
 
-                                _context2.next = 27;
+                                _context2.next = 26;
                                 break;
 
-                            case 21:
-                                _context2.prev = 21;
+                            case 20:
+                                _context2.prev = 20;
                                 _context2.t0 = _context2["catch"](6);
                                 errorMessage = document.querySelector(".home--error");
 
@@ -39780,12 +39774,12 @@ var Home = function (_Component) {
 
                                 console.error(_context2.t0);
 
-                            case 27:
+                            case 26:
                             case "end":
                                 return _context2.stop();
                         }
                     }
-                }, _callee2, this, [[6, 21]]);
+                }, _callee2, this, [[6, 20]]);
             }));
 
             function getTransactions() {
@@ -60282,7 +60276,6 @@ var Budget = function (_Component) {
 		key: "componentDidMount",
 		value: function componentDidMount() {
 			this.getTotalSpent();
-			console.log(this.props.transactions.length);
 		}
 	}, {
 		key: "componentWillUpdate",
@@ -60290,7 +60283,6 @@ var Budget = function (_Component) {
 	}, {
 		key: "getTotalSpent",
 		value: function getTotalSpent() {
-			console.log(this.props.transactions.length);
 			var total = 0;
 			// Sum up the prices of each transaction
 			this.props.transactions.forEach(function (t) {

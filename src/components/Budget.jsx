@@ -41,7 +41,6 @@ class Budget extends Component {
 
 	componentDidMount() {
         this.getTotalSpent();
-        console.log(this.props.transactions.length);
     }
 
     componentWillUpdate() {
@@ -49,7 +48,6 @@ class Budget extends Component {
     }
 
 	getTotalSpent() {
-        console.log(this.props.transactions.length);
         let total = 0;
         // Sum up the prices of each transaction
         this.props.transactions.forEach(t => {
