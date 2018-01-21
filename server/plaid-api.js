@@ -118,15 +118,14 @@ app.post("/transactions", async function(req, res, next) {
 
     try {
         const promiseArray = ACCESS_TOKENS.map(token => {
-            const content = client.getTransactions(token, startDate, endDate, {
+            return content = client.getTransactions(token, startDate, endDate, {
                 count: 250,
                 offset: 0,
             })
-            return content;
         });
 
         let totalData = await Promise.all(promiseArray);
-        console.log(totalData);
+        // console.log(totalData);
         res.json(totalData);
 
     } catch (err) {

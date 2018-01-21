@@ -5,6 +5,7 @@ import helpers from "./helpers.js";
 
 import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
+import isSameYear from "date-fns/is_same_year";
 
 import "../scss/budget.scss";
 
@@ -39,24 +40,30 @@ class Budget extends Component {
 	}
 
 	componentDidMount() {
-		this.getTotalSpent(this.props.transactions);
-	}
+        this.getTotalSpent();
+        console.log(this.props.transactions.length);
+    }
 
-	getTotalSpent(transactions) {
-		let total = 0;
-		// Sum up the prices of each transaction
-		transactions.forEach( t => {
+    componentWillUpdate() {
+
+    }
+
+	getTotalSpent() {
+        console.log(this.props.transactions.length);
+        let total = 0;
+        // Sum up the prices of each transaction
+        this.props.transactions.forEach(t => {
             let today = new Date();
             let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-            if (isSameMonth(transactionDate, today)) {
+            if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
                 total += t.amount;
             }
-		})
+        })
 
-		// Round total to two decimal places and ensure trailing 0s appear
-		total = helpers.formatAmount(total);
-		this.setState({ spentThisMonth: total });
+        // Round total to two decimal places and ensure trailing 0s appear
+        total = helpers.formatAmount(total);
+        this.setState({ spentThisMonth: total });
 	}
 
 	handleChange(event) {

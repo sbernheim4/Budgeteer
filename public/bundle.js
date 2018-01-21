@@ -39526,13 +39526,13 @@ var _regenerator = __webpack_require__(270);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = __webpack_require__(273);
-
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
 var _stringify = __webpack_require__(79);
 
 var _stringify2 = _interopRequireDefault(_stringify);
+
+var _asyncToGenerator2 = __webpack_require__(273);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _set = __webpack_require__(293);
 
@@ -39628,52 +39628,80 @@ var Home = function (_Component) {
 
     (0, _createClass3.default)(Home, [{
         key: "componentWillMount",
-        value: function componentWillMount() {
-            var _this2 = this;
+        value: function () {
+            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+                var _this2 = this;
 
-            // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
-            fetch("plaid-api/set-stored-access-token", {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
-            }).then(function (res) {
-                return res.json();
-            }).catch(function (err) {
-                return console.error(err);
-            });
+                return _regenerator2.default.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
 
-            fetch("plaid-api/key-and-env").then(function (response) {
-                return response.json();
-            }).then(function (res) {
-                var plaid = Plaid.create({
-                    apiVersion: "v2",
-                    clientName: "Plaid Walkthrough Demo",
-                    env: res.env,
-                    product: ["transactions"],
-                    key: res.publicKey,
-                    onSuccess: function onSuccess(public_token) {
-                        fetch("/plaid-api/get-access-token", {
-                            method: "post",
-                            headers: {
-                                "Accept": "application/json",
-                                "Content-Type": "application/json"
-                            },
-                            body: (0, _stringify2.default)({
-                                public_token: public_token,
-                                client_id: "5a24ca6a4e95b836d37e37fe",
-                                secret: "f07a761a591de3cbbc5ac3ba2f4301"
-                            })
-                        });
+                                // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
+                                fetch("plaid-api/set-stored-access-token", {
+                                    method: "POST",
+                                    headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json"
+                                    }
+                                }).then(function (res) {
+                                    return res.json();
+                                }).catch(function (err) {
+                                    return console.error(err);
+                                });
+
+                                fetch("plaid-api/key-and-env").then(function (response) {
+                                    return response.json();
+                                }).then(function (res) {
+                                    var plaid = Plaid.create({
+                                        apiVersion: "v2",
+                                        clientName: "Plaid Walkthrough Demo",
+                                        env: res.env,
+                                        product: ["transactions"],
+                                        key: res.publicKey,
+                                        onSuccess: function onSuccess(public_token) {
+                                            fetch("/plaid-api/get-access-token", {
+                                                method: "post",
+                                                headers: {
+                                                    "Accept": "application/json",
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: (0, _stringify2.default)({
+                                                    public_token: public_token,
+                                                    client_id: "5a24ca6a4e95b836d37e37fe",
+                                                    secret: "f07a761a591de3cbbc5ac3ba2f4301"
+                                                })
+                                            });
+                                        }
+                                    });
+
+                                    _this2.setState({ handler: plaid });
+                                }).catch(function (err) {
+                                    console.error(err);
+                                });
+
+                                try {
+                                    this.getTransactions();
+                                    this.getNetWorth();
+                                } catch (err) {
+                                    console.error("This is likely due to the access tokens not being retrieved from the DB if its a new user");
+                                    console.error(err);
+                                }
+
+                            case 3:
+                            case "end":
+                                return _context.stop();
+                        }
                     }
-                });
+                }, _callee, this);
+            }));
 
-                _this2.setState({ handler: plaid });
-            }).catch(function (err) {
-                console.error(err);
-            });
-        }
+            function componentWillMount() {
+                return _ref.apply(this, arguments);
+            }
+
+            return componentWillMount;
+        }()
     }, {
         key: "addAccount",
         value: function addAccount() {
@@ -39682,13 +39710,12 @@ var Home = function (_Component) {
     }, {
         key: "getTransactions",
         value: function () {
-            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
                 var now, prev, numDays, fetchOptions, response, data, errorMessage;
-                return _regenerator2.default.wrap(function _callee$(_context) {
+                return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
-                        switch (_context.prev = _context.next) {
+                        switch (_context2.prev = _context2.next) {
                             case 0:
-
                                 // Setup info for fetch call
                                 now = new Date(); // Jan. 12th 2018
 
@@ -39708,34 +39735,41 @@ var Home = function (_Component) {
                                         days: numDays
                                     })
                                 };
-                                _context.prev = 6;
-                                _context.next = 9;
+                                _context2.prev = 6;
+                                _context2.next = 9;
                                 return fetch("/plaid-api/transactions", fetchOptions);
 
                             case 9:
-                                response = _context.sent;
-                                _context.next = 12;
+                                response = _context2.sent;
+                                _context2.next = 12;
                                 return response.json();
 
                             case 12:
-                                data = _context.sent;
-                                _context.next = 15;
-                                return this.storeAccounts(data[0].accounts);
+                                data = _context2.sent;
+                                // convert data to json
+                                console.log(data);
 
-                            case 15:
-                                _context.next = 17;
-                                return this.storeTransactions(data[0].transactions);
+                                // TODO: Might need to have a foreach loop if the way it gets
+                                // aggregated is in a new index of the array
 
-                            case 17:
+                                _context2.next = 16;
+                                return this.storeAccounts(data);
+
+                            case 16:
+                                _context2.next = 18;
+                                return this.storeTransactions(data);
+
+                            case 18:
                                 // store transaction info
+
                                 this.getNetWorth(); // store networth
 
-                                _context.next = 26;
+                                _context2.next = 27;
                                 break;
 
-                            case 20:
-                                _context.prev = 20;
-                                _context.t0 = _context["catch"](6);
+                            case 21:
+                                _context2.prev = 21;
+                                _context2.t0 = _context2["catch"](6);
                                 errorMessage = document.querySelector(".home--error");
 
                                 errorMessage.classList.add("home--error__display");
@@ -39744,18 +39778,18 @@ var Home = function (_Component) {
                                     errorMessage.classList.remove("home--error__display");
                                 }, 4000);
 
-                                console.error(_context.t0);
+                                console.error(_context2.t0);
 
-                            case 26:
+                            case 27:
                             case "end":
-                                return _context.stop();
+                                return _context2.stop();
                         }
                     }
-                }, _callee, this, [[6, 20]]);
+                }, _callee2, this, [[6, 21]]);
             }));
 
             function getTransactions() {
-                return _ref.apply(this, arguments);
+                return _ref2.apply(this, arguments);
             }
 
             return getTransactions;
@@ -39763,77 +39797,36 @@ var Home = function (_Component) {
     }, {
         key: "storeTransactions",
         value: function () {
-            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(transactions) {
+            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(data) {
                 var currentTransactions, currentTransactionIds;
-                return _regenerator2.default.wrap(function _callee2$(_context2) {
-                    while (1) {
-                        switch (_context2.prev = _context2.next) {
-                            case 0:
-                                currentTransactions = this.state.transactions;
-                                currentTransactionIds = this.state.transaction_ids;
-
-                                // Add all the transactions for the new bank the user just selected
-
-                                transactions.forEach(function (t) {
-                                    if (!currentTransactionIds.has(t.transaction_id)) {
-                                        currentTransactionIds.add(t.transaction_id);
-                                        currentTransactions.push(t);
-                                    }
-                                });
-
-                                // Sort the transactions based on account_id
-                                currentTransactions = currentTransactions.sort(function (a, b) {
-                                    return a.account_id - b.account_id;
-                                });
-
-                                // Update transactions state variable
-                                this.setState({ transaction_ids: currentTransactionIds });
-                                this.setState({ transactions: currentTransactions });
-
-                            case 6:
-                            case "end":
-                                return _context2.stop();
-                        }
-                    }
-                }, _callee2, this);
-            }));
-
-            function storeTransactions(_x) {
-                return _ref2.apply(this, arguments);
-            }
-
-            return storeTransactions;
-        }()
-    }, {
-        key: "storeAccounts",
-        value: function () {
-            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(accounts) {
-                var _this3 = this;
-
-                var currentAccounts;
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
                     while (1) {
                         switch (_context3.prev = _context3.next) {
                             case 0:
-                                // Get all the connected accounts so far
-                                currentAccounts = this.state.accounts;
+                                currentTransactions = this.state.transactions;
+                                currentTransactionIds = this.state.transaction_ids;
 
-                                // Add all the accounts for the new bank the user just selected
 
-                                accounts.forEach(function (acct) {
-                                    if (!_this3.state.account_ids.has(acct.account_id)) {
-                                        _this3.state.account_ids.add(acct.account_id);
-                                        currentAccounts.push(acct);
-                                    }
+                                data.forEach(function (val) {
+                                    // Add all the transactions for the new bank the user just selected
+                                    val.transactions.forEach(function (t) {
+                                        if (!currentTransactionIds.has(t.transaction_id)) {
+                                            currentTransactionIds.add(t.transaction_id);
+                                            currentTransactions.push(t);
+                                        }
+                                    });
+
+                                    // Sort the transactions based on account_id
+                                    currentTransactions = currentTransactions.sort(function (a, b) {
+                                        return a.account_id - b.account_id;
+                                    });
                                 });
 
-                                // Sort the accounts based on account_id
-                                currentAccounts = currentAccounts.sort(function (a, b) {
-                                    return a.account_id - b.account_id;
+                                // Update state variable
+                                this.setState({
+                                    transaction_ids: currentTransactionIds,
+                                    transactions: currentTransactions
                                 });
-
-                                // Update accounts state variable
-                                this.setState({ accounts: currentAccounts });
 
                             case 4:
                             case "end":
@@ -39843,8 +39836,56 @@ var Home = function (_Component) {
                 }, _callee3, this);
             }));
 
-            function storeAccounts(_x2) {
+            function storeTransactions(_x) {
                 return _ref3.apply(this, arguments);
+            }
+
+            return storeTransactions;
+        }()
+    }, {
+        key: "storeAccounts",
+        value: function () {
+            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(data) {
+                var _this3 = this;
+
+                var currentAccounts;
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                // Get all the connected accounts so far
+                                currentAccounts = this.state.accounts;
+
+
+                                data.forEach(function (val) {
+
+                                    // Add all the accounts for the new bank the user just selected
+                                    val.accounts.forEach(function (acct) {
+                                        if (!_this3.state.account_ids.has(acct.account_id)) {
+                                            _this3.state.account_ids.add(acct.account_id);
+                                            currentAccounts.push(acct);
+                                        }
+                                    });
+
+                                    // Sort the accounts based on account_id
+                                    currentAccounts = currentAccounts.sort(function (a, b) {
+                                        return a.account_id - b.account_id;
+                                    });
+                                });
+
+                                // Update accounts state variable
+                                this.setState({ accounts: currentAccounts });
+
+                            case 3:
+                            case "end":
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function storeAccounts(_x2) {
+                return _ref4.apply(this, arguments);
             }
 
             return storeAccounts;
@@ -60203,6 +60244,10 @@ var _is_same_month = __webpack_require__(253);
 
 var _is_same_month2 = _interopRequireDefault(_is_same_month);
 
+var _is_same_year = __webpack_require__(504);
+
+var _is_same_year2 = _interopRequireDefault(_is_same_year);
+
 __webpack_require__(484);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -60236,18 +60281,23 @@ var Budget = function (_Component) {
 	(0, _createClass3.default)(Budget, [{
 		key: "componentDidMount",
 		value: function componentDidMount() {
-			this.getTotalSpent(this.props.transactions);
+			this.getTotalSpent();
+			console.log(this.props.transactions.length);
 		}
 	}, {
+		key: "componentWillUpdate",
+		value: function componentWillUpdate() {}
+	}, {
 		key: "getTotalSpent",
-		value: function getTotalSpent(transactions) {
+		value: function getTotalSpent() {
+			console.log(this.props.transactions.length);
 			var total = 0;
 			// Sum up the prices of each transaction
-			transactions.forEach(function (t) {
+			this.props.transactions.forEach(function (t) {
 				var today = new Date();
 				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-				if ((0, _is_same_month2.default)(transactionDate, today)) {
+				if ((0, _is_same_month2.default)(transactionDate, today) && (0, _is_same_year2.default)(transactionDate, today)) {
 					total += t.amount;
 				}
 			});
@@ -61188,6 +61238,40 @@ exports = module.exports = __webpack_require__(17)(undefined);
 exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.navbar {\n  display: flex;\n  flex-direction: row; }\n  .navbar p {\n    margin: 15px; }\n", ""]);
 
 // exports
+
+
+/***/ }),
+/* 504 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parse = __webpack_require__(8)
+
+/**
+ * @category Year Helpers
+ * @summary Are the given dates in the same year?
+ *
+ * @description
+ * Are the given dates in the same year?
+ *
+ * @param {Date|String|Number} dateLeft - the first date to check
+ * @param {Date|String|Number} dateRight - the second date to check
+ * @returns {Boolean} the dates are in the same year
+ *
+ * @example
+ * // Are 2 September 2014 and 25 September 2014 in the same year?
+ * var result = isSameYear(
+ *   new Date(2014, 8, 2),
+ *   new Date(2014, 8, 25)
+ * )
+ * //=> true
+ */
+function isSameYear (dirtyDateLeft, dirtyDateRight) {
+  var dateLeft = parse(dirtyDateLeft)
+  var dateRight = parse(dirtyDateRight)
+  return dateLeft.getFullYear() === dateRight.getFullYear()
+}
+
+module.exports = isSameYear
 
 
 /***/ })

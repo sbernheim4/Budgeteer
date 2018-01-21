@@ -33,7 +33,7 @@ class Home extends Component {
         this.getTransactions = this.getTransactions.bind(this);
 	}
 
-	componentWillMount() {
+	async componentWillMount() {
 
         // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
         fetch("plaid-api/set-stored-access-token", {
@@ -75,7 +75,15 @@ class Home extends Component {
 			this.setState({ handler: plaid });
 		}).catch(err => {
 			console.error(err)
-		});
+        });
+
+        try {
+            this.getTransactions();
+            this.getNetWorth();
+        } catch(err) {
+            console.error("This is likely due to the access tokens not being retrieved from the DB if its a new user");
+            console.error(err);
+        }
 	}
 
 	addAccount() {
@@ -83,7 +91,6 @@ class Home extends Component {
     }
 
     async getTransactions() {
-
         // Setup info for fetch call
 		let now = new Date(); // Jan. 12th 2018
 		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
@@ -103,15 +110,16 @@ class Home extends Component {
         };
 
         try {
-
             const response = await fetch("/plaid-api/transactions", fetchOptions); // Fetch transaction info
             const data = await response.json(); // convert data to json
+            console.log(data);
 
-            //TODO: Might need to have a foreach loop if the way it gets
+            // TODO: Might need to have a foreach loop if the way it gets
             // aggregated is in a new index of the array
 
-            await this.storeAccounts(data[0].accounts); // Store account info
-            await this.storeTransactions(data[0].transactions); // store transaction info
+            await this.storeAccounts(data); // Store account info
+            await this.storeTransactions(data); // store transaction info
+
             this.getNetWorth(); // store networth
 
         } catch(err) {
@@ -126,44 +134,54 @@ class Home extends Component {
         }
 	}
 
-    async storeTransactions(transactions) {
+    async storeTransactions(data) {
+
         let currentTransactions = this.state.transactions;
         let currentTransactionIds = this.state.transaction_ids;
 
-        // Add all the transactions for the new bank the user just selected
-        transactions.forEach((t) => {
-            if (!currentTransactionIds.has(t.transaction_id)) {
-                currentTransactionIds.add(t.transaction_id);
-                currentTransactions.push(t);
-            }
-        })
+        data.forEach(val => {
+            // Add all the transactions for the new bank the user just selected
+            val.transactions.forEach(t => {
+                if (!currentTransactionIds.has(t.transaction_id)) {
+                    currentTransactionIds.add(t.transaction_id);
+                    currentTransactions.push(t);
+                }
+            })
 
-        // Sort the transactions based on account_id
-        currentTransactions = currentTransactions.sort((a, b) => {
-            return a.account_id - b.account_id;
+            // Sort the transactions based on account_id
+            currentTransactions = currentTransactions.sort((a, b) => {
+                return a.account_id - b.account_id;
+            });
+
         });
 
-        // Update transactions state variable
-        this.setState({ transaction_ids: currentTransactionIds });
-        this.setState({ transactions: currentTransactions });
+        // Update state variable
+        this.setState({
+            transaction_ids: currentTransactionIds,
+            transactions: currentTransactions
+        });
     }
 
-    async storeAccounts(accounts) {
+    async storeAccounts(data) {
         // Get all the connected accounts so far
         let currentAccounts = this.state.accounts;
 
-        // Add all the accounts for the new bank the user just selected
-        accounts.forEach(acct => {
-            if (!this.state.account_ids.has(acct.account_id)) {
-                this.state.account_ids.add(acct.account_id);
-                currentAccounts.push(acct);
-            }
-        });
+        data.forEach(val => {
 
-        // Sort the accounts based on account_id
-        currentAccounts = currentAccounts.sort((a, b) => {
-            return a.account_id - b.account_id
-        });
+            // Add all the accounts for the new bank the user just selected
+            val.accounts.forEach(acct => {
+                if (!this.state.account_ids.has(acct.account_id)) {
+                    this.state.account_ids.add(acct.account_id);
+                    currentAccounts.push(acct);
+                }
+            });
+
+            // Sort the accounts based on account_id
+            currentAccounts = currentAccounts.sort((a, b) => {
+                return a.account_id - b.account_id
+            });
+        })
+
 
         // Update accounts state variable
         this.setState({ accounts: currentAccounts })
