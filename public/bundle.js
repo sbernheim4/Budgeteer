@@ -39640,11 +39640,11 @@ var Home = function (_Component) {
                 }
             }).then(function (res) {
                 return res.json();
-            }).then(function (res) {
-                console.log(res.SET);
-                if (res.SET) throw new Error("SET");
-                fetch("plaid-api/key-and-env");
-            }).then(function (response) {
+            }).catch(function (err) {
+                return console.error(err);
+            });
+
+            fetch("plaid-api/key-and-env").then(function (response) {
                 return response.json();
             }).then(function (res) {
                 var plaid = Plaid.create({
@@ -39699,7 +39699,7 @@ var Home = function (_Component) {
                                 numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
 
                                 fetchOptions = {
-                                    method: "post",
+                                    method: "POST",
                                     headers: {
                                         "Accept": "application/json",
                                         "Content-Type": "application/json"

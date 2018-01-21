@@ -9,16 +9,16 @@ const moment = require("moment");
 const plaid = require("plaid");
 
 const mongoose = require('mongoose');
-const user = mongoose.model('User');
+const User = mongoose.model('User');
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
 const PLAID_PUBLIC_KEY = process.env.PLAID_PUBLIC_KEY;
 const PLAID_ENV = process.env.PLAID_ENV
 
-let ACCESS_TOKENS = null;
+let ACCESS_TOKENS = [];
 let PUBLIC_TOKEN = null;
-let ITEM_IDS = null;
+let ITEM_IDS = [];
 
 // Initialize the Plaid client
 let client = new plaid.Client(
@@ -50,54 +50,52 @@ app.get("/key-and-env", (req, res) => {
 	res.send(jsonResponse);
 });
 
-app.post('/set-stored-access-token', (req, res, next) => {
-    user.find({}).then(data => {
-        if (data.length === 0) {
-            res.send("NOT SET");
-        } else {
-            console.log("USER FOUND\n");
-            // user already exists so get their info from the result of the DB call
-            ACCESS_TOKENS = data[0].accessTokens;
-            ITEM_IDS = data[0].itemID;
-            console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
-            res.json({
-                "SET": true
-            })
+app.post('/set-stored-access-token', async (req, res, next) => {
+
+    let data;
+    try {
+        let person = await User.find({ _id: "5a63710527c6b237492fc1bb"});
+        person = person[0];
+        if (!person || person.accessTokens.length === 0 || person.itemID.length === 0) {
+            throw new Error("No Users Found");
         }
-    })
+
+        ACCESS_TOKENS = person.accessTokens;
+        ITEM_IDS = person.itemID;
+        console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
+    } catch (err) {
+        console.log(err);
+    }
+
 });
 
 // Get Access Tokens and Item IDs from Plaid
-app.post("/get-access-token", function(req, res, next) {
+app.post("/get-access-token", async (req, res, next) => {
 
-    // If ACCESS_TOKENS and ITEM_IDS are not null then return
-    if (ACCESS_TOKENS !== null && ITEM_IDS !== null ) {
-        return;
-    }
-
-    // Otherwise set them
     PUBLIC_TOKEN = req.body.public_token;
+    try {
+        // Get the token response
+        let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
 
-    client.exchangePublicToken(PUBLIC_TOKEN).then(tokenResponse => {
-        ACCESS_TOKENS = [tokenResponse.access_token];
-        ITEM_IDS = [tokenResponse.item_id];
+        // Update our arrays on the server
+        ACCESS_TOKENS.push(tokenResponse.access_token);
+        ITEM_IDS.push(tokenResponse.item_id);
 
-        user.create({
-            accessTokens: [tokenResponse.access_token],
-            itemID: [tokenResponse.item_id]
+        // Update our arrays in the DB
+        User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: ACCESS_TOKENS, itemID: ITEM_IDS } }, () => {
+            console.log(chalk.green("Update Successful"));
         });
 
-        console.log("USER CREATED");
-        console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
-    }).catch(err => {
-        if (error !== null) {
-            let msg = "Could not exchange public_token!";
-            console.log(msg + "\n" + JSON.stringify(error));
-            return res.json({
-                error: msg
-            });
-        }
-    });
+        console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been UPDATEED ✓✓✓"));
+
+    } catch (err) {
+        console.log("ERROR:");
+        console.log(err);
+        return res.json({
+            error: err
+        });
+    }
+
 });
 
 // Get Transaction information
@@ -128,6 +126,7 @@ app.post("/transactions", async function(req, res, next) {
         });
 
         let totalData = await Promise.all(promiseArray);
+        console.log(totalData);
         res.json(totalData);
 
     } catch (err) {

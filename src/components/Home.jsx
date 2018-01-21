@@ -44,11 +44,10 @@ class Home extends Component {
             }
         }).then( res => {
             return res.json()
-        }).then(res => {
-            console.log(res.SET);
-            if (res.SET) throw new Error("SET");
-            fetch("plaid-api/key-and-env");
-        }).then(response => {
+        }).catch(err => console.error(err));
+
+
+        fetch("plaid-api/key-and-env").then(response => {
 			return response.json();
 		}).then(res => {
 			const plaid = Plaid.create({
@@ -93,7 +92,7 @@ class Home extends Component {
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
         let fetchOptions = {
-            method: "post",
+            method: "POST",
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
