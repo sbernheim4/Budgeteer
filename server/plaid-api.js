@@ -109,7 +109,7 @@ app.post("/transactions", async function(req, res, next) {
     let tempStartDate;
     let tempEndDate;
 
-    if (req.body.startDate && req.body.endDate) {
+    if (req.body.startDate && vreq.body.endDate) {
         tempStartDate = moment(new Date(req.body.startDate)).format("YYYY-MM-DD");
         tempEndDate = moment(new Date(req.body.endDate)).format("YYYY-MM-DD");
     }
@@ -119,7 +119,7 @@ app.post("/transactions", async function(req, res, next) {
     const endDate = tempEndDate || moment().format("YYYY-MM-DD");
 
     try {
-        const promiseArray = ACCESS_TOKENS.map((token) => {
+        const promiseArray = ACCESS_TOKENS.map(token => {
             const content = client.getTransactions(token, startDate, endDate, {
                 count: 250,
                 offset: 0,
@@ -128,7 +128,6 @@ app.post("/transactions", async function(req, res, next) {
         });
 
         let totalData = await Promise.all(promiseArray);
-        console.log(totalData);
         res.json(totalData);
 
     } catch (err) {
@@ -141,52 +140,50 @@ app.post("/transactions", async function(req, res, next) {
             });
         }
     }
-
-    // .then(data => {
-    //     Object.assign(totalData, data)
-    // }).catch(err => {
-    //
-    //     }
-    // });
-
-    //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
-    // Maybe put it in its own async function and do an await call
-
 });
 
-
-
-// app.post("/institutions", (req, res) => {
-// 	client.getInstitutions()
-// });
-
-// Get Balances
-app.post ("/balance", (req, res, next) => {
+// Get Balances -- NOT CURRENTLY BEING USED BY CLIENT SIDE --> getNetworth in Home.jsx just uses data from the accounts state that is returned
+// Might be better to do a server side solution where I do the calculation on the server and just send the response to the client
+// Though when the user adds an account it may not automatically update
+app.post ("/balance", async function (req, res, next) {
     let netWorth = 0;
 
-    ACCESS_TOKENS.forEach(token => {
-        client.getBalance(token).then(res => {
-            // Sum up balances for each linked account
-            res.accounts.forEach(acct => {
-                if (acct.balances.available !== null) {
-                    netWorth += acct.balances.available;
-                }
-            });
-        }).catch(err => {
-            console.log("BALANCE ERROR");
-            console.log(JSON.stringify(err));
-
-            return res.json({
-                error: err
-            });
-        });
+    const promiseArray = ACCESS_TOKENS.map(token => {
+        const content = client.getBalance(token);
+        return content;
     });
 
-    //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
-    // Maybe put it in its own async function and do an await call
-    res.json({
-        "netWorth": netWorth
+    let totalData = await Promise.all(promiseArray);
+    totalData[0].accounts.forEach(acct => {
+        if (acct.balances.available != null) {
+            netWorth += acct.balances.available
+        }
     })
+    console.log(netWorth);
+
+
+    res.json({
+        "netWorth": totalData
+    })
+
+        // .then(res => {
+        //     // Sum up balances for each linked account
+        //     res.accounts.forEach(acct => {
+        //         if (acct.balances.available !== null) {
+        //             netWorth += acct.balances.available;
+        //         }
+        //     });
+        // }).catch(err => {
+        //     console.log("BALANCE ERROR");
+        //     console.log(JSON.stringify(err));
+
+        //     return res.json({
+        //         error: err
+        //     });
+        // });
+        //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
+        // Maybe put it in its own async function and do an await call
 });
+
 
 module.exports = app;
