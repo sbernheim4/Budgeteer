@@ -39886,17 +39886,48 @@ var Home = function (_Component) {
         }()
     }, {
         key: "getNetWorth",
-        value: function getNetWorth() {
-            var netWorth = 0;
+        value: function () {
+            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
+                var fetchOptions, data;
+                return _regenerator2.default.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                fetchOptions = {
+                                    method: "POST",
+                                    headers: {
+                                        "Accept": "application/json",
+                                        "Content-Type": "application/json"
+                                    }
+                                };
+                                _context5.next = 3;
+                                return fetch("plaid-api/balance", fetchOptions);
 
-            this.state.accounts.forEach(function (acct) {
-                if (acct.balances.available !== null) {
-                    netWorth += acct.balances.available;
-                }
-            });
+                            case 3:
+                                data = _context5.sent;
+                                _context5.next = 6;
+                                return data.json();
 
-            this.setState({ netWorth: netWorth });
-        }
+                            case 6:
+                                data = _context5.sent;
+
+
+                                this.setState({ netWorth: data.netWorth });
+
+                            case 8:
+                            case "end":
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this);
+            }));
+
+            function getNetWorth() {
+                return _ref5.apply(this, arguments);
+            }
+
+            return getNetWorth;
+        }()
     }, {
         key: "render",
         value: function render() {

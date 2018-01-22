@@ -186,16 +186,19 @@ class Home extends Component {
         this.setState({ accounts: currentAccounts })
     }
 
-    getNetWorth() {
-        let netWorth = 0;
-
-        this.state.accounts.forEach(acct => {
-            if(acct.balances.available !== null) {
-                netWorth += acct.balances.available;
+    async getNetWorth() {
+        const fetchOptions = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
             }
-        });
+        };
 
-        this.setState({ netWorth: netWorth });
+        let data = await fetch("plaid-api/balance", fetchOptions);
+        data = await data.json();
+
+        this.setState({ netWorth: data.netWorth });
     }
 
 	render() {

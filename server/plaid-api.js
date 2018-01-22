@@ -145,42 +145,26 @@ app.post("/transactions", async function(req, res, next) {
 // Though when the user adds an account it may not automatically update
 app.post ("/balance", async function (req, res, next) {
     let netWorth = 0;
-
     const promiseArray = ACCESS_TOKENS.map(token => {
-        const content = client.getBalance(token);
-        return content;
+        let x = client.getBalance(token);
+        return x;
     });
 
     let totalData = await Promise.all(promiseArray);
-    totalData[0].accounts.forEach(acct => {
-        if (acct.balances.available != null) {
-            netWorth += acct.balances.available
-        }
-    })
+
+    totalData.forEach(bank => {
+        bank.accounts.forEach(acct => {
+            if (acct.balances.available !== null) {
+                netWorth += acct.balances.available;
+            }
+        });
+    });
+
     console.log(netWorth);
 
-
     res.json({
-        "netWorth": totalData
-    })
-
-        // .then(res => {
-        //     // Sum up balances for each linked account
-        //     res.accounts.forEach(acct => {
-        //         if (acct.balances.available !== null) {
-        //             netWorth += acct.balances.available;
-        //         }
-        //     });
-        // }).catch(err => {
-        //     console.log("BALANCE ERROR");
-        //     console.log(JSON.stringify(err));
-
-        //     return res.json({
-        //         error: err
-        //     });
-        // });
-        //TODO: This is happening asynchronously so need to find a way to only do this after the for each loop is done
-        // Maybe put it in its own async function and do an await call
+        "netWorth": netWorth
+    });
 });
 
 
