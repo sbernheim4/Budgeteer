@@ -107,7 +107,7 @@ app.post("/transactions", async function(req, res, next) {
     let tempStartDate;
     let tempEndDate;
 
-    if (req.body.startDate && vreq.body.endDate) {
+    if (req.body.startDate && req.body.endDate) {
         tempStartDate = moment(new Date(req.body.startDate)).format("YYYY-MM-DD");
         tempEndDate = moment(new Date(req.body.endDate)).format("YYYY-MM-DD");
     }
@@ -125,7 +125,6 @@ app.post("/transactions", async function(req, res, next) {
         });
 
         let totalData = await Promise.all(promiseArray);
-        // console.log(totalData);
         res.json(totalData);
 
     } catch (err) {

@@ -42988,6 +42988,9 @@ var Transaction = function (_Component) {
 			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
 			var amount = _helpers2.default.formatAmount(this.props.transaction.amount);
 
+			// The below URL doesn't require an API key, might be better 
+			// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
+			var srcString = "https://www.google.com/maps/embed/v1/place?q=" + this.props.location.lon + "," + this.props.location.lat + "&amp;key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15";
 			return _react2.default.createElement(
 				"div",
 				{ className: "transaction" },
@@ -43006,6 +43009,11 @@ var Transaction = function (_Component) {
 					"p",
 					null,
 					date
+				),
+				_react2.default.createElement(
+					"iframe",
+					{ src: srcString },
+					" "
 				)
 			);
 		}
@@ -43055,7 +43063,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #ffe491; }\n", ""]);
+exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 600px;\n  padding: 5px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #ffe491; }\n  .transaction h4 {\n    margin-top: 10px; }\n  .transaction iframe {\n    margin: 20px;\n    width: 90%;\n    height: 90%; }\n", ""]);
 
 // exports
 
