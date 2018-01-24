@@ -4,12 +4,14 @@
 	margin: 10px;
 	width: 280px;
 	min-width: 280px;
-	height: 600px;
+	// height: 600px;
+	height: 100px;
 	padding: 5px;
 	background-color: $transaction-background-color;
 	border: 1px solid gray;
 	cursor: pointer;
 	text-align: center;
+	transition: all .3s ease;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -27,5 +29,10 @@
 		margin: 20px;
 		width: 90%;
 		height: 90%;
+	}
+
+	&--map {
+		width: 520px;
+		height: 450px;
 	}
 }

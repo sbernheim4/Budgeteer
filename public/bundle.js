@@ -39637,7 +39637,7 @@ var Home = function (_Component) {
                         switch (_context.prev = _context.next) {
                             case 0:
 
-                                // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
+                                // First make a fetch call to get info for already linked accounts
                                 fetch("plaid-api/set-stored-access-token", {
                                     method: "POST",
                                     headers: {
@@ -39650,6 +39650,7 @@ var Home = function (_Component) {
                                     return console.error(err);
                                 });
 
+                                // Used for if the user wants to link a new account
                                 fetch("plaid-api/key-and-env").then(function (response) {
                                     return response.json();
                                 }).then(function (res) {
@@ -39680,20 +39681,31 @@ var Home = function (_Component) {
                                     console.error(err);
                                 });
 
-                                try {
-                                    this.getTransactions();
-                                    this.getNetWorth();
-                                } catch (err) {
-                                    console.error("This is likely due to the access tokens not being retrieved from the DB if its a new user");
-                                    console.error(err);
-                                }
+                                _context.prev = 2;
+                                _context.next = 5;
+                                return this.getTransactions();
 
-                            case 3:
+                            case 5:
+                                _context.next = 7;
+                                return this.getNetWorth();
+
+                            case 7:
+                                _context.next = 13;
+                                break;
+
+                            case 9:
+                                _context.prev = 9;
+                                _context.t0 = _context["catch"](2);
+
+                                console.error("This is likely due to the access tokens not being retrieved from the DB if its a new user");
+                                console.error(_context.t0);
+
+                            case 13:
                             case "end":
                                 return _context.stop();
                         }
                     }
-                }, _callee, this);
+                }, _callee, this, [[2, 9]]);
             }));
 
             function componentWillMount() {
@@ -42920,7 +42932,7 @@ exports.default = TransactionContainer;
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _stringify = __webpack_require__(79);
@@ -42960,65 +42972,92 @@ __webpack_require__(333);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Transaction = function (_Component) {
-	(0, _inherits3.default)(Transaction, _Component);
+  (0, _inherits3.default)(Transaction, _Component);
 
-	function Transaction(props) {
-		(0, _classCallCheck3.default)(this, Transaction);
+  function Transaction(props) {
+    (0, _classCallCheck3.default)(this, Transaction);
 
-		var _this = (0, _possibleConstructorReturn3.default)(this, (Transaction.__proto__ || (0, _getPrototypeOf2.default)(Transaction)).call(this, props));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (Transaction.__proto__ || (0, _getPrototypeOf2.default)(Transaction)).call(this, props));
 
-		_this.state = {
-			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
-		};
-		return _this;
-	}
+    _this.state = {
+      months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+    };
 
-	(0, _createClass3.default)(Transaction, [{
-		key: "formatDate",
-		value: function formatDate(date) {
-			var monthNumber = parseInt(date.slice(date.indexOf("-") + 1, date.indexOf("-") + 3));
-			var day = date.slice(date.length - 3, date.length - 1);
-			var year = date.slice(1, 5);
+    _this.showMap = _this.showMap.bind(_this);
+    return _this;
+  }
 
-			return this.state.months[monthNumber - 1] + " " + day + " " + year;
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
-			var amount = _helpers2.default.formatAmount(this.props.transaction.amount);
+  (0, _createClass3.default)(Transaction, [{
+    key: "formatDate",
+    value: function formatDate(date) {
+      var monthNumber = parseInt(date.slice(date.indexOf("-") + 1, date.indexOf("-") + 3));
+      var day = date.slice(date.length - 3, date.length - 1);
+      var year = date.slice(1, 5);
 
-			// The below URL doesn't require an API key, might be better 
-			// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
-			var srcString = "https://www.google.com/maps/embed/v1/place?q=" + this.props.location.lon + "," + this.props.location.lat + "&amp;key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15";
-			return _react2.default.createElement(
-				"div",
-				{ className: "transaction" },
-				_react2.default.createElement(
-					"h4",
-					null,
-					JSON.parse((0, _stringify2.default)(this.props.transaction.name))
-				),
-				_react2.default.createElement(
-					"p",
-					null,
-					"$",
-					amount
-				),
-				_react2.default.createElement(
-					"p",
-					null,
-					date
-				),
-				_react2.default.createElement(
-					"iframe",
-					{ src: srcString },
-					" "
-				)
-			);
-		}
-	}]);
-	return Transaction;
+      return this.state.months[monthNumber - 1] + " " + day + " " + year;
+    }
+  }, {
+    key: "showMap",
+    value: function showMap(e) {
+      console.log(e.target);
+
+      e.target.classList.toggle("transaction--map");
+      var iframe = document.createElement("iframe");
+
+      // TODO: Currently hardcoding latitude and longitude but it should come from:
+      // this.props.transaction.location.lat
+      // this.props.transaction.location.lon
+      iframe.src = "https://www.google.com/maps/embed/v1/place?q=40.7829,73.9654&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15";
+
+      // WITH API KEY
+      // "https://www.google.com/maps/embed/v1/place?q=40.7829,73.9654&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
+
+      // WITHOUT API KEY
+      // iframe.src = "https://maps.google.com/maps?q=40.7829,73.9654&z=15&output=embed"
+
+      if (!!e.target.querySelector("iframe")) {
+        document.querySelectorAll("iframe").forEach(function (val) {
+          val.remove();
+        });
+        console.log("removing iframe");
+      } else {
+        e.target.appendChild(iframe);
+        console.log("Adding iframe");
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
+      var amount = _helpers2.default.formatAmount(this.props.transaction.amount);
+
+      var googleMap = "";
+      // The below URL doesn't require an API key, might be better
+      // let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
+
+      return _react2.default.createElement(
+        "div",
+        { className: "transaction", onClick: this.showMap },
+        _react2.default.createElement(
+          "h4",
+          null,
+          JSON.parse((0, _stringify2.default)(this.props.transaction.name))
+        ),
+        _react2.default.createElement(
+          "p",
+          null,
+          "$",
+          amount
+        ),
+        _react2.default.createElement(
+          "p",
+          null,
+          date
+        )
+      );
+    }
+  }]);
+  return Transaction;
 }(_react.Component);
 
 exports.default = Transaction;
@@ -43063,7 +43102,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 600px;\n  padding: 5px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #ffe491; }\n  .transaction h4 {\n    margin-top: 10px; }\n  .transaction iframe {\n    margin: 20px;\n    width: 90%;\n    height: 90%; }\n", ""]);
+exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction:hover {\n    background-color: #ffe491; }\n  .transaction h4 {\n    margin-top: 10px; }\n  .transaction iframe {\n    margin: 20px;\n    width: 90%;\n    height: 90%; }\n  .transaction--map {\n    width: 520px;\n    height: 450px; }\n", ""]);
 
 // exports
 

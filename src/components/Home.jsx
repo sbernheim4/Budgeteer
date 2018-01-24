@@ -35,7 +35,7 @@ class Home extends Component {
 
 	async componentWillMount() {
 
-        // First make a fetch call to see if access_tokens and item_ids can be retrieved from DB
+        // First make a fetch call to get info for already linked accounts
         fetch("plaid-api/set-stored-access-token", {
             method: "POST",
             headers: {
@@ -46,7 +46,7 @@ class Home extends Component {
             return res.json()
         }).catch(err => console.error(err));
 
-
+        // Used for if the user wants to link a new account
         fetch("plaid-api/key-and-env").then(response => {
 			return response.json();
 		}).then(res => {
@@ -78,8 +78,8 @@ class Home extends Component {
         });
 
         try {
-            this.getTransactions();
-            this.getNetWorth();
+            await this.getTransactions();
+            await this.getNetWorth();
         } catch(err) {
             console.error("This is likely due to the access tokens not being retrieved from the DB if its a new user");
             console.error(err);

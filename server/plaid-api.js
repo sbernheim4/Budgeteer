@@ -159,8 +159,6 @@ app.post ("/balance", async function (req, res, next) {
         });
     });
 
-    console.log(netWorth);
-
     res.json({
         "netWorth": netWorth
     });
