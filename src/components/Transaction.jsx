@@ -31,7 +31,7 @@ class Transaction extends Component {
         // TODO: Currently hardcoding latitude and longitude but it should come from:
         // this.props.transaction.location.lat
         // this.props.transaction.location.lon
-        iframe.src = "https://www.google.com/maps/embed/v1/place?q=40.7829,73.9654&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
+        iframe.src = "https://www.google.com/maps/embed/v1/place?q=40.7828647,-73.9653551&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
 
         // WITH API KEY
         // "https://www.google.com/maps/embed/v1/place?q=40.7829,73.9654&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
