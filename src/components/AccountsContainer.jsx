@@ -107,7 +107,7 @@ class AccountsContainer extends Component {
 		this.setState({ [val]: e.target.value });
 	}
 
-	handleSubmit(e) {
+	async handleSubmit(e) {
 
 		// TODO: Need additional validation if using forms to get data
 		// Ensure month is between 1 and 12
@@ -120,37 +120,37 @@ class AccountsContainer extends Component {
 		let releventTransactions = [];
 		let total = 0;
 
-		fetch('/plaid-api/transactions', {
-			method: 'post',
-			headers: {
-				"Accept": "application/json",
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				startDate: dateOne,
-				endDate: dateTwo
+		try {
+
+			let data = await fetch('/plaid-api/transactions', {
+				method: 'post',
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					startDate: dateOne,
+					endDate: dateTwo
+				})
 			})
-		}).then(data => {
-			return data.json();
-		}).then(data => {
-			console.log(data);
+
+			data = await data.json();
+
 			data.forEach(acct => {
 				acct.transactions.forEach(transaction => {
 					releventTransactions.push(transaction);
 					total += transaction.amount;
 				});
-			})
-		}).then(() => {
+			});
+
 			this.setState({
 				categoryTransactions: releventTransactions,
 				categoryType: "Date",
 				categoryTotal: total
-			})
-		}).catch(err => {
+			});
+		} catch (err) {
 			console.error(err);
-		});
-
-		// Update the state with the relevent transactions and how the user is sorting them
+		}
 	}
 
 	render() {
