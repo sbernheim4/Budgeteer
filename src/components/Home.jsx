@@ -79,7 +79,6 @@ class Home extends Component {
 
         try {
             await this.getTransactions();
-            await this.getNetWorth();
         } catch(err) {
             console.error("This is likely due to the access tokens not being retrieved from the DB if its a new user");
             console.error(err);
