@@ -108,6 +108,7 @@ class AccountsContainer extends Component {
 	}
 
 	async handleSubmit(e) {
+		const months = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
 
 		// TODO: Need additional validation if using forms to get data
 		// Ensure month is between 1 and 12
@@ -119,21 +120,21 @@ class AccountsContainer extends Component {
 		let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
 		let releventTransactions = [];
 		let total = 0;
+		let fetchOptions = {
+			method: 'post',
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				startDate: dateOne,
+				endDate: dateTwo
+			})
+		};
 
 		try {
 
-			let data = await fetch('/plaid-api/transactions', {
-				method: 'post',
-				headers: {
-					"Accept": "application/json",
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({
-					startDate: dateOne,
-					endDate: dateTwo
-				})
-			})
-
+			let data = await fetch('/plaid-api/transactions', fetchOptions);
 			data = await data.json();
 
 			data.forEach(acct => {
@@ -143,9 +144,12 @@ class AccountsContainer extends Component {
 				});
 			});
 
+			total = helpers.formatAmount(total);
+			total = helpers.numberWithCommas(total);
+
 			this.setState({
 				categoryTransactions: releventTransactions,
-				categoryType: "Date",
+				categoryType: `${months[dateOne.getMonth()]} ${dateOne.getDate()} - ${months[dateTwo.getMonth()]} ${dateTwo.getDate()}`,
 				categoryTotal: total
 			});
 		} catch (err) {
@@ -183,7 +187,6 @@ class AccountsContainer extends Component {
 					<button onClick={() => { this.getCategoryTransactions("Healthcare") }}>Healthcare</button>
 					<button onClick={() => { this.getCategoryTransactions("Other") }}>Other</button>
 				</div>
-
 
 				<div className="accounts--date-picker">
 
@@ -225,14 +228,12 @@ class AccountsContainer extends Component {
 
 					</form>
 
-
 				</div>
 
 				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
 				<h2 className="accounts--totals">{this.state.categoryTotal}</h2>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
-
 			</div>
 		);
 	}
