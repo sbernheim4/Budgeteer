@@ -18,9 +18,9 @@ class AccountsContainer extends Component {
 		};
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
-        this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
-        this.getDate = this.getDate.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
+		this.getDate = this.getDate.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
 	getAccountTransactions(account_id) {
@@ -46,10 +46,10 @@ class AccountsContainer extends Component {
 
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
-        });
+		});
 
-        total = helpers.formatAmount(total);
-        total = helpers.numberWithCommas(total);
+		total = helpers.formatAmount(total);
+		total = helpers.numberWithCommas(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.props.accounts.forEach(account => {
@@ -57,7 +57,7 @@ class AccountsContainer extends Component {
 				type = account.name;
 				return;
 			}
-        });
+		});
 
 
 		this.setState({
@@ -90,10 +90,10 @@ class AccountsContainer extends Component {
 		let total = 0;
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
-        });
+		});
 
-        total = helpers.formatAmount(total);
-        total = helpers.numberWithCommas(total);
+		total = helpers.formatAmount(total);
+		total = helpers.numberWithCommas(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.setState({
@@ -101,43 +101,57 @@ class AccountsContainer extends Component {
 			categoryType: categoryString,
 			categoryTotal: total
 		});
-    }
+	}
 
-    getDate(e, val) {
-        this.setState({ [val]: e.target.value });
-    }
+	getDate(e, val) {
+		this.setState({ [val]: e.target.value });
+	}
 
-    handleSubmit(e) {
+	handleSubmit(e) {
 
-        // TODO: Need additional validation if using forms to get data
-        // Ensure month is between 1 and 12
-        // Ensure the day given is between 1 - 30, 1 -31, 1 - 28 or 1 - 29 based on the month and year
-        // Don't allow a range greater than 5 years.
+		// TODO: Need additional validation if using forms to get data
+		// Ensure month is between 1 and 12
+		// Ensure the day given is between 1 - 30, 1 -31, 1 - 28 or 1 - 29 based on the month and year
+		// Don't allow a range greater than 5 years or some other arbitrary amount
 
-        e.preventDefault();
-        let dateOne = new Date(this.state.yearOne, this.state.monthOne - 1, this.state.dayOne);
-        let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
+		e.preventDefault();
+		let dateOne = new Date(this.state.yearOne, this.state.monthOne - 1, this.state.dayOne);
+		let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
+		let releventTransactions = [];
+		let total = 0;
 
-        fetch('/plaid-api/transactions', {
-            method: 'post',
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                startDate: dateOne,
-                endDate: dateTwo
-            })
-        }).then(data => {
-            return data.json();
-        }).then(data => {
-            console.log(data);
+		fetch('/plaid-api/transactions', {
+			method: 'post',
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				startDate: dateOne,
+				endDate: dateTwo
+			})
+		}).then(data => {
+			return data.json();
+		}).then(data => {
+			console.log(data);
+			data.forEach(acct => {
+				acct.transactions.forEach(transaction => {
+					releventTransactions.push(transaction);
+					total += transaction.amount;
+				});
+			})
+		}).then(() => {
+			this.setState({
+				categoryTransactions: releventTransactions,
+				categoryType: "Date",
+				categoryTotal: total
+			})
+		}).catch(err => {
+			console.error(err);
+		});
 
-            // TODO: Need a setState for the transactions in data
-        }).catch(err => {
-            console.error(err);
-        });
-    }
+		// Update the state with the relevent transactions and how the user is sorting them
+	}
 
 	render() {
 
@@ -151,7 +165,7 @@ class AccountsContainer extends Component {
 
 					{/* Generate a button for each type of account connected */}
 					{this.props.accounts.map( (a, index) =>
-						<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
+					<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
 					)}
 
 					{/* Hide All Transactions */}
@@ -171,49 +185,48 @@ class AccountsContainer extends Component {
 				</div>
 
 
+				<div className="accounts--date-picker">
 
-                <div className="accounts--date-picker">
+					<form onSubmit={this.handleSubmit}>
 
-                     <form onSubmit={this.handleSubmit}>
+						<div>
+							<p>Begin Date</p>
+							<label>Month
+								<input type="text" vale={this.state.monthOne} onChange={(e) => {this.getDate(e, 'monthOne') }} />
+							</label>
 
-                        <div>
-                            <p>Begin Date</p>
-                            <label>Month
-                                <input type="text" vale={this.state.monthOne} onChange={(e) => {this.getDate(e, 'monthOne') }} />
-                            </label>
+							<label>Day
+								<input type="text" vale={this.state.dayOne} onChange={(e) => { this.getDate(e, 'dayOne') }} />
+							</label>
 
-                            <label>Day
-                                <input type="text" vale={this.state.dayOne} onChange={(e) => { this.getDate(e, 'dayOne') }} />
-                            </label>
-
-                            <label>Year
-                                <input type="text" vale={this.state.yearOne} onChange={(e) => { this.getDate(e, 'yearOne') }} />
-                            </label>
-                        </div>
-
-
-                        <div>
-                            <p>End Date</p>
-                            <label>Month
-                                <input type="text" vale={this.state.monthTwo} onChange={(e) => { this.getDate(e, 'monthTwo') }} />
-                            </label>
-
-                            <label>Day
-                                <input type="text" vale={this.state.dayTwo} onChange={(e) => { this.getDate(e, 'dayTwo') }} />
-                            </label>
-
-                            <label>Year
-                                <input type="text" vale={this.state.YearTwo} onChange={(e) => { this.getDate(e, 'yearTwo') }} />
-                            </label>
-                        </div>
-
-                        <br />
-                        <input type="submit" value="Submit"/>
-
-                    </form>
+							<label>Year
+								<input type="text" vale={this.state.yearOne} onChange={(e) => { this.getDate(e, 'yearOne') }} />
+							</label>
+						</div>
 
 
-                </div>
+						<div>
+							<p>End Date</p>
+							<label>Month
+								<input type="text" vale={this.state.monthTwo} onChange={(e) => { this.getDate(e, 'monthTwo') }} />
+							</label>
+
+							<label>Day
+								<input type="text" vale={this.state.dayTwo} onChange={(e) => { this.getDate(e, 'dayTwo') }} />
+							</label>
+
+							<label>Year
+								<input type="text" vale={this.state.YearTwo} onChange={(e) => { this.getDate(e, 'yearTwo') }} />
+							</label>
+						</div>
+
+						<br />
+						<input type="submit" value="Submit"/>
+
+					</form>
+
+
+				</div>
 
 				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
 				<h2 className="accounts--totals">{this.state.categoryTotal}</h2>
