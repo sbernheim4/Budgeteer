@@ -1,10 +1,42 @@
 @import '/global';
 
+$background-color: rgb(50, 50, 50);
+
 .navbar {
+	width: 100vw;
+	height: 60px;
+	background-color: $background-color;
+
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 
-	p {
-		margin: 15px;
+	ul {
+		display: flex;
+		flex-direction: row;
+
+		li {
+			margin: 15px;
+
+			&:after {
+				content: '';
+				margin: auto;
+				display: block;
+				width: 0;
+				height: 1px;
+				background: rgb(255, 132, 132);
+				transition: all .3s ease;
+			}
+
+			&:hover:after {
+				width: 100%;
+			}
+
+			a {
+				color: white;
+				text-decoration: none;
+
+			}
+		}
 	}
 }

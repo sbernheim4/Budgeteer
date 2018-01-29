@@ -60977,7 +60977,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.navbar {\n  display: flex;\n  flex-direction: row; }\n  .navbar p {\n    margin: 15px; }\n", ""]);
+exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.navbar {\n  display: flex;\n  flex-direction: row; }\n  .navbar ul li {\n    margin: 15px; }\n", ""]);
 
 // exports
 
@@ -65530,8 +65530,7 @@ var App = function (_Component) {
         key: 'componentWillMount',
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var _this2 = this;
-
+                var info, plaid;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
@@ -65544,64 +65543,66 @@ var App = function (_Component) {
                                         'Accept': 'application/json',
                                         'Content-Type': 'application/json'
                                     }
-                                }).then(function (res) {
-                                    return res.json();
                                 }).catch(function (err) {
                                     return console.error(err);
                                 });
 
-                                // Used for if the user wants to link a new account
-                                fetch('plaid-api/key-and-env').then(function (response) {
-                                    return response.json();
-                                }).then(function (res) {
-                                    var plaid = Plaid.create({
-                                        apiVersion: 'v2',
-                                        clientName: 'Plaid Walkthrough Demo',
-                                        env: res.env,
-                                        product: ['transactions'],
-                                        key: res.publicKey,
-                                        onSuccess: function onSuccess(public_token) {
-                                            fetch('/plaid-api/get-access-token', {
-                                                method: 'post',
-                                                headers: {
-                                                    'Accept': 'application/json',
-                                                    'Content-Type': 'application/json'
-                                                },
-                                                body: (0, _stringify2.default)({
-                                                    public_token: public_token,
-                                                    client_id: '5a24ca6a4e95b836d37e37fe',
-                                                    secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-                                                })
-                                            });
-                                        }
-                                    });
-
-                                    _this2.setState({ handler: plaid });
-                                }).catch(function (err) {
-                                    console.error(err);
-                                });
-
-                                _context.prev = 2;
-                                _context.next = 5;
+                                _context.prev = 1;
+                                _context.next = 4;
                                 return this.getTransactions();
 
-                            case 5:
-                                _context.next = 11;
+                            case 4:
+                                _context.next = 6;
+                                return fetch('plaid-api/key-and-env');
+
+                            case 6:
+                                info = _context.sent;
+                                _context.next = 9;
+                                return info.json();
+
+                            case 9:
+                                info = _context.sent;
+                                plaid = Plaid.create({
+                                    apiVersion: 'v2',
+                                    clientName: 'Plaid Walkthrough Demo',
+                                    env: info.env,
+                                    product: ['transactions'],
+                                    key: info.publicKey,
+                                    onSuccess: function onSuccess(public_token) {
+                                        fetch('/plaid-api/get-access-token', {
+                                            method: 'post',
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: (0, _stringify2.default)({
+                                                public_token: public_token,
+                                                client_id: '5a24ca6a4e95b836d37e37fe',
+                                                secret: 'f07a761a591de3cbbc5ac3ba2f4301'
+                                            })
+                                        });
+                                    }
+                                });
+
+
+                                this.setState({ handler: plaid });
+
+                                _context.next = 18;
                                 break;
 
-                            case 7:
-                                _context.prev = 7;
-                                _context.t0 = _context['catch'](2);
+                            case 14:
+                                _context.prev = 14;
+                                _context.t0 = _context['catch'](1);
 
                                 console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
                                 console.error(_context.t0);
 
-                            case 11:
+                            case 18:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[2, 7]]);
+                }, _callee, this, [[1, 14]]);
             }));
 
             function componentWillMount() {
@@ -65748,7 +65749,7 @@ var App = function (_Component) {
         key: 'storeAccounts',
         value: function () {
             var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(data) {
-                var _this3 = this;
+                var _this2 = this;
 
                 var currentAccounts;
                 return _regenerator2.default.wrap(function _callee4$(_context4) {
@@ -65763,8 +65764,8 @@ var App = function (_Component) {
 
                                     // Add all the accounts for the new bank the user just selected
                                     val.accounts.forEach(function (acct) {
-                                        if (!_this3.state.account_ids.has(acct.account_id)) {
-                                            _this3.state.account_ids.add(acct.account_id);
+                                        if (!_this2.state.account_ids.has(acct.account_id)) {
+                                            _this2.state.account_ids.add(acct.account_id);
                                             currentAccounts.push(acct);
                                         }
                                     });
@@ -65839,7 +65840,7 @@ var App = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this4 = this;
+            var _this3 = this;
 
             return _react2.default.createElement(
                 'div',
@@ -65875,18 +65876,18 @@ var App = function (_Component) {
                 _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Home2.default }),
                 _react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
                         return _react2.default.createElement(_Statistics2.default, {
-                            transactions: _this4.state.transactions
+                            transactions: _this3.state.transactions
                         });
                     } }),
                 _react2.default.createElement(_reactRouterDom.Route, { path: '/accounts', render: function render() {
                         return _react2.default.createElement(_AccountsContainer2.default, {
-                            transactions: _this4.state.transactions,
-                            accounts: _this4.state.accounts
+                            transactions: _this3.state.transactions,
+                            accounts: _this3.state.accounts
                         });
                     } }),
                 _react2.default.createElement(_reactRouterDom.Route, { path: '/networth', render: function render() {
                         return _react2.default.createElement(_Networth2.default, {
-                            netWorth: _this4.state.netWorth
+                            netWorth: _this3.state.netWorth
                         });
                     } })
             );

@@ -44,20 +44,21 @@ class App extends Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        }).then(res => {
-            return res.json()
         }).catch(err => console.error(err));
 
-        // Used for if the user wants to link a new account
-        fetch('plaid-api/key-and-env').then(response => {
-            return response.json();
-        }).then(res => {
+
+        try {
+            await this.getTransactions();
+
+            // Used for if the user wants to link a new account
+            let info = await fetch('plaid-api/key-and-env');
+            info = await info.json();
             const plaid = Plaid.create({
                 apiVersion: 'v2',
                 clientName: 'Plaid Walkthrough Demo',
-                env: res.env,
+                env: info.env,
                 product: ['transactions'],
-                key: res.publicKey,
+                key: info.publicKey,
                 onSuccess: function (public_token) {
                     fetch('/plaid-api/get-access-token', {
                         method: 'post',
@@ -75,12 +76,7 @@ class App extends Component {
             });
 
             this.setState({ handler: plaid });
-        }).catch(err => {
-            console.error(err)
-        });
 
-        try {
-            await this.getTransactions();
         } catch (err) {
             console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
             console.error(err);
