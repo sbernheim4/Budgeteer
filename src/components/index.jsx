@@ -1,11 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+/* import BrowserRouter from 'react-router-dom' */
+import { BrowserRouter } from 'react-router-dom';
+
 // Global Style Sheet
 import "../scss/reset.scss";
 
-import Home from "./Home.jsx";
-import Navbar from "./Navbar.jsx";
+/* App is the entry point to the React code.*/
+import App from './App.jsx';
 
-ReactDOM.render(<Navbar />, document.querySelector("#nav"));
-ReactDOM.render(<Home />, document.querySelector("#Home"));
+// ReactDOM.render(<Navbar />, document.querySelector("#nav"));
+// ReactDOM.render(<Main />, document.querySelector("#Home"));
+ReactDOM.render(
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
+    ,document.getElementById("root")
+);

@@ -32,8 +32,12 @@ app.all("*", (req, res, next) => {
     next();
 });
 
+app.get("/*", (req, res) => {
+    res.redirect('/');
+});
+
 app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/index.html"));
+    res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 /****************** Start the DB and Server ******************/

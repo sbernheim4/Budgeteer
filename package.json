@@ -13,7 +13,8 @@
     "plaid": "^2.2.0",
     "react": "^16.2.0",
     "react-chartjs-2": "^2.6.4",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.2.2",
