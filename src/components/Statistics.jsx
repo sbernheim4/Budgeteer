@@ -1,3 +1,5 @@
+/* eslint no-undef: 0*/
+
 import React, { Component } from "react";
 
 import { Doughnut, Line, Bar } from "react-chartjs-2";
@@ -16,6 +18,8 @@ import isAfter from "date-fns/is_after";
 import helpers from './helpers';
 
 import "../scss/statistics.scss";
+Chart.defaults.global.defaultFontColor = 'white';
+Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
 
 class Statistics extends Component {
 	constructor(props) {
@@ -127,7 +131,6 @@ class Statistics extends Component {
 	generateDoughnutChart() {
 		// get the data array
 		let info = this.calculateDoughnutInfo();
-
 		const data = {
 			labels: info.labels,
 			datasets: [{
@@ -200,7 +203,6 @@ class Statistics extends Component {
 				data: new Array(12).fill(avg),
 				label: "Avg. Monthly Spending",
 				radius: 0,
-				borderColor: "#EC932F",
 				backgroundColor: "#EC932F",
 				pointBorderColor: "#EC932F",
 				pointBackgroundColor: "#EC932F",
@@ -213,7 +215,6 @@ class Statistics extends Component {
 				data: orderedAmounts,
 				label: "Monthly Spending",
 				backgroundColor: "rgb(77, 153, 114)",
-				borderColor: "rgb(77, 153, 114)",
 				hoverBorderColor: "rgb(77, 153, 114)",
 				hoverBackgroundColor: "rgb(60, 119, 89)"
 			}],
@@ -302,7 +303,6 @@ class Statistics extends Component {
 					fill:  false,
 					label:  "Week",
 					backgroundColor: "rgb(77,  153, 114)",
-					borderColor: "rgb(77, 153, 114)",
 				},
 				{
 					stack: "Stack 0",
@@ -310,7 +310,6 @@ class Statistics extends Component {
 					fill: false,
 					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
-					borderColor: "rgb(52, 108, 161)",
 				}
 			],
 			options: {

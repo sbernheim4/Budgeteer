@@ -42374,80 +42374,76 @@ var AccountsContainer = function (_Component) {
 					)
 				),
 				_react2.default.createElement(
-					"div",
-					{ className: "accounts--date-picker" },
+					"form",
+					{ className: "accounts--date-picker", onSubmit: this.handleSubmit },
 					_react2.default.createElement(
-						"form",
-						{ onSubmit: this.handleSubmit },
+						"div",
+						null,
 						_react2.default.createElement(
-							"div",
+							"p",
 							null,
-							_react2.default.createElement(
-								"p",
-								null,
-								"Begin Date"
-							),
-							_react2.default.createElement(
-								"label",
-								null,
-								"Month",
-								_react2.default.createElement("input", { type: "text", vale: this.state.monthOne, onChange: function onChange(e) {
-										_this2.getDate(e, 'monthOne');
-									} })
-							),
-							_react2.default.createElement(
-								"label",
-								null,
-								"Day",
-								_react2.default.createElement("input", { type: "text", vale: this.state.dayOne, onChange: function onChange(e) {
-										_this2.getDate(e, 'dayOne');
-									} })
-							),
-							_react2.default.createElement(
-								"label",
-								null,
-								"Year",
-								_react2.default.createElement("input", { type: "text", vale: this.state.yearOne, onChange: function onChange(e) {
-										_this2.getDate(e, 'yearOne');
-									} })
-							)
+							"Begin Date"
 						),
 						_react2.default.createElement(
-							"div",
+							"label",
 							null,
-							_react2.default.createElement(
-								"p",
-								null,
-								"End Date"
-							),
-							_react2.default.createElement(
-								"label",
-								null,
-								"Month",
-								_react2.default.createElement("input", { type: "text", vale: this.state.monthTwo, onChange: function onChange(e) {
-										_this2.getDate(e, 'monthTwo');
-									} })
-							),
-							_react2.default.createElement(
-								"label",
-								null,
-								"Day",
-								_react2.default.createElement("input", { type: "text", vale: this.state.dayTwo, onChange: function onChange(e) {
-										_this2.getDate(e, 'dayTwo');
-									} })
-							),
-							_react2.default.createElement(
-								"label",
-								null,
-								"Year",
-								_react2.default.createElement("input", { type: "text", vale: this.state.YearTwo, onChange: function onChange(e) {
-										_this2.getDate(e, 'yearTwo');
-									} })
-							)
+							"Month",
+							_react2.default.createElement("input", { type: "text", vale: this.state.monthOne, onChange: function onChange(e) {
+									_this2.getDate(e, 'monthOne');
+								} })
 						),
-						_react2.default.createElement("br", null),
-						_react2.default.createElement("input", { type: "submit", value: "Submit" })
-					)
+						_react2.default.createElement(
+							"label",
+							null,
+							"Day",
+							_react2.default.createElement("input", { type: "text", vale: this.state.dayOne, onChange: function onChange(e) {
+									_this2.getDate(e, 'dayOne');
+								} })
+						),
+						_react2.default.createElement(
+							"label",
+							null,
+							"Year",
+							_react2.default.createElement("input", { type: "text", vale: this.state.yearOne, onChange: function onChange(e) {
+									_this2.getDate(e, 'yearOne');
+								} })
+						)
+					),
+					_react2.default.createElement(
+						"div",
+						null,
+						_react2.default.createElement(
+							"p",
+							null,
+							"End Date"
+						),
+						_react2.default.createElement(
+							"label",
+							null,
+							"Month",
+							_react2.default.createElement("input", { type: "text", vale: this.state.monthTwo, onChange: function onChange(e) {
+									_this2.getDate(e, 'monthTwo');
+								} })
+						),
+						_react2.default.createElement(
+							"label",
+							null,
+							"Day",
+							_react2.default.createElement("input", { type: "text", vale: this.state.dayTwo, onChange: function onChange(e) {
+									_this2.getDate(e, 'dayTwo');
+								} })
+						),
+						_react2.default.createElement(
+							"label",
+							null,
+							"Year",
+							_react2.default.createElement("input", { type: "text", vale: this.state.YearTwo, onChange: function onChange(e) {
+									_this2.getDate(e, 'yearTwo');
+								} })
+						)
+					),
+					_react2.default.createElement("br", null),
+					_react2.default.createElement("input", { type: "submit", value: "Submit" })
 				),
 				_react2.default.createElement(
 					"h2",
@@ -42756,7 +42752,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #fffdf7;\n  border: 1px solid gray;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #ffe491; }\n  .transaction h4 {\n    margin-top: 10px;\n    pointer-events: none; }\n  .transaction p {\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  /*border: 1px solid rgb(255, 132, 132);*/\n  border-radius: 5px;\n  box-shadow: 5px 5px 5px grey;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a;\n    box-shadow: 5px 5px 5px #5a5a5a; }\n  .transaction h4 {\n    margin-top: 10px;\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction p {\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
 
 // exports
 
@@ -42801,7 +42797,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: center;\n  flex-wrap: wrap; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: center;\n  flex-wrap: wrap; }\n", ""]);
 
 // exports
 
@@ -42846,7 +42842,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    border-radius: 5px;\n    cursor: pointer; }\n\n.accounts--date-picker form {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker form div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker form div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker form div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n", ""]);
 
 // exports
 
@@ -42935,6 +42931,10 @@ var _helpers2 = _interopRequireDefault(_helpers);
 __webpack_require__(494);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* eslint no-undef: 0*/
+
+Chart.defaults.global.defaultFontColor = 'white';
 
 var Statistics = function (_Component) {
 	(0, _inherits3.default)(Statistics, _Component);
@@ -43056,12 +43056,12 @@ var Statistics = function (_Component) {
 		value: function generateDoughnutChart() {
 			// get the data array
 			var info = this.calculateDoughnutInfo();
-
 			var data = {
 				labels: info.labels,
 				datasets: [{
 					data: info.amounts,
-					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
+					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"],
+					borderColor: ['rgba(0, 0,0, 0)']
 				}],
 				options: {
 					responsive: false
@@ -43130,7 +43130,7 @@ var Statistics = function (_Component) {
 					data: new Array(12).fill(avg),
 					label: "Avg. Monthly Spending",
 					radius: 0,
-					borderColor: "#EC932F",
+					borderColor: "rgba(0, 0, 0, 0)",
 					backgroundColor: "#EC932F",
 					pointBorderColor: "#EC932F",
 					pointBackgroundColor: "#EC932F",
@@ -43142,7 +43142,7 @@ var Statistics = function (_Component) {
 					data: orderedAmounts,
 					label: "Monthly Spending",
 					backgroundColor: "rgb(77, 153, 114)",
-					borderColor: "rgb(77, 153, 114)",
+					borderColor: "rgba(0, 0, 0, 0)",
 					hoverBorderColor: "rgb(77, 153, 114)",
 					hoverBackgroundColor: "rgb(60, 119, 89)"
 				}],
@@ -43230,14 +43230,14 @@ var Statistics = function (_Component) {
 					fill: false,
 					label: "Week",
 					backgroundColor: "rgb(77,  153, 114)",
-					borderColor: "rgb(77, 153, 114)"
+					borderColor: "rgba(0, 0, 0, 0)"
 				}, {
 					stack: "Stack 0",
 					data: weekend,
 					fill: false,
 					label: "Weekend",
 					backgroundColor: "rgb(52, 108, 161)",
-					borderColor: "rgb(52, 108, 161)"
+					borderColor: "rgba(0, 0, 0, 0)"
 				}],
 				options: {
 					title: {
@@ -60352,7 +60352,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 333px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 333px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
 
 // exports
 
@@ -60656,7 +60656,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.stats {\n  width: 100vw; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.stats {\n  width: 100vw; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
@@ -60842,7 +60842,7 @@ module.exports = startOfMonth
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _getPrototypeOf = __webpack_require__(21);
@@ -60876,63 +60876,63 @@ __webpack_require__(503);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Navbar = function (_Component) {
-    (0, _inherits3.default)(Navbar, _Component);
+	(0, _inherits3.default)(Navbar, _Component);
 
-    function Navbar() {
-        (0, _classCallCheck3.default)(this, Navbar);
-        return (0, _possibleConstructorReturn3.default)(this, (Navbar.__proto__ || (0, _getPrototypeOf2.default)(Navbar)).apply(this, arguments));
-    }
+	function Navbar() {
+		(0, _classCallCheck3.default)(this, Navbar);
+		return (0, _possibleConstructorReturn3.default)(this, (Navbar.__proto__ || (0, _getPrototypeOf2.default)(Navbar)).apply(this, arguments));
+	}
 
-    (0, _createClass3.default)(Navbar, [{
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "nav",
-                { className: "navbar" },
-                _react2.default.createElement(
-                    "ul",
-                    null,
-                    _react2.default.createElement(
-                        "li",
-                        null,
-                        _react2.default.createElement(
-                            _reactRouterDom.Link,
-                            { to: "/" },
-                            "Home"
-                        )
-                    ),
-                    _react2.default.createElement(
-                        "li",
-                        null,
-                        _react2.default.createElement(
-                            _reactRouterDom.Link,
-                            { to: "/accounts" },
-                            "Accounts"
-                        )
-                    ),
-                    _react2.default.createElement(
-                        "li",
-                        null,
-                        _react2.default.createElement(
-                            _reactRouterDom.Link,
-                            { to: "/statistics" },
-                            "Statistics"
-                        )
-                    ),
-                    _react2.default.createElement(
-                        "li",
-                        null,
-                        _react2.default.createElement(
-                            _reactRouterDom.Link,
-                            { to: "/networth" },
-                            "Networth"
-                        )
-                    )
-                )
-            );
-        }
-    }]);
-    return Navbar;
+	(0, _createClass3.default)(Navbar, [{
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"nav",
+				{ className: "navbar" },
+				_react2.default.createElement(
+					"ul",
+					null,
+					_react2.default.createElement(
+						"li",
+						null,
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: "/" },
+							"Home"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						null,
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: "/accounts" },
+							"Accounts"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						null,
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: "/statistics" },
+							"Statistics"
+						)
+					),
+					_react2.default.createElement(
+						"li",
+						null,
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: "/networth" },
+							"Networth"
+						)
+					)
+				)
+			);
+		}
+	}]);
+	return Navbar;
 }(_react.Component);
 
 exports.default = Navbar;
@@ -60977,7 +60977,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.navbar {\n  display: flex;\n  flex-direction: row; }\n  .navbar ul li {\n    margin: 15px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.navbar {\n  width: 100vw;\n  height: 60px;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n", ""]);
 
 // exports
 
@@ -65938,7 +65938,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "button {\n  border: 1px solid black; }\n\n.app--error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.app--error__display {\n  opacity: 1; }\n\n.app--btns {\n  margin-left: 20px;\n  display: flex;\n  flex-direction: row; }\n  @media all and (max-width: 408px) {\n    .app--btns {\n      margin: 0 auto;\n      max-width: 75%;\n      flex-direction: column;\n      justify-content: center; } }\n  .app--btns__blue {\n    background-color: #346ca1; }\n  .app--btns__green {\n    margin-left: 5px;\n    background-color: #4d9972; }\n    @media all and (max-width: 408px) {\n      .app--btns__green {\n        margin-left: 0; } }\n  .app--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.app--error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.app--error__display {\n  opacity: 1; }\n\n.app--btns {\n  margin-left: 20px;\n  display: flex;\n  flex-direction: row; }\n  @media all and (max-width: 408px) {\n    .app--btns {\n      margin: 0 auto;\n      max-width: 75%;\n      flex-direction: column;\n      justify-content: center; } }\n  .app--btns__blue {\n    background-color: #346ca1; }\n  .app--btns__green {\n    margin-left: 5px;\n    background-color: #4d9972; }\n    @media all and (max-width: 408px) {\n      .app--btns__green {\n        margin-left: 0; } }\n  .app--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

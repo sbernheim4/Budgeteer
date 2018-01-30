@@ -17,13 +17,14 @@ $background-color: rgb(50, 50, 50);
 
 		li {
 			margin: 15px;
+			text-transform: uppercase;
 
 			&:after {
 				content: '';
 				margin: auto;
 				display: block;
 				width: 0;
-				height: 1px;
+				height: 3px;
 				background: rgb(255, 132, 132);
 				transition: all .3s ease;
 			}

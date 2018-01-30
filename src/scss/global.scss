@@ -4,7 +4,13 @@
 $green: rgb(77, 153, 114);
 $red: rgb(212, 99, 99);
 $blue: rgb(52, 108, 161);
-$transaction-background-color: #fffdf7;
+
+* {
+	color: white;
+}
+body {
+	background-color: rgb(50, 50, 50);
+}
 
 button {
 	border: 1px solid black;
