@@ -65,43 +65,43 @@ class Statistics extends Component {
 				switch (category) {
 					case "Food and Drink":
 						amts[0] += amount;
-						break;
+					break;
 					case "Travel":
 						amts[1] += amount;
-						break;
+					break;
 					case "Shops":
 						amts[2] += amount;
-						break;
+					break;
 					case "Recreation":
 						amts[3] += amount;
-						break;
+					break;
 					case "Service":
 						amts[4] += amount;
-						break;
+					break;
 					case "Community":
 						amts[5] += amount;
-						break;
+					break;
 					case "Healthcare":
 						amts[6] += amount;
-						break;
+					break;
 					case "Bank Fees":
 						amts[7] += amount;
-						break;
+					break;
 					case "Cash Advance":
 						amts[8] += amount;
-						break;
+					break;
 					case "Interest":
 						amts[9] += amount;
-						break;
+					break;
 					case "Payment":
 						amts[10] += amount;
-						break;
+					break;
 					case "Tax":
 						amts[11] += amount;
-						break;
+					break;
 					case "Transfer":
 						amts[12] += amount;
-						break;
+					break;
 					default:
 						amts[13] += amount
 				}
@@ -349,21 +349,21 @@ class Statistics extends Component {
 
 		if (chartType === "barChart") {
 			chartDisplay = <div className="stats--line-chart"> <Bar data={this.state.monthlyLineChartData} /> </div>
-		} else if (chartType === "monthlyBudget") {
-			chartDisplay = <Budget transactions={this.props.transactions}/>
-		} else if (chartType === "categoricalSpending") {
-			chartDisplay = <div className="stats--doughnut"> <Doughnut data={this.state.categoryDoughnutData} /> </div>
-		} else {
-			chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
-		}
+			} else if (chartType === "monthlyBudget") {
+				chartDisplay = <Budget transactions={this.props.transactions}/>
+				} else if (chartType === "categoricalSpending") {
+					chartDisplay = <div className="stats--doughnut"> <Doughnut data={this.state.categoryDoughnutData} /> </div>
+					} else {
+						chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
+						}
 
-		document.querySelectorAll(`button`).forEach(btn => {
-			btn.classList.remove("active");
-		});
+						document.querySelectorAll(`button`).forEach(btn => {
+							btn.classList.remove("active");
+						});
 
-		document.querySelector("." + chartType).classList.add("active");
+						document.querySelector("." + chartType).classList.add("active");
 
-		this.setState({chart: chartDisplay});
+						this.setState({chart: chartDisplay});
 	}
 
 	/************************************* End Line Chart *************************************/

@@ -40,28 +40,28 @@ class Budget extends Component {
 	}
 
 	componentDidMount() {
-        this.getTotalSpent();
-    }
+		this.getTotalSpent();
+	}
 
-    componentWillUpdate() {
+	componentWillUpdate() {
 
-    }
+	}
 
 	getTotalSpent() {
-        let total = 0;
-        // Sum up the prices of each transaction
-        this.props.transactions.forEach(t => {
-            let today = new Date();
-            let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+		let total = 0;
+		// Sum up the prices of each transaction
+		this.props.transactions.forEach(t => {
+			let today = new Date();
+			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-            if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
-                total += t.amount;
-            }
-        })
+			if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
+				total += t.amount;
+			}
+		})
 
-        // Round total to two decimal places and ensure trailing 0s appear
-        total = helpers.formatAmount(total);
-        this.setState({ spentThisMonth: total });
+		// Round total to two decimal places and ensure trailing 0s appear
+		total = helpers.formatAmount(total);
+		this.setState({ spentThisMonth: total });
 	}
 
 	handleChange(event) {
@@ -108,7 +108,7 @@ class Budget extends Component {
 		let spent = helpers.numberWithCommas(this.state.spentThisMonth);
 
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
-        remaining = helpers.numberWithCommas(remaining);
+		remaining = helpers.numberWithCommas(remaining);
 
 		return (
 			<div className="budget">

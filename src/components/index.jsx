@@ -13,8 +13,8 @@ import App from './App.jsx';
 // ReactDOM.render(<Navbar />, document.querySelector("#nav"));
 // ReactDOM.render(<Main />, document.querySelector("#Home"));
 ReactDOM.render(
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
-    ,document.getElementById("root")
+	<BrowserRouter>
+		<App />
+	</BrowserRouter>
+	,document.getElementById("root")
 );

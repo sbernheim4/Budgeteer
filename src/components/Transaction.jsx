@@ -38,11 +38,11 @@ class Transaction extends Component {
 		// iframe.src = "https://maps.google.com/maps?q=40.7829,73.9654&z=15&output=embed"
 
 		if (!!e.target.querySelector("iframe")) {
-            document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
+			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
 
-            setTimeout(() => {
-                document.querySelectorAll("iframe").forEach(val => { val.remove() });
-            }, 301);
+			setTimeout(() => {
+				document.querySelectorAll("iframe").forEach(val => { val.remove() });
+			}, 301);
 		} else {
 			// close all iframes
 			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
@@ -69,6 +69,5 @@ class Transaction extends Component {
 		);
 	}
 }
-
 
 export default Transaction;

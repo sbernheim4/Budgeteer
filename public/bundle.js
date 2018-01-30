@@ -22131,9 +22131,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // Global Style Sheet
 _reactDom2.default.render(_react2.default.createElement(
-    _reactRouterDom.BrowserRouter,
-    null,
-    _react2.default.createElement(_App2.default, null)
+	_reactRouterDom.BrowserRouter,
+	null,
+	_react2.default.createElement(_App2.default, null)
 ), document.getElementById("root"));
 
 /* App is the entry point to the React code.*/
@@ -65470,7 +65470,7 @@ module.exports = function hoistNonReactStatics(targetComponent, sourceComponent,
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _regenerator = __webpack_require__(98);
@@ -65565,393 +65565,393 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // Helper Functions
 var App = function (_Component) {
-    (0, _inherits3.default)(App, _Component);
+	(0, _inherits3.default)(App, _Component);
 
-    function App(props) {
-        (0, _classCallCheck3.default)(this, App);
+	function App(props) {
+		(0, _classCallCheck3.default)(this, App);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).call(this, props));
+		var _this = (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).call(this, props));
 
-        var x = new _set2.default();
-        var y = new _set2.default();
+		var x = new _set2.default();
+		var y = new _set2.default();
 
-        _this.state = {
-            transactions: [],
-            accounts: [],
-            account_ids: x,
-            transaction_ids: y,
-            netWorth: 0
-        };
+		_this.state = {
+			transactions: [],
+			accounts: [],
+			account_ids: x,
+			transaction_ids: y,
+			netWorth: 0
+		};
 
-        _this.addAccount = _this.addAccount.bind(_this);
-        _this.getTransactions = _this.getTransactions.bind(_this);
-        return _this;
-    }
+		_this.addAccount = _this.addAccount.bind(_this);
+		_this.getTransactions = _this.getTransactions.bind(_this);
+		return _this;
+	}
 
-    (0, _createClass3.default)(App, [{
-        key: 'componentWillMount',
-        value: function () {
-            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-                var info, plaid;
-                return _regenerator2.default.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
+	(0, _createClass3.default)(App, [{
+		key: 'componentWillMount',
+		value: function () {
+			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+				var info, plaid;
+				return _regenerator2.default.wrap(function _callee$(_context) {
+					while (1) {
+						switch (_context.prev = _context.next) {
+							case 0:
 
-                                // First make a fetch call to get info for already linked accounts
-                                fetch('plaid-api/set-stored-access-token', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    }
-                                }).catch(function (err) {
-                                    return console.error(err);
-                                });
+								// First make a fetch call to get info for already linked accounts
+								fetch('plaid-api/set-stored-access-token', {
+									method: 'POST',
+									headers: {
+										'Accept': 'application/json',
+										'Content-Type': 'application/json'
+									}
+								}).catch(function (err) {
+									return console.error(err);
+								});
 
-                                _context.prev = 1;
-                                _context.next = 4;
-                                return this.getTransactions();
+								_context.prev = 1;
+								_context.next = 4;
+								return this.getTransactions();
 
-                            case 4:
-                                _context.next = 6;
-                                return fetch('plaid-api/key-and-env');
+							case 4:
+								_context.next = 6;
+								return fetch('plaid-api/key-and-env');
 
-                            case 6:
-                                info = _context.sent;
-                                _context.next = 9;
-                                return info.json();
+							case 6:
+								info = _context.sent;
+								_context.next = 9;
+								return info.json();
 
-                            case 9:
-                                info = _context.sent;
-                                plaid = Plaid.create({
-                                    apiVersion: 'v2',
-                                    clientName: 'Plaid Walkthrough Demo',
-                                    env: info.env,
-                                    product: ['transactions'],
-                                    key: info.publicKey,
-                                    onSuccess: function onSuccess(public_token) {
-                                        fetch('/plaid-api/get-access-token', {
-                                            method: 'post',
-                                            headers: {
-                                                'Accept': 'application/json',
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: (0, _stringify2.default)({
-                                                public_token: public_token,
-                                                client_id: '5a24ca6a4e95b836d37e37fe',
-                                                secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-                                            })
-                                        });
-                                    }
-                                });
-
-
-                                this.setState({ handler: plaid });
-
-                                _context.next = 18;
-                                break;
-
-                            case 14:
-                                _context.prev = 14;
-                                _context.t0 = _context['catch'](1);
-
-                                console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
-                                console.error(_context.t0);
-
-                            case 18:
-                            case 'end':
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this, [[1, 14]]);
-            }));
-
-            function componentWillMount() {
-                return _ref.apply(this, arguments);
-            }
-
-            return componentWillMount;
-        }()
-    }, {
-        key: 'addAccount',
-        value: function addAccount() {
-            this.state.handler.open();
-        }
-    }, {
-        key: 'getTransactions',
-        value: function () {
-            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-                var now, prev, numDays, fetchOptions, response, data, errorMessage;
-                return _regenerator2.default.wrap(function _callee2$(_context2) {
-                    while (1) {
-                        switch (_context2.prev = _context2.next) {
-                            case 0:
-                                // Setup info for fetch call
-                                now = new Date(); // Jan. 12th 2018
-
-                                prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-
-                                prev = (0, _add_months2.default)(prev, 1); // Feb. 12th 2017
-                                prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
-                                numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
-
-                                fetchOptions = {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: (0, _stringify2.default)({
-                                        days: numDays
-                                    })
-                                };
-                                _context2.prev = 6;
-                                _context2.next = 9;
-                                return fetch('/plaid-api/transactions', fetchOptions);
-
-                            case 9:
-                                response = _context2.sent;
-                                _context2.next = 12;
-                                return response.json();
-
-                            case 12:
-                                data = _context2.sent;
-                                _context2.next = 15;
-                                return this.storeAccounts(data);
-
-                            case 15:
-                                _context2.next = 17;
-                                return this.storeTransactions(data);
-
-                            case 17:
-                                // store transaction info
-
-                                this.getNetWorth(); // store networth
-
-                                _context2.next = 26;
-                                break;
-
-                            case 20:
-                                _context2.prev = 20;
-                                _context2.t0 = _context2['catch'](6);
-                                errorMessage = document.querySelector('.home--error');
-
-                                errorMessage.classList.add('home--error__display');
-
-                                setTimeout(function () {
-                                    errorMessage.classList.remove('home--error__display');
-                                }, 4000);
-
-                                console.error(_context2.t0);
-
-                            case 26:
-                            case 'end':
-                                return _context2.stop();
-                        }
-                    }
-                }, _callee2, this, [[6, 20]]);
-            }));
-
-            function getTransactions() {
-                return _ref2.apply(this, arguments);
-            }
-
-            return getTransactions;
-        }()
-    }, {
-        key: 'storeTransactions',
-        value: function () {
-            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(data) {
-                var currentTransactions, currentTransactionIds;
-                return _regenerator2.default.wrap(function _callee3$(_context3) {
-                    while (1) {
-                        switch (_context3.prev = _context3.next) {
-                            case 0:
-                                currentTransactions = this.state.transactions;
-                                currentTransactionIds = this.state.transaction_ids;
+							case 9:
+								info = _context.sent;
+								plaid = Plaid.create({
+									apiVersion: 'v2',
+									clientName: 'Plaid Walkthrough Demo',
+									env: info.env,
+									product: ['transactions'],
+									key: info.publicKey,
+									onSuccess: function onSuccess(public_token) {
+										fetch('/plaid-api/get-access-token', {
+											method: 'post',
+											headers: {
+												'Accept': 'application/json',
+												'Content-Type': 'application/json'
+											},
+											body: (0, _stringify2.default)({
+												public_token: public_token,
+												client_id: '5a24ca6a4e95b836d37e37fe',
+												secret: 'f07a761a591de3cbbc5ac3ba2f4301'
+											})
+										});
+									}
+								});
 
 
-                                data.forEach(function (val) {
-                                    // Add all the transactions for the new bank the user just selected
-                                    val.transactions.forEach(function (t) {
-                                        if (!currentTransactionIds.has(t.transaction_id)) {
-                                            currentTransactionIds.add(t.transaction_id);
-                                            currentTransactions.push(t);
-                                        }
-                                    });
+								this.setState({ handler: plaid });
 
-                                    // Sort the transactions based on account_id
-                                    currentTransactions = currentTransactions.sort(function (a, b) {
-                                        return a.account_id - b.account_id;
-                                    });
-                                });
+								_context.next = 18;
+								break;
 
-                                // Update state variable
-                                this.setState({
-                                    transaction_ids: currentTransactionIds,
-                                    transactions: currentTransactions
-                                });
+							case 14:
+								_context.prev = 14;
+								_context.t0 = _context['catch'](1);
 
-                            case 4:
-                            case 'end':
-                                return _context3.stop();
-                        }
-                    }
-                }, _callee3, this);
-            }));
+								console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
+								console.error(_context.t0);
 
-            function storeTransactions(_x) {
-                return _ref3.apply(this, arguments);
-            }
+							case 18:
+							case 'end':
+								return _context.stop();
+						}
+					}
+				}, _callee, this, [[1, 14]]);
+			}));
 
-            return storeTransactions;
-        }()
-    }, {
-        key: 'storeAccounts',
-        value: function () {
-            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(data) {
-                var _this2 = this;
+			function componentWillMount() {
+				return _ref.apply(this, arguments);
+			}
 
-                var currentAccounts;
-                return _regenerator2.default.wrap(function _callee4$(_context4) {
-                    while (1) {
-                        switch (_context4.prev = _context4.next) {
-                            case 0:
-                                // Get all the connected accounts so far
-                                currentAccounts = this.state.accounts;
+			return componentWillMount;
+		}()
+	}, {
+		key: 'addAccount',
+		value: function addAccount() {
+			this.state.handler.open();
+		}
+	}, {
+		key: 'getTransactions',
+		value: function () {
+			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+				var now, prev, numDays, fetchOptions, response, data, errorMessage;
+				return _regenerator2.default.wrap(function _callee2$(_context2) {
+					while (1) {
+						switch (_context2.prev = _context2.next) {
+							case 0:
+								// Setup info for fetch call
+								now = new Date(); // Jan. 12th 2018
+
+								prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+
+								prev = (0, _add_months2.default)(prev, 1); // Feb. 12th 2017
+								prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
+								numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
+
+								fetchOptions = {
+									method: 'POST',
+									headers: {
+										'Accept': 'application/json',
+										'Content-Type': 'application/json'
+									},
+									body: (0, _stringify2.default)({
+										days: numDays
+									})
+								};
+								_context2.prev = 6;
+								_context2.next = 9;
+								return fetch('/plaid-api/transactions', fetchOptions);
+
+							case 9:
+								response = _context2.sent;
+								_context2.next = 12;
+								return response.json();
+
+							case 12:
+								data = _context2.sent;
+								_context2.next = 15;
+								return this.storeAccounts(data);
+
+							case 15:
+								_context2.next = 17;
+								return this.storeTransactions(data);
+
+							case 17:
+								// store transaction info
+
+								this.getNetWorth(); // store networth
+
+								_context2.next = 26;
+								break;
+
+							case 20:
+								_context2.prev = 20;
+								_context2.t0 = _context2['catch'](6);
+								errorMessage = document.querySelector('.home--error');
+
+								errorMessage.classList.add('home--error__display');
+
+								setTimeout(function () {
+									errorMessage.classList.remove('home--error__display');
+								}, 4000);
+
+								console.error(_context2.t0);
+
+							case 26:
+							case 'end':
+								return _context2.stop();
+						}
+					}
+				}, _callee2, this, [[6, 20]]);
+			}));
+
+			function getTransactions() {
+				return _ref2.apply(this, arguments);
+			}
+
+			return getTransactions;
+		}()
+	}, {
+		key: 'storeTransactions',
+		value: function () {
+			var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(data) {
+				var currentTransactions, currentTransactionIds;
+				return _regenerator2.default.wrap(function _callee3$(_context3) {
+					while (1) {
+						switch (_context3.prev = _context3.next) {
+							case 0:
+								currentTransactions = this.state.transactions;
+								currentTransactionIds = this.state.transaction_ids;
 
 
-                                data.forEach(function (val) {
+								data.forEach(function (val) {
+									// Add all the transactions for the new bank the user just selected
+									val.transactions.forEach(function (t) {
+										if (!currentTransactionIds.has(t.transaction_id)) {
+											currentTransactionIds.add(t.transaction_id);
+											currentTransactions.push(t);
+										}
+									});
 
-                                    // Add all the accounts for the new bank the user just selected
-                                    val.accounts.forEach(function (acct) {
-                                        if (!_this2.state.account_ids.has(acct.account_id)) {
-                                            _this2.state.account_ids.add(acct.account_id);
-                                            currentAccounts.push(acct);
-                                        }
-                                    });
+									// Sort the transactions based on account_id
+									currentTransactions = currentTransactions.sort(function (a, b) {
+										return a.account_id - b.account_id;
+									});
+								});
 
-                                    // Sort the accounts based on account_id
-                                    currentAccounts = currentAccounts.sort(function (a, b) {
-                                        return a.account_id - b.account_id;
-                                    });
-                                });
+								// Update state variable
+								this.setState({
+									transaction_ids: currentTransactionIds,
+									transactions: currentTransactions
+								});
 
-                                // Update accounts state variable
-                                this.setState({ accounts: currentAccounts });
+							case 4:
+							case 'end':
+								return _context3.stop();
+						}
+					}
+				}, _callee3, this);
+			}));
 
-                            case 3:
-                            case 'end':
-                                return _context4.stop();
-                        }
-                    }
-                }, _callee4, this);
-            }));
+			function storeTransactions(_x) {
+				return _ref3.apply(this, arguments);
+			}
 
-            function storeAccounts(_x2) {
-                return _ref4.apply(this, arguments);
-            }
+			return storeTransactions;
+		}()
+	}, {
+		key: 'storeAccounts',
+		value: function () {
+			var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(data) {
+				var _this2 = this;
 
-            return storeAccounts;
-        }()
-    }, {
-        key: 'getNetWorth',
-        value: function () {
-            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
-                var fetchOptions, data;
-                return _regenerator2.default.wrap(function _callee5$(_context5) {
-                    while (1) {
-                        switch (_context5.prev = _context5.next) {
-                            case 0:
-                                fetchOptions = {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Content-Type': 'application/json'
-                                    }
-                                };
-                                _context5.next = 3;
-                                return fetch('plaid-api/balance', fetchOptions);
-
-                            case 3:
-                                data = _context5.sent;
-                                _context5.next = 6;
-                                return data.json();
-
-                            case 6:
-                                data = _context5.sent;
+				var currentAccounts;
+				return _regenerator2.default.wrap(function _callee4$(_context4) {
+					while (1) {
+						switch (_context4.prev = _context4.next) {
+							case 0:
+								// Get all the connected accounts so far
+								currentAccounts = this.state.accounts;
 
 
-                                this.setState({ netWorth: data.netWorth });
+								data.forEach(function (val) {
 
-                            case 8:
-                            case 'end':
-                                return _context5.stop();
-                        }
-                    }
-                }, _callee5, this);
-            }));
+									// Add all the accounts for the new bank the user just selected
+									val.accounts.forEach(function (acct) {
+										if (!_this2.state.account_ids.has(acct.account_id)) {
+											_this2.state.account_ids.add(acct.account_id);
+											currentAccounts.push(acct);
+										}
+									});
 
-            function getNetWorth() {
-                return _ref5.apply(this, arguments);
-            }
+									// Sort the accounts based on account_id
+									currentAccounts = currentAccounts.sort(function (a, b) {
+										return a.account_id - b.account_id;
+									});
+								});
 
-            return getNetWorth;
-        }()
-    }, {
-        key: 'render',
-        value: function render() {
-            var _this3 = this;
+								// Update accounts state variable
+								this.setState({ accounts: currentAccounts });
 
-            return _react2.default.createElement(
-                'div',
-                null,
-                _react2.default.createElement(_Navbar2.default, null),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'app' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'app--btns' },
-                        _react2.default.createElement(
-                            'button',
-                            { className: 'app--btns__blue', onClick: this.addAccount },
-                            'Add Accounts'
-                        ),
-                        '                    '
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'app--error' },
-                        _react2.default.createElement(
-                            'p',
-                            null,
-                            'Please first link an account'
-                        )
-                    )
-                ),
-                _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Home2.default }),
-                _react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
-                        return _react2.default.createElement(_Statistics2.default, {
-                            transactions: _this3.state.transactions
-                        });
-                    } }),
-                _react2.default.createElement(_reactRouterDom.Route, { path: '/accounts', render: function render() {
-                        return _react2.default.createElement(_AccountsContainer2.default, {
-                            transactions: _this3.state.transactions,
-                            accounts: _this3.state.accounts
-                        });
-                    } }),
-                _react2.default.createElement(_reactRouterDom.Route, { path: '/networth', render: function render() {
-                        return _react2.default.createElement(_Networth2.default, {
-                            netWorth: _this3.state.netWorth
-                        });
-                    } })
-            );
-        }
-    }]);
-    return App;
+							case 3:
+							case 'end':
+								return _context4.stop();
+						}
+					}
+				}, _callee4, this);
+			}));
+
+			function storeAccounts(_x2) {
+				return _ref4.apply(this, arguments);
+			}
+
+			return storeAccounts;
+		}()
+	}, {
+		key: 'getNetWorth',
+		value: function () {
+			var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
+				var fetchOptions, data;
+				return _regenerator2.default.wrap(function _callee5$(_context5) {
+					while (1) {
+						switch (_context5.prev = _context5.next) {
+							case 0:
+								fetchOptions = {
+									method: 'POST',
+									headers: {
+										'Accept': 'application/json',
+										'Content-Type': 'application/json'
+									}
+								};
+								_context5.next = 3;
+								return fetch('plaid-api/balance', fetchOptions);
+
+							case 3:
+								data = _context5.sent;
+								_context5.next = 6;
+								return data.json();
+
+							case 6:
+								data = _context5.sent;
+
+
+								this.setState({ netWorth: data.netWorth });
+
+							case 8:
+							case 'end':
+								return _context5.stop();
+						}
+					}
+				}, _callee5, this);
+			}));
+
+			function getNetWorth() {
+				return _ref5.apply(this, arguments);
+			}
+
+			return getNetWorth;
+		}()
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this3 = this;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(_Navbar2.default, null),
+				_react2.default.createElement(
+					'div',
+					{ className: 'app' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'app--btns' },
+						_react2.default.createElement(
+							'button',
+							{ className: 'app--btns__blue', onClick: this.addAccount },
+							'Add Accounts'
+						),
+						'                    '
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'app--error' },
+						_react2.default.createElement(
+							'p',
+							null,
+							'Please first link an account'
+						)
+					)
+				),
+				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Home2.default }),
+				_react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
+						return _react2.default.createElement(_Statistics2.default, {
+							transactions: _this3.state.transactions
+						});
+					} }),
+				_react2.default.createElement(_reactRouterDom.Route, { path: '/accounts', render: function render() {
+						return _react2.default.createElement(_AccountsContainer2.default, {
+							transactions: _this3.state.transactions,
+							accounts: _this3.state.accounts
+						});
+					} }),
+				_react2.default.createElement(_reactRouterDom.Route, { path: '/networth', render: function render() {
+						return _react2.default.createElement(_Networth2.default, {
+							netWorth: _this3.state.netWorth
+						});
+					} })
+			);
+		}
+	}]);
+	return App;
 }(_react.Component);
 
 exports.default = App;
