@@ -16,17 +16,16 @@
 		justify-content: center;
 
 		button {
+			margin: 0 1px;
 			width: 25%;
 			padding: 15px 50px;
 			background-color: rgb(50, 50, 50);
-			border: 2px solid rgb(255, 132, 132);
-			border-right-width: 0;
-			transition: all .5s ease;
+			border-bottom: 2px solid darken(rgb(50, 50, 50), 10%);
+			outline: none;
 
 			&:hover {
 				/*background-color: darken(rgb(50, 50, 50), 5%);*/
 				cursor: pointer;
-				outline: none;
 			}
 		}
 
@@ -35,7 +34,8 @@
 		}
 
 		.active {
-			background-color: darken(rgb(50, 50, 50), 5%);
+			border-bottom: 2px solid rgb(255, 132, 132);
+			/*background-color: darken(rgb(50, 50, 50), 5%);*/
 			transition: all .3s ease;
 		}
 	}

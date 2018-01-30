@@ -343,27 +343,26 @@ class Statistics extends Component {
 		return arr;
 	}
 
-	changeChart(chartType) {
+	changeChart(chartType = "barChart") {
 
 		let chartDisplay;
 
 		if (chartType === "barChart") {
 			chartDisplay = <div className="stats--line-chart"> <Bar data={this.state.monthlyLineChartData} /> </div>
-			} else if (chartType === "monthlyBudget") {
-				chartDisplay = <Budget transactions={this.props.transactions}/>
-				} else if (chartType === "categoricalSpending") {
-					chartDisplay = <div className="stats--doughnut"> <Doughnut data={this.state.categoryDoughnutData} /> </div>
-					} else {
-						chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
-						}
+		} else if (chartType === "monthlyBudget") {
+			chartDisplay = <Budget transactions={this.props.transactions}/>
+		} else if (chartType === "categoricalSpending") {
+			chartDisplay = <div className="stats--doughnut"> <Doughnut data={this.state.categoryDoughnutData} /> </div>
+		} else {
+			chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
+		}
 
-						document.querySelectorAll(`button`).forEach(btn => {
-							btn.classList.remove("active");
-						});
+		document.querySelectorAll(`button`).forEach(btn => {
+			btn.classList.remove("active");
+		});
+		document.querySelector("." + chartType).classList.add("active");
 
-						document.querySelector("." + chartType).classList.add("active");
-
-						this.setState({chart: chartDisplay});
+		this.setState({chart: chartDisplay});
 	}
 
 	/************************************* End Line Chart *************************************/

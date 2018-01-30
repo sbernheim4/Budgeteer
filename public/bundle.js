@@ -42752,7 +42752,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  /*border: 1px solid rgb(255, 132, 132);*/\n  border-radius: 5px;\n  box-shadow: 5px 5px 5px grey;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a;\n    box-shadow: 5px 5px 5px #5a5a5a; }\n  .transaction h4 {\n    margin-top: 10px;\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction p {\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  /*border: 1px solid rgb(255, 132, 132);*/\n  border-radius: 5px;\n  box-shadow: 5px 5px 5px grey;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a;\n    box-shadow: 5px 5px 5px #5a5a5a; }\n  .transaction h4 {\n    margin-top: 10px;\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction p {\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
 
 // exports
 
@@ -42797,7 +42797,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: center;\n  flex-wrap: wrap; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.transaction-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: center;\n  flex-wrap: wrap; }\n", ""]);
 
 // exports
 
@@ -42842,7 +42842,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n", ""]);
 
 // exports
 
@@ -43268,7 +43268,9 @@ var Statistics = function (_Component) {
 		}
 	}, {
 		key: "changeChart",
-		value: function changeChart(chartType) {
+		value: function changeChart() {
+			var chartType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "barChart";
+
 
 			var chartDisplay = void 0;
 
@@ -43303,7 +43305,6 @@ var Statistics = function (_Component) {
 			document.querySelectorAll("button").forEach(function (btn) {
 				btn.classList.remove("active");
 			});
-
 			document.querySelector("." + chartType).classList.add("active");
 
 			this.setState({ chart: chartDisplay });
@@ -60414,7 +60415,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 333px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 333px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
 
 // exports
 
@@ -60718,7 +60719,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.stats {\n  width: 100vw; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    width: 80vw;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border: 2px solid #ff8484;\n      border-right-width: 0;\n      transition: all .5s ease; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer;\n        outline: none; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      background-color: #252525;\n      transition: all .3s ease; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.stats {\n  width: 100vw; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    width: 80vw;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 1px;\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
@@ -61039,7 +61040,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.navbar {\n  width: 100vw;\n  height: 60px;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.navbar {\n  width: 100vw;\n  height: 60px;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n", ""]);
 
 // exports
 
@@ -65996,7 +65997,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.app--error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.app--error__display {\n  opacity: 1; }\n\n.app--btns {\n  margin-left: 20px;\n  display: flex;\n  flex-direction: row; }\n  @media all and (max-width: 408px) {\n    .app--btns {\n      margin: 0 auto;\n      max-width: 75%;\n      flex-direction: column;\n      justify-content: center; } }\n  .app--btns__blue {\n    background-color: #346ca1; }\n  .app--btns__green {\n    margin-left: 5px;\n    background-color: #4d9972; }\n    @media all and (max-width: 408px) {\n      .app--btns__green {\n        margin-left: 0; } }\n  .app--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  /*border: 1px solid black;*/ }\n\n.app--error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.app--error__display {\n  opacity: 1; }\n\n.app--btns {\n  margin-left: 20px;\n  display: flex;\n  flex-direction: row; }\n  @media all and (max-width: 408px) {\n    .app--btns {\n      margin: 0 auto;\n      max-width: 75%;\n      flex-direction: column;\n      justify-content: center; } }\n  .app--btns__blue {\n    background-color: #346ca1; }\n  .app--btns__green {\n    margin-left: 5px;\n    background-color: #4d9972; }\n    @media all and (max-width: 408px) {\n      .app--btns__green {\n        margin-left: 0; } }\n  .app--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
