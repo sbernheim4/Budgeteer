@@ -207,8 +207,7 @@ class App extends Component {
                 <div className='app'>
                     <div className='app--btns'>
                         <button className='app--btns__blue' onClick={this.addAccount}>Add Accounts</button>
-                        <button className='app--btns__green' onClick={this.getTransactions}>Get Transactions</button>
-                    </div>
+						{/* <button className='app--btns__green' onClick={this.getTransactions}>Get Transactions</button>*/}                    </div>
 
                     <div className='app--error'>
                         <p>Please first link an account</p>
