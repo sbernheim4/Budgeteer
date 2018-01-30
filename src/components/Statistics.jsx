@@ -203,6 +203,7 @@ class Statistics extends Component {
 				data: new Array(12).fill(avg),
 				label: "Avg. Monthly Spending",
 				radius: 0,
+				borderColor: "#EC932F",
 				backgroundColor: "#EC932F",
 				pointBorderColor: "#EC932F",
 				pointBackgroundColor: "#EC932F",
@@ -346,16 +347,16 @@ class Statistics extends Component {
 
 			<div className="stats">
 
+				<div className="stats--line-chart">
+					{/* Render a bar and line chart for monthly and avg spending */}
+					<Bar data={this.state.monthlyLineChartData} />
+				</div>
+
 				<Budget transactions={this.props.transactions}/>
 
 				<div className="stats--doughnut">
 					{/* Render a doughnut chart for categorical spending */}
 					<Doughnut data={this.state.categoryDoughnutData} />
-				</div>
-
-				<div className="stats--line-chart">
-					{/* Render a bar and line chart for monthly and avg spending */}
-					<Bar data={this.state.monthlyLineChartData} />
 				</div>
 
 				<div className="stats--week-weekend">
