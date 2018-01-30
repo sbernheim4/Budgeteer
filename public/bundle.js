@@ -42935,6 +42935,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /* eslint no-undef: 0*/
 
 Chart.defaults.global.defaultFontColor = 'white';
+Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
 
 var Statistics = function (_Component) {
 	(0, _inherits3.default)(Statistics, _Component);
@@ -42948,8 +42949,12 @@ var Statistics = function (_Component) {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-			weekVsWeekend: {}
+			weekVsWeekend: {},
+			currChart: "barChart"
 		};
+
+		_this.changeChart = _this.changeChart.bind(_this);
+
 		return _this;
 	}
 
@@ -42959,7 +42964,7 @@ var Statistics = function (_Component) {
 			// Generate all the charts when the component has loaded
 
 			this.generateDoughnutChart();
-			this.generateMonthlyBarChart();
+			this.generateMonthlybarChart();
 			this.generateLineChart();
 		}
 
@@ -43060,8 +43065,7 @@ var Statistics = function (_Component) {
 				labels: info.labels,
 				datasets: [{
 					data: info.amounts,
-					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"],
-					borderColor: ['rgba(0, 0,0, 0)']
+					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
 				}],
 				options: {
 					responsive: false
@@ -43075,8 +43079,8 @@ var Statistics = function (_Component) {
 		/************************************* Bar Chart *************************************/
 
 	}, {
-		key: "generateMonthlyBarChart",
-		value: function generateMonthlyBarChart() {
+		key: "generateMonthlybarChart",
+		value: function generateMonthlybarChart() {
 			// Ensure the order of the date is chronological not just based on jan - dec.
 
 			/* Sum up costs by week */
@@ -43130,7 +43134,7 @@ var Statistics = function (_Component) {
 					data: new Array(12).fill(avg),
 					label: "Avg. Monthly Spending",
 					radius: 0,
-					borderColor: "rgba(0, 0, 0, 0)",
+					borderColor: "#EC932F",
 					backgroundColor: "#EC932F",
 					pointBorderColor: "#EC932F",
 					pointBackgroundColor: "#EC932F",
@@ -43142,7 +43146,6 @@ var Statistics = function (_Component) {
 					data: orderedAmounts,
 					label: "Monthly Spending",
 					backgroundColor: "rgb(77, 153, 114)",
-					borderColor: "rgba(0, 0, 0, 0)",
 					hoverBorderColor: "rgb(77, 153, 114)",
 					hoverBackgroundColor: "rgb(60, 119, 89)"
 				}],
@@ -43229,15 +43232,13 @@ var Statistics = function (_Component) {
 					data: weekday,
 					fill: false,
 					label: "Week",
-					backgroundColor: "rgb(77,  153, 114)",
-					borderColor: "rgba(0, 0, 0, 0)"
+					backgroundColor: "rgb(77,  153, 114)"
 				}, {
 					stack: "Stack 0",
 					data: weekend,
 					fill: false,
 					label: "Weekend",
-					backgroundColor: "rgb(52, 108, 161)",
-					borderColor: "rgba(0, 0, 0, 0)"
+					backgroundColor: "rgb(52, 108, 161)"
 				}],
 				options: {
 					title: {
@@ -43265,31 +43266,92 @@ var Statistics = function (_Component) {
 
 			return arr;
 		}
+	}, {
+		key: "changeChart",
+		value: function changeChart(chartType) {
+
+			var chartDisplay = void 0;
+
+			if (chartType === "barChart") {
+				chartDisplay = _react2.default.createElement(
+					"div",
+					{ className: "stats--line-chart" },
+					" ",
+					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.monthlyLineChartData }),
+					" "
+				);
+			} else if (chartType === "monthlyBudget") {
+				chartDisplay = _react2.default.createElement(_Budget2.default, { transactions: this.props.transactions });
+			} else if (chartType === "categoricalSpending") {
+				chartDisplay = _react2.default.createElement(
+					"div",
+					{ className: "stats--doughnut" },
+					" ",
+					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData }),
+					" "
+				);
+			} else {
+				chartDisplay = _react2.default.createElement(
+					"div",
+					{ className: "stats--week-weekend" },
+					" ",
+					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.weekVsWeekend }),
+					" "
+				);
+			}
+
+			document.querySelectorAll("button").forEach(function (btn) {
+				btn.classList.remove("active");
+			});
+
+			document.querySelector("." + chartType).classList.add("active");
+
+			this.setState({ chart: chartDisplay });
+		}
 
 		/************************************* End Line Chart *************************************/
 
 	}, {
 		key: "render",
 		value: function render() {
+			var _this2 = this;
+
 			return _react2.default.createElement(
 				"div",
 				{ className: "stats" },
-				_react2.default.createElement(_Budget2.default, { transactions: this.props.transactions }),
 				_react2.default.createElement(
 					"div",
-					{ className: "stats--doughnut" },
-					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData })
+					{ className: "stats--tab-container" },
+					_react2.default.createElement(
+						"button",
+						{ className: "barChart", onClick: function onClick() {
+								_this2.changeChart("barChart");
+							} },
+						"Annual Monthly Spending"
+					),
+					_react2.default.createElement(
+						"button",
+						{ className: "monthlyBudget", onClick: function onClick() {
+								_this2.changeChart("monthlyBudget");
+							} },
+						"Monthly Budget"
+					),
+					_react2.default.createElement(
+						"button",
+						{ className: "categoricalSpending", onClick: function onClick() {
+								_this2.changeChart("categoricalSpending");
+							} },
+						"Categorical Spending"
+					),
+					_react2.default.createElement(
+						"button",
+						{ className: "weekVsWeekend", onClick: function onClick() {
+								_this2.changeChart("weekVsWeekend");
+							} },
+						"Week vs Weekend"
+					)
 				),
-				_react2.default.createElement(
-					"div",
-					{ className: "stats--line-chart" },
-					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.monthlyLineChartData })
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "stats--week-weekend" },
-					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.weekVsWeekend })
-				)
+				this.state.chart
 			);
 		}
 	}]);
@@ -60656,7 +60718,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.stats {\n  width: 100vw; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\nbutton {\n  border: 1px solid black; }\n\n.stats {\n  width: 100vw; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    width: 80vw;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border: 2px solid #ff8484;\n      border-right-width: 0;\n      transition: all .5s ease; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer;\n        outline: none; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      background-color: #252525;\n      transition: all .3s ease; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
@@ -65857,11 +65919,7 @@ var App = function (_Component) {
                             { className: 'app--btns__blue', onClick: this.addAccount },
                             'Add Accounts'
                         ),
-                        _react2.default.createElement(
-                            'button',
-                            { className: 'app--btns__green', onClick: this.getTransactions },
-                            'Get Transactions'
-                        )
+                        '                    '
                     ),
                     _react2.default.createElement(
                         'div',

@@ -29,15 +29,19 @@ class Statistics extends Component {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-			weekVsWeekend: {}
+			weekVsWeekend: {},
+			currChart: "barChart"
 		}
+
+		this.changeChart = this.changeChart.bind(this);
+
 	}
 
 	componentDidMount() {
 		// Generate all the charts when the component has loaded
 
 		this.generateDoughnutChart();
-		this.generateMonthlyBarChart();
+		this.generateMonthlybarChart();
 		this.generateLineChart();
 	}
 
@@ -149,7 +153,7 @@ class Statistics extends Component {
 
 	/************************************* Bar Chart *************************************/
 
-	generateMonthlyBarChart() {
+	generateMonthlybarChart() {
 		// Ensure the order of the date is chronological not just based on jan - dec.
 
 		/* Sum up costs by week */
@@ -339,33 +343,50 @@ class Statistics extends Component {
 		return arr;
 	}
 
+	changeChart(chartType) {
+
+		let chartDisplay;
+
+		if (chartType === "barChart") {
+			chartDisplay = <div className="stats--line-chart"> <Bar data={this.state.monthlyLineChartData} /> </div>
+		} else if (chartType === "monthlyBudget") {
+			chartDisplay = <Budget transactions={this.props.transactions}/>
+		} else if (chartType === "categoricalSpending") {
+			chartDisplay = <div className="stats--doughnut"> <Doughnut data={this.state.categoryDoughnutData} /> </div>
+		} else {
+			chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
+		}
+
+		document.querySelectorAll(`button`).forEach(btn => {
+			btn.classList.remove("active");
+		});
+
+		document.querySelector("." + chartType).classList.add("active");
+
+		this.setState({chart: chartDisplay});
+	}
+
 	/************************************* End Line Chart *************************************/
 
-
 	render() {
+
 		return (
 
 			<div className="stats">
 
-				<div className="stats--line-chart">
-					{/* Render a bar and line chart for monthly and avg spending */}
-					<Bar data={this.state.monthlyLineChartData} />
+				<div className="stats--tab-container">
+
+					<button className="barChart" onClick={() => {this.changeChart("barChart")}}>Annual Monthly Spending</button>
+					<button className="monthlyBudget" onClick={() => {this.changeChart("monthlyBudget")}}>Monthly Budget</button>
+					<button className="categoricalSpending" onClick={() => {this.changeChart("categoricalSpending")}}>Categorical Spending</button>
+					<button className="weekVsWeekend" onClick={() => {this.changeChart("weekVsWeekend")}}>Week vs Weekend</button>
 				</div>
 
-				<Budget transactions={this.props.transactions}/>
-
-				<div className="stats--doughnut">
-					{/* Render a doughnut chart for categorical spending */}
-					<Doughnut data={this.state.categoryDoughnutData} />
-				</div>
-
-				<div className="stats--week-weekend">
-					<Bar data={this.state.weekVsWeekend} />
-				</div>
+				{this.state.chart}
 
 			</div>
-
 		);
+
 	}
 }
 

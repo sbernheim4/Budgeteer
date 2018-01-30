@@ -3,14 +3,46 @@
 .stats {
 	width: 100vw;
 
-	&--doughnut {
-		margin: 0 auto;
-		max-width: 500px;
-	}
-
 	&--line-chart {
 		margin: 0 auto;
 		max-width: 700px;
+	}
+
+	&--tab-container {
+		margin: 30px auto;
+		width: 80vw;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+
+		button {
+			width: 25%;
+			padding: 15px 50px;
+			background-color: rgb(50, 50, 50);
+			border: 2px solid rgb(255, 132, 132);
+			border-right-width: 0;
+			transition: all .5s ease;
+
+			&:hover {
+				/*background-color: darken(rgb(50, 50, 50), 5%);*/
+				cursor: pointer;
+				outline: none;
+			}
+		}
+
+		button:last-child {
+			border-right-width: 2px;
+		}
+
+		.active {
+			background-color: darken(rgb(50, 50, 50), 5%);
+			transition: all .3s ease;
+		}
+	}
+
+	&--doughnut {
+		margin: 0 auto;
+		max-width: 500px;
 	}
 
 	&--week-weekend {
