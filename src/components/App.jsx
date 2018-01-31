@@ -5,6 +5,7 @@ import "../scss/app.scss";
 
 import Navbar from './Navbar.jsx';
 import Home from './Home.jsx';
+import Loading from './Loading.jsx';
 import Statistics from './Statistics.jsx';
 import AccountsContainer from './AccountsContainer.jsx';
 import Networth from './Networth.jsx';
@@ -28,7 +29,8 @@ class App extends Component {
 			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
-			netWorth: 0
+			netWorth: 0,
+			counter: 0
 		};
 
 		this.addAccount = this.addAccount.bind(this);
@@ -115,6 +117,9 @@ class App extends Component {
 
 			await this.storeAccounts(data); // Store account info
 			await this.storeTransactions(data); // store transaction info
+			let x = this.state.counter;
+			x++;
+			this.setState({counter: x})
 
 		} catch (err) {
 			const errorMessage = document.querySelector('.home--error');
@@ -194,9 +199,20 @@ class App extends Component {
 		data = await data.json();
 
 		this.setState({ netWorth: data.netWorth });
+		let x = this.state.counter;
+		x++;
+		this.setState({counter: x})
 	}
 
 	render() {
+
+		let text;
+
+		if (this.state.counter === 2) {
+			text = Home
+		} else {
+			text = Loading
+		}
 
 		return (
 			<div>
@@ -213,7 +229,7 @@ class App extends Component {
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
-				<Route exact path='/' component={Home} />
+				<Route exact path='/' component={text}/>
 
 				<Route path='/statistics' render={() => (<Statistics
 						transactions={this.state.transactions}

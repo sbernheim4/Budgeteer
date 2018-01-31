@@ -65519,6 +65519,10 @@ var _Home = __webpack_require__(271);
 
 var _Home2 = _interopRequireDefault(_Home);
 
+var _Loading = __webpack_require__(554);
+
+var _Loading2 = _interopRequireDefault(_Loading);
+
 var _Statistics = __webpack_require__(339);
 
 var _Statistics2 = _interopRequireDefault(_Statistics);
@@ -65574,7 +65578,8 @@ var App = function (_Component) {
 			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
-			netWorth: 0
+			netWorth: 0,
+			counter: 0
 		};
 
 		_this.addAccount = _this.addAccount.bind(_this);
@@ -65674,7 +65679,7 @@ var App = function (_Component) {
 		key: 'getTransactions',
 		value: function () {
 			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-				var now, prev, numDays, fetchOptions, response, data, errorMessage;
+				var now, prev, numDays, fetchOptions, response, data, x, errorMessage;
 				return _regenerator2.default.wrap(function _callee2$(_context2) {
 					while (1) {
 						switch (_context2.prev = _context2.next) {
@@ -65717,11 +65722,17 @@ var App = function (_Component) {
 								return this.storeTransactions(data);
 
 							case 17:
-								_context2.next = 25;
+								// store transaction info
+								x = this.state.counter;
+
+								x++;
+								this.setState({ counter: x });
+
+								_context2.next = 28;
 								break;
 
-							case 19:
-								_context2.prev = 19;
+							case 22:
+								_context2.prev = 22;
 								_context2.t0 = _context2['catch'](6);
 								errorMessage = document.querySelector('.home--error');
 
@@ -65733,12 +65744,12 @@ var App = function (_Component) {
 
 								console.error(_context2.t0);
 
-							case 25:
+							case 28:
 							case 'end':
 								return _context2.stop();
 						}
 					}
-				}, _callee2, this, [[6, 19]]);
+				}, _callee2, this, [[6, 22]]);
 			}));
 
 			function getTransactions() {
@@ -65847,7 +65858,7 @@ var App = function (_Component) {
 		key: 'getNetWorth',
 		value: function () {
 			var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
-				var fetchOptions, data;
+				var fetchOptions, data, x;
 				return _regenerator2.default.wrap(function _callee5$(_context5) {
 					while (1) {
 						switch (_context5.prev = _context5.next) {
@@ -65872,8 +65883,12 @@ var App = function (_Component) {
 
 
 								this.setState({ netWorth: data.netWorth });
+								x = this.state.counter;
 
-							case 8:
+								x++;
+								this.setState({ counter: x });
+
+							case 11:
 							case 'end':
 								return _context5.stop();
 						}
@@ -65891,6 +65906,14 @@ var App = function (_Component) {
 		key: 'render',
 		value: function render() {
 			var _this3 = this;
+
+			var text = void 0;
+
+			if (this.state.counter === 2) {
+				text = _Home2.default;
+			} else {
+				text = _Loading2.default;
+			}
 
 			return _react2.default.createElement(
 				'div',
@@ -65919,7 +65942,7 @@ var App = function (_Component) {
 						)
 					)
 				),
-				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Home2.default }),
+				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: text }),
 				_react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
 						return _react2.default.createElement(_Statistics2.default, {
 							transactions: _this3.state.transactions
@@ -65988,6 +66011,71 @@ exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #
 
 // exports
 
+
+/***/ }),
+/* 554 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _getPrototypeOf = __webpack_require__(21);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(22);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(23);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(24);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(25);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(8);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Loading = function (_Component) {
+	(0, _inherits3.default)(Loading, _Component);
+
+	function Loading(props) {
+		(0, _classCallCheck3.default)(this, Loading);
+		return (0, _possibleConstructorReturn3.default)(this, (Loading.__proto__ || (0, _getPrototypeOf2.default)(Loading)).call(this, props));
+	}
+
+	(0, _createClass3.default)(Loading, [{
+		key: "render",
+		value: function render() {
+
+			return _react2.default.createElement(
+				"div",
+				{ className: "home" },
+				_react2.default.createElement(
+					"h1",
+					null,
+					"Loading..."
+				)
+			);
+		}
+	}]);
+	return Loading;
+}(_react.Component);
+
+exports.default = Loading;
 
 /***/ })
 /******/ ]);
