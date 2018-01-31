@@ -113,9 +113,8 @@ class Budget extends Component {
 		return (
 			<div className="budget">
 
-				<div className="budget--totals">
-					<h2>Spent: ${spent}</h2>
-					<h2>Remaining: ${remaining}</h2>
+				<div className="budget--doughnut-chart">
+					<Doughnut data={this.state.data} />
 				</div>
 
 				<form className="budget--form">
@@ -125,9 +124,9 @@ class Budget extends Component {
 					</label>
 				</form>
 
-
-				<div className="budget--doughnut-chart">
-					<Doughnut data={this.state.data} />
+				<div className="budget--totals">
+					<h2>Spent: ${spent}</h2>
+					<h2>Remaining: ${remaining}</h2>
 				</div>
 
 			</div>

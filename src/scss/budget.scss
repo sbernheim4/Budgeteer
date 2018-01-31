@@ -1,6 +1,7 @@
 @import '/global';
 
 .budget {
+	margin: 0 2vw;
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
@@ -9,18 +10,12 @@
 		flex-direction: column;
 	}
 
-	&--totals {
-		margin: 20px 0;
-		width: 333px;
-		text-align: center;
+	div, form {
+		width: calc(100% - 80px);
+	}
 
-		@media all and (max-width: 930px) {
-			width: auto;
-		}
-
-		h2 {
-			overflow-y: hidden;
-		}
+	&--doughnut-chart {
+		/*width: 400px;*/
 	}
 
 	&--form {
@@ -57,25 +52,17 @@
 		}
 	}
 
-	&--graph{
-		width: 300px;
-		height: 20px;
-		background-color: $green;
-		border: 1px solid black;
-		border-radius: 5px;
+	&--totals {
+		margin: 20px 0;
+		text-align: center;
 
-		div {
-			width: 0%;
-			height: inherit;
-			background-color: $red;
+		@media all and (max-width: 930px) {
+			width: auto;
+		}
+
+		h2 {
+			overflow-y: hidden;
 		}
 	}
 
-	&--percent {
-
-	}
-
-	&--doughnut-chart {
-		width: 300px !important;
-	}
 }

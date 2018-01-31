@@ -60131,19 +60131,8 @@ var Budget = function (_Component) {
 				{ className: "budget" },
 				_react2.default.createElement(
 					"div",
-					{ className: "budget--totals" },
-					_react2.default.createElement(
-						"h2",
-						null,
-						"Spent: $",
-						spent
-					),
-					_react2.default.createElement(
-						"h2",
-						null,
-						"Remaining: $",
-						remaining
-					)
+					{ className: "budget--doughnut-chart" },
+					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
 				),
 				_react2.default.createElement(
 					"form",
@@ -60161,8 +60150,19 @@ var Budget = function (_Component) {
 				),
 				_react2.default.createElement(
 					"div",
-					{ className: "budget--doughnut-chart" },
-					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
+					{ className: "budget--totals" },
+					_react2.default.createElement(
+						"h2",
+						null,
+						"Spent: $",
+						spent
+					),
+					_react2.default.createElement(
+						"h2",
+						null,
+						"Remaining: $",
+						remaining
+					)
 				)
 			);
 		}
@@ -60407,7 +60407,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.budget {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--totals {\n    margin: 20px 0;\n    width: 333px;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--graph {\n    width: 300px;\n    height: 20px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px; }\n    .budget--graph div {\n      width: 0%;\n      height: inherit;\n      background-color: #d46363; }\n  .budget--doughnut-chart {\n    width: 300px !important; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.budget {\n  margin: 0 2vw;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget div, .budget form {\n    width: calc(100% - 80px); }\n  .budget--doughnut-chart {\n    /*width: 400px;*/ }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n", ""]);
 
 // exports
 
