@@ -142,7 +142,8 @@ class Statistics extends Component {
 				backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
 			}],
 			options: {
-				responsive: false
+				responsive: true,
+				maintainAspectRatio: true
 			}
 		};
 		this.setState({ categoryDoughnutData: data });
@@ -224,7 +225,8 @@ class Statistics extends Component {
 				hoverBackgroundColor: "rgb(60, 119, 89)"
 			}],
 			options: {
-				responsive: false,
+				responsive: true,
+				maintainAspectRatio: true
 			}
 		};
 
@@ -343,16 +345,22 @@ class Statistics extends Component {
 		return arr;
 	}
 
-	changeChart(chartType = "barChart") {
+	changeChart(chartType) {
 
 		let chartDisplay;
 
-		if (chartType === "barChart") {
-			chartDisplay = <div className="stats--line-chart"> <Bar data={this.state.monthlyLineChartData} /> </div>
+		if (chartType === "spendingAnalysis") {
+			chartDisplay = <div className="stats--spending">
+							<div className="stats--spending--doughnut">
+								<Doughnut data={this.state.categoryDoughnutData} />
+							</div>
+							<hr />
+							<div className="stats--spending--line-chart">
+								<Bar data={this.state.monthlyLineChartData} />
+							</div>
+						</div>
 		} else if (chartType === "monthlyBudget") {
 			chartDisplay = <Budget transactions={this.props.transactions}/>
-		} else if (chartType === "categoricalSpending") {
-			chartDisplay = <div className="stats--doughnut"> <Doughnut data={this.state.categoryDoughnutData} /> </div>
 		} else {
 			chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
 		}
@@ -375,9 +383,8 @@ class Statistics extends Component {
 
 				<div className="stats--tab-container">
 
-					<button className="barChart" onClick={() => {this.changeChart("barChart")}}>Annual Monthly Spending</button>
+					<button className="spendingAnalysis" onClick={() => {this.changeChart("spendingAnalysis")}}>Spending Analysis</button>
 					<button className="monthlyBudget" onClick={() => {this.changeChart("monthlyBudget")}}>Monthly Budget</button>
-					<button className="categoricalSpending" onClick={() => {this.changeChart("categoricalSpending")}}>Categorical Spending</button>
 					<button className="weekVsWeekend" onClick={() => {this.changeChart("weekVsWeekend")}}>Week vs Weekend</button>
 				</div>
 

@@ -43068,7 +43068,8 @@ var Statistics = function (_Component) {
 					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
 				}],
 				options: {
-					responsive: false
+					responsive: true,
+					maintainAspectRatio: true
 				}
 			};
 			this.setState({ categoryDoughnutData: data });
@@ -43150,7 +43151,8 @@ var Statistics = function (_Component) {
 					hoverBackgroundColor: "rgb(60, 119, 89)"
 				}],
 				options: {
-					responsive: false
+					responsive: true,
+					maintainAspectRatio: true
 				}
 			};
 
@@ -43268,30 +43270,28 @@ var Statistics = function (_Component) {
 		}
 	}, {
 		key: "changeChart",
-		value: function changeChart() {
-			var chartType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "barChart";
-
+		value: function changeChart(chartType) {
 
 			var chartDisplay = void 0;
 
-			if (chartType === "barChart") {
+			if (chartType === "spendingAnalysis") {
 				chartDisplay = _react2.default.createElement(
 					"div",
-					{ className: "stats--line-chart" },
-					" ",
-					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.monthlyLineChartData }),
-					" "
+					{ className: "stats--spending" },
+					_react2.default.createElement(
+						"div",
+						{ className: "stats--spending--doughnut" },
+						_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData })
+					),
+					_react2.default.createElement("hr", null),
+					_react2.default.createElement(
+						"div",
+						{ className: "stats--spending--line-chart" },
+						_react2.default.createElement(_reactChartjs.Bar, { data: this.state.monthlyLineChartData })
+					)
 				);
 			} else if (chartType === "monthlyBudget") {
 				chartDisplay = _react2.default.createElement(_Budget2.default, { transactions: this.props.transactions });
-			} else if (chartType === "categoricalSpending") {
-				chartDisplay = _react2.default.createElement(
-					"div",
-					{ className: "stats--doughnut" },
-					" ",
-					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData }),
-					" "
-				);
 			} else {
 				chartDisplay = _react2.default.createElement(
 					"div",
@@ -43325,10 +43325,10 @@ var Statistics = function (_Component) {
 					{ className: "stats--tab-container" },
 					_react2.default.createElement(
 						"button",
-						{ className: "barChart", onClick: function onClick() {
-								_this2.changeChart("barChart");
+						{ className: "spendingAnalysis", onClick: function onClick() {
+								_this2.changeChart("spendingAnalysis");
 							} },
-						"Annual Monthly Spending"
+						"Spending Analysis"
 					),
 					_react2.default.createElement(
 						"button",
@@ -43336,13 +43336,6 @@ var Statistics = function (_Component) {
 								_this2.changeChart("monthlyBudget");
 							} },
 						"Monthly Budget"
-					),
-					_react2.default.createElement(
-						"button",
-						{ className: "categoricalSpending", onClick: function onClick() {
-								_this2.changeChart("categoricalSpending");
-							} },
-						"Categorical Spending"
 					),
 					_react2.default.createElement(
 						"button",
@@ -60719,7 +60712,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--line-chart {\n    margin: 0 auto;\n    max-width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    width: 80vw;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 1px;\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--doughnut {\n    margin: 0 auto;\n    max-width: 500px; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--spending {\n    margin: 0 20px;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      margin: 0 auto;\n      width: 500px; }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n    .stats--spending--line-chart {\n      margin: 0 auto;\n      width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 1px;\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
