@@ -43271,13 +43271,6 @@ var Statistics = function (_Component) {
 	}, {
 		key: "changeChart",
 		value: function changeChart(chartType) {
-			if (!!chartType) {
-				chartType = "spendingAnalysis";
-				console.log("setting chartType");
-			} else {
-				console.log("chart type was passed in");
-			}
-
 			var chartDisplay = void 0;
 
 			if (chartType === "spendingAnalysis") {
@@ -60718,7 +60711,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--spending {\n    margin: 0 20px;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      margin: 0 auto;\n      width: 500px; }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n    .stats--spending--line-chart {\n      margin: 0 auto;\n      width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 1px;\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--spending {\n    margin: 0 20px;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      margin: 0 auto;\n      width: 500px; }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n    .stats--spending--line-chart {\n      margin: 0 auto;\n      width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
