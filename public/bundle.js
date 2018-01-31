@@ -43271,6 +43271,12 @@ var Statistics = function (_Component) {
 	}, {
 		key: "changeChart",
 		value: function changeChart(chartType) {
+			if (!!chartType) {
+				chartType = "spendingAnalysis";
+				console.log("setting chartType");
+			} else {
+				console.log("chart type was passed in");
+			}
 
 			var chartDisplay = void 0;
 

@@ -346,6 +346,12 @@ class Statistics extends Component {
 	}
 
 	changeChart(chartType) {
+		if (!!chartType){
+			chartType = "spendingAnalysis";
+			console.log("setting chartType");
+		} else {
+			console.log("chart type was passed in");
+		}
 
 		let chartDisplay;
 
