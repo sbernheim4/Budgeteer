@@ -35,20 +35,20 @@ class App extends Component {
 		this.getTransactions = this.getTransactions.bind(this);
 	}
 
-	async componentWillMount() {
-
-		// First make a fetch call to get info for already linked accounts
-		fetch('plaid-api/set-stored-access-token', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			}
-		}).catch(err => console.error(err));
-
+	async componentDidMount() {
 
 		try {
-			await this.getTransactions();
+			// First make a fetch call to get info for already linked accounts
+			fetch('plaid-api/set-stored-access-token', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			});
+
+			this.getTransactions();
+			this.getNetWorth(); // store networth
 
 			// Used for if the user wants to link a new account
 			let info = await fetch('plaid-api/key-and-env');
@@ -115,8 +115,6 @@ class App extends Component {
 
 			await this.storeAccounts(data); // Store account info
 			await this.storeTransactions(data); // store transaction info
-
-			this.getNetWorth(); // store networth
 
 		} catch (err) {
 			const errorMessage = document.querySelector('.home--error');

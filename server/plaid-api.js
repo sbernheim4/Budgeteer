@@ -118,7 +118,7 @@ app.post("/transactions", async function(req, res, next) {
 
     try {
         const promiseArray = ACCESS_TOKENS.map(token => {
-            return content = client.getTransactions(token, startDate, endDate, {
+            return client.getTransactions(token, startDate, endDate, {
                 count: 250,
                 offset: 0,
             })
