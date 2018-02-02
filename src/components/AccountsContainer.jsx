@@ -14,13 +14,16 @@ class AccountsContainer extends Component {
 			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
-			categoryTotal: 0
+			categoryTotal: 0,
+			keyWord: "Uber, Netflix..."
 		};
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
 		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
 		this.getDate = this.getDate.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.searchByKeyword = this.searchByKeyword.bind(this);
+		this.handleKeywordSearch = this.handleKeywordSearch.bind(this);
 	}
 
 	getAccountTransactions(account_id) {
@@ -157,6 +160,41 @@ class AccountsContainer extends Component {
 		}
 	}
 
+	async searchByKeyword(e) {
+		e.preventDefault();
+
+		let releventTransactions = [];
+		let keyword = this.state.keyWord.toLowerCase();
+
+		let total = 0;
+		this.props.transactions.forEach(t => {
+			let transactionName = t.name.toLowerCase();
+
+			if (transactionName.includes(keyword)) {
+				total += t.amount;
+				releventTransactions.push(t);
+			}
+		});
+
+		total = helpers.formatAmount(total);
+		total = helpers.numberWithCommas(total);
+
+		if (this.state.keyWord === "" || this.state.keyWord === null) {
+			this.setState({keyWord: "Everything"});
+		}
+
+		this.setState({
+			categoryTransactions: releventTransactions,
+			categoryType: this.state.keyWord,
+			categoryTotal: total
+		});
+	}
+
+	handleKeywordSearch(e) {
+		let keyWord = helpers.toTitleCase(e.target.value);
+		this.setState({keyWord: helpers.toTitleCase(e.target.value)})
+	}
+
 	render() {
 
 		return (
@@ -227,9 +265,15 @@ class AccountsContainer extends Component {
 
 				</form>
 
+				<form onSubmit={this.searchByKeyword}>
+					<label>Search by Keyword
+						<input type="text" value={this.state.keyWord} onChange={(e) => {this.handleKeywordSearch(e)}} />
+					</label>
+				</form>
+
 
 				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
-				<h2 className="accounts--totals">{this.state.categoryTotal}</h2>
+				<h2 className="accounts--totals">${this.state.categoryTotal}</h2>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 			</div>

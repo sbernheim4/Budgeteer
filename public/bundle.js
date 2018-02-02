@@ -6136,8 +6136,14 @@ const helper = {
 
 	formatAmount(amt) {
 		return (Math.round(amt * 100) / 100).toFixed(2);
-	}
+	},
 
+	toTitleCase(str) {
+		if (str === "" || str === null) return "";
+		return str.toLowerCase().split(' ').map(function(word) {
+			return word.replace(word[0], word[0].toUpperCase());
+		}).join(' ');
+	}
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (helper);
@@ -42090,13 +42096,16 @@ var AccountsContainer = function (_Component) {
 			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
-			categoryTotal: 0
+			categoryTotal: 0,
+			keyWord: "Uber, Netflix..."
 		};
 
 		_this.getAccountTransactions = _this.getAccountTransactions.bind(_this);
 		_this.getCategoryTransactions = _this.getCategoryTransactions.bind(_this);
 		_this.getDate = _this.getDate.bind(_this);
 		_this.handleSubmit = _this.handleSubmit.bind(_this);
+		_this.searchByKeyword = _this.searchByKeyword.bind(_this);
+		_this.handleKeywordSearch = _this.handleKeywordSearch.bind(_this);
 		return _this;
 	}
 
@@ -42268,6 +42277,63 @@ var AccountsContainer = function (_Component) {
 
 			return handleSubmit;
 		}()
+	}, {
+		key: "searchByKeyword",
+		value: function () {
+			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(e) {
+				var releventTransactions, keyword, total;
+				return _regenerator2.default.wrap(function _callee2$(_context2) {
+					while (1) {
+						switch (_context2.prev = _context2.next) {
+							case 0:
+								e.preventDefault();
+
+								releventTransactions = [];
+								keyword = this.state.keyWord.toLowerCase();
+								total = 0;
+
+								this.props.transactions.forEach(function (t) {
+									var transactionName = t.name.toLowerCase();
+
+									if (transactionName.includes(keyword)) {
+										total += t.amount;
+										releventTransactions.push(t);
+									}
+								});
+
+								total = _helpers2.default.formatAmount(total);
+								total = _helpers2.default.numberWithCommas(total);
+
+								if (this.state.keyWord === "" || this.state.keyWord === null) {
+									this.setState({ keyWord: "Everything" });
+								}
+
+								this.setState({
+									categoryTransactions: releventTransactions,
+									categoryType: this.state.keyWord,
+									categoryTotal: total
+								});
+
+							case 9:
+							case "end":
+								return _context2.stop();
+						}
+					}
+				}, _callee2, this);
+			}));
+
+			function searchByKeyword(_x2) {
+				return _ref2.apply(this, arguments);
+			}
+
+			return searchByKeyword;
+		}()
+	}, {
+		key: "handleKeywordSearch",
+		value: function handleKeywordSearch(e) {
+			var keyWord = _helpers2.default.toTitleCase(e.target.value);
+			this.setState({ keyWord: _helpers2.default.toTitleCase(e.target.value) });
+		}
 	}, {
 		key: "render",
 		value: function render() {
@@ -42446,6 +42512,18 @@ var AccountsContainer = function (_Component) {
 					_react2.default.createElement("input", { type: "submit", value: "Submit" })
 				),
 				_react2.default.createElement(
+					"form",
+					{ onSubmit: this.searchByKeyword },
+					_react2.default.createElement(
+						"label",
+						null,
+						"Search by Keyword",
+						_react2.default.createElement("input", { type: "text", value: this.state.keyWord, onChange: function onChange(e) {
+								_this2.handleKeywordSearch(e);
+							} })
+					)
+				),
+				_react2.default.createElement(
 					"h2",
 					{ className: "accounts--totals" },
 					"Total spent on ",
@@ -42454,6 +42532,7 @@ var AccountsContainer = function (_Component) {
 				_react2.default.createElement(
 					"h2",
 					{ className: "accounts--totals" },
+					"$",
 					this.state.categoryTotal
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions })
@@ -42842,7 +42921,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n\n.accounts form input {\n  color: black; }\n", ""]);
 
 // exports
 
