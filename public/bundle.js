@@ -42513,7 +42513,7 @@ var AccountsContainer = function (_Component) {
 				),
 				_react2.default.createElement(
 					"form",
-					{ onSubmit: this.searchByKeyword },
+					{ "class": "accounts--keyword-search", onSubmit: this.searchByKeyword },
 					_react2.default.createElement(
 						"label",
 						null,
@@ -42521,7 +42521,8 @@ var AccountsContainer = function (_Component) {
 						_react2.default.createElement("input", { type: "text", value: this.state.keyWord, onChange: function onChange(e) {
 								_this2.handleKeywordSearch(e);
 							} })
-					)
+					),
+					_react2.default.createElement("input", { type: "submit", value: "Submit" })
 				),
 				_react2.default.createElement(
 					"h2",
@@ -42921,7 +42922,7 @@ exports = module.exports = __webpack_require__(17)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n\n.accounts form input {\n  color: black; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n\n.accounts--date-picker {\n  display: flex;\n  flex-direction: row;\n  justify-content: center; }\n  .accounts--date-picker input {\n    width: 100px;\n    height: 30px;\n    background-color: grey;\n    color: white;\n    align-self: center; }\n  .accounts--date-picker div {\n    margin: 10px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-end; }\n    .accounts--date-picker div p {\n      margin-bottom: 5px; }\n    .accounts--date-picker div label input {\n      margin-left: 10px;\n      width: 100px;\n      border: 1px solid black;\n      color: black; }\n\n.accounts--keyword-search input {\n  margin: 0 5px;\n  background-color: grey;\n  color: white; }\n", ""]);
 
 // exports
 

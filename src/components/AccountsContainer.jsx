@@ -265,10 +265,11 @@ class AccountsContainer extends Component {
 
 				</form>
 
-				<form onSubmit={this.searchByKeyword}>
+				<form class='accounts--keyword-search' onSubmit={this.searchByKeyword}>
 					<label>Search by Keyword
 						<input type="text" value={this.state.keyWord} onChange={(e) => {this.handleKeywordSearch(e)}} />
 					</label>
+					<input type="submit" value="Submit"/>
 				</form>
 
 

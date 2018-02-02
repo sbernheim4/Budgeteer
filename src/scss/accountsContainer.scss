@@ -64,10 +64,17 @@
 		}
 	}
 
-	form {
+	&--keyword-search {
+
+		label {
+
+		}
 
 		input {
-			color: black;
+			margin: 0 5px;
+			background-color: grey;
+			color: white;
+
 		}
 	}
 }
