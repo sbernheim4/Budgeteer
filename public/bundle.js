@@ -42924,6 +42924,14 @@ var _is_after = __webpack_require__(493);
 
 var _is_after2 = _interopRequireDefault(_is_after);
 
+var _sub_months = __webpack_require__(555);
+
+var _sub_months2 = _interopRequireDefault(_sub_months);
+
+var _is_within_range = __webpack_require__(556);
+
+var _is_within_range2 = _interopRequireDefault(_is_within_range);
+
 var _helpers = __webpack_require__(31);
 
 var _helpers2 = _interopRequireDefault(_helpers);
@@ -42976,11 +42984,13 @@ var Statistics = function (_Component) {
 			// Initialize a new array of size 8 and fill it with 0s initially
 			var amts = new Array(14);
 			amts.fill(0);
+			var now = new Date();
+			var oneMonthAgo = (0, _sub_months2.default)(now, 1);
 
 			this.props.transactions.forEach(function (t) {
 				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-				if ((0, _is_same_month2.default)(transactionDate, new Date())) {
+				if ((0, _is_within_range2.default)(transactionDate, oneMonthAgo, now)) {
 					var category = (t.category || [""])[0];
 					var amount = t.amount;
 
@@ -66075,6 +66085,84 @@ var Loading = function (_Component) {
 }(_react.Component);
 
 exports.default = Loading;
+
+/***/ }),
+/* 555 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var addMonths = __webpack_require__(497)
+
+/**
+ * @category Month Helpers
+ * @summary Subtract the specified number of months from the given date.
+ *
+ * @description
+ * Subtract the specified number of months from the given date.
+ *
+ * @param {Date|String|Number} date - the date to be changed
+ * @param {Number} amount - the amount of months to be subtracted
+ * @returns {Date} the new date with the months subtracted
+ *
+ * @example
+ * // Subtract 5 months from 1 February 2015:
+ * var result = subMonths(new Date(2015, 1, 1), 5)
+ * //=> Mon Sep 01 2014 00:00:00
+ */
+function subMonths (dirtyDate, dirtyAmount) {
+  var amount = Number(dirtyAmount)
+  return addMonths(dirtyDate, -amount)
+}
+
+module.exports = subMonths
+
+
+/***/ }),
+/* 556 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parse = __webpack_require__(7)
+
+/**
+ * @category Range Helpers
+ * @summary Is the given date within the range?
+ *
+ * @description
+ * Is the given date within the range?
+ *
+ * @param {Date|String|Number} date - the date to check
+ * @param {Date|String|Number} startDate - the start of range
+ * @param {Date|String|Number} endDate - the end of range
+ * @returns {Boolean} the date is within the range
+ * @throws {Error} startDate cannot be after endDate
+ *
+ * @example
+ * // For the date within the range:
+ * isWithinRange(
+ *   new Date(2014, 0, 3), new Date(2014, 0, 1), new Date(2014, 0, 7)
+ * )
+ * //=> true
+ *
+ * @example
+ * // For the date outside of the range:
+ * isWithinRange(
+ *   new Date(2014, 0, 10), new Date(2014, 0, 1), new Date(2014, 0, 7)
+ * )
+ * //=> false
+ */
+function isWithinRange (dirtyDate, dirtyStartDate, dirtyEndDate) {
+  var time = parse(dirtyDate).getTime()
+  var startTime = parse(dirtyStartDate).getTime()
+  var endTime = parse(dirtyEndDate).getTime()
+
+  if (startTime > endTime) {
+    throw new Error('The start of the range cannot be after the end of the range')
+  }
+
+  return time >= startTime && time <= endTime
+}
+
+module.exports = isWithinRange
+
 
 /***/ })
 /******/ ]);

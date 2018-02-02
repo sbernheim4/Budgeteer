@@ -14,6 +14,8 @@ import addWeeks from "date-fns/add_weeks";
 import subWeeks from "date-fns/sub_weeks";
 import isBefore from 'date-fns/is_before';
 import isAfter from "date-fns/is_after";
+import subMonths from 'date-fns/sub_months'
+import isWithinRange from 'date-fns/is_within_range'
 
 import helpers from './helpers';
 
@@ -51,11 +53,13 @@ class Statistics extends Component {
 		// Initialize a new array of size 8 and fill it with 0s initially
 		let amts = new Array(14);
 		amts.fill(0);
+		const now = new Date();
+		const oneMonthAgo = subMonths(now, 1);
 
 		this.props.transactions.forEach(t => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-			if (isSameMonth(transactionDate, new Date)) {
+			if (isWithinRange(transactionDate, oneMonthAgo, now)) {
 				let category = (t.category || [""])[0];
 				let amount = t.amount;
 
