@@ -42900,10 +42900,6 @@ var _difference_in_calendar_weeks = __webpack_require__(489);
 
 var _difference_in_calendar_weeks2 = _interopRequireDefault(_difference_in_calendar_weeks);
 
-var _is_same_month = __webpack_require__(255);
-
-var _is_same_month2 = _interopRequireDefault(_is_same_month);
-
 var _start_of_week = __webpack_require__(58);
 
 var _start_of_week2 = _interopRequireDefault(_start_of_week);
@@ -42912,17 +42908,9 @@ var _add_weeks = __webpack_require__(91);
 
 var _add_weeks2 = _interopRequireDefault(_add_weeks);
 
-var _sub_weeks = __webpack_require__(491);
-
-var _sub_weeks2 = _interopRequireDefault(_sub_weeks);
-
 var _is_before = __webpack_require__(492);
 
 var _is_before2 = _interopRequireDefault(_is_before);
-
-var _is_after = __webpack_require__(493);
-
-var _is_after2 = _interopRequireDefault(_is_after);
 
 var _sub_months = __webpack_require__(555);
 
@@ -42940,9 +42928,8 @@ __webpack_require__(494);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* eslint no-undef: 0*/
+Chart.defaults.global.defaultFontColor = 'white'; /* eslint no-undef: 0*/
 
-Chart.defaults.global.defaultFontColor = 'white';
 Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
 
 var Statistics = function (_Component) {
@@ -60590,36 +60577,7 @@ module.exports = addDays
 
 
 /***/ }),
-/* 491 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var addWeeks = __webpack_require__(91)
-
-/**
- * @category Week Helpers
- * @summary Subtract the specified number of weeks from the given date.
- *
- * @description
- * Subtract the specified number of weeks from the given date.
- *
- * @param {Date|String|Number} date - the date to be changed
- * @param {Number} amount - the amount of weeks to be subtracted
- * @returns {Date} the new date with the weeks subtracted
- *
- * @example
- * // Subtract 4 weeks from 1 September 2014:
- * var result = subWeeks(new Date(2014, 8, 1), 4)
- * //=> Mon Aug 04 2014 00:00:00
- */
-function subWeeks (dirtyDate, dirtyAmount) {
-  var amount = Number(dirtyAmount)
-  return addWeeks(dirtyDate, -amount)
-}
-
-module.exports = subWeeks
-
-
-/***/ }),
+/* 491 */,
 /* 492 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -60651,37 +60609,7 @@ module.exports = isBefore
 
 
 /***/ }),
-/* 493 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(7)
-
-/**
- * @category Common Helpers
- * @summary Is the first date after the second one?
- *
- * @description
- * Is the first date after the second one?
- *
- * @param {Date|String|Number} date - the date that should be after the other one to return true
- * @param {Date|String|Number} dateToCompare - the date to compare with
- * @returns {Boolean} the first date is after the second date
- *
- * @example
- * // Is 10 July 1989 after 11 February 1987?
- * var result = isAfter(new Date(1989, 6, 10), new Date(1987, 1, 11))
- * //=> true
- */
-function isAfter (dirtyDate, dirtyDateToCompare) {
-  var date = parse(dirtyDate)
-  var dateToCompare = parse(dirtyDateToCompare)
-  return date.getTime() > dateToCompare.getTime()
-}
-
-module.exports = isAfter
-
-
-/***/ }),
+/* 493 */,
 /* 494 */
 /***/ (function(module, exports, __webpack_require__) {
 

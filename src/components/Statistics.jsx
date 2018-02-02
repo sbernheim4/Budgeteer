@@ -8,12 +8,9 @@ import Budget from "./Budget.jsx";
 import isWeekend from "date-fns/is_weekend";
 import isSameWeek from "date-fns/is_same_week";
 import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
-import isSameMonth from "date-fns/is_same_month";
 import startOfWeek from "date-fns/start_of_week";
 import addWeeks from "date-fns/add_weeks";
-import subWeeks from "date-fns/sub_weeks";
 import isBefore from 'date-fns/is_before';
-import isAfter from "date-fns/is_after";
 import subMonths from 'date-fns/sub_months'
 import isWithinRange from 'date-fns/is_within_range'
 
@@ -147,7 +144,7 @@ class Statistics extends Component {
 			}],
 			options: {
 				responsive: true,
-				maintainAspectRatio: true
+				maintainAspectRatio: true,
 			}
 		};
 		this.setState({ categoryDoughnutData: data });
@@ -230,7 +227,7 @@ class Statistics extends Component {
 			}],
 			options: {
 				responsive: true,
-				maintainAspectRatio: true
+				maintainAspectRatio: true,
 			}
 		};
 
