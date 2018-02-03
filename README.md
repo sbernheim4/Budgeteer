@@ -10,7 +10,13 @@ To install and get setup with the repo run the following.
 
 `yarn install`
 
-`npm start`
+In one terminal tab run 
+
+`npm run es`
+
+and in another run 
+
+`npm run watch`
 
 Then in your browser go to `localhost:5000`.
 
