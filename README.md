@@ -6,7 +6,7 @@ To install and get setup with the repo run the following.
 
 `git clone https://github.com/sbernheim4/MoneySaver.git`
 
-`cd MoneySaver`
+`cd Budgeteer`
 
 `yarn install`
 
