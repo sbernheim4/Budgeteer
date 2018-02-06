@@ -6,11 +6,17 @@ To install and get setup with the repo run the following.
 
 `git clone https://github.com/sbernheim4/MoneySaver.git`
 
-`cd MoneySaver`
+`cd Budgeteer`
 
 `yarn install`
 
-`npm start`
+In one terminal tab run 
+
+`npm run es`
+
+and in another run 
+
+`npm run watch`
 
 Then in your browser go to `localhost:5000`.
 
