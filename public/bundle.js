@@ -47959,8 +47959,7 @@ var Statistics = function (_Component) {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-			weekVsWeekend: {},
-			chart: {}
+			weekVsWeekend: {}
 		};
 		return _this;
 	}

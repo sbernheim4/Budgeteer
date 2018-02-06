@@ -30,8 +30,7 @@ class Statistics extends Component {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
-			weekVsWeekend: {},
-			chart: {}
+			weekVsWeekend: {}
 		}
 	}
 
