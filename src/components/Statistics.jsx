@@ -24,24 +24,27 @@ class Statistics extends Component {
 	constructor(props) {
 		super(props);
 
+		this.changeChart = this.changeChart.bind(this);
+
 		this.state = {
 			categoryDoughnutData: {},
 			monthlyLineChartData: {},
 			bubbleChartData: {},
 			weekVsWeekend: {},
-			currChart: "barChart"
+			chart: {}
 		}
-
-		this.changeChart = this.changeChart.bind(this);
-
 	}
 
-	componentDidMount() {
-		// Generate all the charts when the component has loaded
-
+	componentWillMount() {
+		// Calculate all the data for the different charts
 		this.generateDoughnutChart();
 		this.generateMonthlybarChart();
 		this.generateLineChart();
+	}
+
+	componentDidMount() {
+		// Once the component has loaded, display this chart
+		this.changeChart('spendingAnalysis');
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -66,43 +69,43 @@ class Statistics extends Component {
 				switch (category) {
 					case "Food and Drink":
 						amts[0] += amount;
-					break;
+						break;
 					case "Travel":
 						amts[1] += amount;
-					break;
+						break;
 					case "Shops":
 						amts[2] += amount;
-					break;
+						break;
 					case "Recreation":
 						amts[3] += amount;
-					break;
+						break;
 					case "Service":
 						amts[4] += amount;
-					break;
+						break;
 					case "Community":
 						amts[5] += amount;
-					break;
+						break;
 					case "Healthcare":
 						amts[6] += amount;
-					break;
+						break;
 					case "Bank Fees":
 						amts[7] += amount;
-					break;
+						break;
 					case "Cash Advance":
 						amts[8] += amount;
-					break;
+						break;
 					case "Interest":
 						amts[9] += amount;
-					break;
+						break;
 					case "Payment":
 						amts[10] += amount;
-					break;
+						break;
 					case "Tax":
 						amts[11] += amount;
-					break;
+						break;
 					case "Transfer":
 						amts[12] += amount;
-					break;
+						break;
 					default:
 						amts[13] += amount
 				}
@@ -237,8 +240,8 @@ class Statistics extends Component {
 	/************************************* End Bar Chart *************************************/
 
 
-	/************************************* Line Chart *************************************/
 
+	/************************************* Line Chart *************************************/
 
 	// TODO: MATH NEEDS TO BE REDONE SINCE I AM NOW GOING AS FAR BACK AS ONE YEAR
 	generateLineChart() {
@@ -351,19 +354,19 @@ class Statistics extends Component {
 
 		if (chartType === "spendingAnalysis") {
 			chartDisplay = <div className="stats--spending">
-							<div className="stats--spending--doughnut">
-								<Doughnut data={this.state.categoryDoughnutData} />
-							</div>
-							<hr />
-							<div className="stats--spending--line-chart">
-								<Bar data={this.state.monthlyLineChartData} />
-							</div>
-						</div>
-		} else if (chartType === "monthlyBudget") {
-			chartDisplay = <Budget transactions={this.props.transactions}/>
-		} else {
-			chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
-		}
+				<div className="stats--spending--doughnut">
+					<Doughnut data={this.state.categoryDoughnutData} />
+				</div>
+				<hr />
+				<div className="stats--spending--line-chart">
+					<Bar data={this.state.monthlyLineChartData} />
+				</div>
+			</div>
+			} else if (chartType === "monthlyBudget") {
+				chartDisplay = <Budget transactions={this.props.transactions}/>
+				} else {
+					chartDisplay = <div className="stats--week-weekend"> <Bar data={this.state.weekVsWeekend} /> </div>
+					}
 
 		document.querySelectorAll(`button`).forEach(btn => {
 			btn.classList.remove("active");
@@ -397,3 +400,4 @@ class Statistics extends Component {
 }
 
 export default Statistics;
+
