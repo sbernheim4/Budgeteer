@@ -384,7 +384,6 @@ class Statistics extends Component {
 			<div className="stats">
 
 				<div className="stats--tab-container">
-
 					<button className="spendingAnalysis" onClick={() => {this.changeChart("spendingAnalysis")}}>Spending Analysis</button>
 					<button className="monthlyBudget" onClick={() => {this.changeChart("monthlyBudget")}}>Monthly Budget</button>
 					<button className="weekVsWeekend" onClick={() => {this.changeChart("weekVsWeekend")}}>Week vs Weekend</button>

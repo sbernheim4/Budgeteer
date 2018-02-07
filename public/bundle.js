@@ -42592,7 +42592,7 @@ NavLink.defaultProps = {
 /* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isarray = __webpack_require__(299)
+var isarray = __webpack_require__(552)
 
 /**
  * Expose `pathToRegexp`.
@@ -43021,15 +43021,7 @@ function pathToRegexp (path, keys, options) {
 
 
 /***/ }),
-/* 299 */
-/***/ (function(module, exports) {
-
-module.exports = Array.isArray || function (arr) {
-  return Object.prototype.toString.call(arr) == '[object Array]';
-};
-
-
-/***/ }),
+/* 299 */,
 /* 300 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -64425,11 +64417,33 @@ var Budget = function (_Component) {
 	(0, _createClass3.default)(Budget, [{
 		key: "componentDidMount",
 		value: function componentDidMount() {
-			this.getTotalSpent();
+			var totalSpent = this.getTotalSpent(); // Get total spent this month
+			var monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
+
+
+			// Calculate remaining amount left to spend
+			var remaining = (monthlyBudgetFromSessionStorage - totalSpent).toFixed(2);
+			if (remaining <= 0) {
+				remaining = 0;
+			}
+
+			// Update chart
+			if (monthlyBudgetFromSessionStorage !== null) {
+				var chartData = {
+					labels: ["Spent", "Remaining"],
+					datasets: [{
+						data: [totalSpent, remaining],
+						backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
+						hoverBackgroundColor: ["#D46363", "#007255"]
+					}]
+
+					// Update state data
+				};this.setState({
+					data: chartData,
+					monthlyBudget: monthlyBudgetFromSessionStorage
+				});
+			}
 		}
-	}, {
-		key: "componentWillUpdate",
-		value: function componentWillUpdate() {}
 	}, {
 		key: "getTotalSpent",
 		value: function getTotalSpent() {
@@ -64447,12 +64461,16 @@ var Budget = function (_Component) {
 			// Round total to two decimal places and ensure trailing 0s appear
 			total = _helpers2.default.formatAmount(total);
 			this.setState({ spentThisMonth: total });
+			return total;
 		}
 	}, {
 		key: "handleChange",
 		value: function handleChange(event) {
 			// Update the state variable
 			this.setState({ monthlyBudget: event.target.value.trim() });
+
+			// Save data to the current local store
+			localStorage.setItem("monthlyBudget", event.target.value.trim());
 
 			// Update the percentage calculator
 			var spent = this.state.spentThisMonth;
@@ -64470,7 +64488,6 @@ var Budget = function (_Component) {
 					hoverBackgroundColor: ["rgb(201, 59, 59)", "rgb(60, 119, 89)"]
 				}]
 			};
-
 			this.setState({ data: data });
 		}
 	}, {
@@ -65160,7 +65177,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--spending {\n    margin: 0 20px;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      margin: 0 auto;\n      width: 500px; }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n    .stats--spending--line-chart {\n      margin: 0 auto;\n      width: 700px; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding: 15px 50px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: all .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 60%; } }\n      @media all and (max-width: 800px) {\n        .stats--spending--doughnut {\n          width: 80%; } }\n    .stats--spending--line-chart {\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
@@ -66168,6 +66185,15 @@ function startOfMonth (dirtyDate) {
 }
 
 module.exports = startOfMonth
+
+
+/***/ }),
+/* 552 */
+/***/ (function(module, exports) {
+
+module.exports = Array.isArray || function (arr) {
+  return Object.prototype.toString.call(arr) == '[object Array]';
+};
 
 
 /***/ })
