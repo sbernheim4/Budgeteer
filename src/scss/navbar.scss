@@ -16,7 +16,7 @@ $background-color: rgb(50, 50, 50);
 		flex-direction: row;
 
 		li {
-			margin: 15px;
+			margin-right: 15px;
 			text-transform: uppercase;
 
 			&:after {
@@ -38,6 +38,10 @@ $background-color: rgb(50, 50, 50);
 				text-decoration: none;
 
 			}
+		}
+
+		li:first-child {
+			margin-left: 15px;
 		}
 	}
 }
