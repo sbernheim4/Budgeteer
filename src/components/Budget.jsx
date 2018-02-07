@@ -40,11 +40,43 @@ class Budget extends Component {
 	}
 
 	componentDidMount() {
-		this.getTotalSpent();
-	}
+		const totalSpent = this.getTotalSpent(); // Get total spent this month
+		const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
 
-	componentWillUpdate() {
 
+		// Calculate remaining amount left to spend
+		let remaining = (monthlyBudgetFromSessionStorage - totalSpent).toFixed(2);
+		if (remaining <= 0) {
+			remaining = 0;
+		}
+
+
+		// Update chart
+		if (monthlyBudgetFromSessionStorage !== null) {
+			const chartData = {
+				labels: [
+					"Spent",
+					"Remaining"
+				],
+				datasets: [{
+					data: [totalSpent, remaining],
+					backgroundColor: [
+						"rgb(212,99,99)",
+						"rgb(77, 153, 114)"
+					],
+					hoverBackgroundColor: [
+						"#D46363",
+						"#007255"
+					]
+				}]
+			}
+
+			// Update state data
+			this.setState({
+				data: chartData,
+				monthlyBudget: monthlyBudgetFromSessionStorage
+			});
+		}
 	}
 
 	getTotalSpent() {
@@ -62,11 +94,15 @@ class Budget extends Component {
 		// Round total to two decimal places and ensure trailing 0s appear
 		total = helpers.formatAmount(total);
 		this.setState({ spentThisMonth: total });
+		return total;
 	}
 
 	handleChange(event) {
 		// Update the state variable
 		this.setState({ monthlyBudget: event.target.value.trim() });
+
+		// Save data to the current local store
+		localStorage.setItem("monthlyBudget", event.target.value.trim());
 
 		// Update the percentage calculator
 		const spent = this.state.spentThisMonth;
@@ -93,7 +129,6 @@ class Budget extends Component {
 				]
 			}]
 		};
-
 		this.setState({data: data})
 	}
 
