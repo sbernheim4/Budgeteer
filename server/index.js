@@ -50,9 +50,20 @@ app.get("/", (req, res) => {
 
 /****************** Start the DB and Server ******************/
 
-startDb.then( () => {
-    https.createServer(options, app).listen(port);
-    console.log(chalk.green(`Listening on port ${port}`));
-}).catch(err => {
-    console.log(err);
-});
+if (process.env.NODE_ENV === "development") {
+    startDb.then(() => {
+        https.createServer(options, app).listen(port);
+        console.log(chalk.green(`Listening on port ${port}`));
+    }).catch(err => {
+        console.log(err);
+    });
+} else if (process.env.NODE_ENV === "production") {
+    startDb.then(() => {
+        app.listen(port, () => {
+            console.log(chalk.green(`Listening on port ${port}`));
+        })
+    }).catch(err => {
+        console.log(err);
+    });
+}
+
