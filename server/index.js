@@ -7,7 +7,15 @@ const chalk = require("chalk");
 const compression = require('compression');
 const mongoose = require('mongoose');
 const startDb = require('./db');
+const fs = require('fs');
+const https = require('https');
+const http = require('http');
 
+const options = {
+    key: fs.readFileSync('encryption/server.key'),
+    cert: fs.readFileSync('encryption/server.crt'),
+    ca: fs.readFileSync('encryption/server.csr')
+};
 
 /****************** DB Options ******************/
 const mongodbUri = process.env.DB_URI;
@@ -41,14 +49,10 @@ app.get("/", (req, res) => {
 });
 
 /****************** Start the DB and Server ******************/
+
 startDb.then( () => {
-    app.listen(port, () => {
-        console.log(chalk.blue(`Listening on port ${port}`));
-    });
+    https.createServer(options, app).listen(port);
+    console.log(chalk.green(`Listening on port ${port}`));
 }).catch(err => {
     console.log(err);
-})
-
-
-
-
+});
