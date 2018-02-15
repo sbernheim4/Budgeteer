@@ -1,11 +1,70 @@
 @import '/global';
+$font-awesome-size: 40px;
 
 .accounts {
 
 	&--search-options {
+		margin-bottom: 30px;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
+
+		&--keyword-search {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			.icon {
+				padding: 15px;
+				font-size: 30px;
+			}
+
+			form {
+
+				label {
+
+					input {
+						width: 30vw;
+						height: 61px;
+						padding: 0 15px;
+						background-color: rgb(50, 50, 50);
+						border: 1px solid rgb(255, 132, 132);
+						border-radius: 6px;
+						color: white;
+					}
+
+				}
+
+				input {
+
+				}
+			}
+		}
+
+		&--categorical-search {
+			.icon {
+				font-size: $font-awesome-size;
+				cursor: pointer;
+
+			}
+
+			&--categories {
+				display: none;
+
+			}
+
+			&--categories__active {
+				display: block;
+			}
+
+		}
+
+		&--date-search {
+			.icon {
+				font-size: $font-awesome-size;
+				cursor: pointer;
+			}
+		}
 
 		&--date-picker {
 			display: flex;
@@ -40,63 +99,6 @@
 						border: 1px solid black;
 						color: black;
 					}
-				}
-			}
-		}
-
-		&--keyword-search {
-			position: absolute;
-			margin: 0 auto;
-			top: 130px;
-
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			.icon {
-				padding: 15px;
-				font-size: 30px;
-				cursor: pointer;
-			}
-
-			form {
-
-				label {
-
-					input {
-						width: 0;
-						transition: all .3s ease-out;
-					}
-				}
-			}
-		}
-
-		&--keyword-search__active {
-			position: absolute;
-
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-
-			form {
-
-				label {
-
-					input {
-						width: 50vw;
-						height: 61px;
-						padding: 0 15px;
-						background-color: rgb(50, 50, 50);
-						border: 1px solid rgb(255, 132, 132);
-						border-radius: 6px;
-						color: white;
-					}
-
-				}
-
-				input {
-
 				}
 			}
 		}

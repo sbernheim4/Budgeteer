@@ -65288,7 +65288,6 @@ var AccountsContainer = function (_Component) {
 		_this.searchByDate = _this.searchByDate.bind(_this);
 		_this.searchByKeyword = _this.searchByKeyword.bind(_this);
 
-		_this.showSearch = _this.showSearch.bind(_this);
 		_this.getKeyword = _this.getKeyword.bind(_this);
 		return _this;
 	}
@@ -65527,12 +65526,6 @@ var AccountsContainer = function (_Component) {
 			return searchByKeyword;
 		}()
 	}, {
-		key: "showSearch",
-		value: function showSearch(e) {
-			var elem = document.querySelector(".accounts--search-options--keyword-search");
-			elem.classList.toggle("accounts--search-options--keyword-search__active");
-		}
-	}, {
 		key: "getKeyword",
 		value: function getKeyword(e) {
 			e.preventDefault();
@@ -65559,9 +65552,7 @@ var AccountsContainer = function (_Component) {
 					_react2.default.createElement(
 						"div",
 						{ className: "accounts--search-options--keyword-search" },
-						_react2.default.createElement(_reactFontawesome2.default, { className: "icon", onClick: function onClick(e) {
-								_this2.showSearch(e);
-							}, icon: _fontawesomeFreeSolid.faSearch }),
+						_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
 						_react2.default.createElement(
 							"form",
 							{ onSubmit: this.searchByKeyword },
@@ -65573,6 +65564,26 @@ var AccountsContainer = function (_Component) {
 									} })
 							)
 						)
+					),
+					_react2.default.createElement(
+						"div",
+						{ className: "accounts--search-options--categorical-search" },
+						_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faTags }),
+						_react2.default.createElement(
+							"div",
+							{ className: "accounts--search-options--categorical-search--categories" },
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch })
+						)
+					),
+					_react2.default.createElement(
+						"div",
+						{ className: "accounts--search-options--date-search" },
+						_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faCalendar })
 					),
 					_react2.default.createElement(
 						"form",
@@ -66142,7 +66153,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n  .accounts--search-options--keyword-search {\n    position: absolute;\n    margin: 0 auto;\n    top: 130px;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px;\n      cursor: pointer; }\n    .accounts--search-options--keyword-search form label input {\n      width: 0;\n      transition: all .3s ease-out; }\n  .accounts--search-options--keyword-search__active {\n    position: absolute;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search__active form label input {\n      width: 50vw;\n      height: 61px;\n      padding: 0 15px;\n      background-color: #323232;\n      border: 1px solid #ff8484;\n      border-radius: 6px;\n      color: white; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  margin-bottom: 30px;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form label input {\n      width: 30vw;\n      height: 61px;\n      padding: 0 15px;\n      background-color: #323232;\n      border: 1px solid #ff8484;\n      border-radius: 6px;\n      color: white; }\n  .accounts--search-options--categorical-search .icon {\n    font-size: 40px;\n    cursor: pointer; }\n  .accounts--search-options--categorical-search--categories {\n    display: none; }\n  .accounts--search-options--categorical-search--categories__active {\n    display: block; }\n  .accounts--search-options--date-search .icon {\n    font-size: 40px;\n    cursor: pointer; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

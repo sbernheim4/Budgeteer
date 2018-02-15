@@ -6,7 +6,7 @@ import "../scss/accountsContainer.scss"
 import helpers from './helpers';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/fontawesome-free-solid';
+import { faSearch, faTags, faCalendar } from '@fortawesome/fontawesome-free-solid';
 
 class AccountsContainer extends Component {
 	constructor(props) {
@@ -27,10 +27,9 @@ class AccountsContainer extends Component {
 		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
 		this.getDate = this.getDate.bind(this);
 		this.searchByDate = this.searchByDate.bind(this);
-        this.searchByKeyword = this.searchByKeyword.bind(this);
+		this.searchByKeyword = this.searchByKeyword.bind(this);
 
-        this.showSearch = this.showSearch.bind(this);
-        this.getKeyword = this.getKeyword.bind(this);
+		this.getKeyword = this.getKeyword.bind(this);
 	}
 
 	getAccountTransactions(account_id) {
@@ -90,8 +89,6 @@ class AccountsContainer extends Component {
 			});
 
 		}
-
-
 	}
 
 	getCategoryTransactions(categoryString) {
@@ -179,110 +176,123 @@ class AccountsContainer extends Component {
 		} catch (err) {
 			console.error(err);
 		}
-    }
+	}
 
 	async searchByKeyword(e) {
-        console.log("SEARCHING...");
-        e.preventDefault();
-        let releventTransactions = [];
-        const keyWord = this.state.keyWord || "Everything";
+		console.log("SEARCHING...");
+		e.preventDefault();
+		let releventTransactions = [];
+		const keyWord = this.state.keyWord || "Everything";
 
-        const normalizedKeyWord = keyWord.toLowerCase();
-        console.log(normalizedKeyWord);
+		const normalizedKeyWord = keyWord.toLowerCase();
+		console.log(normalizedKeyWord);
 
-        let total = 0;
-        this.props.transactions.forEach(t => {
-            let normalizedTransactionName = t.name.toLowerCase();
+		let total = 0;
+		this.props.transactions.forEach(t => {
+			let normalizedTransactionName = t.name.toLowerCase();
 
-            if (normalizedTransactionName.includes(normalizedKeyWord)) {
-                console.log("FOUND")
-                total += t.amount;
-                releventTransactions.push(t);
-            }
-        });
-        console.log(releventTransactions);
+			if (normalizedTransactionName.includes(normalizedKeyWord)) {
+				console.log("FOUND")
+				total += t.amount;
+				releventTransactions.push(t);
+			}
+		});
+		console.log(releventTransactions);
 
-        total = helpers.formatAmount(total);
-        total = helpers.numberWithCommas(total);
+		total = helpers.formatAmount(total);
+		total = helpers.numberWithCommas(total);
 
-        this.setState({
-            categoryType: keyWord,
-            categoryTransactions: releventTransactions,
-            categoryTotal: total
-        });
+		this.setState({
+			categoryType: keyWord,
+			categoryTransactions: releventTransactions,
+			categoryTotal: total
+		});
 
 	}
 
-	showSearch(e) {
-        const elem = document.querySelector(".accounts--search-options--keyword-search");
-        elem.classList.toggle("accounts--search-options--keyword-search__active");
-    }
+	getKeyword(e) {
+		e.preventDefault();
 
-    getKeyword(e) {
-        e.preventDefault();
+		let keyWord = e.target.value.trim() // helpers.toTitleCase(e.target.value);
 
-        let keyWord = e.target.value.trim() // helpers.toTitleCase(e.target.value);
+		console.log(keyWord);
 
-        console.log(keyWord);
-
-        this.setState({
-            keyWord: keyWord
-        });
-    }
+		this.setState({
+			keyWord: keyWord
+		});
+	}
 
 	render() {
 
 		return (
 			<div className="accounts">
 
-			<div className="accounts--search-options">
+				<div className="accounts--search-options">
 
-                <div className="accounts--search-options--keyword-search">
-                    <FontAwesomeIcon className="icon" onClick={(e) => { this.showSearch(e) }} icon={faSearch} />
+					<div className="accounts--search-options--keyword-search">
+						<FontAwesomeIcon className="icon" icon={faSearch}/>
 
-                    <form onSubmit={this.searchByKeyword}>
-                        <label>
-                            <input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
-                        </label>
-                    </form>
-                </div>
-
-                <form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
-					<div>
-						<p>Begin Date</p>
-						<label>Month
-						<input type="text" vale={this.state.monthOne} onChange={(e) => { this.getDate(e, 'monthOne') }} />
-						</label>
-
-						<label>Day
-						<input type="text" vale={this.state.dayOne} onChange={(e) => { this.getDate(e, 'dayOne') }} />
-						</label>
-
-						<label>Year
-						<input type="text" vale={this.state.yearOne} onChange={(e) => { this.getDate(e, 'yearOne') }} />
-						</label>
+						<form onSubmit={this.searchByKeyword}>
+							<label>
+								<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
+							</label>
+						</form>
 					</div>
 
-					<div>
-						<p>End Date</p>
-						<label>Month
-						<input type="text" vale={this.state.monthTwo} onChange={(e) => { this.getDate(e, 'monthTwo') }} />
-						</label>
+					<div className="accounts--search-options--categorical-search">
+						<FontAwesomeIcon className="icon" icon={faTags} />
 
-						<label>Day
-						<input type="text" vale={this.state.dayTwo} onChange={(e) => { this.getDate(e, 'dayTwo') }} />
-						</label>
-
-						<label>Year
-						<input type="text" vale={this.state.YearTwo} onChange={(e) => { this.getDate(e, 'yearTwo') }} />
-						</label>
+						{/* Display this div when icon above is clicked */}
+						<div className="accounts--search-options--categorical-search--categories">
+							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<FontAwesomeIcon className="icon" icon={faSearch} />
+						</div>
 					</div>
 
-					<br />
-					<input type="submit" value="Submit" />
-				</form>
+					<div className="accounts--search-options--date-search">
+						<FontAwesomeIcon className="icon" icon={faCalendar} />
+					</div>
 
-			</div>
+					<form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
+						<div>
+							<p>Begin Date</p>
+							<label>Month
+								<input type="text" vale={this.state.monthOne} onChange={(e) => { this.getDate(e, 'monthOne') }} />
+							</label>
+
+							<label>Day
+								<input type="text" vale={this.state.dayOne} onChange={(e) => { this.getDate(e, 'dayOne') }} />
+							</label>
+
+							<label>Year
+								<input type="text" vale={this.state.yearOne} onChange={(e) => { this.getDate(e, 'yearOne') }} />
+							</label>
+						</div>
+
+						<div>
+							<p>End Date</p>
+							<label>Month
+								<input type="text" vale={this.state.monthTwo} onChange={(e) => { this.getDate(e, 'monthTwo') }} />
+							</label>
+
+							<label>Day
+								<input type="text" vale={this.state.dayTwo} onChange={(e) => { this.getDate(e, 'dayTwo') }} />
+							</label>
+
+							<label>Year
+								<input type="text" vale={this.state.YearTwo} onChange={(e) => { this.getDate(e, 'yearTwo') }} />
+							</label>
+						</div>
+
+						<br />
+						<input type="submit" value="Submit" />
+					</form>
+
+				</div>
 
 				<h3 className="accounts--sort-options" >Sort by Account Type</h3>
 				<div className="accounts--btns">
@@ -315,8 +325,8 @@ class AccountsContainer extends Component {
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 			</div>
-		);
-	}
+			);
+}
 }
 
 export default AccountsContainer;
