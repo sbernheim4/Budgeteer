@@ -65278,7 +65278,8 @@ var AccountsContainer = function (_Component) {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0,
-			keyWord: ""
+			keyWord: "",
+			months: ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 		};
 
 		_this.getAccountTransactions = _this.getAccountTransactions.bind(_this);
@@ -65330,11 +65331,25 @@ var AccountsContainer = function (_Component) {
 				}
 			});
 
-			this.setState({
-				categoryTransactions: releventTransactions,
-				categoryType: type,
-				categoryTotal: total
-			});
+			if (type === "All Categories") {
+				var now = new Date();
+
+				var nowString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + now.getFullYear();
+				var prevString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
+				console.log(prevString);
+
+				this.setState({
+					categoryTransactions: releventTransactions,
+					categoryType: nowString + " - " + prevString,
+					categoryTotal: total
+				});
+			} else {
+				this.setState({
+					categoryTransactions: releventTransactions,
+					categoryType: type,
+					categoryTotal: total
+				});
+			}
 		}
 	}, {
 		key: "getCategoryTransactions",
@@ -65381,13 +65396,11 @@ var AccountsContainer = function (_Component) {
 		key: "searchByDate",
 		value: function () {
 			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(e) {
-				var months, dateOne, dateTwo, releventTransactions, total, fetchOptions, data;
+				var dateOne, dateTwo, releventTransactions, total, fetchOptions, data;
 				return _regenerator2.default.wrap(function _callee$(_context) {
 					while (1) {
 						switch (_context.prev = _context.next) {
 							case 0:
-								months = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
-
 								// TODO: Need additional validation if using forms to get data
 								// Ensure month is between 1 and 12
 								// Ensure the day given is between 1 - 30, 1 -31, 1 - 28 or 1 - 29 based on the month and year
@@ -65409,16 +65422,16 @@ var AccountsContainer = function (_Component) {
 										endDate: dateTwo
 									})
 								};
-								_context.prev = 7;
-								_context.next = 10;
+								_context.prev = 6;
+								_context.next = 9;
 								return fetch('/plaid-api/transactions', fetchOptions);
 
-							case 10:
+							case 9:
 								data = _context.sent;
-								_context.next = 13;
+								_context.next = 12;
 								return data.json();
 
-							case 13:
+							case 12:
 								data = _context.sent;
 
 
@@ -65434,24 +65447,24 @@ var AccountsContainer = function (_Component) {
 
 								this.setState({
 									categoryTransactions: releventTransactions,
-									categoryType: months[dateOne.getMonth()] + " " + dateOne.getDate() + " - " + months[dateTwo.getMonth()] + " " + dateTwo.getDate(),
+									categoryType: this.state.months[dateOne.getMonth()] + " " + dateOne.getDate() + " - " + this.state.months[dateTwo.getMonth()] + " " + dateTwo.getDate(),
 									categoryTotal: total
 								});
-								_context.next = 23;
+								_context.next = 22;
 								break;
 
-							case 20:
-								_context.prev = 20;
-								_context.t0 = _context["catch"](7);
+							case 19:
+								_context.prev = 19;
+								_context.t0 = _context["catch"](6);
 
 								console.error(_context.t0);
 
-							case 23:
+							case 22:
 							case "end":
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[7, 20]]);
+				}, _callee, this, [[6, 19]]);
 			}));
 
 			function searchByDate(_x) {
@@ -66129,7 +66142,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n  .accounts--search-options--keyword-search {\n    position: absolute;\n    margin: 0 auto;\n    top: 130px;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px;\n      cursor: pointer; }\n    .accounts--search-options--keyword-search form label input {\n      width: 0;\n      transition: all .3s ease-out; }\n  .accounts--search-options--keyword-search__active {\n    position: absolute;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search__active form label input {\n      width: 50vw;\n      height: 61px;\n      padding: 0 15px;\n      background-color: #323232;\n      border: 1px solid #ff8484;\n      border-radius: 6px;\n      color: white; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n  .accounts--search-options--keyword-search {\n    position: absolute;\n    margin: 0 auto;\n    top: 130px;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px;\n      cursor: pointer; }\n    .accounts--search-options--keyword-search form label input {\n      width: 0;\n      transition: all .3s ease-out; }\n  .accounts--search-options--keyword-search__active {\n    position: absolute;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search__active form label input {\n      width: 50vw;\n      height: 61px;\n      padding: 0 15px;\n      background-color: #323232;\n      border: 1px solid #ff8484;\n      border-radius: 6px;\n      color: white; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

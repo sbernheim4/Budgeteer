@@ -19,7 +19,8 @@ class AccountsContainer extends Component {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0,
-			keyWord: ""
+			keyWord: "",
+			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 		};
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
@@ -69,11 +70,27 @@ class AccountsContainer extends Component {
 		});
 
 
-		this.setState({
-			categoryTransactions: releventTransactions,
-			categoryType: type,
-			categoryTotal: total
-		});
+		if (type === "All Categories") {
+			const now = new Date();
+
+			const nowString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + now.getFullYear();
+			const prevString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
+			console.log(prevString);
+
+			this.setState({
+				categoryTransactions: releventTransactions,
+				categoryType: nowString + " - " + prevString,
+				categoryTotal: total
+			});
+		} else {
+			this.setState({
+				categoryTransactions: releventTransactions,
+				categoryType: type,
+				categoryTotal: total
+			});
+
+		}
+
 
 	}
 
@@ -117,8 +134,6 @@ class AccountsContainer extends Component {
 	}
 
 	async searchByDate(e) {
-		const months = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
-
 		// TODO: Need additional validation if using forms to get data
 		// Ensure month is between 1 and 12
 		// Ensure the day given is between 1 - 30, 1 -31, 1 - 28 or 1 - 29 based on the month and year
@@ -158,7 +173,7 @@ class AccountsContainer extends Component {
 
 			this.setState({
 				categoryTransactions: releventTransactions,
-				categoryType: `${months[dateOne.getMonth()]} ${dateOne.getDate()} - ${months[dateTwo.getMonth()]} ${dateTwo.getDate()}`,
+				categoryType: `${this.state.months[dateOne.getMonth()]} ${dateOne.getDate()} - ${this.state.months[dateTwo.getMonth()]} ${dateTwo.getDate()}`,
 				categoryTotal: total
 			});
 		} catch (err) {
