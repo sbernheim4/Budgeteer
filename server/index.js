@@ -61,7 +61,7 @@ if (process.env.NODE_ENV === "development") {
     startDb.then(() => {
         app.listen(port, () => {
             console.log(chalk.green(`Listening on port ${port}`));
-        })
+        });
     }).catch(err => {
         console.log(err);
     });
