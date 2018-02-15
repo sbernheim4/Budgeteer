@@ -6,7 +6,14 @@ import "../scss/accountsContainer.scss"
 import helpers from './helpers';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSearch, faTags, faCalendar } from '@fortawesome/fontawesome-free-solid';
+import {faSearch,
+		faTags,
+		faCalendar,
+		faPlus,
+		faUtensils,
+		faPlane,
+		faShoppingBag
+} from '@fortawesome/fontawesome-free-solid';
 
 class AccountsContainer extends Component {
 	constructor(props) {
@@ -222,6 +229,11 @@ class AccountsContainer extends Component {
 		});
 	}
 
+	showCategories() {
+		const elem = document.querySelector(".accounts--search-options--categorical-search--categories");
+		elem.classList.toggle("accounts--search-options--categorical-search--categories__active");
+	}
+
 	render() {
 
 		return (
@@ -240,15 +252,14 @@ class AccountsContainer extends Component {
 					</div>
 
 					<div className="accounts--search-options--categorical-search">
-						<FontAwesomeIcon className="icon" icon={faTags} />
+						<FontAwesomeIcon className="icon" icon={faTags} onClick={this.showCategories}/>
 
-						{/* Display this div when icon above is clicked */}
+						{/* display this div when icon above is clicked */}
 						<div className="accounts--search-options--categorical-search--categories">
-							<FontAwesomeIcon className="icon" icon={faSearch} />
-							<FontAwesomeIcon className="icon" icon={faSearch} />
-							<FontAwesomeIcon className="icon" icon={faSearch} />
-							<FontAwesomeIcon className="icon" icon={faSearch} />
-							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<FontAwesomeIcon className="icon" icon={faPlus} />
+							<FontAwesomeIcon className="icon" icon={faUtensils} />
+							<FontAwesomeIcon className="icon" icon={faPlane} />
+							<FontAwesomeIcon className="icon" icon={faShoppingBag} />
 							<FontAwesomeIcon className="icon" icon={faSearch} />
 						</div>
 					</div>

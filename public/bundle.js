@@ -65539,6 +65539,12 @@ var AccountsContainer = function (_Component) {
 			});
 		}
 	}, {
+		key: "showCategories",
+		value: function showCategories() {
+			var elem = document.querySelector(".accounts--search-options--categorical-search--categories");
+			elem.classList.toggle("accounts--search-options--categorical-search--categories__active");
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			var _this2 = this;
@@ -65568,15 +65574,14 @@ var AccountsContainer = function (_Component) {
 					_react2.default.createElement(
 						"div",
 						{ className: "accounts--search-options--categorical-search" },
-						_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faTags }),
+						_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faTags, onClick: this.showCategories }),
 						_react2.default.createElement(
 							"div",
 							{ className: "accounts--search-options--categorical-search--categories" },
-							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
-							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
-							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
-							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
-							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faPlus }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faUtensils }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faPlane }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faShoppingBag }),
 							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faSearch })
 						)
 					),
@@ -66153,7 +66158,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  margin-bottom: 30px;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form label input {\n      width: 30vw;\n      height: 61px;\n      padding: 0 15px;\n      background-color: #323232;\n      border: 1px solid #ff8484;\n      border-radius: 6px;\n      color: white; }\n  .accounts--search-options--categorical-search .icon {\n    font-size: 40px;\n    cursor: pointer; }\n  .accounts--search-options--categorical-search--categories {\n    display: none; }\n  .accounts--search-options--categorical-search--categories__active {\n    display: block; }\n  .accounts--search-options--date-search .icon {\n    font-size: 40px;\n    cursor: pointer; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  margin-bottom: 30px;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form label input {\n      width: 30vw;\n      height: 61px;\n      padding: 0 15px;\n      background-color: #323232;\n      border: 1px solid white;\n      border-radius: 6px;\n      color: white;\n      transition: all .2s ease-in; }\n      .accounts--search-options--keyword-search form label input:focus {\n        border: 1px solid #ff8484; }\n  .accounts--search-options--categorical-search {\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .accounts--search-options--categorical-search .icon {\n      font-size: 40px;\n      cursor: pointer; }\n      .accounts--search-options--categorical-search .icon path {\n        transition: color .2s ease-in; }\n        .accounts--search-options--categorical-search .icon path:hover {\n          color: #ff8484; }\n    .accounts--search-options--categorical-search--categories {\n      display: none;\n      transition: all .3s ease-in; }\n    .accounts--search-options--categorical-search--categories__active {\n      position: absolute;\n      margin: 0 auto;\n      width: 190px;\n      padding: 30px;\n      bottom: -60px;\n      background: rgba(0, 0, 0, 0.8);\n      border-radius: 10px;\n      display: flex;\n      justify-content: flex-start;\n      flex-wrap: wrap; }\n      .accounts--search-options--categorical-search--categories__active .icon {\n        margin: 15px; }\n  .accounts--search-options--date-search .icon {\n    font-size: 45px;\n    cursor: pointer; }\n    .accounts--search-options--date-search .icon path {\n      transition: color .2s ease-in; }\n      .accounts--search-options--date-search .icon path:hover {\n        color: #ff8484; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
