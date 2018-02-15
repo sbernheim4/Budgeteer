@@ -65340,7 +65340,7 @@ var AccountsContainer = function (_Component) {
 
 				this.setState({
 					categoryTransactions: releventTransactions,
-					categoryType: nowString + " - " + prevString,
+					categoryType: prevString + " - " + nowString,
 					categoryTotal: total
 				});
 			} else {
