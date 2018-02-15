@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
-import DatePicker from "react-datepicker";
 import TransactionContainer from "./TransactionContainer.jsx";
 import "../scss/accountsContainer.scss"
 
