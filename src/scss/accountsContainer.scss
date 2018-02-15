@@ -65,7 +65,7 @@
 
 					input {
 						width: 0;
-						transition: all .3s ease;
+						transition: all .3s ease-out;
 					}
 				}
 			}
@@ -84,11 +84,11 @@
 				label {
 
 					input {
-						width: 90vw;
-						height: 60px;
+						width: 50vw;
+						height: 61px;
 						padding: 0 15px;
 						background-color: rgb(50, 50, 50);
-						border: 1px solid white;
+						border: 1px solid rgb(255, 132, 132);
 						border-radius: 6px;
 						color: white;
 					}

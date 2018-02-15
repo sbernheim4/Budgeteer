@@ -19,7 +19,7 @@ class AccountsContainer extends Component {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0,
-			keyWord: "Uber, Netflix..."
+			keyWord: ""
 		};
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
@@ -227,7 +227,7 @@ class AccountsContainer extends Component {
 
                     <form onSubmit={this.searchByKeyword}>
                         <label>
-                            <input type="text" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
+                            <input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
                         </label>
                     </form>
                 </div>

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 /* import BrowserRouter from 'react-router-dom' */
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 
 // Global Style Sheet
 import "../scss/reset.scss";
@@ -13,8 +13,8 @@ import App from './App.jsx';
 // ReactDOM.render(<Navbar />, document.querySelector("#nav"));
 // ReactDOM.render(<Main />, document.querySelector("#Home"));
 ReactDOM.render(
-	<BrowserRouter>
+	<HashRouter>
 		<App />
-	</BrowserRouter>
+	</HashRouter>
 	,document.getElementById("root")
 );
