@@ -256,11 +256,13 @@ class AccountsContainer extends Component {
 
 						{/* display this div when icon above is clicked */}
 						<div className="accounts--search-options--categorical-search--categories">
-							<FontAwesomeIcon className="icon" icon={faPlus} />
-							<FontAwesomeIcon className="icon" icon={faUtensils} />
-							<FontAwesomeIcon className="icon" icon={faPlane} />
-							<FontAwesomeIcon className="icon" icon={faShoppingBag} />
-							<FontAwesomeIcon className="icon" icon={faSearch} />
+							<div>
+								<FontAwesomeIcon className="icon" icon={faPlus} />
+								<FontAwesomeIcon className="icon" icon={faUtensils} />
+								<FontAwesomeIcon className="icon" icon={faPlane} />
+								<FontAwesomeIcon className="icon" icon={faShoppingBag} />
+								<FontAwesomeIcon className="icon" icon={faSearch} />
+							</div>
 						</div>
 					</div>
 
@@ -268,7 +270,7 @@ class AccountsContainer extends Component {
 						<FontAwesomeIcon className="icon" icon={faCalendar} />
 					</div>
 
-					<form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
+					{/*<form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
 						<div>
 							<p>Begin Date</p>
 							<label>Month
@@ -301,7 +303,7 @@ class AccountsContainer extends Component {
 
 						<br />
 						<input type="submit" value="Submit" />
-					</form>
+					</form>*/}
 
 				</div>
 
