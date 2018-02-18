@@ -9,15 +9,14 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import {faSearch,
 		faTags,
 		faCalendar,
-		faPlus,
-		faUtensils,
-		faPlane,
+        faUtensils,
+        faPlane,
         faShoppingBag,
-        faRacquet,
         faWrench,
+        faUsers,
+        faPlus,
         faPercent,
         faMoneyBillAlt,
-        faUsers,
         faExchangeAlt
 } from '@fortawesome/fontawesome-free-solid';
 
@@ -105,19 +104,20 @@ class AccountsContainer extends Component {
 	}
 
 	getCategoryTransactions(categoryString) {
-		let releventTransactions = [];
+
+        let releventTransactions = [];
 
 		// Other displays transactions with a category of null
 		if (categoryString === "Other") {
-			this.props.transactions.forEach(t => {
+            this.props.transactions.forEach(t => {
 				if (t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Interest" || t.category[0] === "Payment" || t.category[0] === "Tax" || t.category[0] === "Transfer") {
-					releventTransactions.push(t);
+                    releventTransactions.push(t);
 				}
 			});
 		} else {
 			this.props.transactions.forEach(t => {
 				if (t.category !== null && t.category[0] === categoryString) {
-					releventTransactions.push(t);
+                    releventTransactions.push(t);
 				}
 			});
 		}
@@ -125,11 +125,13 @@ class AccountsContainer extends Component {
 		// Get the total spent for the current Category
 		let total = 0;
 		releventTransactions.forEach((transaction) => {
-			total += transaction.amount;
+            total += transaction.amount;
 		});
 
 		total = helpers.formatAmount(total);
-		total = helpers.numberWithCommas(total);
+        total = helpers.numberWithCommas(total);
+
+        this.toggleCategoryViewer();
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.setState({
@@ -235,7 +237,7 @@ class AccountsContainer extends Component {
 		});
 	}
 
-	showCategories() {
+	toggleCategoryViewer() {
 		const elem = document.querySelector(".accounts--search-options--categorical-search--categories");
 		elem.classList.toggle("accounts--search-options--categorical-search--categories__active");
 	}
@@ -258,24 +260,24 @@ class AccountsContainer extends Component {
 					</div>
 
 					<div className="accounts--search-options--categorical-search">
-						<FontAwesomeIcon className="icon" icon={faTags} onClick={this.showCategories}/>
+						<FontAwesomeIcon className="icon" icon={faTags} onClick={this.toggleCategoryViewer}/>
 
 						{/* display this div when icon above is clicked */}
 						<div className="accounts--search-options--categorical-search--categories">
 							<div>
-								<FontAwesomeIcon className="icon" icon={faUtensils} />
-								<FontAwesomeIcon className="icon" icon={faPlane} />
-								<FontAwesomeIcon className="icon" icon={faShoppingBag} />
-                                <FontAwesomeIcon className="icon" icon={faRacquet} />
-                                <FontAwesomeIcon className="icon" icon={faWrench} />
-                                <FontAwesomeIcon className="icon" icon={faUsers} />
-                                <FontAwesomeIcon className="icon" icon={faPlus} />
-                                {/* <FontAwesomeIcon className="icon" icon={Bank fees} /> */}
-                                {/* <FontAwesomeIcon className="icon" icon={Cash advance} /> */}
-                                <FontAwesomeIcon className="icon" icon={faPercent} />
-                                <FontAwesomeIcon className="icon" icon={faMoneyBillAlt} />
-                                {/* <FontAwesomeIcon className="icon" icon={Tax} /> */}
-                                <FontAwesomeIcon className="icon" icon={faExchangeAlt} />
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops") }} className="icon" icon={faShoppingBag} />
+                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Recreation") }} className="icon" icon={faRacquet} /> */}
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service") }} className="icon" icon={faWrench} />
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community") }} className="icon" icon={faUsers} />
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare") }} className="icon" icon={faPlus} />
+                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Bank Fees") }} className="icon" icon={Bank fees} /> */}
+                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Cash Advance") }} className="icon" icon={Cash advance} /> */}
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest") }} className="icon" icon={faPercent} />
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment") }} className="icon" icon={faMoneyBillAlt} />
+                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Tax") }} className="icon" icon={Tax} /> */}
+                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer") }} className="icon" icon={faExchangeAlt} />
 							</div>
 						</div>
 					</div>
@@ -333,18 +335,6 @@ class AccountsContainer extends Component {
 
 					{/* Hide All Transactions */}
 					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
-				</div>
-
-				<h3 className="accounts--sort-options">Sort by Categories</h3>
-				<div className="accounts--btns">
-					<button onClick={() => { this.getCategoryTransactions("Food and Drink") }}>Food and Drink</button>
-					<button onClick={() => { this.getCategoryTransactions("Travel") }}>Travel</button>
-					<button onClick={() => { this.getCategoryTransactions("Shops") }}>Shops</button>
-					<button onClick={() => { this.getCategoryTransactions("Recreation") }}>Recreation</button>
-					<button onClick={() => { this.getCategoryTransactions("Service") }}>Service</button>
-					<button onClick={() => { this.getCategoryTransactions("Community") }}>Community</button>
-					<button onClick={() => { this.getCategoryTransactions("Healthcare") }}>Healthcare</button>
-					<button onClick={() => { this.getCategoryTransactions("Other") }}>Other</button>
 				</div>
 
 				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
