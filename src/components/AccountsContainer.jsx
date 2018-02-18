@@ -12,7 +12,13 @@ import {faSearch,
 		faPlus,
 		faUtensils,
 		faPlane,
-		faShoppingBag
+        faShoppingBag,
+        faRacquet,
+        faWrench,
+        faPercent,
+        faMoneyBillAlt,
+        faUsers,
+        faExchangeAlt
 } from '@fortawesome/fontawesome-free-solid';
 
 class AccountsContainer extends Component {
@@ -257,11 +263,19 @@ class AccountsContainer extends Component {
 						{/* display this div when icon above is clicked */}
 						<div className="accounts--search-options--categorical-search--categories">
 							<div>
-								<FontAwesomeIcon className="icon" icon={faPlus} />
 								<FontAwesomeIcon className="icon" icon={faUtensils} />
 								<FontAwesomeIcon className="icon" icon={faPlane} />
 								<FontAwesomeIcon className="icon" icon={faShoppingBag} />
-								<FontAwesomeIcon className="icon" icon={faSearch} />
+                                <FontAwesomeIcon className="icon" icon={faRacquet} />
+                                <FontAwesomeIcon className="icon" icon={faWrench} />
+                                <FontAwesomeIcon className="icon" icon={faUsers} />
+                                <FontAwesomeIcon className="icon" icon={faPlus} />
+                                {/* <FontAwesomeIcon className="icon" icon={Bank fees} /> */}
+                                {/* <FontAwesomeIcon className="icon" icon={Cash advance} /> */}
+                                <FontAwesomeIcon className="icon" icon={faPercent} />
+                                <FontAwesomeIcon className="icon" icon={faMoneyBillAlt} />
+                                {/* <FontAwesomeIcon className="icon" icon={Tax} /> */}
+                                <FontAwesomeIcon className="icon" icon={faExchangeAlt} />
 							</div>
 						</div>
 					</div>
