@@ -81,9 +81,11 @@ class Budget extends Component {
 
 	getTotalSpent() {
 		let total = 0;
+
+		let today = new Date();
+
 		// Sum up the prices of each transaction
 		this.props.transactions.forEach(t => {
-			let today = new Date();
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 			if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
@@ -130,13 +132,6 @@ class Budget extends Component {
 			}]
 		};
 		this.setState({data: data})
-	}
-
-	numDaysPassedThisMonth() {
-		let now = new Date();
-		let beginningOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-		return differenceInDays(now, beginningOfMonth); // Excludes today
 	}
 
 	render() {

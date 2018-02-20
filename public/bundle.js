@@ -47925,6 +47925,10 @@ var _is_before = __webpack_require__(534);
 
 var _is_before2 = _interopRequireDefault(_is_before);
 
+var _is_after = __webpack_require__(685);
+
+var _is_after2 = _interopRequireDefault(_is_after);
+
 var _sub_months = __webpack_require__(535);
 
 var _sub_months2 = _interopRequireDefault(_sub_months);
@@ -47941,8 +47945,9 @@ __webpack_require__(538);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-Chart.defaults.global.defaultFontColor = 'white'; /* eslint no-undef: 0*/
+/* eslint no-undef: 0*/
 
+Chart.defaults.global.defaultFontColor = 'white';
 Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
 
 var Statistics = function (_Component) {
@@ -48176,27 +48181,29 @@ var Statistics = function (_Component) {
 
 		/************************************* Line Chart *************************************/
 
-		// TODO: MATH NEEDS TO BE REDONE SINCE I AM NOW GOING AS FAR BACK AS ONE YEAR
+		//
 
 	}, {
 		key: "generateLineChart",
 		value: function generateLineChart() {
 
 			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
-			var pastSixMonths = this.props.transactions.sort(function (a, b) {
+			var sortedTransactions = this.props.transactions.sort(function (a, b) {
 				// a and b are transactions
 				var dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
 				var dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 				return dateA - dateB;
 			});
+
 			// Only really care about the past 6 months, not a full year
-			pastSixMonths = pastSixMonths.slice(this.props.transactions.length / 2);
+			var pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
 			// Start date is the Monday following the first transaction
 			var firstDate = pastSixMonths[0].date;
 			var startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
 			// startWeek = addWeeks(startWeek, 1);
 			startWeek = (0, _start_of_week2.default)(startWeek, { weekStartsOn: 1 });
+			var currentWeek = startWeek;
 
 			// End week is always the current week - 1 --> This is because data for
 			// the current week is definitionally incomplete so I can only get
@@ -48211,32 +48218,46 @@ var Statistics = function (_Component) {
 			var weekend = new Array(arrSize).fill(0);
 
 			var counter = 0;
+			var falsePos = 0;
 
 			pastSixMonths.forEach(function (t) {
 				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-				if ((0, _is_before2.default)(transactionDate, endWeek)) {
-					if ((0, _is_same_week2.default)(startWeek, transactionDate) && t.amount > 0) {
-						if ((0, _is_weekend2.default)(transactionDate)) {
-							weekend[counter] += t.amount;
-						} else {
-							weekday[counter] += t.amount;
-						}
-					} else if (t.amount > 0) {
-						// I"ve moved to a different week so update counter index
-						counter += (0, _difference_in_calendar_weeks2.default)(transactionDate, startWeek);
+				// if the transaction date is the same week as the current week
+				if ((0, _is_same_week2.default)(currentWeek, transactionDate) && t.amount > 0) {
 
-						// Put the current transaction amount in the right array
-						if ((0, _is_weekend2.default)(transactionDate)) {
-							weekend[counter] += t.amount;
-						} else {
-							weekday[counter] += t.amount;
-						}
-
-						// update currentWeek
-						startWeek = transactionDate;
+					// determine if it goes in the weekend or weekday array
+					if ((0, _is_weekend2.default)(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
 					}
+				} else if (t.amount > 0) {
+					// I"ve moved to a different week so update counter index to advance as many weeks as necessary
+
+					// NOTE: For example transaction 1 could have been on 1/1/2018 but transaction 2 on 1/15/2018 so
+					// counter would need to advance by 2 not just 1
+					counter += (0, _difference_in_calendar_weeks2.default)(transactionDate, currentWeek);
+
+					// Put the current transaction amount in the right array
+					if ((0, _is_weekend2.default)(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+
+					// update currentWeek to be the start of the week of the transaction date
+					currentWeek = (0, _start_of_week2.default)(transactionDate, { weekStartsOn: 1 });
 				}
+			});
+
+			// Format values in the array to two decimals
+			weekday.forEach(function (val, index) {
+				weekday[index] = _helpers2.default.formatAmount(val);
+			});
+
+			weekend.forEach(function (val, index) {
+				weekday[index] = _helpers2.default.formatAmount(val);
 			});
 
 			var chartData = {
@@ -64456,9 +64477,11 @@ var Budget = function (_Component) {
 		key: "getTotalSpent",
 		value: function getTotalSpent() {
 			var total = 0;
+
+			var today = new Date();
+
 			// Sum up the prices of each transaction
 			this.props.transactions.forEach(function (t) {
-				var today = new Date();
 				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 				if ((0, _is_same_month2.default)(transactionDate, today) && (0, _is_same_year2.default)(transactionDate, today)) {
@@ -64497,14 +64520,6 @@ var Budget = function (_Component) {
 				}]
 			};
 			this.setState({ data: data });
-		}
-	}, {
-		key: "numDaysPassedThisMonth",
-		value: function numDaysPassedThisMonth() {
-			var now = new Date();
-			var beginningOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-			return (0, _difference_in_days2.default)(now, beginningOfMonth); // Excludes today
 		}
 	}, {
 		key: "render",
@@ -65263,6 +65278,7 @@ var _fontawesomeFreeSolid = __webpack_require__(554);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// Font Awesome base package
 var AccountsContainer = function (_Component) {
 	(0, _inherits3.default)(AccountsContainer, _Component);
 
@@ -65601,7 +65617,7 @@ var AccountsContainer = function (_Component) {
 									}, className: "icon", icon: _fontawesomeFreeSolid.faUsers }),
 								_react2.default.createElement(_reactFontawesome2.default, { onClick: function onClick() {
 										_this2.getCategoryTransactions("Healthcare");
-									}, className: "icon", icon: _fontawesomeFreeSolid.faPlus }),
+									}, className: "icon", icon: _fontawesomeFreeSolid.faMedkit }),
 								_react2.default.createElement(_reactFontawesome2.default, { onClick: function onClick() {
 										_this2.getCategoryTransactions("Interest");
 									}, className: "icon", icon: _fontawesomeFreeSolid.faPercent }),
@@ -65670,6 +65686,9 @@ var AccountsContainer = function (_Component) {
 	}]);
 	return AccountsContainer;
 }(_react.Component);
+
+// Selective icons from Font Awesome
+
 
 exports.default = AccountsContainer;
 
@@ -70135,6 +70154,167 @@ bunker(function () {
 /* harmony default export */ __webpack_exports__["default"] = (icons$1);
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(8)))
+
+/***/ }),
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */,
+/* 559 */,
+/* 560 */,
+/* 561 */,
+/* 562 */,
+/* 563 */,
+/* 564 */,
+/* 565 */,
+/* 566 */,
+/* 567 */,
+/* 568 */,
+/* 569 */,
+/* 570 */,
+/* 571 */,
+/* 572 */,
+/* 573 */,
+/* 574 */,
+/* 575 */,
+/* 576 */,
+/* 577 */,
+/* 578 */,
+/* 579 */,
+/* 580 */,
+/* 581 */,
+/* 582 */,
+/* 583 */,
+/* 584 */,
+/* 585 */,
+/* 586 */,
+/* 587 */,
+/* 588 */,
+/* 589 */,
+/* 590 */,
+/* 591 */,
+/* 592 */,
+/* 593 */,
+/* 594 */,
+/* 595 */,
+/* 596 */,
+/* 597 */,
+/* 598 */,
+/* 599 */,
+/* 600 */,
+/* 601 */,
+/* 602 */,
+/* 603 */,
+/* 604 */,
+/* 605 */,
+/* 606 */,
+/* 607 */,
+/* 608 */,
+/* 609 */,
+/* 610 */,
+/* 611 */,
+/* 612 */,
+/* 613 */,
+/* 614 */,
+/* 615 */,
+/* 616 */,
+/* 617 */,
+/* 618 */,
+/* 619 */,
+/* 620 */,
+/* 621 */,
+/* 622 */,
+/* 623 */,
+/* 624 */,
+/* 625 */,
+/* 626 */,
+/* 627 */,
+/* 628 */,
+/* 629 */,
+/* 630 */,
+/* 631 */,
+/* 632 */,
+/* 633 */,
+/* 634 */,
+/* 635 */,
+/* 636 */,
+/* 637 */,
+/* 638 */,
+/* 639 */,
+/* 640 */,
+/* 641 */,
+/* 642 */,
+/* 643 */,
+/* 644 */,
+/* 645 */,
+/* 646 */,
+/* 647 */,
+/* 648 */,
+/* 649 */,
+/* 650 */,
+/* 651 */,
+/* 652 */,
+/* 653 */,
+/* 654 */,
+/* 655 */,
+/* 656 */,
+/* 657 */,
+/* 658 */,
+/* 659 */,
+/* 660 */,
+/* 661 */,
+/* 662 */,
+/* 663 */,
+/* 664 */,
+/* 665 */,
+/* 666 */,
+/* 667 */,
+/* 668 */,
+/* 669 */,
+/* 670 */,
+/* 671 */,
+/* 672 */,
+/* 673 */,
+/* 674 */,
+/* 675 */,
+/* 676 */,
+/* 677 */,
+/* 678 */,
+/* 679 */,
+/* 680 */,
+/* 681 */,
+/* 682 */,
+/* 683 */,
+/* 684 */,
+/* 685 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parse = __webpack_require__(11)
+
+/**
+ * @category Common Helpers
+ * @summary Is the first date after the second one?
+ *
+ * @description
+ * Is the first date after the second one?
+ *
+ * @param {Date|String|Number} date - the date that should be after the other one to return true
+ * @param {Date|String|Number} dateToCompare - the date to compare with
+ * @returns {Boolean} the first date is after the second date
+ *
+ * @example
+ * // Is 10 July 1989 after 11 February 1987?
+ * var result = isAfter(new Date(1989, 6, 10), new Date(1987, 1, 11))
+ * //=> true
+ */
+function isAfter (dirtyDate, dirtyDateToCompare) {
+  var date = parse(dirtyDate)
+  var dateToCompare = parse(dirtyDateToCompare)
+  return date.getTime() > dateToCompare.getTime()
+}
+
+module.exports = isAfter
+
 
 /***/ })
 /******/ ]);

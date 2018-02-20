@@ -11,6 +11,7 @@ import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
 import startOfWeek from "date-fns/start_of_week";
 import addWeeks from "date-fns/add_weeks";
 import isBefore from 'date-fns/is_before';
+import isAfter from 'date-fns/is_after';
 import subMonths from 'date-fns/sub_months'
 import isWithinRange from 'date-fns/is_within_range'
 
@@ -242,24 +243,26 @@ class Statistics extends Component {
 
 	/************************************* Line Chart *************************************/
 
-	// TODO: MATH NEEDS TO BE REDONE SINCE I AM NOW GOING AS FAR BACK AS ONE YEAR
+	//
 	generateLineChart() {
 
 		// Sort the transactions from oldest to newest --> [oldest, ..., newest]
-		let pastSixMonths = this.props.transactions.sort((a, b) => {
+		let sortedTransactions = this.props.transactions.sort((a, b) => {
 			// a and b are transactions
 			let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
 			let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateA - dateB;
 		});
+
 		// Only really care about the past 6 months, not a full year
-		pastSixMonths = pastSixMonths.slice(this.props.transactions.length / 2);
+		let pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
 		// Start date is the Monday following the first transaction
 		let firstDate = pastSixMonths[0].date;
 		let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
 		// startWeek = addWeeks(startWeek, 1);
 		startWeek = startOfWeek(startWeek, { weekStartsOn: 1 });
+		let currentWeek = startWeek;
 
 		// End week is always the current week - 1 --> This is because data for
 		// the current week is definitionally incomplete so I can only get
@@ -274,34 +277,47 @@ class Statistics extends Component {
 		let weekend = new Array(arrSize).fill(0);
 
 		let counter = 0;
+		let falsePos = 0;
 
 		pastSixMonths.forEach(t => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-			if (isBefore(transactionDate, endWeek)) {
-				if (isSameWeek(startWeek, transactionDate) && t.amount > 0) {
-					if (isWeekend(transactionDate)) {
-						weekend[counter] += t.amount;
-					} else {
-						weekday[counter] += t.amount;
-					}
-				} else if (t.amount > 0) {
-					// I"ve moved to a different week so update counter index
-					counter += differenceInCalendarWeeks(transactionDate, startWeek);
+			// if the transaction date is the same week as the current week
+			if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
 
-
-					// Put the current transaction amount in the right array
-					if (isWeekend(transactionDate)) {
-						weekend[counter] += t.amount;
-					} else {
-						weekday[counter] += t.amount;
-					}
-
-					// update currentWeek
-					startWeek = transactionDate;
+				// determine if it goes in the weekend or weekday array
+				if (isWeekend(transactionDate)) {
+					weekend[counter] += t.amount;
+				} else {
+					weekday[counter] += t.amount;
 				}
+			} else if (t.amount > 0) {
+				// I"ve moved to a different week so update counter index to advance as many weeks as necessary
+
+				// NOTE: For example transaction 1 could have been on 1/1/2018 but transaction 2 on 1/15/2018 so
+				// counter would need to advance by 2 not just 1
+				counter += differenceInCalendarWeeks(transactionDate, currentWeek);
+
+				// Put the current transaction amount in the right array
+				if (isWeekend(transactionDate)) {
+					weekend[counter] += t.amount;
+				} else {
+					weekday[counter] += t.amount;
+				}
+
+				// update currentWeek to be the start of the week of the transaction date
+				currentWeek = startOfWeek(transactionDate, { weekStartsOn: 1 });
 			}
 		});
+
+		// Format values in the array to two decimals
+		weekday.forEach( (val, index) => {
+			weekday[index] = helpers.formatAmount(val)
+		})
+
+		weekend.forEach((val, index) => {
+			weekday[index] = helpers.formatAmount(val)
+		})
 
 		const chartData = {
 			labels: this.generateLineChartLabels(arrSize),

@@ -1,23 +1,28 @@
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import TransactionContainer from "./TransactionContainer.jsx";
+
 import "../scss/accountsContainer.scss"
 
 import helpers from './helpers';
 
+// Font Awesome base package
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import {faSearch,
-		faTags,
-		faCalendar,
-        faUtensils,
-        faPlane,
-        faShoppingBag,
-        faWrench,
-        faUsers,
-        faPlus,
-        faPercent,
-        faMoneyBillAlt,
-        faExchangeAlt
+
+// Selective icons from Font Awesome
+import {
+	faSearch,
+	faTags,
+	faCalendar,
+	faUtensils,
+	faPlane,
+	faShoppingBag,
+	faWrench,
+	faUsers,
+	faMedkit,
+	faPercent,
+	faMoneyBillAlt,
+	faExchangeAlt
 } from '@fortawesome/fontawesome-free-solid';
 
 class AccountsContainer extends Component {
@@ -105,19 +110,19 @@ class AccountsContainer extends Component {
 
 	getCategoryTransactions(categoryString) {
 
-        let releventTransactions = [];
+		let releventTransactions = [];
 
 		// Other displays transactions with a category of null
 		if (categoryString === "Other") {
-            this.props.transactions.forEach(t => {
+			this.props.transactions.forEach(t => {
 				if (t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Interest" || t.category[0] === "Payment" || t.category[0] === "Tax" || t.category[0] === "Transfer") {
-                    releventTransactions.push(t);
+					releventTransactions.push(t);
 				}
 			});
 		} else {
 			this.props.transactions.forEach(t => {
 				if (t.category !== null && t.category[0] === categoryString) {
-                    releventTransactions.push(t);
+					releventTransactions.push(t);
 				}
 			});
 		}
@@ -125,13 +130,13 @@ class AccountsContainer extends Component {
 		// Get the total spent for the current Category
 		let total = 0;
 		releventTransactions.forEach((transaction) => {
-            total += transaction.amount;
+			total += transaction.amount;
 		});
 
 		total = helpers.formatAmount(total);
-        total = helpers.numberWithCommas(total);
+		total = helpers.numberWithCommas(total);
 
-        this.toggleCategoryViewer();
+		this.toggleCategoryViewer();
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.setState({
@@ -265,19 +270,19 @@ class AccountsContainer extends Component {
 						{/* display this div when icon above is clicked */}
 						<div className="accounts--search-options--categorical-search--categories">
 							<div>
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops") }} className="icon" icon={faShoppingBag} />
-                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Recreation") }} className="icon" icon={faRacquet} /> */}
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service") }} className="icon" icon={faWrench} />
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community") }} className="icon" icon={faUsers} />
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare") }} className="icon" icon={faPlus} />
-                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Bank Fees") }} className="icon" icon={Bank fees} /> */}
-                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Cash Advance") }} className="icon" icon={Cash advance} /> */}
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest") }} className="icon" icon={faPercent} />
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment") }} className="icon" icon={faMoneyBillAlt} />
-                                {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Tax") }} className="icon" icon={Tax} /> */}
-                                <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer") }} className="icon" icon={faExchangeAlt} />
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops") }} className="icon" icon={faShoppingBag} />
+								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Recreation") }} className="icon" icon={faRacquet} /> */}
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service") }} className="icon" icon={faWrench} />
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community") }} className="icon" icon={faUsers} />
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare") }} className="icon" icon={faMedkit} />
+								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Bank Fees") }} className="icon" icon={Bank fees} /> */}
+								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Cash Advance") }} className="icon" icon={Cash advance} /> */}
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest") }} className="icon" icon={faPercent} />
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment") }} className="icon" icon={faMoneyBillAlt} />
+								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Tax") }} className="icon" icon={Tax} /> */}
+								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer") }} className="icon" icon={faExchangeAlt} />
 							</div>
 						</div>
 					</div>
@@ -342,8 +347,8 @@ class AccountsContainer extends Component {
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 			</div>
-			);
-}
+		);
+	}
 }
 
 export default AccountsContainer;
