@@ -122,11 +122,11 @@ class App extends Component {
 			this.setState({counter: x})
 
 		} catch (err) {
-			const errorMessage = document.querySelector('.home--error');
-			errorMessage.classList.add('home--error__display');
+			const errorMessage = document.querySelector('.app--error');
+			errorMessage.classList.add('app--error__display');
 
 			setTimeout(() => {
-				errorMessage.classList.remove('home--error__display')
+				errorMessage.classList.remove('app--error__display')
 			}, 4000)
 
 			console.error(err);

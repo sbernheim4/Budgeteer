@@ -44926,12 +44926,12 @@ var App = function (_Component) {
 							case 22:
 								_context2.prev = 22;
 								_context2.t0 = _context2['catch'](6);
-								errorMessage = document.querySelector('.home--error');
+								errorMessage = document.querySelector('.app--error');
 
-								errorMessage.classList.add('home--error__display');
+								errorMessage.classList.add('app--error__display');
 
 								setTimeout(function () {
-									errorMessage.classList.remove('home--error__display');
+									errorMessage.classList.remove('app--error__display');
 								}, 4000);
 
 								console.error(_context2.t0);
