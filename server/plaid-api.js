@@ -163,12 +163,9 @@ app.post ("/balance", async function (req, res, next) {
 
                 netWorth += value;
                 map[name] = value;
-
-                console.log(name + ": " + value);
             }
         });
     });
-    console.log(map);
 
     res.json({
         "netWorth": netWorth,
