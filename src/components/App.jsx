@@ -190,9 +190,9 @@ class App extends Component {
 		};
 
 		let data = await fetch('plaid-api/balance', fetchOptions);
-		data = await data.json();
+        data = await data.json();
 
-		this.setState({ netWorth: data.netWorth });
+		this.setState({ netWorth: data.myMap });
 		let x = this.state.counter;
 		x++;
 		this.setState({counter: x})

@@ -46,7 +46,6 @@ class Navbar extends Component {
     }
 
     addAccount() {
-        console.log(this.state);
         this.state.handler.open();
     }
 

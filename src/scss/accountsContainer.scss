@@ -34,7 +34,7 @@
 						transition: all .2s ease-in;
 
 						&:focus {
-							border: 1px solid rgb(255, 132, 132);
+							border: 1px solid $pink;
 						}
 					}
 
@@ -62,7 +62,7 @@
 					transition: color .2s ease-in;
 
 					&:hover {
-						color: rgb(255, 132, 132);
+						color: $pink;
 					}
 				}
 			}
@@ -135,7 +135,7 @@
 					transition: color .2s ease-in;
 
 					&:hover {
-						color: rgb(255, 132, 132);
+						color: $pink;
 					}
 				}
 			}

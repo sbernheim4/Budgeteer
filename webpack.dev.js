@@ -23,7 +23,7 @@ module.exports = {
         // Set up a proxy for my api --> All calls to /plaid-api are redirected to use a different port where the epxress server is running
         proxy: {
             '/plaid-api': {
-                target: 'http://localhost:5000', // URL of the express server
+                target: 'http://localhost:5001', // URL of the express server
                 secure: false // using https or no
             }
         }

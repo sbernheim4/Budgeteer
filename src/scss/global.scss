@@ -4,6 +4,8 @@
 $green: rgb(77, 153, 114);
 $red: rgb(212, 99, 99);
 $blue: rgb(52, 108, 161);
+$pink: rgb(255, 132, 132);
+$background-color: rgb(50, 50, 50);
 
 * {
 	color: white;
@@ -14,5 +16,5 @@ $blue: rgb(52, 108, 161);
 }
 
 body {
-	background-color: rgb(50, 50, 50);
+	background-color: $background-color;
 }

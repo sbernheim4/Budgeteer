@@ -25,6 +25,7 @@ let db = mongoose.connection;
 
 /****************** Server Options ******************/
 const port = process.env.PORT;
+const insecurePort = process.env.INSECURE_PORT;
 const cacheTime = 31536000000;
 
 app.use(compression());
@@ -53,6 +54,7 @@ app.get("/", (req, res) => {
 if (process.env.NODE_ENV === "development") {
     startDb.then(() => {
         https.createServer(options, app).listen(port);
+        http.createServer(app).listen(insecurePort);
         console.log(chalk.green(`Listening on port ${port}`));
     }).catch(err => {
         console.log(err);

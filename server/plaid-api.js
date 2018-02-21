@@ -144,11 +144,10 @@ app.post("/transactions", async function(req, res, next) {
     }
 });
 
-// Get Balances -- NOT CURRENTLY BEING USED BY CLIENT SIDE --> getNetworth in Home.jsx just uses data from the accounts state that is returned
-// Might be better to do a server side solution where I do the calculation on the server and just send the response to the client
-// Though when the user adds an account it may not automatically update
 app.post ("/balance", async function (req, res, next) {
     let netWorth = 0;
+    let map = {};
+
     const promiseArray = ACCESS_TOKENS.map(token => {
         let x = client.getBalance(token);
         return x;
@@ -159,13 +158,21 @@ app.post ("/balance", async function (req, res, next) {
     totalData.forEach(bank => {
         bank.accounts.forEach(acct => {
             if (acct.balances.available !== null) {
-                netWorth += acct.balances.available;
+                let name = acct.name;
+                let value = acct.balances.available;
+
+                netWorth += value;
+                map[name] = value;
+
+                console.log(name + ": " + value);
             }
         });
     });
+    console.log(map);
 
     res.json({
-        "netWorth": netWorth
+        "netWorth": netWorth,
+        "myMap": map
     });
 });
 

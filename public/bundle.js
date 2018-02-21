@@ -45067,8 +45067,9 @@ var App = function (_Component) {
 							case 6:
 								data = _context5.sent;
 
+								// console.log(data.myMap);
 
-								this.setState({ netWorth: data.netWorth });
+								this.setState({ netWorth: data.myMap });
 								x = this.state.counter;
 
 								x++;
@@ -66052,7 +66053,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  /*border: 1px solid rgb(255, 132, 132);*/\n  border-radius: 5px;\n  box-shadow: 5px 5px 5px grey;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a;\n    box-shadow: 5px 5px 5px #5a5a5a; }\n  .transaction h4 {\n    margin-top: 10px;\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction p {\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  /*border: 1px solid $pink;*/\n  border-radius: 5px;\n  box-shadow: 5px 5px 5px grey;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a;\n    box-shadow: 5px 5px 5px #5a5a5a; }\n  .transaction h4 {\n    margin-top: 10px;\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction p {\n    /*color: black;*/\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
 
 // exports
 
@@ -66155,24 +66156,36 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+    value: true
 });
+
+var _keys = __webpack_require__(697);
+
+var _keys2 = _interopRequireDefault(_keys);
 
 var _getPrototypeOf = __webpack_require__(17);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
+var _slicedToArray2 = __webpack_require__(686);
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _entries = __webpack_require__(693);
+
+var _entries2 = _interopRequireDefault(_entries);
+
 var _classCallCheck2 = __webpack_require__(18);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
 var _possibleConstructorReturn2 = __webpack_require__(20);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _createClass2 = __webpack_require__(19);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
 
 var _inherits2 = __webpack_require__(21);
 
@@ -66186,28 +66199,87 @@ var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
+__webpack_require__(700);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Networth = function (_Component) {
-	(0, _inherits3.default)(Networth, _Component);
+    (0, _inherits3.default)(Networth, _Component);
+    (0, _createClass3.default)(Networth, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            console.log("In Networth");
 
-	function Networth(props) {
-		(0, _classCallCheck3.default)(this, Networth);
-		return (0, _possibleConstructorReturn3.default)(this, (Networth.__proto__ || (0, _getPrototypeOf2.default)(Networth)).call(this, props));
-	}
+            (0, _entries2.default)(this.props.netWorth).forEach(function (_ref) {
+                var _ref2 = (0, _slicedToArray3.default)(_ref, 2),
+                    key = _ref2[0],
+                    value = _ref2[1];
 
-	(0, _createClass3.default)(Networth, [{
-		key: "render",
-		value: function render() {
-			return _react2.default.createElement(
-				"h1",
-				null,
-				"Net Worth $",
-				this.props.netWorth
-			);
-		}
-	}]);
-	return Networth;
+                console.log(key, value);
+            });
+        }
+    }]);
+
+    function Networth(props) {
+        (0, _classCallCheck3.default)(this, Networth);
+        return (0, _possibleConstructorReturn3.default)(this, (Networth.__proto__ || (0, _getPrototypeOf2.default)(Networth)).call(this, props));
+    }
+
+    (0, _createClass3.default)(Networth, [{
+        key: "render",
+        value: function render() {
+            var _this2 = this;
+
+            return _react2.default.createElement(
+                "div",
+                { className: "networth" },
+                _react2.default.createElement(
+                    "table",
+                    null,
+                    _react2.default.createElement(
+                        "thead",
+                        null,
+                        _react2.default.createElement(
+                            "tr",
+                            null,
+                            _react2.default.createElement(
+                                "th",
+                                null,
+                                "Account Name"
+                            ),
+                            _react2.default.createElement(
+                                "th",
+                                null,
+                                "Amount"
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "tbody",
+                        null,
+                        (0, _keys2.default)(this.props.netWorth).map(function (keyName) {
+                            return _react2.default.createElement(
+                                "tr",
+                                { className: "networth--entry" },
+                                _react2.default.createElement(
+                                    "td",
+                                    null,
+                                    keyName
+                                ),
+                                _react2.default.createElement(
+                                    "td",
+                                    null,
+                                    "$",
+                                    _helpers2.default.numberWithCommas(_this2.props.netWorth[keyName])
+                                )
+                            );
+                        })
+                    )
+                )
+            );
+        }
+    }]);
+    return Networth;
 }(_react.Component);
 
 exports.default = Networth;
@@ -70387,6 +70459,247 @@ function isAfter (dirtyDate, dirtyDateToCompare) {
 }
 
 module.exports = isAfter
+
+
+/***/ }),
+/* 686 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _isIterable2 = __webpack_require__(687);
+
+var _isIterable3 = _interopRequireDefault(_isIterable2);
+
+var _getIterator2 = __webpack_require__(690);
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = (0, _getIterator3.default)(arr), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if ((0, _isIterable3.default)(Object(arr))) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+}();
+
+/***/ }),
+/* 687 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(688), __esModule: true };
+
+/***/ }),
+/* 688 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(88);
+__webpack_require__(76);
+module.exports = __webpack_require__(689);
+
+
+/***/ }),
+/* 689 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var classof = __webpack_require__(89);
+var ITERATOR = __webpack_require__(7)('iterator');
+var Iterators = __webpack_require__(41);
+module.exports = __webpack_require__(5).isIterable = function (it) {
+  var O = Object(it);
+  return O[ITERATOR] !== undefined
+    || '@@iterator' in O
+    // eslint-disable-next-line no-prototype-builtins
+    || Iterators.hasOwnProperty(classof(O));
+};
+
+
+/***/ }),
+/* 690 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(691), __esModule: true };
+
+/***/ }),
+/* 691 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(88);
+__webpack_require__(76);
+module.exports = __webpack_require__(692);
+
+
+/***/ }),
+/* 692 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var anObject = __webpack_require__(22);
+var get = __webpack_require__(335);
+module.exports = __webpack_require__(5).getIterator = function (it) {
+  var iterFn = get(it);
+  if (typeof iterFn != 'function') throw TypeError(it + ' is not iterable!');
+  return anObject(iterFn.call(it));
+};
+
+
+/***/ }),
+/* 693 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(694), __esModule: true };
+
+/***/ }),
+/* 694 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(695);
+module.exports = __webpack_require__(5).Object.entries;
+
+
+/***/ }),
+/* 695 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/tc39/proposal-object-values-entries
+var $export = __webpack_require__(10);
+var $entries = __webpack_require__(696)(true);
+
+$export($export.S, 'Object', {
+  entries: function entries(it) {
+    return $entries(it);
+  }
+});
+
+
+/***/ }),
+/* 696 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getKeys = __webpack_require__(82);
+var toIObject = __webpack_require__(33);
+var isEnum = __webpack_require__(96).f;
+module.exports = function (isEntries) {
+  return function (it) {
+    var O = toIObject(it);
+    var keys = getKeys(O);
+    var length = keys.length;
+    var i = 0;
+    var result = [];
+    var key;
+    while (length > i) if (isEnum.call(O, key = keys[i++])) {
+      result.push(isEntries ? [key, O[key]] : O[key]);
+    } return result;
+  };
+};
+
+
+/***/ }),
+/* 697 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(698), __esModule: true };
+
+/***/ }),
+/* 698 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(699);
+module.exports = __webpack_require__(5).Object.keys;
+
+
+/***/ }),
+/* 699 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 Object.keys(O)
+var toObject = __webpack_require__(87);
+var $keys = __webpack_require__(82);
+
+__webpack_require__(358)('keys', function () {
+  return function keys(it) {
+    return $keys(toObject(it));
+  };
+});
+
+
+/***/ }),
+/* 700 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(701);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(26)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./networth.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./networth.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 701 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(25)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.networth table {\n  margin: 0 auto;\n  width: 90%;\n  border-collapse: collapse; }\n  .networth table thead {\n    padding-bottom: 15px; }\n    .networth table thead tr th {\n      width: 200px;\n      text-align: left; }\n  .networth table tbody tr {\n    border: 1px solid #ff8484; }\n    .networth table tbody tr td {\n      height: 40px;\n      padding: 10px;\n      font-size: 35px; }\n  .networth table tbody tr:nth-child(even) {\n    background: #2a2a2a; }\n  .networth table tbody tr:hover {\n    cursor: pointer;\n    background: #232323; }\n", ""]);
+
+// exports
 
 
 /***/ })

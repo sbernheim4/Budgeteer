@@ -91,7 +91,6 @@ class AccountsContainer extends Component {
 
 			const nowString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + now.getFullYear();
 			const prevString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
-			console.log(prevString);
 
 			this.setState({
 				categoryTransactions: releventTransactions,
@@ -199,25 +198,21 @@ class AccountsContainer extends Component {
 	}
 
 	async searchByKeyword(e) {
-		console.log("SEARCHING...");
 		e.preventDefault();
 		let releventTransactions = [];
 		const keyWord = this.state.keyWord || "Everything";
 
 		const normalizedKeyWord = keyWord.toLowerCase();
-		console.log(normalizedKeyWord);
 
 		let total = 0;
 		this.props.transactions.forEach(t => {
 			let normalizedTransactionName = t.name.toLowerCase();
 
 			if (normalizedTransactionName.includes(normalizedKeyWord)) {
-				console.log("FOUND")
 				total += t.amount;
 				releventTransactions.push(t);
 			}
 		});
-		console.log(releventTransactions);
 
 		total = helpers.formatAmount(total);
 		total = helpers.numberWithCommas(total);
@@ -234,8 +229,6 @@ class AccountsContainer extends Component {
 		e.preventDefault();
 
 		let keyWord = e.target.value.trim() // helpers.toTitleCase(e.target.value);
-
-		console.log(keyWord);
 
 		this.setState({
 			keyWord: keyWord

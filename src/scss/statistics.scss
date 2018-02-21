@@ -29,7 +29,7 @@
 		}
 
 		.active {
-			border-bottom: 2px solid rgb(255, 132, 132);
+			border-bottom: 2px solid $pink;
 			/*background-color: darken(rgb(50, 50, 50), 5%);*/
 			transition: border-bottom .3s ease;
 		}
