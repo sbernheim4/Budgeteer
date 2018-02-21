@@ -1,65 +1,22 @@
 @import '/global';
 
-.app {
+.app-error {
+	margin: 15px auto;
+	width: 350px;
+	height: 30px;
+	background-color: $red;
+	border-radius: 10px;
+	opacity: 0;
+	transition: opacity .2s ease;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
-	&--error {
-		margin: 15px auto;
-		width: 350px;
-		height: 30px;
-		background-color: $red;
-		border-radius: 10px;
-		opacity: 0;
-		transition: opacity .2s ease;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+	p {
 
-		p {
-
-		}
 	}
 
-	&--error__display {
+	&__display {
 		opacity: 1;
-	}
-
-	&--btns {
-		margin-left: 20px;
-		display: flex;
-		flex-direction: row;
-
-		@media all and (max-width: 408px) {
-			margin: 0 auto;
-			max-width: 75%;
-			flex-direction: column;
-			justify-content: center;
-		}
-
-		&__blue {
-			background-color: $blue;
-		}
-
-		&__green {
-			margin-left: 5px;
-			background-color: $green;
-
-			@media all and (max-width: 408px) {
-				margin-left: 0;
-			}
-		}
-
-		button {
-			margin-top: 10px;
-			padding: 15px;
-			border: 1px solid black;
-			border-radius: 5px;
-			font-size: 20px;
-			color: white;
-			cursor: pointer;
-		}
-	}
-
-	&--total-spent {
-
 	}
 }

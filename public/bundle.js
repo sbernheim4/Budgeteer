@@ -44774,7 +44774,6 @@ var App = function (_Component) {
 			counter: 0
 		};
 
-		_this.addAccount = _this.addAccount.bind(_this);
 		_this.getTransactions = _this.getTransactions.bind(_this);
 		return _this;
 	}
@@ -44783,7 +44782,7 @@ var App = function (_Component) {
 		key: 'componentDidMount',
 		value: function () {
 			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-				var info, plaid;
+				var keyAndEnv, plaid;
 				return _regenerator2.default.wrap(function _callee$(_context) {
 					while (1) {
 						switch (_context.prev = _context.next) {
@@ -44807,18 +44806,18 @@ var App = function (_Component) {
 								return fetch('plaid-api/key-and-env');
 
 							case 6:
-								info = _context.sent;
+								keyAndEnv = _context.sent;
 								_context.next = 9;
-								return info.json();
+								return keyAndEnv.json();
 
 							case 9:
-								info = _context.sent;
+								keyAndEnv = _context.sent;
 								plaid = Plaid.create({
 									apiVersion: 'v2',
 									clientName: 'Plaid Walkthrough Demo',
-									env: info.env,
+									env: keyAndEnv.env,
 									product: ['transactions'],
-									key: info.publicKey,
+									key: keyAndEnv.publicKey,
 									onSuccess: function onSuccess(public_token) {
 										fetch('/plaid-api/get-access-token', {
 											method: 'post',
@@ -44862,11 +44861,6 @@ var App = function (_Component) {
 
 			return componentDidMount;
 		}()
-	}, {
-		key: 'addAccount',
-		value: function addAccount() {
-			this.state.handler.open();
-		}
 	}, {
 		key: 'getTransactions',
 		value: function () {
@@ -44926,12 +44920,12 @@ var App = function (_Component) {
 							case 22:
 								_context2.prev = 22;
 								_context2.t0 = _context2['catch'](6);
-								errorMessage = document.querySelector('.app--error');
+								errorMessage = document.querySelector('.app-error');
 
-								errorMessage.classList.add('app--error__display');
+								errorMessage.classList.add('app-error__display');
 
 								setTimeout(function () {
-									errorMessage.classList.remove('app--error__display');
+									errorMessage.classList.remove('app-error__display');
 								}, 4000);
 
 								console.error(_context2.t0);
@@ -45113,25 +45107,11 @@ var App = function (_Component) {
 				_react2.default.createElement(_Navbar2.default, null),
 				_react2.default.createElement(
 					'div',
-					{ className: 'app' },
+					{ className: 'app-error' },
 					_react2.default.createElement(
-						'div',
-						{ className: 'app--btns' },
-						_react2.default.createElement(
-							'button',
-							{ className: 'app--btns__blue', onClick: this.addAccount },
-							'Add Accounts'
-						),
-						'                    '
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'app--error' },
-						_react2.default.createElement(
-							'p',
-							null,
-							'Please first link an account'
-						)
+						'p',
+						null,
+						'Please first link an account'
 					)
 				),
 				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: text }),
@@ -47573,7 +47553,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.app--error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.app--error__display {\n  opacity: 1; }\n\n.app--btns {\n  margin-left: 20px;\n  display: flex;\n  flex-direction: row; }\n  @media all and (max-width: 408px) {\n    .app--btns {\n      margin: 0 auto;\n      max-width: 75%;\n      flex-direction: column;\n      justify-content: center; } }\n  .app--btns__blue {\n    background-color: #346ca1; }\n  .app--btns__green {\n    margin-left: 5px;\n    background-color: #4d9972; }\n    @media all and (max-width: 408px) {\n      .app--btns__green {\n        margin-left: 0; } }\n  .app--btns button {\n    margin-top: 10px;\n    padding: 15px;\n    border: 1px solid black;\n    border-radius: 5px;\n    font-size: 20px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.app-error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .app-error__display {\n    opacity: 1; }\n", ""]);
 
 // exports
 
@@ -47586,8 +47566,20 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+    value: true
 });
+
+var _regenerator = __webpack_require__(117);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _stringify = __webpack_require__(74);
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _asyncToGenerator2 = __webpack_require__(118);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _getPrototypeOf = __webpack_require__(17);
 
@@ -47620,63 +47612,144 @@ __webpack_require__(380);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Navbar = function (_Component) {
-	(0, _inherits3.default)(Navbar, _Component);
+    (0, _inherits3.default)(Navbar, _Component);
 
-	function Navbar() {
-		(0, _classCallCheck3.default)(this, Navbar);
-		return (0, _possibleConstructorReturn3.default)(this, (Navbar.__proto__ || (0, _getPrototypeOf2.default)(Navbar)).apply(this, arguments));
-	}
+    function Navbar(props) {
+        (0, _classCallCheck3.default)(this, Navbar);
 
-	(0, _createClass3.default)(Navbar, [{
-		key: "render",
-		value: function render() {
-			return _react2.default.createElement(
-				"nav",
-				{ className: "navbar" },
-				_react2.default.createElement(
-					"ul",
-					null,
-					_react2.default.createElement(
-						"li",
-						null,
-						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: "/" },
-							"Home"
-						)
-					),
-					_react2.default.createElement(
-						"li",
-						null,
-						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: "/accounts" },
-							"Accounts"
-						)
-					),
-					_react2.default.createElement(
-						"li",
-						null,
-						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: "/statistics" },
-							"Statistics"
-						)
-					),
-					_react2.default.createElement(
-						"li",
-						null,
-						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: "/networth" },
-							"Networth"
-						)
-					)
-				)
-			);
-		}
-	}]);
-	return Navbar;
+        var _this = (0, _possibleConstructorReturn3.default)(this, (Navbar.__proto__ || (0, _getPrototypeOf2.default)(Navbar)).call(this, props));
+
+        _this.state = {
+            handler: {}
+        };
+
+        _this.addAccount = _this.addAccount.bind(_this);
+        return _this;
+    }
+
+    (0, _createClass3.default)(Navbar, [{
+        key: "componentDidMount",
+        value: function () {
+            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+                var keyAndEnv, plaid;
+                return _regenerator2.default.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                _context.next = 2;
+                                return fetch('plaid-api/key-and-env');
+
+                            case 2:
+                                keyAndEnv = _context.sent;
+                                _context.next = 5;
+                                return keyAndEnv.json();
+
+                            case 5:
+                                keyAndEnv = _context.sent;
+                                plaid = Plaid.create({
+                                    apiVersion: 'v2',
+                                    clientName: 'Plaid Walkthrough Demo',
+                                    env: keyAndEnv.env,
+                                    product: ['transactions'],
+                                    key: keyAndEnv.publicKey,
+                                    onSuccess: function onSuccess(public_token) {
+                                        fetch('/plaid-api/get-access-token', {
+                                            method: 'post',
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: (0, _stringify2.default)({
+                                                public_token: public_token,
+                                                client_id: '5a24ca6a4e95b836d37e37fe',
+                                                secret: 'f07a761a591de3cbbc5ac3ba2f4301'
+                                            })
+                                        });
+                                    }
+                                });
+
+
+                                this.setState({ handler: plaid });
+
+                            case 8:
+                            case "end":
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function componentDidMount() {
+                return _ref.apply(this, arguments);
+            }
+
+            return componentDidMount;
+        }()
+    }, {
+        key: "addAccount",
+        value: function addAccount() {
+            console.log(this.state);
+            this.state.handler.open();
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "nav",
+                { className: "navbar" },
+                _react2.default.createElement(
+                    "ul",
+                    null,
+                    _react2.default.createElement(
+                        "li",
+                        null,
+                        _react2.default.createElement(
+                            _reactRouterDom.Link,
+                            { to: "/" },
+                            "Home"
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "li",
+                        null,
+                        _react2.default.createElement(
+                            _reactRouterDom.Link,
+                            { to: "/accounts" },
+                            "Accounts"
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "li",
+                        null,
+                        _react2.default.createElement(
+                            _reactRouterDom.Link,
+                            { to: "/statistics" },
+                            "Statistics"
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "li",
+                        null,
+                        _react2.default.createElement(
+                            _reactRouterDom.Link,
+                            { to: "/networth" },
+                            "Networth"
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    null,
+                    _react2.default.createElement(
+                        "button",
+                        { onClick: this.addAccount },
+                        "Add Accounts"
+                    )
+                )
+            );
+        }
+    }]);
+    return Navbar;
 }(_react.Component);
 
 exports.default = Navbar;
@@ -47721,7 +47794,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  height: 60px;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  height: 70px;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
 
 // exports
 

@@ -4,11 +4,12 @@ $background-color: rgb(50, 50, 50);
 
 .navbar {
 	width: 100vw;
-	height: 60px;
+	height: 70px;
 	background-color: $background-color;
 
 	display: flex;
 	flex-direction: row;
+	justify-content: space-between;
 	align-items: center;
 
 	ul {
@@ -42,6 +43,21 @@ $background-color: rgb(50, 50, 50);
 
 		li:first-child {
 			margin-left: 15px;
+		}
+	}
+
+	div {
+		display: flex;
+		align-items: center;
+
+		button {
+			padding: 15px;
+			background-color: #346ca1;
+			border: 1px solid black;
+			border-radius: 5px;
+			font-size: 20px;
+			color: white;
+			cursor: pointer;
 		}
 	}
 }

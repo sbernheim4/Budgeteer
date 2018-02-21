@@ -33,7 +33,6 @@ class App extends Component {
 			counter: 0
 		};
 
-		this.addAccount = this.addAccount.bind(this);
 		this.getTransactions = this.getTransactions.bind(this);
 	}
 
@@ -53,14 +52,14 @@ class App extends Component {
 			this.getNetWorth(); // store networth
 
 			// Used for if the user wants to link a new account
-			let info = await fetch('plaid-api/key-and-env');
-			info = await info.json();
+			let keyAndEnv = await fetch('plaid-api/key-and-env');
+			keyAndEnv = await keyAndEnv.json();
 			const plaid = Plaid.create({
 				apiVersion: 'v2',
 				clientName: 'Plaid Walkthrough Demo',
-				env: info.env,
+				env: keyAndEnv.env,
 				product: ['transactions'],
-				key: info.publicKey,
+				key: keyAndEnv.publicKey,
 				onSuccess: function (public_token) {
 					fetch('/plaid-api/get-access-token', {
 						method: 'post',
@@ -83,10 +82,6 @@ class App extends Component {
 			console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
 			console.error(err);
 		}
-	}
-
-	addAccount() {
-		this.state.handler.open();
 	}
 
 	async getTransactions() {
@@ -122,11 +117,11 @@ class App extends Component {
 			this.setState({counter: x})
 
 		} catch (err) {
-			const errorMessage = document.querySelector('.app--error');
-			errorMessage.classList.add('app--error__display');
+			const errorMessage = document.querySelector('.app-error');
+			errorMessage.classList.add('app-error__display');
 
 			setTimeout(() => {
-				errorMessage.classList.remove('app--error__display')
+				errorMessage.classList.remove('app-error__display')
 			}, 4000)
 
 			console.error(err);
@@ -181,7 +176,6 @@ class App extends Component {
 			});
 		})
 
-
 		// Update accounts state variable
 		this.setState({ accounts: currentAccounts })
 	}
@@ -218,31 +212,31 @@ class App extends Component {
 			<div>
 				<Navbar />
 
-				<div className='app'>
-					<div className='app--btns'>
-						<button className='app--btns__blue' onClick={this.addAccount}>Add Accounts</button>
-						{/* <button className='app--btns__green' onClick={this.getTransactions}>Get Transactions</button>*/}                    </div>
-
-					<div className='app--error'>
-						<p>Please first link an account</p>
-					</div>
+				<div className='app-error'>
+                    <p>Please first link an account</p>
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
 				<Route exact path='/' component={text}/>
 
-				<Route path='/statistics' render={() => (<Statistics
-						transactions={this.state.transactions}
-				/>)}/>
+				<Route path='/statistics' render={() => (
+                    <Statistics
+				        transactions={this.state.transactions}
+                    />
+                )}/>
 
-				<Route path='/accounts' render={() => (<AccountsContainer
-					transactions={this.state.transactions}
-					accounts={this.state.accounts}
-				/>)}/>
+				<Route path='/accounts' render={() => (
+                    <AccountsContainer
+					    transactions={this.state.transactions}
+                        accounts={this.state.accounts}
+                    />
+                )}/>
 
-				<Route path='/networth' render={() => (<Networth
-					netWorth={this.state.netWorth}
-				/>)}/>
+				<Route path='/networth' render={() => (
+                    <Networth
+					    netWorth={this.state.netWorth}
+                    />
+                )}/>
 
 			</div>
 		);

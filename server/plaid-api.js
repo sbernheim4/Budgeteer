@@ -57,7 +57,9 @@ app.post('/set-stored-access-token', async (req, res, next) => {
         let person = await User.find({ _id: "5a63710527c6b237492fc1bb"});
         person = person[0];
         if (!person || person.accessTokens.length === 0 || person.itemID.length === 0) {
-            throw new Error("No Users Found");
+
+            let JSONError = JSON.stringify({ "Error": "No Account Infromation Found" });
+            throw new Error(JSONError);
         }
 
         ACCESS_TOKENS = person.accessTokens;
@@ -65,6 +67,7 @@ app.post('/set-stored-access-token', async (req, res, next) => {
         console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
     } catch (err) {
         console.log(err);
+        return res.json(err);
     }
 
 });
@@ -76,6 +79,8 @@ app.post("/get-access-token", async (req, res, next) => {
     try {
         // Get the token response
         let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
+        console.log(tokenResponse.access_token);
+        console.log(tokenResponse.item_id);
 
         // Update our arrays on the server
         ACCESS_TOKENS.push(tokenResponse.access_token);
