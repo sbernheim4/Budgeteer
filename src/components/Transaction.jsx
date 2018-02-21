@@ -29,13 +29,17 @@ class Transaction extends Component {
 		// TODO: Currently hardcoding latitude and longitude but it should come from:
 		// this.props.transaction.location.lat
 		// this.props.transaction.location.lon
-		iframe.src = "https://www.google.com/maps/embed/v1/place?q=40.7828647,-73.9653551&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
+		/*iframe.src = "https://www.google.com/maps/embed/v1/place?q=40.7828647,-73.9653551&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"*/
 
 		// WITH API KEY
 		// "https://www.google.com/maps/embed/v1/place?q=40.7829,73.9654&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
 
 		// WITHOUT API KEY
-		// iframe.src = "https://maps.google.com/maps?q=40.7829,73.9654&z=15&output=embed"
+		if (this.props.transaction.location.lat !== null && this.props.transaction.location.lon !== null) {
+			iframe.src = `https://maps.google.com/maps?q=${this.props.transaction.location.lat},${this.props.transaction.location.lon}&z=15&output=embed`
+		} else {
+			iframe.src = "https://maps.google.com/maps?q=40.7828647,-73.9653551&z=15&output=embed"
+		}
 
 		if (!!e.target.querySelector("iframe")) {
 			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });

@@ -49,8 +49,8 @@ class Networth extends Component {
 					</tbody>
 				</table>
 			</div>
-			)
-}
+		)
+	}
 }
 
 export default Networth

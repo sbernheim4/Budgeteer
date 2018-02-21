@@ -11,8 +11,8 @@ $transaction-background-color: rgb(80, 80, 80);
 	padding: 5px;
 	background-color: $transaction-background-color;
 	/*border: 1px solid $pink;*/
+	box-shadow: 5px 5px 3px white;
 	border-radius: 5px;
-	box-shadow: 5px 5px 5px grey;
 	cursor: pointer;
 	text-align: center;
 	transition: all .3s ease-in;
@@ -24,7 +24,6 @@ $transaction-background-color: rgb(80, 80, 80);
 
 	&:hover {
 		background-color: darken($transaction-background-color, 15%);
-		box-shadow: 5px 5px 5px darken(grey, 15%);
 	}
 
 	h4 {
