@@ -10,8 +10,7 @@ $transaction-background-color: rgb(80, 80, 80);
 	height: 100px;
 	padding: 5px;
 	background-color: $transaction-background-color;
-	/*border: 1px solid $pink;*/
-	box-shadow: 5px 5px 3px white;
+	border: 1px solid $pink;
 	border-radius: 5px;
 	cursor: pointer;
 	text-align: center;
@@ -28,12 +27,10 @@ $transaction-background-color: rgb(80, 80, 80);
 
 	h4 {
 		margin-top: 10px;
-		/*color: black;*/
 		pointer-events: none;
 	}
 
 	p {
-		/*color: black;*/
 		pointer-events: none;
 	}
 

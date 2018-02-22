@@ -54,7 +54,8 @@ class App extends Component {
 			// Used for if the user wants to link a new account
 			let keyAndEnv = await fetch('plaid-api/key-and-env');
 			keyAndEnv = await keyAndEnv.json();
-			const plaid = Plaid.create({
+
+            const plaid = Plaid.create({
 				apiVersion: 'v2',
 				clientName: 'Plaid Walkthrough Demo',
 				env: keyAndEnv.env,
@@ -89,7 +90,7 @@ class App extends Component {
 		let now = new Date(); // Jan. 12th 2018
 		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
 		prev = addMonths(prev, 1); // Feb. 12th 2017
-		prev = startOfMonth(prev); // Returns Feb 1st 2017
+        prev = startOfMonth(prev); // Returns Feb 1st 2017
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 		let fetchOptions = {

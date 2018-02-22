@@ -10,8 +10,6 @@ import "../scss/reset.scss";
 /* App is the entry point to the React code.*/
 import App from './App.jsx';
 
-// ReactDOM.render(<Navbar />, document.querySelector("#nav"));
-// ReactDOM.render(<Main />, document.querySelector("#Home"));
 ReactDOM.render(
 	<HashRouter>
 		<App />

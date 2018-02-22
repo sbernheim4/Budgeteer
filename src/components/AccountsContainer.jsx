@@ -236,8 +236,8 @@ class AccountsContainer extends Component {
 	}
 
 	toggleCategoryViewer() {
-		const elem = document.querySelector(".accounts--search-options--categorical-search--categories");
-		elem.classList.toggle("accounts--search-options--categorical-search--categories__active");
+		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
+        elem.classList.toggle("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
 	render() {
@@ -257,32 +257,36 @@ class AccountsContainer extends Component {
 						</form>
 					</div>
 
-					<div className="accounts--search-options--categorical-search">
-						<FontAwesomeIcon className="icon" icon={faTags} onClick={this.toggleCategoryViewer}/>
+                    <div className="accounts--search-options--icon-search">
 
-						{/* display this div when icon above is clicked */}
-						<div className="accounts--search-options--categorical-search--categories">
-							<div>
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops") }} className="icon" icon={faShoppingBag} />
-								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Recreation") }} className="icon" icon={faRacquet} /> */}
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service") }} className="icon" icon={faWrench} />
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community") }} className="icon" icon={faUsers} />
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare") }} className="icon" icon={faMedkit} />
-								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Bank Fees") }} className="icon" icon={Bank fees} /> */}
-								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Cash Advance") }} className="icon" icon={Cash advance} /> */}
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest") }} className="icon" icon={faPercent} />
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment") }} className="icon" icon={faMoneyBillAlt} />
-								{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Tax") }} className="icon" icon={Tax} /> */}
-								<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer") }} className="icon" icon={faExchangeAlt} />
-							</div>
-						</div>
-					</div>
+                        <div className="accounts--search-options--icon-search--categorical-search">
+                            <FontAwesomeIcon className="icon" icon={faTags} onClick={this.toggleCategoryViewer} />
 
-					<div className="accounts--search-options--date-search">
-						<FontAwesomeIcon className="icon" icon={faCalendar} />
-					</div>
+                            {/* display this div when icon above is clicked */}
+                            <div className="accounts--search-options--icon-search--categorical-search--categories">
+                                <div>
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops") }} className="icon" icon={faShoppingBag} />
+                                    {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Recreation") }} className="icon" icon={faRacquet} /> */}
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service") }} className="icon" icon={faWrench} />
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community") }} className="icon" icon={faUsers} />
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare") }} className="icon" icon={faMedkit} />
+                                    {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Bank Fees") }} className="icon" icon={Bank fees} /> */}
+                                    {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Cash Advance") }} className="icon" icon={Cash advance} /> */}
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest") }} className="icon" icon={faPercent} />
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment") }} className="icon" icon={faMoneyBillAlt} />
+                                    {/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Tax") }} className="icon" icon={Tax} /> */}
+                                    <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer") }} className="icon" icon={faExchangeAlt} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="accounts--search-options--icon-search--date-search">
+                            <FontAwesomeIcon className="icon" icon={faCalendar} />
+                        </div>
+
+                    </div>
 
 					{/*<form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
 						<div>
