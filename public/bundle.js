@@ -65438,12 +65438,15 @@ var AccountsContainer = function (_Component) {
 			total = _helpers2.default.numberWithCommas(total);
 
 			// Update the state with the relevent transactions and how the user is sorting them
-			this.props.accounts.forEach(function (account) {
-				if (account.account_id === account_id) {
-					type = account.name;
-					return;
-				}
-			});
+			// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
+			if (type === undefined) {
+				this.props.accounts.forEach(function (account) {
+					if (account.account_id === account_id) {
+						type = account.name;
+						return;
+					}
+				});
+			}
 
 			if (type === "All Categories") {
 				var now = new Date();
@@ -65824,8 +65827,12 @@ exports.default = function (obj, key, value) {
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
+
+var _toConsumableArray2 = __webpack_require__(585);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
 var _getPrototypeOf = __webpack_require__(17);
 
@@ -65860,61 +65867,75 @@ __webpack_require__(547);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var TransactionContainer = function (_Component) {
-    (0, _inherits3.default)(TransactionContainer, _Component);
+	(0, _inherits3.default)(TransactionContainer, _Component);
 
-    function TransactionContainer(props) {
-        (0, _classCallCheck3.default)(this, TransactionContainer);
+	function TransactionContainer(props) {
+		(0, _classCallCheck3.default)(this, TransactionContainer);
 
-        var _this = (0, _possibleConstructorReturn3.default)(this, (TransactionContainer.__proto__ || (0, _getPrototypeOf2.default)(TransactionContainer)).call(this, props));
+		var _this = (0, _possibleConstructorReturn3.default)(this, (TransactionContainer.__proto__ || (0, _getPrototypeOf2.default)(TransactionContainer)).call(this, props));
 
-        var initialNum = _this.props.transactions.length < 10 ? _this.props.transactions.length : 10;
+		var initialNum = _this.props.transactions.length < 10 ? _this.props.transactions.length : 10;
+		var transactions = _this.props.transactions.slice(0, 10);
 
-        _this.state = {
-            num: initialNum,
-            transactionsToDisplay: _this.props.transactions.slice(0, initialNum)
-        };
+		_this.state = {
+			num: 10,
+			transactionsToDisplay: transactions
+		};
 
-        _this.showMoreItems = _this.showMoreItems.bind(_this);
-        return _this;
-    }
+		_this.showMoreItems = _this.showMoreItems.bind(_this);
+		return _this;
+	}
 
-    (0, _createClass3.default)(TransactionContainer, [{
-        key: "showMoreItems",
-        value: function showMoreItems() {
+	(0, _createClass3.default)(TransactionContainer, [{
+		key: "componentWillReceiveProps",
+		value: function componentWillReceiveProps(nextProps) {
+			if (this.state.transactionsToDisplay.length === 0) {
+				this.setState({
+					transactionsToDisplay: nextProps.transactions.slice(0, 10)
+				});
+			}
+		}
+	}, {
+		key: "showMoreItems",
+		value: function showMoreItems() {
+			if (this.state.num + 10 > this.props.transactions.length) {
+				this.setState({
+					transactionsToDisplay: this.props.transactions,
+					num: this.props.transactions.length
+				});
 
-            if (this.state.num + 10 > this.props.transactions.length) {
-                this.setState({
-                    transactionsToDisplay: this.props.transactions,
-                    num: this.props.transactions.length
-                });
+				// If all transactions are shown, remove the button
+				// TODO: find a react way to do this (I think using refs)
+				document.querySelector("button").remove();
+			} else {
+				var newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 10);
+				var relevent = this.state.transactionsToDisplay;
+				relevent.push.apply(relevent, (0, _toConsumableArray3.default)(newTransactions));
 
-                // If all transactions are shown, remove the button
-                document.querySelector("button").remove();
-            } else {
-                this.setState({
-                    transactionsToDisplay: this.props.transactions.slice(0, this.state.num + 10),
-                    num: this.state.num + 10
-                });
-            }
-        }
-    }, {
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "transaction-container" },
-                this.state.transactionsToDisplay.map(function (t, index) {
-                    return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
-                }),
-                _react2.default.createElement(
-                    "button",
-                    { onClick: this.showMoreItems },
-                    "Show More"
-                )
-            );
-        }
-    }]);
-    return TransactionContainer;
+				this.setState({
+					transactionsToDisplay: relevent,
+					num: this.state.num + 10
+				});
+			}
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"div",
+				{ className: "transaction-container" },
+				this.state.transactionsToDisplay.map(function (t, index) {
+					return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
+				}),
+				_react2.default.createElement(
+					"button",
+					{ onClick: this.showMoreItems },
+					"Show More"
+				)
+			);
+		}
+	}]);
+	return TransactionContainer;
 }(_react.Component);
 
 exports.default = TransactionContainer;
@@ -70492,6 +70513,127 @@ function startOfMonth (dirtyDate) {
 }
 
 module.exports = startOfMonth
+
+
+/***/ }),
+/* 565 */,
+/* 566 */,
+/* 567 */,
+/* 568 */,
+/* 569 */,
+/* 570 */,
+/* 571 */,
+/* 572 */,
+/* 573 */,
+/* 574 */,
+/* 575 */,
+/* 576 */,
+/* 577 */,
+/* 578 */,
+/* 579 */,
+/* 580 */,
+/* 581 */,
+/* 582 */,
+/* 583 */,
+/* 584 */,
+/* 585 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _from = __webpack_require__(586);
+
+var _from2 = _interopRequireDefault(_from);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  } else {
+    return (0, _from2.default)(arr);
+  }
+};
+
+/***/ }),
+/* 586 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(587), __esModule: true };
+
+/***/ }),
+/* 587 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(81);
+__webpack_require__(588);
+module.exports = __webpack_require__(4).Array.from;
+
+
+/***/ }),
+/* 588 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var ctx = __webpack_require__(27);
+var $export = __webpack_require__(8);
+var toObject = __webpack_require__(57);
+var call = __webpack_require__(335);
+var isArrayIter = __webpack_require__(336);
+var toLength = __webpack_require__(87);
+var createProperty = __webpack_require__(589);
+var getIterFn = __webpack_require__(337);
+
+$export($export.S + $export.F * !__webpack_require__(340)(function (iter) { Array.from(iter); }), 'Array', {
+  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+    var O = toObject(arrayLike);
+    var C = typeof this == 'function' ? this : Array;
+    var aLen = arguments.length;
+    var mapfn = aLen > 1 ? arguments[1] : undefined;
+    var mapping = mapfn !== undefined;
+    var index = 0;
+    var iterFn = getIterFn(O);
+    var length, result, step, iterator;
+    if (mapping) mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
+    // if object isn't iterable or it's array with default iterator - use simple case
+    if (iterFn != undefined && !(C == Array && isArrayIter(iterFn))) {
+      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
+        createProperty(result, index, mapping ? call(iterator, mapfn, [step.value, index], true) : step.value);
+      }
+    } else {
+      length = toLength(O.length);
+      for (result = new C(length); length > index; index++) {
+        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
+      }
+    }
+    result.length = index;
+    return result;
+  }
+});
+
+
+/***/ }),
+/* 589 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $defineProperty = __webpack_require__(15);
+var createDesc = __webpack_require__(54);
+
+module.exports = function (object, index, value) {
+  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
+  else object[index] = value;
+};
 
 
 /***/ })

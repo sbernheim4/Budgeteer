@@ -78,13 +78,15 @@ class AccountsContainer extends Component {
 		total = helpers.numberWithCommas(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
-		this.props.accounts.forEach(account => {
-			if (account.account_id === account_id) {
-				type = account.name;
-				return;
-			}
-		});
-
+		// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
+		if (type === undefined) {
+			this.props.accounts.forEach(account => {
+				if (account.account_id === account_id) {
+					type = account.name;
+					return;
+				}
+			});
+		}
 
 		if (type === "All Categories") {
 			const now = new Date();
@@ -103,7 +105,6 @@ class AccountsContainer extends Component {
 				categoryType: type,
 				categoryTotal: total
 			});
-
 		}
 	}
 
