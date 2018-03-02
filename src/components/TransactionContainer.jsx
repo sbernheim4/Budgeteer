@@ -35,7 +35,7 @@ class TransactionContainer extends Component {
 
 			// If all transactions are shown, remove the button
 			// TODO: find a react way to do this (I think using refs)
-			document.querySelector("button").remove();
+			document.querySelector("#showMore").remove();
 		} else {
 			let newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 10);
 			let relevent = this.state.transactionsToDisplay;
@@ -52,7 +52,7 @@ class TransactionContainer extends Component {
 		return (
 			<div className="transaction-container">
 				{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} transaction={t} /> )}
-				<button onClick={this.showMoreItems}>Show More</button>
+				<button id='showMore' onClick={this.showMoreItems}>Show More</button>
 			</div>
 		);
 	}
