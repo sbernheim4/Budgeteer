@@ -12,10 +12,10 @@ class Networth extends Component {
 		}
 	}
 
-	componentWillReceiveProps() {
+	componentWillReceiveProps(nextProps) {
 		let acctTotal = 0;
 
-		Object.entries(this.props.netWorth).forEach( key => {
+		Object.entries(nextProps.netWorth).forEach( key => {
 			acctTotal += key[1]
 		});
 
