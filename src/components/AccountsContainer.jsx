@@ -91,8 +91,8 @@ class AccountsContainer extends Component {
 		if (type === "All Categories") {
 			const now = new Date();
 
-			const nowString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + now.getFullYear();
-			const prevString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
+			const nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
+			const prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
 
 			this.setState({
 				categoryTransactions: releventTransactions,

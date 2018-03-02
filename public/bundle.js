@@ -65451,8 +65451,8 @@ var AccountsContainer = function (_Component) {
 			if (type === "All Categories") {
 				var now = new Date();
 
-				var nowString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + now.getFullYear();
-				var prevString = this.state.months[now.getMonth() - 1] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
+				var nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
+				var prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
 
 				this.setState({
 					categoryTransactions: releventTransactions,
@@ -65889,16 +65889,16 @@ var TransactionContainer = function (_Component) {
 	(0, _createClass3.default)(TransactionContainer, [{
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
-			if (this.state.transactionsToDisplay.length === 0) {
-				this.setState({
-					transactionsToDisplay: nextProps.transactions.slice(0, 10)
-				});
-			}
+			this.setState({
+				transactionsToDisplay: nextProps.transactions.slice(0, 10),
+				num: 10
+			});
 		}
 	}, {
 		key: "showMoreItems",
 		value: function showMoreItems() {
 			if (this.state.num + 10 > this.props.transactions.length) {
+				// if there are fewer than 10 transactions left --> Don't want to go over limit
 				this.setState({
 					transactionsToDisplay: this.props.transactions,
 					num: this.props.transactions.length
@@ -65906,8 +65906,9 @@ var TransactionContainer = function (_Component) {
 
 				// If all transactions are shown, remove the button
 				// TODO: find a react way to do this (I think using refs)
-				document.querySelector("#showMore").remove();
+				//document.querySelector("#showMore").remove();
 			} else {
+				// if there are more than 10 transactions left --> Don't worry about going over
 				var newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 10);
 				var relevent = this.state.transactionsToDisplay;
 				relevent.push.apply(relevent, (0, _toConsumableArray3.default)(newTransactions));
@@ -65924,9 +65925,13 @@ var TransactionContainer = function (_Component) {
 			return _react2.default.createElement(
 				"div",
 				{ className: "transaction-container" },
-				this.state.transactionsToDisplay.map(function (t, index) {
-					return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
-				}),
+				_react2.default.createElement(
+					"div",
+					{ className: "transaction-container--item" },
+					this.state.transactionsToDisplay.map(function (t, index) {
+						return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
+					})
+				),
 				_react2.default.createElement(
 					"button",
 					{ id: "showMore", onClick: this.showMoreItems },
@@ -66275,7 +66280,7 @@ exports = module.exports = __webpack_require__(22)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: row;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .transaction-container button {\n    width: 120px;\n    height: 35px;\n    border-radius: 5px;\n    color: black; }\n  .transaction-container__hidden {\n    display: none; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction-container--item {\n    display: flex;\n    flex-direction: row;\n    justify-content: center;\n    flex-wrap: wrap; }\n    .transaction-container--item__hidden {\n      display: none; }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
