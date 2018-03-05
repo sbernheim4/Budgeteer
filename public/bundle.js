@@ -65378,6 +65378,12 @@ var _fontawesomeFreeSolid = __webpack_require__(558);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Font Awesome base package
+var num = document.documentElement.scrollTop + document.body.scrollTop;
+
+// Selective icons from Font Awesome
+
+var denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
+
 var AccountsContainer = function (_Component) {
 	(0, _inherits3.default)(AccountsContainer, _Component);
 
@@ -65784,9 +65790,6 @@ var AccountsContainer = function (_Component) {
 	return AccountsContainer;
 }(_react.Component);
 
-// Selective icons from Font Awesome
-
-
 exports.default = AccountsContainer;
 
 /***/ }),
@@ -65887,6 +65890,21 @@ var TransactionContainer = function (_Component) {
 	}
 
 	(0, _createClass3.default)(TransactionContainer, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var _this2 = this;
+
+			window.addEventListener("scroll", function (e) {
+				var num = document.documentElement.scrollTop + document.body.scrollTop;
+				var denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
+				var percent = num / denom;
+
+				if (percent > .0075) {
+					_this2.showMoreItems();
+				}
+			});
+		}
+	}, {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
 			this.setState({
@@ -65931,11 +65949,6 @@ var TransactionContainer = function (_Component) {
 					this.state.transactionsToDisplay.map(function (t, index) {
 						return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
 					})
-				),
-				_react2.default.createElement(
-					"button",
-					{ id: "showMore", onClick: this.showMoreItems },
-					"Show More"
 				)
 			);
 		}

@@ -18,6 +18,18 @@ class TransactionContainer extends Component {
 		this.showMoreItems = this.showMoreItems.bind(this);
 	}
 
+	componentDidMount() {
+		window.addEventListener("scroll", (e) => {
+			const num = document.documentElement.scrollTop + document.body.scrollTop;
+			const denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
+			const percent = num / denom;
+
+			if (percent > .0075) {
+				this.showMoreItems();
+			}
+		})
+	}
+
 	componentWillReceiveProps(nextProps) {
 		this.setState({
 			transactionsToDisplay: nextProps.transactions.slice(0, 10),
@@ -47,6 +59,7 @@ class TransactionContainer extends Component {
 				num: this.state.num + 10
 			});
 		}
+
 	}
 
 	render() {
@@ -55,10 +68,8 @@ class TransactionContainer extends Component {
 				<div className='transaction-container--item'>
 					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} transaction={t} /> )}
 				</div>
-
-				<button id='showMore' onClick={this.showMoreItems}>Show More</button>
 			</div>
-		);
+			);
 	}
 }
 
