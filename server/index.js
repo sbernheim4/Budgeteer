@@ -12,9 +12,9 @@ const https = require('https');
 const http = require('http');
 
 const options = {
-    key: fs.readFileSync('encryption/server.key'),
-    cert: fs.readFileSync('encryption/server.crt'),
-    ca: fs.readFileSync('encryption/server.csr')
+	key: fs.readFileSync('encryption/server.key'),
+	cert: fs.readFileSync('encryption/server.crt'),
+	ca: fs.readFileSync('encryption/server.csr')
 };
 
 /****************** DB Options ******************/
@@ -38,34 +38,37 @@ app.use("/plaid-api", require("./plaid-api.js"));
 
 app.all("*", (req, res, next) => {
 	console.log(chalk.blue(`New ${req.method} request for ${req.path} on ${new Date().toLocaleString()}`));
-    next();
+	next();
 });
 
 app.get("/*", (req, res) => {
-    res.redirect('/');
+	res.redirect('/');
 });
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+	res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 /****************** Start the DB and Server ******************/
 
 if (process.env.NODE_ENV === "development") {
-    startDb.then(() => {
-        https.createServer(options, app).listen(port);
-        http.createServer(app).listen(insecurePort);
-        console.log(chalk.green(`Listening on port ${port}`));
-    }).catch(err => {
-        console.log(err);
-    });
+	startDb.then(() => {
+		https.createServer(options, app).listen(port);
+		http.createServer(app).listen(insecurePort);
+		console.log(chalk.green(`Listening securely on port ${port}`));
+		console.log(chalk.green(`Listening insecurely on port ${insecurePort}`))
+	}).catch(err => {
+		console.log(err);
+	});
 } else if (process.env.NODE_ENV === "production") {
-    startDb.then(() => {
-        app.listen(port, () => {
-            console.log(chalk.green(`Listening on port ${port}`));
-        });
-    }).catch(err => {
-        console.log(err);
-    });
+
+	startDb.then(() => {
+		app.listen(port, () => {
+			console.log(chalk.green(`Listening on port ${port}`));
+		});
+
+	}).catch(err => {
+		console.log(err);
+	});
 }
 
