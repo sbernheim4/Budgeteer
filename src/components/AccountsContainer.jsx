@@ -25,11 +25,6 @@ import {
 	faExchangeAlt
 } from '@fortawesome/fontawesome-free-solid';
 
-
-let num = document.documentElement.scrollTop + document.body.scrollTop;
-let denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
-
-
 class AccountsContainer extends Component {
 	constructor(props) {
 		super(props)

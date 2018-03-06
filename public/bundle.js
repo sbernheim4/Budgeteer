@@ -65378,12 +65378,6 @@ var _fontawesomeFreeSolid = __webpack_require__(558);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Font Awesome base package
-var num = document.documentElement.scrollTop + document.body.scrollTop;
-
-// Selective icons from Font Awesome
-
-var denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
-
 var AccountsContainer = function (_Component) {
 	(0, _inherits3.default)(AccountsContainer, _Component);
 
@@ -65789,6 +65783,9 @@ var AccountsContainer = function (_Component) {
 	}]);
 	return AccountsContainer;
 }(_react.Component);
+
+// Selective icons from Font Awesome
+
 
 exports.default = AccountsContainer;
 
