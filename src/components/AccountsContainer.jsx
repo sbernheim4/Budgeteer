@@ -224,7 +224,7 @@ class AccountsContainer extends Component {
 		total = helpers.numberWithCommas(total);
 
 		this.setState({
-			categoryType: keyWord,
+			categoryType: helpers.toTitleCase(keyWord),
 			categoryTransactions: releventTransactions,
 			categoryTotal: total
 		});

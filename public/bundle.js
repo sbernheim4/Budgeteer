@@ -47816,7 +47816,7 @@ exports = module.exports = __webpack_require__(22)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  height: 70px;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -65626,7 +65626,7 @@ var AccountsContainer = function (_Component) {
 								total = _helpers2.default.numberWithCommas(total);
 
 								this.setState({
-									categoryType: keyWord,
+									categoryType: _helpers2.default.toTitleCase(keyWord),
 									categoryTransactions: releventTransactions,
 									categoryTotal: total
 								});
@@ -65915,7 +65915,7 @@ var TransactionContainer = function (_Component) {
 	}, {
 		key: "showMoreItems",
 		value: function showMoreItems() {
-			if (this.state.num + 10 > this.props.transactions.length) {
+			if (this.state.num + 20 > this.props.transactions.length) {
 				// if there are fewer than 10 transactions left --> Don't want to go over limit
 				this.setState({
 					transactionsToDisplay: this.props.transactions,
@@ -65927,13 +65927,13 @@ var TransactionContainer = function (_Component) {
 				//document.querySelector("#showMore").remove();
 			} else {
 				// if there are more than 10 transactions left --> Don't worry about going over
-				var newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 10);
+				var newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
 				var relevent = this.state.transactionsToDisplay;
 				relevent.push.apply(relevent, (0, _toConsumableArray3.default)(newTransactions));
 
 				this.setState({
 					transactionsToDisplay: relevent,
-					num: this.state.num + 10
+					num: this.state.num + 20
 				});
 			}
 		}
