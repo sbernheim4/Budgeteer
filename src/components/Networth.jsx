@@ -22,6 +22,16 @@ class Networth extends Component {
 		this.setState({total: acctTotal})
 	}
 
+	componentDidMount() {
+		let acctTotal = 0;
+
+		Object.entries(this.props.netWorth).forEach( key => {
+			acctTotal += key[1]
+		});
+
+		this.setState({total: acctTotal})
+	}
+
 	render () {
 		return (
 			<div className='networth'>

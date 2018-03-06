@@ -70404,6 +70404,17 @@ var Networth = function (_Component) {
 			this.setState({ total: acctTotal });
 		}
 	}, {
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var acctTotal = 0;
+
+			(0, _entries2.default)(this.props.netWorth).forEach(function (key) {
+				acctTotal += key[1];
+			});
+
+			this.setState({ total: acctTotal });
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			var _this2 = this;
