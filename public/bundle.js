@@ -65363,6 +65363,10 @@ var _TransactionContainer = __webpack_require__(543);
 
 var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
 
+var _is_before = __webpack_require__(534);
+
+var _is_before2 = _interopRequireDefault(_is_before);
+
 __webpack_require__(554);
 
 var _helpers = __webpack_require__(35);
@@ -65410,8 +65414,6 @@ var AccountsContainer = function (_Component) {
 	(0, _createClass3.default)(AccountsContainer, [{
 		key: "getAccountTransactions",
 		value: function getAccountTransactions(account_id) {
-			var allTransactions = this.props.transactions;
-
 			var releventTransactions = [];
 			var type = void 0;
 			var total = 0;
@@ -65420,10 +65422,10 @@ var AccountsContainer = function (_Component) {
 				releventTransactions = [];
 				type = "";
 			} else if (account_id === "all") {
-				releventTransactions = allTransactions;
+				releventTransactions = this.props.transactions;
 				type = "All Categories";
 			} else {
-				allTransactions.map(function (transaction) {
+				this.props.transactions.map(function (transaction) {
 					if (transaction.account_id === account_id) {
 						releventTransactions.push(transaction);
 					}
@@ -65447,6 +65449,12 @@ var AccountsContainer = function (_Component) {
 					}
 				});
 			}
+
+			releventTransactions.sort(function (a, b) {
+				var dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				var dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+				return dateOne - dateTwo;
+			});
 
 			if (type === "All Categories") {
 				var now = new Date();
@@ -65830,10 +65838,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _toConsumableArray2 = __webpack_require__(544);
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
 var _getPrototypeOf = __webpack_require__(17);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -65875,7 +65879,7 @@ var TransactionContainer = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (TransactionContainer.__proto__ || (0, _getPrototypeOf2.default)(TransactionContainer)).call(this, props));
 
 		var initialNum = _this.props.transactions.length < 10 ? _this.props.transactions.length : 10;
-		var transactions = _this.props.transactions.slice(0, 10);
+		var transactions = _this.props.transactions.slice(-10).reverse();
 
 		_this.state = {
 			num: 10,
@@ -65891,13 +65895,15 @@ var TransactionContainer = function (_Component) {
 		value: function componentDidMount() {
 			var _this2 = this;
 
-			window.addEventListener("scroll", function (e) {
-				var num = document.documentElement.scrollTop + document.body.scrollTop;
-				var denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
-				var percent = num / denom;
+			window.addEventListener("scroll", function () {
+				if (_this2.state.transactionsToDisplay.length !== _this2.props.transactions.length) {
+					var num = document.documentElement.scrollTop + document.body.scrollTop;
+					var denom = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+					var percent = num / denom * 100;
 
-				if (percent > .0075) {
-					_this2.showMoreItems();
+					if (percent > .75) {
+						_this2.showMoreItems();
+					}
 				}
 			});
 		}
@@ -65905,32 +65911,29 @@ var TransactionContainer = function (_Component) {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
 			this.setState({
-				transactionsToDisplay: nextProps.transactions.slice(0, 10),
+				transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
 				num: 10
 			});
 		}
 	}, {
 		key: "showMoreItems",
 		value: function showMoreItems() {
-			if (this.state.num + 20 > this.props.transactions.length) {
+			if (this.state.num + 30 > this.props.transactions.length) {
 				// if there are fewer than 10 transactions left --> Don't want to go over limit
 				this.setState({
-					transactionsToDisplay: this.props.transactions,
+					transactionsToDisplay: this.props.transactions.reverse(),
 					num: this.props.transactions.length
 				});
-
-				// If all transactions are shown, remove the button
-				// TODO: find a react way to do this (I think using refs)
-				//document.querySelector("#showMore").remove();
 			} else {
 				// if there are more than 10 transactions left --> Don't worry about going over
-				var newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
-				var relevent = this.state.transactionsToDisplay;
-				relevent.push.apply(relevent, (0, _toConsumableArray3.default)(newTransactions));
+				/*let newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
+    let relevent = this.state.transactionsToDisplay;
+    relevent.push(...newTransactions);*/
+				var relevent = this.props.transactions.slice(-(this.state.num + 30)).reverse();
 
 				this.setState({
 					transactionsToDisplay: relevent,
-					num: this.state.num + 20
+					num: this.state.num + 30
 				});
 			}
 		}
@@ -65956,107 +65959,11 @@ var TransactionContainer = function (_Component) {
 exports.default = TransactionContainer;
 
 /***/ }),
-/* 544 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-var _from = __webpack_require__(545);
-
-var _from2 = _interopRequireDefault(_from);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
-  } else {
-    return (0, _from2.default)(arr);
-  }
-};
-
-/***/ }),
-/* 545 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = { "default": __webpack_require__(546), __esModule: true };
-
-/***/ }),
-/* 546 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(55);
-__webpack_require__(547);
-module.exports = __webpack_require__(4).Array.from;
-
-
-/***/ }),
-/* 547 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var ctx = __webpack_require__(24);
-var $export = __webpack_require__(7);
-var toObject = __webpack_require__(46);
-var call = __webpack_require__(127);
-var isArrayIter = __webpack_require__(128);
-var toLength = __webpack_require__(58);
-var createProperty = __webpack_require__(548);
-var getIterFn = __webpack_require__(129);
-
-$export($export.S + $export.F * !__webpack_require__(135)(function (iter) { Array.from(iter); }), 'Array', {
-  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
-  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
-    var O = toObject(arrayLike);
-    var C = typeof this == 'function' ? this : Array;
-    var aLen = arguments.length;
-    var mapfn = aLen > 1 ? arguments[1] : undefined;
-    var mapping = mapfn !== undefined;
-    var index = 0;
-    var iterFn = getIterFn(O);
-    var length, result, step, iterator;
-    if (mapping) mapfn = ctx(mapfn, aLen > 2 ? arguments[2] : undefined, 2);
-    // if object isn't iterable or it's array with default iterator - use simple case
-    if (iterFn != undefined && !(C == Array && isArrayIter(iterFn))) {
-      for (iterator = iterFn.call(O), result = new C(); !(step = iterator.next()).done; index++) {
-        createProperty(result, index, mapping ? call(iterator, mapfn, [step.value, index], true) : step.value);
-      }
-    } else {
-      length = toLength(O.length);
-      for (result = new C(length); length > index; index++) {
-        createProperty(result, index, mapping ? mapfn(O[index], index) : O[index]);
-      }
-    }
-    result.length = index;
-    return result;
-  }
-});
-
-
-/***/ }),
-/* 548 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $defineProperty = __webpack_require__(13);
-var createDesc = __webpack_require__(41);
-
-module.exports = function (object, index, value) {
-  if (index in object) $defineProperty.f(object, index, createDesc(0, value));
-  else object[index] = value;
-};
-
-
-/***/ }),
+/* 544 */,
+/* 545 */,
+/* 546 */,
+/* 547 */,
+/* 548 */,
 /* 549 */
 /***/ (function(module, exports, __webpack_require__) {
 

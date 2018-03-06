@@ -8,7 +8,7 @@ class TransactionContainer extends Component {
 		super(props)
 
 		let initialNum = this.props.transactions.length < 10 ? this.props.transactions.length : 10
-		let transactions = this.props.transactions.slice(0, 10);
+		let transactions = this.props.transactions.slice(-10).reverse();
 
 		this.state = {
 			num: 10,
@@ -19,47 +19,45 @@ class TransactionContainer extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener("scroll", (e) => {
-			const num = document.documentElement.scrollTop + document.body.scrollTop;
-			const denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
-			const percent = num / denom;
+		window.addEventListener("scroll", () => {
+			if (this.state.transactionsToDisplay.length !== this.props.transactions.length) {
+				const num = document.documentElement.scrollTop + document.body.scrollTop;
+				const denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight)
+				const percent = num / denom * 100;
 
-			if (percent > .0075) {
-				this.showMoreItems();
+				if (percent > .75 ) {
+					this.showMoreItems();
+				}
 			}
-		})
+		});
 	}
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			transactionsToDisplay: nextProps.transactions.slice(0, 10),
+			transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
 			num: 10
 		});
 	}
 
 	showMoreItems() {
-		if (this.state.num + 20 > this.props.transactions.length) {
+		if (this.state.num + 30 > this.props.transactions.length) {
 			// if there are fewer than 10 transactions left --> Don't want to go over limit
 			this.setState({
-				transactionsToDisplay: this.props.transactions,
+				transactionsToDisplay: this.props.transactions.reverse(),
 				num: this.props.transactions.length
-			})
-
-			// If all transactions are shown, remove the button
-			// TODO: find a react way to do this (I think using refs)
-			//document.querySelector("#showMore").remove();
+			});
 		} else {
 			// if there are more than 10 transactions left --> Don't worry about going over
-			let newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
+			/*let newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
 			let relevent = this.state.transactionsToDisplay;
-			relevent.push(...newTransactions);
+			relevent.push(...newTransactions);*/
+			let relevent = this.props.transactions.slice(-(this.state.num + 30)).reverse();
 
 			this.setState({
 				transactionsToDisplay: relevent,
-				num: this.state.num + 20
+				num: this.state.num + 30
 			});
 		}
-
 	}
 
 	render() {

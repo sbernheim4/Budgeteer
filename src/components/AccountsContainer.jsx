@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import TransactionContainer from "./TransactionContainer.jsx";
+import isBefore from 'date-fns/is_before';
 
 import "../scss/accountsContainer.scss"
 
@@ -50,8 +51,6 @@ class AccountsContainer extends Component {
 	}
 
 	getAccountTransactions(account_id) {
-		let allTransactions = this.props.transactions;
-
 		let releventTransactions = [];
 		let type;
 		let total = 0;
@@ -60,10 +59,10 @@ class AccountsContainer extends Component {
 			releventTransactions = [];
 			type = "";
 		} else if (account_id === "all") {
-			releventTransactions = allTransactions;
+			releventTransactions = this.props.transactions;
 			type = "All Categories";
 		} else {
-			allTransactions.map( (transaction) => {
+			this.props.transactions.map( (transaction) => {
 				if (transaction.account_id === account_id) {
 					releventTransactions.push(transaction);
 				}
@@ -87,6 +86,12 @@ class AccountsContainer extends Component {
 				}
 			});
 		}
+
+		releventTransactions.sort((a, b) => {
+			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			return dateOne - dateTwo;
+		});
 
 		if (type === "All Categories") {
 			const now = new Date();
