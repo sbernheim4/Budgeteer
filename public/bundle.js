@@ -65897,6 +65897,7 @@ var TransactionContainer = function (_Component) {
 
 			window.addEventListener("scroll", function () {
 				if (_this2.state.transactionsToDisplay.length !== _this2.props.transactions.length) {
+					console.log("Scrolling... ");
 					var num = document.documentElement.scrollTop + document.body.scrollTop;
 					var denom = document.documentElement.scrollHeight - document.documentElement.clientHeight;
 					var percent = num / denom * 100;
@@ -65910,6 +65911,7 @@ var TransactionContainer = function (_Component) {
 	}, {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
+			console.log("getting new props");
 			this.setState({
 				transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
 				num: 10
@@ -65919,16 +65921,13 @@ var TransactionContainer = function (_Component) {
 		key: "showMoreItems",
 		value: function showMoreItems() {
 			if (this.state.num + 30 > this.props.transactions.length) {
-				// if there are fewer than 10 transactions left --> Don't want to go over limit
+				// if there are fewer than n transactions left --> Don't want to go over limit
 				this.setState({
 					transactionsToDisplay: this.props.transactions.reverse(),
 					num: this.props.transactions.length
 				});
 			} else {
-				// if there are more than 10 transactions left --> Don't worry about going over
-				/*let newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
-    let relevent = this.state.transactionsToDisplay;
-    relevent.push(...newTransactions);*/
+				// if there are n or more transactions left
 				var relevent = this.props.transactions.slice(-(this.state.num + 30)).reverse();
 
 				this.setState({

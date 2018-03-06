@@ -21,6 +21,7 @@ class TransactionContainer extends Component {
 	componentDidMount() {
 		window.addEventListener("scroll", () => {
 			if (this.state.transactionsToDisplay.length !== this.props.transactions.length) {
+				console.log("Scrolling... ");
 				const num = document.documentElement.scrollTop + document.body.scrollTop;
 				const denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight)
 				const percent = num / denom * 100;
@@ -33,6 +34,7 @@ class TransactionContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		console.log("getting new props");
 		this.setState({
 			transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
 			num: 10
@@ -41,16 +43,13 @@ class TransactionContainer extends Component {
 
 	showMoreItems() {
 		if (this.state.num + 30 > this.props.transactions.length) {
-			// if there are fewer than 10 transactions left --> Don't want to go over limit
+			// if there are fewer than n transactions left --> Don't want to go over limit
 			this.setState({
 				transactionsToDisplay: this.props.transactions.reverse(),
 				num: this.props.transactions.length
 			});
 		} else {
-			// if there are more than 10 transactions left --> Don't worry about going over
-			/*let newTransactions = this.props.transactions.slice(this.state.num, this.state.num + 20);
-			let relevent = this.state.transactionsToDisplay;
-			relevent.push(...newTransactions);*/
+			// if there are n or more transactions left
 			let relevent = this.props.transactions.slice(-(this.state.num + 30)).reverse();
 
 			this.setState({
