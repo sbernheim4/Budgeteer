@@ -8,7 +8,8 @@ class Networth extends Component {
 		super(props);
 
 		this.state = {
-			total: 0
+			total: 0,
+			recurringPayments: new Set()
 		}
 	}
 
@@ -36,7 +37,6 @@ class Networth extends Component {
 		return (
 			<div className='networth'>
 				<table>
-
 					<thead>
 						<tr>
 							<th>Account Name</th>
@@ -58,6 +58,10 @@ class Networth extends Component {
 						</tr>
 					</tbody>
 				</table>
+
+				<div>
+					<h2>Recurring Payments</h2>
+				</div>
 			</div>
 		)
 	}

@@ -5795,26 +5795,14 @@ var isOldIE = memoize(function () {
 	return window && document && document.all && !window.atob;
 });
 
-var getTarget = function (target) {
-  return document.querySelector(target);
-};
-
 var getElement = (function (fn) {
 	var memo = {};
 
-	return function(target) {
-                // If passing function in options, then use it for resolve "head" element.
-                // Useful for Shadow Root style i.e
-                // {
-                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
-                // }
-                if (typeof target === 'function') {
-                        return target();
-                }
-                if (typeof memo[target] === "undefined") {
-			var styleTarget = getTarget.call(this, target);
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			var styleTarget = fn.call(this, selector);
 			// Special case to return head of iframe instead of iframe itself
-			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+			if (styleTarget instanceof window.HTMLIFrameElement) {
 				try {
 					// This will throw an exception if access to iframe is blocked
 					// due to cross-origin restrictions
@@ -5823,11 +5811,13 @@ var getElement = (function (fn) {
 					styleTarget = null;
 				}
 			}
-			memo[target] = styleTarget;
+			memo[selector] = styleTarget;
 		}
-		return memo[target]
+		return memo[selector]
 	};
-})();
+})(function (target) {
+	return document.querySelector(target)
+});
 
 var singleton = null;
 var	singletonCounter = 0;
@@ -5849,7 +5839,7 @@ module.exports = function(list, options) {
 	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
 
 	// By default, add <style> tags to the <head> element
-        if (!options.insertInto) options.insertInto = "head";
+	if (!options.insertInto) options.insertInto = "head";
 
 	// By default, add <style> tags to the bottom of the target
 	if (!options.insertAt) options.insertAt = "bottom";
@@ -46023,7 +46013,7 @@ module.exports = function (css) {
 			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
 
 		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
 		  return fullMatch;
 		}
 
@@ -46531,7 +46521,8 @@ var App = function (_Component) {
 					} }),
 				_react2.default.createElement(_reactRouterDom.Route, { path: '/networth', render: function render() {
 						return _react2.default.createElement(_Networth2.default, {
-							netWorth: _this3.state.netWorth
+							netWorth: _this3.state.netWorth,
+							transactions: _this3.state.transactions
 						});
 					} })
 			);
@@ -71683,6 +71674,10 @@ var _entries = __webpack_require__(577);
 
 var _entries2 = _interopRequireDefault(_entries);
 
+var _set = __webpack_require__(353);
+
+var _set2 = _interopRequireDefault(_set);
+
 var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -71724,7 +71719,8 @@ var Networth = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Networth.__proto__ || (0, _getPrototypeOf2.default)(Networth)).call(this, props));
 
 		_this.state = {
-			total: 0
+			total: 0,
+			recurringPayments: new _set2.default()
 		};
 		return _this;
 	}
@@ -71815,6 +71811,15 @@ var Networth = function (_Component) {
 								this.state.total
 							)
 						)
+					)
+				),
+				_react2.default.createElement(
+					"div",
+					null,
+					_react2.default.createElement(
+						"h2",
+						null,
+						"Recurring Payments"
 					)
 				)
 			);

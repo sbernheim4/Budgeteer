@@ -236,6 +236,7 @@ class App extends Component {
 				<Route path='/networth' render={() => (
 					<Networth
 						netWorth={this.state.netWorth}
+						transactions={this.state.transactions}
 					/>
 				)}/>
 
