@@ -9,7 +9,7 @@ class Networth extends Component {
 
 		this.state = {
 			total: 0,
-			recurringPayments: new Set()
+			recurringPayments: []
 		}
 	}
 
@@ -21,6 +21,32 @@ class Networth extends Component {
 		});
 
 		this.setState({total: acctTotal})
+
+
+		let duplicates = new Set();
+		nextProps.transactions.forEach(val => {
+			let numOccurances = 0;
+
+			nextProps.transactions.forEach(secondVal => {
+				if (JSON.stringify(val) === JSON.stringify(secondVal)) {
+					numOccurances += 1;
+				}
+			});
+
+			if (numOccurances > 1) {
+				duplicates.add(JSON.stringify(val));
+			}
+		});
+
+		let recurringPayments = [];
+		duplicates.forEach(payment => {
+			recurringPayments.push(JSON.parse(payment));
+		});
+
+		this.setState({
+			recurringPayments: recurringPayments
+		});
+
 	}
 
 	componentDidMount() {
@@ -34,6 +60,13 @@ class Networth extends Component {
 	}
 
 	render () {
+		let recurringPayments;
+		if (this.state.recurringPayments.length === 0) {
+			recurringPayments = <p>No Recurring Payments Found</p>
+		} else {
+			recurringPayments = <ul> this.state.recurringPayments.map(val => <li>val.name</li>) </ul>
+		}
+
 		return (
 			<div className='networth'>
 				<table>
@@ -59,11 +92,13 @@ class Networth extends Component {
 					</tbody>
 				</table>
 
-				<div>
+				<div className='networth--recurring-payments'>
 					<h2>Recurring Payments</h2>
+					{recurringPayments}
 				</div>
+
 			</div>
-		)
+			)
 	}
 }
 
