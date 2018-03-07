@@ -33,6 +33,11 @@ class Networth extends Component {
 				}
 			});
 
+			// TODO: Change the 1 to the minimum number of times you want the number of
+			// occurances to be before its considered a recurring payment.
+			//
+			// Should also work to check that the payment has been made in the past two
+			// most recent months (NOT INCLUDING THE CURRENT MONTH)
 			if (numOccurances > 1) {
 				duplicates.add(JSON.stringify(val));
 			}
