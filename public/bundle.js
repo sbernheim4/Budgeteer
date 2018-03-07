@@ -60,18 +60,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 283);
+/******/ 	return __webpack_require__(__webpack_require__.s = 289);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {//! moment.js
-//! version : 2.18.1
-//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
-//! license : MIT
-//! momentjs.com
+/* WEBPACK VAR INJECTION */(function(module) {var require;//! moment.js
 
 ;(function (global, factory) {
      true ? module.exports = factory() :
@@ -102,12 +98,17 @@ function isObject(input) {
 }
 
 function isObjectEmpty(obj) {
-    var k;
-    for (k in obj) {
-        // even if its not own property I'd still call it non-empty
-        return false;
+    if (Object.getOwnPropertyNames) {
+        return (Object.getOwnPropertyNames(obj).length === 0);
+    } else {
+        var k;
+        for (k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
 }
 
 function isUndefined(input) {
@@ -201,12 +202,10 @@ if (Array.prototype.some) {
     };
 }
 
-var some$1 = some;
-
 function isValid(m) {
     if (m._isValid == null) {
         var flags = getParsingFlags(m);
-        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
+        var parsedParts = some.call(flags.parsedDateParts, function (i) {
             return i != null;
         });
         var isNowValid = !isNaN(m._d.getTime()) &&
@@ -214,6 +213,7 @@ function isValid(m) {
             !flags.empty &&
             !flags.invalidMonth &&
             !flags.invalidWeekday &&
+            !flags.weekdayMismatch &&
             !flags.nullInput &&
             !flags.invalidFormat &&
             !flags.userInvalidated &&
@@ -479,8 +479,6 @@ if (Object.keys) {
     };
 }
 
-var keys$1 = keys;
-
 var defaultCalendar = {
     sameDay : '[Today at] LT',
     nextDay : '[Tomorrow at] LT',
@@ -606,56 +604,6 @@ function getPrioritizedUnits(unitsObj) {
     return units;
 }
 
-function makeGetSet (unit, keepTime) {
-    return function (value) {
-        if (value != null) {
-            set$1(this, unit, value);
-            hooks.updateOffset(this, keepTime);
-            return this;
-        } else {
-            return get(this, unit);
-        }
-    };
-}
-
-function get (mom, unit) {
-    return mom.isValid() ?
-        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
-}
-
-function set$1 (mom, unit, value) {
-    if (mom.isValid()) {
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
-    }
-}
-
-// MOMENTS
-
-function stringGet (units) {
-    units = normalizeUnits(units);
-    if (isFunction(this[units])) {
-        return this[units]();
-    }
-    return this;
-}
-
-
-function stringSet (units, value) {
-    if (typeof units === 'object') {
-        units = normalizeObjectUnits(units);
-        var prioritized = getPrioritizedUnits(units);
-        for (var i = 0; i < prioritized.length; i++) {
-            this[prioritized[i].unit](units[prioritized[i].unit]);
-        }
-    } else {
-        units = normalizeUnits(units);
-        if (isFunction(this[units])) {
-            return this[units](value);
-        }
-    }
-    return this;
-}
-
 function zeroFill(number, targetLength, forceSign) {
     var absNumber = '' + Math.abs(number),
         zerosToFill = targetLength - absNumber.length,
@@ -776,8 +724,7 @@ var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 
 // any word (or two) characters or numbers including two/three word month in arabic.
 // includes scottish gaelic two word and hyphenated months
-var matchWord = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i;
-
+var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
 
 var regexes = {};
 
@@ -846,6 +793,131 @@ var MILLISECOND = 6;
 var WEEK = 7;
 var WEEKDAY = 8;
 
+// FORMATTING
+
+addFormatToken('Y', 0, 0, function () {
+    var y = this.year();
+    return y <= 9999 ? '' + y : '+' + y;
+});
+
+addFormatToken(0, ['YY', 2], 0, function () {
+    return this.year() % 100;
+});
+
+addFormatToken(0, ['YYYY',   4],       0, 'year');
+addFormatToken(0, ['YYYYY',  5],       0, 'year');
+addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
+
+// ALIASES
+
+addUnitAlias('year', 'y');
+
+// PRIORITIES
+
+addUnitPriority('year', 1);
+
+// PARSING
+
+addRegexToken('Y',      matchSigned);
+addRegexToken('YY',     match1to2, match2);
+addRegexToken('YYYY',   match1to4, match4);
+addRegexToken('YYYYY',  match1to6, match6);
+addRegexToken('YYYYYY', match1to6, match6);
+
+addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+addParseToken('YYYY', function (input, array) {
+    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
+});
+addParseToken('YY', function (input, array) {
+    array[YEAR] = hooks.parseTwoDigitYear(input);
+});
+addParseToken('Y', function (input, array) {
+    array[YEAR] = parseInt(input, 10);
+});
+
+// HELPERS
+
+function daysInYear(year) {
+    return isLeapYear(year) ? 366 : 365;
+}
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// HOOKS
+
+hooks.parseTwoDigitYear = function (input) {
+    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
+};
+
+// MOMENTS
+
+var getSetYear = makeGetSet('FullYear', true);
+
+function getIsLeapYear () {
+    return isLeapYear(this.year());
+}
+
+function makeGetSet (unit, keepTime) {
+    return function (value) {
+        if (value != null) {
+            set$1(this, unit, value);
+            hooks.updateOffset(this, keepTime);
+            return this;
+        } else {
+            return get(this, unit);
+        }
+    };
+}
+
+function get (mom, unit) {
+    return mom.isValid() ?
+        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
+}
+
+function set$1 (mom, unit, value) {
+    if (mom.isValid() && !isNaN(value)) {
+        if (unit === 'FullYear' && isLeapYear(mom.year()) && mom.month() === 1 && mom.date() === 29) {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value, mom.month(), daysInMonth(value, mom.month()));
+        }
+        else {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        }
+    }
+}
+
+// MOMENTS
+
+function stringGet (units) {
+    units = normalizeUnits(units);
+    if (isFunction(this[units])) {
+        return this[units]();
+    }
+    return this;
+}
+
+
+function stringSet (units, value) {
+    if (typeof units === 'object') {
+        units = normalizeObjectUnits(units);
+        var prioritized = getPrioritizedUnits(units);
+        for (var i = 0; i < prioritized.length; i++) {
+            this[prioritized[i].unit](units[prioritized[i].unit]);
+        }
+    } else {
+        units = normalizeUnits(units);
+        if (isFunction(this[units])) {
+            return this[units](value);
+        }
+    }
+    return this;
+}
+
+function mod(n, x) {
+    return ((n % x) + x) % x;
+}
+
 var indexOf;
 
 if (Array.prototype.indexOf) {
@@ -863,10 +935,13 @@ if (Array.prototype.indexOf) {
     };
 }
 
-var indexOf$1 = indexOf;
-
 function daysInMonth(year, month) {
-    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    if (isNaN(year) || isNaN(month)) {
+        return NaN;
+    }
+    var modMonth = mod(month, 12);
+    year += (month - modMonth) / 12;
+    return modMonth === 1 ? (isLeapYear(year) ? 29 : 28) : (31 - modMonth % 7 % 2);
 }
 
 // FORMATTING
@@ -955,26 +1030,26 @@ function handleStrictParse(monthName, format, strict) {
 
     if (strict) {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -1131,72 +1206,6 @@ function computeMonthsParse () {
     this._monthsShortRegex = this._monthsRegex;
     this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
     this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-addFormatToken('Y', 0, 0, function () {
-    var y = this.year();
-    return y <= 9999 ? '' + y : '+' + y;
-});
-
-addFormatToken(0, ['YY', 2], 0, function () {
-    return this.year() % 100;
-});
-
-addFormatToken(0, ['YYYY',   4],       0, 'year');
-addFormatToken(0, ['YYYYY',  5],       0, 'year');
-addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-
-// ALIASES
-
-addUnitAlias('year', 'y');
-
-// PRIORITIES
-
-addUnitPriority('year', 1);
-
-// PARSING
-
-addRegexToken('Y',      matchSigned);
-addRegexToken('YY',     match1to2, match2);
-addRegexToken('YYYY',   match1to4, match4);
-addRegexToken('YYYYY',  match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array) {
-    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
-});
-addParseToken('YY', function (input, array) {
-    array[YEAR] = hooks.parseTwoDigitYear(input);
-});
-addParseToken('Y', function (input, array) {
-    array[YEAR] = parseInt(input, 10);
-});
-
-// HELPERS
-
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
-}
-
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// HOOKS
-
-hooks.parseTwoDigitYear = function (input) {
-    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
-};
-
-// MOMENTS
-
-var getSetYear = makeGetSet('FullYear', true);
-
-function getIsLeapYear () {
-    return isLeapYear(this.year());
 }
 
 function createDate (y, m, d, h, M, s, ms) {
@@ -1466,48 +1475,48 @@ function handleStrictParse$1(weekdayName, format, strict) {
 
     if (strict) {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -1829,10 +1838,6 @@ function localeMeridiem (hours, minutes, isLower) {
 // this rule.
 var getSetHour = makeGetSet('Hours', true);
 
-// months
-// week
-// weekdays
-// meridiem
 var baseConfig = {
     calendar: defaultCalendar,
     longDateFormat: defaultLongDateFormat,
@@ -1886,7 +1891,7 @@ function chooseLocale(names) {
         }
         i++;
     }
-    return null;
+    return globalLocale;
 }
 
 function loadLocale(name) {
@@ -1896,11 +1901,10 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(416)("./" + name);
-            // because defineLocale currently also sets the global locale, we
-            // want to undo that for lazy loaded locales
+            var aliasedRequire = require;
+            __webpack_require__(424)("./" + name);
             getSetGlobalLocale(oldLocale);
-        } catch (e) { }
+        } catch (e) {}
     }
     return locales[name];
 }
@@ -1922,6 +1926,12 @@ function getSetGlobalLocale (key, values) {
             // moment.duration._locale = moment._locale = data;
             globalLocale = data;
         }
+        else {
+            if ((typeof console !==  'undefined') && console.warn) {
+                //warn user if arguments are passed but the locale could not be set
+                console.warn('Locale ' + key +  ' not found. Did you forget to load it?');
+            }
+        }
     }
 
     return globalLocale._abbr;
@@ -1929,7 +1939,7 @@ function getSetGlobalLocale (key, values) {
 
 function defineLocale (name, config) {
     if (config !== null) {
-        var parentConfig = baseConfig;
+        var locale, parentConfig = baseConfig;
         config.abbr = name;
         if (locales[name] != null) {
             deprecateSimple('defineLocaleOverride',
@@ -1942,14 +1952,19 @@ function defineLocale (name, config) {
             if (locales[config.parentLocale] != null) {
                 parentConfig = locales[config.parentLocale]._config;
             } else {
-                if (!localeFamilies[config.parentLocale]) {
-                    localeFamilies[config.parentLocale] = [];
+                locale = loadLocale(config.parentLocale);
+                if (locale != null) {
+                    parentConfig = locale._config;
+                } else {
+                    if (!localeFamilies[config.parentLocale]) {
+                        localeFamilies[config.parentLocale] = [];
+                    }
+                    localeFamilies[config.parentLocale].push({
+                        name: name,
+                        config: config
+                    });
+                    return null;
                 }
-                localeFamilies[config.parentLocale].push({
-                    name: name,
-                    config: config
-                });
-                return null;
             }
         }
         locales[name] = new Locale(mergeConfigs(parentConfig, config));
@@ -1976,10 +1991,11 @@ function defineLocale (name, config) {
 
 function updateLocale(name, config) {
     if (config != null) {
-        var locale, parentConfig = baseConfig;
+        var locale, tmpLocale, parentConfig = baseConfig;
         // MERGE
-        if (locales[name] != null) {
-            parentConfig = locales[name]._config;
+        tmpLocale = loadLocale(name);
+        if (tmpLocale != null) {
+            parentConfig = tmpLocale._config;
         }
         config = mergeConfigs(parentConfig, config);
         locale = new Locale(config);
@@ -2026,7 +2042,7 @@ function getLocale (key) {
 }
 
 function listLocales() {
-    return keys$1(locales);
+    return keys(locales);
 }
 
 function checkOverflow (m) {
@@ -2057,6 +2073,156 @@ function checkOverflow (m) {
     }
 
     return m;
+}
+
+// Pick the first defined of two or three arguments.
+function defaults(a, b, c) {
+    if (a != null) {
+        return a;
+    }
+    if (b != null) {
+        return b;
+    }
+    return c;
+}
+
+function currentDateArray(config) {
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
+    if (config._useUTC) {
+        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
+    }
+    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
+}
+
+// convert an array to a date.
+// the array should mirror the parameters below
+// note: all values past the year are optional and will default to the lowest possible value.
+// [year, month, day , hour, minute, second, millisecond]
+function configFromArray (config) {
+    var i, date, input = [], currentDate, expectedWeekday, yearToUse;
+
+    if (config._d) {
+        return;
+    }
+
+    currentDate = currentDateArray(config);
+
+    //compute day of the year from weeks and weekdays
+    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
+        dayOfYearFromWeekInfo(config);
+    }
+
+    //if the day of the year is set, figure out what it is
+    if (config._dayOfYear != null) {
+        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
+
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
+            getParsingFlags(config)._overflowDayOfYear = true;
+        }
+
+        date = createUTCDate(yearToUse, 0, config._dayOfYear);
+        config._a[MONTH] = date.getUTCMonth();
+        config._a[DATE] = date.getUTCDate();
+    }
+
+    // Default to current date.
+    // * if no year, month, day of month are given, default to today
+    // * if day of month is given, default month and year
+    // * if month is given, default only year
+    // * if year is given, don't default anything
+    for (i = 0; i < 3 && config._a[i] == null; ++i) {
+        config._a[i] = input[i] = currentDate[i];
+    }
+
+    // Zero out whatever was not defaulted, including time
+    for (; i < 7; i++) {
+        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
+    }
+
+    // Check for 24:00:00.000
+    if (config._a[HOUR] === 24 &&
+            config._a[MINUTE] === 0 &&
+            config._a[SECOND] === 0 &&
+            config._a[MILLISECOND] === 0) {
+        config._nextDay = true;
+        config._a[HOUR] = 0;
+    }
+
+    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    expectedWeekday = config._useUTC ? config._d.getUTCDay() : config._d.getDay();
+
+    // Apply timezone offset from input. The actual utcOffset can be changed
+    // with parseZone.
+    if (config._tzm != null) {
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+    }
+
+    if (config._nextDay) {
+        config._a[HOUR] = 24;
+    }
+
+    // check for mismatching day of week
+    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== expectedWeekday) {
+        getParsingFlags(config).weekdayMismatch = true;
+    }
+}
+
+function dayOfYearFromWeekInfo(config) {
+    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
+
+    w = config._w;
+    if (w.GG != null || w.W != null || w.E != null) {
+        dow = 1;
+        doy = 4;
+
+        // TODO: We need to take the current isoWeekYear, but that depends on
+        // how we interpret now (local, utc, fixed offset). So create
+        // a now version of current config (take local/utc/offset flags, and
+        // create now).
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
+        week = defaults(w.W, 1);
+        weekday = defaults(w.E, 1);
+        if (weekday < 1 || weekday > 7) {
+            weekdayOverflow = true;
+        }
+    } else {
+        dow = config._locale._week.dow;
+        doy = config._locale._week.doy;
+
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
+
+        if (w.d != null) {
+            // weekday -- low day numbers are considered next week
+            weekday = w.d;
+            if (weekday < 0 || weekday > 6) {
+                weekdayOverflow = true;
+            }
+        } else if (w.e != null) {
+            // local weekday -- counting starts from begining of week
+            weekday = w.e + dow;
+            if (w.e < 0 || w.e > 6) {
+                weekdayOverflow = true;
+            }
+        } else {
+            // default to begining of week
+            weekday = dow;
+        }
+    }
+    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+        getParsingFlags(config)._overflowWeeks = true;
+    } else if (weekdayOverflow != null) {
+        getParsingFlags(config)._overflowWeekday = true;
+    } else {
+        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+        config._a[YEAR] = temp.year;
+        config._dayOfYear = temp.dayOfYear;
+    }
 }
 
 // iso 8601 regex
@@ -2150,70 +2316,94 @@ function configFromISO(config) {
 }
 
 // RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+var rfc2822 = /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/;
+
+function extractFromRFC2822Strings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr) {
+    var result = [
+        untruncateYear(yearStr),
+        defaultLocaleMonthsShort.indexOf(monthStr),
+        parseInt(dayStr, 10),
+        parseInt(hourStr, 10),
+        parseInt(minuteStr, 10)
+    ];
+
+    if (secondStr) {
+        result.push(parseInt(secondStr, 10));
+    }
+
+    return result;
+}
+
+function untruncateYear(yearStr) {
+    var year = parseInt(yearStr, 10);
+    if (year <= 49) {
+        return 2000 + year;
+    } else if (year <= 999) {
+        return 1900 + year;
+    }
+    return year;
+}
+
+function preprocessRFC2822(s) {
+    // Remove comments and folding whitespace and replace multiple-spaces with a single space
+    return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+}
+
+function checkWeekday(weekdayStr, parsedInput, config) {
+    if (weekdayStr) {
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        var weekdayProvided = defaultLocaleWeekdaysShort.indexOf(weekdayStr),
+            weekdayActual = new Date(parsedInput[0], parsedInput[1], parsedInput[2]).getDay();
+        if (weekdayProvided !== weekdayActual) {
+            getParsingFlags(config).weekdayMismatch = true;
+            config._isValid = false;
+            return false;
+        }
+    }
+    return true;
+}
+
+var obsOffsets = {
+    UT: 0,
+    GMT: 0,
+    EDT: -4 * 60,
+    EST: -5 * 60,
+    CDT: -5 * 60,
+    CST: -6 * 60,
+    MDT: -6 * 60,
+    MST: -7 * 60,
+    PDT: -7 * 60,
+    PST: -8 * 60
+};
+
+function calculateOffset(obsOffset, militaryOffset, numOffset) {
+    if (obsOffset) {
+        return obsOffsets[obsOffset];
+    } else if (militaryOffset) {
+        // the only allowed military tz is Z
+        return 0;
+    } else {
+        var hm = parseInt(numOffset, 10);
+        var m = hm % 100, h = (hm - m) / 100;
+        return h * 60 + m;
+    }
+}
 
 // date and time from ref 2822 format
 function configFromRFC2822(config) {
-    var string, match, dayFormat,
-        dateFormat, timeFormat, tzFormat;
-    var timezones = {
-        ' GMT': ' +0000',
-        ' EDT': ' -0400',
-        ' EST': ' -0500',
-        ' CDT': ' -0500',
-        ' CST': ' -0600',
-        ' MDT': ' -0600',
-        ' MST': ' -0700',
-        ' PDT': ' -0700',
-        ' PST': ' -0800'
-    };
-    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
-    var timezone, timezoneIndex;
-
-    string = config._i
-        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
-        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
-        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
-    match = basicRfcRegex.exec(string);
-
+    var match = rfc2822.exec(preprocessRFC2822(config._i));
     if (match) {
-        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
-        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
-        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
-
-        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
-        if (match[1]) { // day of week given
-            var momentDate = new Date(match[2]);
-            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
-
-            if (match[1].substr(0,3) !== momentDay) {
-                getParsingFlags(config).weekdayMismatch = true;
-                config._isValid = false;
-                return;
-            }
+        var parsedArray = extractFromRFC2822Strings(match[4], match[3], match[2], match[5], match[6], match[7]);
+        if (!checkWeekday(match[1], parsedArray, config)) {
+            return;
         }
 
-        switch (match[5].length) {
-            case 2: // military
-                if (timezoneIndex === 0) {
-                    timezone = ' +0000';
-                } else {
-                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
-                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
-                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
-                }
-                break;
-            case 4: // Zone
-                timezone = timezones[match[5]];
-                break;
-            default: // UT or +/-9999
-                timezone = timezones[' GMT'];
-        }
-        match[5] = timezone;
-        config._i = match.splice(1).join('');
-        tzFormat = ' ZZ';
-        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
-        configFromStringAndFormat(config);
+        config._a = parsedArray;
+        config._tzm = calculateOffset(match[8], match[9], match[10]);
+
+        config._d = createUTCDate.apply(null, config._a);
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+
         getParsingFlags(config).rfc2822 = true;
     } else {
         config._isValid = false;
@@ -2256,149 +2446,6 @@ hooks.createFromInputFallback = deprecate(
         config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
     }
 );
-
-// Pick the first defined of two or three arguments.
-function defaults(a, b, c) {
-    if (a != null) {
-        return a;
-    }
-    if (b != null) {
-        return b;
-    }
-    return c;
-}
-
-function currentDateArray(config) {
-    // hooks is actually the exported moment object
-    var nowValue = new Date(hooks.now());
-    if (config._useUTC) {
-        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
-    }
-    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
-}
-
-// convert an array to a date.
-// the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
-// [year, month, day , hour, minute, second, millisecond]
-function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
-
-    if (config._d) {
-        return;
-    }
-
-    currentDate = currentDateArray(config);
-
-    //compute day of the year from weeks and weekdays
-    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-        dayOfYearFromWeekInfo(config);
-    }
-
-    //if the day of the year is set, figure out what it is
-    if (config._dayOfYear != null) {
-        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-
-        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
-            getParsingFlags(config)._overflowDayOfYear = true;
-        }
-
-        date = createUTCDate(yearToUse, 0, config._dayOfYear);
-        config._a[MONTH] = date.getUTCMonth();
-        config._a[DATE] = date.getUTCDate();
-    }
-
-    // Default to current date.
-    // * if no year, month, day of month are given, default to today
-    // * if day of month is given, default month and year
-    // * if month is given, default only year
-    // * if year is given, don't default anything
-    for (i = 0; i < 3 && config._a[i] == null; ++i) {
-        config._a[i] = input[i] = currentDate[i];
-    }
-
-    // Zero out whatever was not defaulted, including time
-    for (; i < 7; i++) {
-        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
-    }
-
-    // Check for 24:00:00.000
-    if (config._a[HOUR] === 24 &&
-            config._a[MINUTE] === 0 &&
-            config._a[SECOND] === 0 &&
-            config._a[MILLISECOND] === 0) {
-        config._nextDay = true;
-        config._a[HOUR] = 0;
-    }
-
-    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
-    // Apply timezone offset from input. The actual utcOffset can be changed
-    // with parseZone.
-    if (config._tzm != null) {
-        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
-    }
-
-    if (config._nextDay) {
-        config._a[HOUR] = 24;
-    }
-}
-
-function dayOfYearFromWeekInfo(config) {
-    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-
-    w = config._w;
-    if (w.GG != null || w.W != null || w.E != null) {
-        dow = 1;
-        doy = 4;
-
-        // TODO: We need to take the current isoWeekYear, but that depends on
-        // how we interpret now (local, utc, fixed offset). So create
-        // a now version of current config (take local/utc/offset flags, and
-        // create now).
-        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
-        week = defaults(w.W, 1);
-        weekday = defaults(w.E, 1);
-        if (weekday < 1 || weekday > 7) {
-            weekdayOverflow = true;
-        }
-    } else {
-        dow = config._locale._week.dow;
-        doy = config._locale._week.doy;
-
-        var curWeek = weekOfYear(createLocal(), dow, doy);
-
-        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
-
-        // Default to current week.
-        week = defaults(w.w, curWeek.week);
-
-        if (w.d != null) {
-            // weekday -- low day numbers are considered next week
-            weekday = w.d;
-            if (weekday < 0 || weekday > 6) {
-                weekdayOverflow = true;
-            }
-        } else if (w.e != null) {
-            // local weekday -- counting starts from begining of week
-            weekday = w.e + dow;
-            if (w.e < 0 || w.e > 6) {
-                weekdayOverflow = true;
-            }
-        } else {
-            // default to begining of week
-            weekday = dow;
-        }
-    }
-    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
-        getParsingFlags(config)._overflowWeeks = true;
-    } else if (weekdayOverflow != null) {
-        getParsingFlags(config)._overflowWeekday = true;
-    } else {
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
-    }
-}
 
 // constant that refers to the ISO standard
 hooks.ISO_8601 = function () {};
@@ -2724,7 +2771,7 @@ var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'se
 
 function isDurationValid(m) {
     for (var key in m) {
-        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+        if (!(indexOf.call(ordering, key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
             return false;
         }
     }
@@ -2775,7 +2822,7 @@ function Duration (duration) {
     // day when working around DST, we need to store them separately
     this._days = +days +
         weeks * 7;
-    // It is impossible translate months into days without knowing
+    // It is impossible to translate months into days without knowing
     // which months you are are talking about, so we have to store
     // it separately.
     this._months = +months +
@@ -3022,12 +3069,12 @@ function isUtc () {
 }
 
 // ASP.NET json date format regex
-var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
+var aspNetRegex = /^(\-|\+)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
 
 // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 // and further modified to allow for strings containing both week and day
-var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
+var isoRegex = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 
 function createDuration (input, key) {
     var duration = input,
@@ -3061,7 +3108,7 @@ function createDuration (input, key) {
             ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
         };
     } else if (!!(match = isoRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
+        sign = (match[1] === '-') ? -1 : (match[1] === '+') ? 1 : 1;
         duration = {
             y : parseIso(match[2], sign),
             M : parseIso(match[3], sign),
@@ -3164,14 +3211,14 @@ function addSubtract (mom, duration, isAdding, updateOffset) {
 
     updateOffset = updateOffset == null ? true : updateOffset;
 
-    if (milliseconds) {
-        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
+    if (months) {
+        setMonth(mom, get(mom, 'Month') + months * isAdding);
     }
     if (days) {
         set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
     }
-    if (months) {
-        setMonth(mom, get(mom, 'Month') + months * isAdding);
+    if (milliseconds) {
+        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
     }
     if (updateOffset) {
         hooks.updateOffset(mom, days || months);
@@ -3265,7 +3312,7 @@ function isSameOrBefore (input, units) {
 function diff (input, units, asFloat) {
     var that,
         zoneDelta,
-        delta, output;
+        output;
 
     if (!this.isValid()) {
         return NaN;
@@ -3281,22 +3328,18 @@ function diff (input, units, asFloat) {
 
     units = normalizeUnits(units);
 
-    if (units === 'year' || units === 'month' || units === 'quarter') {
-        output = monthDiff(this, that);
-        if (units === 'quarter') {
-            output = output / 3;
-        } else if (units === 'year') {
-            output = output / 12;
-        }
-    } else {
-        delta = this - that;
-        output = units === 'second' ? delta / 1e3 : // 1000
-            units === 'minute' ? delta / 6e4 : // 1000 * 60
-            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
-            delta;
+    switch (units) {
+        case 'year': output = monthDiff(this, that) / 12; break;
+        case 'month': output = monthDiff(this, that); break;
+        case 'quarter': output = monthDiff(this, that) / 3; break;
+        case 'second': output = (this - that) / 1e3; break; // 1000
+        case 'minute': output = (this - that) / 6e4; break; // 1000 * 60
+        case 'hour': output = (this - that) / 36e5; break; // 1000 * 60 * 60
+        case 'day': output = (this - that - zoneDelta) / 864e5; break; // 1000 * 60 * 60 * 24, negate dst
+        case 'week': output = (this - that - zoneDelta) / 6048e5; break; // 1000 * 60 * 60 * 24 * 7, negate dst
+        default: output = this - that;
     }
+
     return asFloat ? output : absFloor(output);
 }
 
@@ -3328,19 +3371,24 @@ function toString () {
     return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
 }
 
-function toISOString() {
+function toISOString(keepOffset) {
     if (!this.isValid()) {
         return null;
     }
-    var m = this.clone().utc();
+    var utc = keepOffset !== true;
+    var m = utc ? this.clone().utc() : this;
     if (m.year() < 0 || m.year() > 9999) {
-        return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+        return formatMoment(m, utc ? 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]' : 'YYYYYY-MM-DD[T]HH:mm:ss.SSSZ');
     }
     if (isFunction(Date.prototype.toISOString)) {
         // native implementation is ~50x faster, use it when we can
-        return this.toDate().toISOString();
+        if (utc) {
+            return this.toDate().toISOString();
+        } else {
+            return new Date(this.valueOf() + this.utcOffset() * 60 * 1000).toISOString().replace('Z', formatMoment(m, 'Z'));
+        }
     }
-    return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+    return formatMoment(m, utc ? 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]' : 'YYYY-MM-DD[T]HH:mm:ss.SSSZ');
 }
 
 /**
@@ -3696,7 +3744,7 @@ addRegexToken('Do', function (isStrict, locale) {
 
 addParseToken(['D', 'DD'], DATE);
 addParseToken('Do', function (input, array) {
-    array[DATE] = toInt(input.match(match1to2)[0], 10);
+    array[DATE] = toInt(input.match(match1to2)[0]);
 });
 
 // MOMENTS
@@ -3891,48 +3939,26 @@ proto.toString          = toString;
 proto.unix              = unix;
 proto.valueOf           = valueOf;
 proto.creationData      = creationData;
-
-// Year
 proto.year       = getSetYear;
 proto.isLeapYear = getIsLeapYear;
-
-// Week Year
 proto.weekYear    = getSetWeekYear;
 proto.isoWeekYear = getSetISOWeekYear;
-
-// Quarter
 proto.quarter = proto.quarters = getSetQuarter;
-
-// Month
 proto.month       = getSetMonth;
 proto.daysInMonth = getDaysInMonth;
-
-// Week
 proto.week           = proto.weeks        = getSetWeek;
 proto.isoWeek        = proto.isoWeeks     = getSetISOWeek;
 proto.weeksInYear    = getWeeksInYear;
 proto.isoWeeksInYear = getISOWeeksInYear;
-
-// Day
 proto.date       = getSetDayOfMonth;
 proto.day        = proto.days             = getSetDayOfWeek;
 proto.weekday    = getSetLocaleDayOfWeek;
 proto.isoWeekday = getSetISODayOfWeek;
 proto.dayOfYear  = getSetDayOfYear;
-
-// Hour
 proto.hour = proto.hours = getSetHour;
-
-// Minute
 proto.minute = proto.minutes = getSetMinute;
-
-// Second
 proto.second = proto.seconds = getSetSecond;
-
-// Millisecond
 proto.millisecond = proto.milliseconds = getSetMillisecond;
-
-// Offset
 proto.utcOffset            = getSetOffset;
 proto.utc                  = setOffsetToUTC;
 proto.local                = setOffsetToLocal;
@@ -3943,12 +3969,8 @@ proto.isLocal              = isLocal;
 proto.isUtcOffset          = isUtcOffset;
 proto.isUtc                = isUtc;
 proto.isUTC                = isUtc;
-
-// Timezone
 proto.zoneAbbr = getZoneAbbr;
 proto.zoneName = getZoneName;
-
-// Deprecations
 proto.dates  = deprecate('dates accessor is deprecated. Use date instead.', getSetDayOfMonth);
 proto.months = deprecate('months accessor is deprecated. Use month instead', getSetMonth);
 proto.years  = deprecate('years accessor is deprecated. Use year instead', getSetYear);
@@ -3979,19 +4001,15 @@ proto$1.relativeTime    = relativeTime;
 proto$1.pastFuture      = pastFuture;
 proto$1.set             = set;
 
-// Month
 proto$1.months            =        localeMonths;
 proto$1.monthsShort       =        localeMonthsShort;
 proto$1.monthsParse       =        localeMonthsParse;
 proto$1.monthsRegex       = monthsRegex;
 proto$1.monthsShortRegex  = monthsShortRegex;
-
-// Week
 proto$1.week = localeWeek;
 proto$1.firstDayOfYear = localeFirstDayOfYear;
 proto$1.firstDayOfWeek = localeFirstDayOfWeek;
 
-// Day of Week
 proto$1.weekdays       =        localeWeekdays;
 proto$1.weekdaysMin    =        localeWeekdaysMin;
 proto$1.weekdaysShort  =        localeWeekdaysShort;
@@ -4001,7 +4019,6 @@ proto$1.weekdaysRegex       =        weekdaysRegex;
 proto$1.weekdaysShortRegex  =        weekdaysShortRegex;
 proto$1.weekdaysMinRegex    =        weekdaysMinRegex;
 
-// Hours
 proto$1.isPM = localeIsPM;
 proto$1.meridiem = localeMeridiem;
 
@@ -4108,6 +4125,7 @@ getSetGlobalLocale('en', {
 });
 
 // Side effect imports
+
 hooks.lang = deprecate('moment.lang is deprecated. Use moment.locale instead.', getSetGlobalLocale);
 hooks.langData = deprecate('moment.langData is deprecated. Use moment.localeData instead.', getLocale);
 
@@ -4274,6 +4292,10 @@ var asWeeks        = makeAs('w');
 var asMonths       = makeAs('M');
 var asYears        = makeAs('y');
 
+function clone$1 () {
+    return createDuration(this);
+}
+
 function get$2 (units) {
     units = normalizeUnits(units);
     return this.isValid() ? this[units + 's']() : NaN;
@@ -4383,6 +4405,10 @@ function humanize (withSuffix) {
 
 var abs$1 = Math.abs;
 
+function sign(x) {
+    return ((x > 0) - (x < 0)) || +x;
+}
+
 function toISOString$1() {
     // for ISO strings we do not use the normal bubbling rules:
     //  * milliseconds bubble up until they become hours
@@ -4417,7 +4443,7 @@ function toISOString$1() {
     var D = days;
     var h = hours;
     var m = minutes;
-    var s = seconds;
+    var s = seconds ? seconds.toFixed(3).replace(/\.?0+$/, '') : '';
     var total = this.asSeconds();
 
     if (!total) {
@@ -4426,15 +4452,19 @@ function toISOString$1() {
         return 'P0D';
     }
 
-    return (total < 0 ? '-' : '') +
-        'P' +
-        (Y ? Y + 'Y' : '') +
-        (M ? M + 'M' : '') +
-        (D ? D + 'D' : '') +
+    var totalSign = total < 0 ? '-' : '';
+    var ymSign = sign(this._months) !== sign(total) ? '-' : '';
+    var daysSign = sign(this._days) !== sign(total) ? '-' : '';
+    var hmsSign = sign(this._milliseconds) !== sign(total) ? '-' : '';
+
+    return totalSign + 'P' +
+        (Y ? ymSign + Y + 'Y' : '') +
+        (M ? ymSign + M + 'M' : '') +
+        (D ? daysSign + D + 'D' : '') +
         ((h || m || s) ? 'T' : '') +
-        (h ? h + 'H' : '') +
-        (m ? m + 'M' : '') +
-        (s ? s + 'S' : '');
+        (h ? hmsSign + h + 'H' : '') +
+        (m ? hmsSign + m + 'M' : '') +
+        (s ? hmsSign + s + 'S' : '');
 }
 
 var proto$2 = Duration.prototype;
@@ -4454,6 +4484,7 @@ proto$2.asMonths       = asMonths;
 proto$2.asYears        = asYears;
 proto$2.valueOf        = valueOf$1;
 proto$2._bubble        = bubble;
+proto$2.clone          = clone$1;
 proto$2.get            = get$2;
 proto$2.milliseconds   = milliseconds;
 proto$2.seconds        = seconds;
@@ -4470,7 +4501,6 @@ proto$2.toJSON         = toISOString$1;
 proto$2.locale         = locale;
 proto$2.localeData     = localeData;
 
-// Deprecations
 proto$2.toIsoString = deprecate('toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)', toISOString$1);
 proto$2.lang = lang;
 
@@ -4495,7 +4525,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.18.1';
+hooks.version = '2.21.0';
 
 setHookCallback(createLocal);
 
@@ -4522,16 +4552,29 @@ hooks.updateLocale          = updateLocale;
 hooks.locales               = listLocales;
 hooks.weekdaysShort         = listWeekdaysShort;
 hooks.normalizeUnits        = normalizeUnits;
-hooks.relativeTimeRounding = getSetRelativeTimeRounding;
+hooks.relativeTimeRounding  = getSetRelativeTimeRounding;
 hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
 hooks.calendarFormat        = getCalendarFormat;
 hooks.prototype             = proto;
+
+// currently HTML5 input type only supports 24-hour formats
+hooks.HTML5_FMT = {
+    DATETIME_LOCAL: 'YYYY-MM-DDTHH:mm',             // <input type="datetime-local" />
+    DATETIME_LOCAL_SECONDS: 'YYYY-MM-DDTHH:mm:ss',  // <input type="datetime-local" step="1" />
+    DATETIME_LOCAL_MS: 'YYYY-MM-DDTHH:mm:ss.SSS',   // <input type="datetime-local" step="0.001" />
+    DATE: 'YYYY-MM-DD',                             // <input type="date" />
+    TIME: 'HH:mm',                                  // <input type="time" />
+    TIME_SECONDS: 'HH:mm:ss',                       // <input type="time" step="1" />
+    TIME_MS: 'HH:mm:ss.SSS',                        // <input type="time" step="0.001" />
+    WEEK: 'YYYY-[W]WW',                             // <input type="week" />
+    MONTH: 'YYYY-MM'                                // <input type="month" />
+};
 
 return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(99)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(101)(module)))
 
 /***/ }),
 /* 1 */
@@ -4540,10 +4583,10 @@ return hooks;
 "use strict";
 
 
-module.exports = __webpack_require__(61);
-module.exports.easing = __webpack_require__(388);
-module.exports.canvas = __webpack_require__(389);
-module.exports.options = __webpack_require__(390);
+module.exports = __webpack_require__(60);
+module.exports.easing = __webpack_require__(398);
+module.exports.canvas = __webpack_require__(399);
+module.exports.options = __webpack_require__(400);
 
 
 /***/ }),
@@ -4554,9 +4597,9 @@ module.exports.options = __webpack_require__(390);
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(284);
+  module.exports = __webpack_require__(290);
 } else {
-  module.exports = __webpack_require__(285);
+  module.exports = __webpack_require__(291);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
@@ -4850,10 +4893,45 @@ module.exports = warning;
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+if (process.env.NODE_ENV !== 'production') {
+  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+    Symbol.for &&
+    Symbol.for('react.element')) ||
+    0xeac7;
+
+  var isValidElement = function(object) {
+    return typeof object === 'object' &&
+      object !== null &&
+      object.$$typeof === REACT_ELEMENT_TYPE;
+  };
+
+  // By explicitly using `prop-types` you are opting into new development behavior.
+  // http://fb.me/prop-types-in-prod
+  var throwOnDirectAccess = true;
+  module.exports = __webpack_require__(301)(isValidElement, throwOnDirectAccess);
+} else {
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = __webpack_require__(302)();
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var global = __webpack_require__(9);
 var core = __webpack_require__(4);
-var ctx = __webpack_require__(24);
-var hide = __webpack_require__(28);
+var ctx = __webpack_require__(28);
+var hide = __webpack_require__(29);
 var PROTOTYPE = 'prototype';
 
 var $export = function (type, name, source) {
@@ -4914,41 +4992,6 @@ module.exports = $export;
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-if (process.env.NODE_ENV !== 'production') {
-  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
-    Symbol.for &&
-    Symbol.for('react.element')) ||
-    0xeac7;
-
-  var isValidElement = function(object) {
-    return typeof object === 'object' &&
-      object !== null &&
-      object.$$typeof === REACT_ELEMENT_TYPE;
-  };
-
-  // By explicitly using `prop-types` you are opting into new development behavior.
-  // http://fb.me/prop-types-in-prod
-  var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(295)(isValidElement, throwOnDirectAccess);
-} else {
-  // By explicitly using `prop-types` you are opting into new production behavior.
-  // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(296)();
-}
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports) {
 
@@ -4964,8 +5007,8 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store = __webpack_require__(89)('wks');
-var uid = __webpack_require__(59);
+var store = __webpack_require__(91)('wks');
+var uid = __webpack_require__(57);
 var Symbol = __webpack_require__(9).Symbol;
 var USE_SYMBOL = typeof Symbol == 'function';
 
@@ -4981,7 +5024,7 @@ $exports.store = store;
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isDate = __webpack_require__(522)
+var isDate = __webpack_require__(542)
 
 var MILLISECONDS_IN_HOUR = 3600000
 var MILLISECONDS_IN_MINUTE = 60000
@@ -5364,14 +5407,23 @@ module.exports = invariant;
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(25);
-var IE8_DOM_DEFINE = __webpack_require__(120);
-var toPrimitive = __webpack_require__(87);
+var anObject = __webpack_require__(24);
+var IE8_DOM_DEFINE = __webpack_require__(123);
+var toPrimitive = __webpack_require__(88);
 var dP = Object.defineProperty;
 
-exports.f = __webpack_require__(16) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+exports.f = __webpack_require__(15) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
   anObject(O);
   P = toPrimitive(P, true);
   anObject(Attributes);
@@ -5385,22 +5437,139 @@ exports.f = __webpack_require__(16) ? Object.defineProperty : function definePro
 
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports) {
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
+// Thank's IE8 for his funny defineProperty
+module.exports = !__webpack_require__(34)(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
 
 
 /***/ }),
-/* 15 */
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(368), __esModule: true };
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var color = __webpack_require__(145);
+exports.__esModule = true;
+
+exports.default = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _defineProperty = __webpack_require__(138);
+
+var _defineProperty2 = _interopRequireDefault(_defineProperty);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _typeof2 = __webpack_require__(139);
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
+};
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _setPrototypeOf = __webpack_require__(381);
+
+var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
+
+var _create = __webpack_require__(385);
+
+var _create2 = _interopRequireDefault(_create);
+
+var _typeof2 = __webpack_require__(139);
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : (0, _typeof3.default)(superClass)));
+  }
+
+  subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass;
+};
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var color = __webpack_require__(144);
 var helpers = __webpack_require__(1);
 
 function interpolate(start, view, model, ease) {
@@ -5516,132 +5685,6 @@ module.exports = Element;
 
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(33)(function () {
-  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
-});
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = { "default": __webpack_require__(358), __esModule: true };
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-exports.default = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-var _defineProperty = __webpack_require__(139);
-
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-var _typeof2 = __webpack_require__(140);
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (self, call) {
-  if (!self) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
-};
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-var _setPrototypeOf = __webpack_require__(371);
-
-var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
-
-var _create = __webpack_require__(375);
-
-var _create2 = _interopRequireDefault(_create);
-
-var _typeof2 = __webpack_require__(140);
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : (0, _typeof3.default)(superClass)));
-  }
-
-  subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass;
-};
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
@@ -5752,14 +5795,26 @@ var isOldIE = memoize(function () {
 	return window && document && document.all && !window.atob;
 });
 
+var getTarget = function (target) {
+  return document.querySelector(target);
+};
+
 var getElement = (function (fn) {
 	var memo = {};
 
-	return function(selector) {
-		if (typeof memo[selector] === "undefined") {
-			var styleTarget = fn.call(this, selector);
+	return function(target) {
+                // If passing function in options, then use it for resolve "head" element.
+                // Useful for Shadow Root style i.e
+                // {
+                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
+                // }
+                if (typeof target === 'function') {
+                        return target();
+                }
+                if (typeof memo[target] === "undefined") {
+			var styleTarget = getTarget.call(this, target);
 			// Special case to return head of iframe instead of iframe itself
-			if (styleTarget instanceof window.HTMLIFrameElement) {
+			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
 				try {
 					// This will throw an exception if access to iframe is blocked
 					// due to cross-origin restrictions
@@ -5768,19 +5823,17 @@ var getElement = (function (fn) {
 					styleTarget = null;
 				}
 			}
-			memo[selector] = styleTarget;
+			memo[target] = styleTarget;
 		}
-		return memo[selector]
+		return memo[target]
 	};
-})(function (target) {
-	return document.querySelector(target)
-});
+})();
 
 var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(324);
+var	fixUrls = __webpack_require__(330);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -5796,7 +5849,7 @@ module.exports = function(list, options) {
 	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
 
 	// By default, add <style> tags to the <head> element
-	if (!options.insertInto) options.insertInto = "head";
+        if (!options.insertInto) options.insertInto = "head";
 
 	// By default, add <style> tags to the bottom of the target
 	if (!options.insertAt) options.insertAt = "bottom";
@@ -6099,33 +6152,7 @@ function updateLink (link, options, obj) {
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// optional / simple context binding
-var aFunction = __webpack_require__(40);
-module.exports = function (fn, that, length) {
-  aFunction(fn);
-  if (that === undefined) return fn;
-  switch (length) {
-    case 1: return function (a) {
-      return fn.call(that, a);
-    };
-    case 2: return function (a, b) {
-      return fn.call(that, a, b);
-    };
-    case 3: return function (a, b, c) {
-      return fn.call(that, a, b, c);
-    };
-  }
-  return function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
-};
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(14);
+var isObject = __webpack_require__(13);
 module.exports = function (it) {
   if (!isObject(it)) throw TypeError(it + ' is not an object!');
   return it;
@@ -6133,10 +6160,10 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var freeGlobal = __webpack_require__(266);
+var freeGlobal = __webpack_require__(273);
 
 /** Detect free variable `self`. */
 var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -6145,6 +6172,38 @@ var freeSelf = typeof self == 'object' && self && self.Object === Object && self
 var root = freeGlobal || freeSelf || Function('return this')();
 
 module.exports = root;
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+module.exports = isArray;
 
 
 /***/ }),
@@ -6193,9 +6252,35 @@ module.exports = emptyFunction;
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(13);
-var createDesc = __webpack_require__(41);
-module.exports = __webpack_require__(16) ? function (object, key, value) {
+// optional / simple context binding
+var aFunction = __webpack_require__(40);
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var dP = __webpack_require__(14);
+var createDesc = __webpack_require__(55);
+module.exports = __webpack_require__(15) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
 } : function (object, key, value) {
   object[key] = value;
@@ -6204,49 +6289,17 @@ module.exports = __webpack_require__(16) ? function (object, key, value) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {};
-module.exports.Arc = __webpack_require__(396);
-module.exports.Line = __webpack_require__(397);
-module.exports.Point = __webpack_require__(398);
-module.exports.Rectangle = __webpack_require__(399);
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports) {
-
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
-
-module.exports = isArray;
+module.exports.Arc = __webpack_require__(406);
+module.exports.Line = __webpack_require__(407);
+module.exports.Point = __webpack_require__(408);
+module.exports.Rectangle = __webpack_require__(409);
 
 
 /***/ }),
@@ -6264,8 +6317,8 @@ module.exports = function (it, key) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(123);
-var defined = __webpack_require__(84);
+var IObject = __webpack_require__(126);
+var defined = __webpack_require__(85);
 module.exports = function (it) {
   return IObject(defined(it));
 };
@@ -6273,23 +6326,10 @@ module.exports = function (it) {
 
 /***/ }),
 /* 33 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (e) {
-    return true;
-  }
-};
-
-
-/***/ }),
-/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsNative = __webpack_require__(446),
-    getValue = __webpack_require__(451);
+var baseIsNative = __webpack_require__(455),
+    getValue = __webpack_require__(460);
 
 /**
  * Gets the native function at `key` of `object`.
@@ -6305,6 +6345,19 @@ function getNative(object, key) {
 }
 
 module.exports = getNative;
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
 
 
 /***/ }),
@@ -6643,30 +6696,16 @@ module.exports = function (it) {
 /* 41 */
 /***/ (function(module, exports) {
 
-module.exports = function (bitmap, value) {
-  return {
-    enumerable: !(bitmap & 1),
-    configurable: !(bitmap & 2),
-    writable: !(bitmap & 4),
-    value: value
-  };
-};
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports) {
-
 module.exports = {};
 
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(122);
-var enumBugKeys = __webpack_require__(90);
+var $keys = __webpack_require__(125);
+var enumBugKeys = __webpack_require__(92);
 
 module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
@@ -6674,7 +6713,7 @@ module.exports = Object.keys || function keys(O) {
 
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -6685,10 +6724,10 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var def = __webpack_require__(13).f;
+var def = __webpack_require__(14).f;
 var has = __webpack_require__(31);
 var TAG = __webpack_require__(10)('toStringTag');
 
@@ -6698,26 +6737,15 @@ module.exports = function (it, tag, stat) {
 
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 7.1.13 ToObject(argument)
-var defined = __webpack_require__(84);
-module.exports = function (it) {
-  return Object(defined(it));
-};
-
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var ctx = __webpack_require__(24);
-var call = __webpack_require__(127);
-var isArrayIter = __webpack_require__(128);
-var anObject = __webpack_require__(25);
-var toLength = __webpack_require__(58);
-var getIterFn = __webpack_require__(129);
+var ctx = __webpack_require__(28);
+var call = __webpack_require__(345);
+var isArrayIter = __webpack_require__(346);
+var anObject = __webpack_require__(24);
+var toLength = __webpack_require__(89);
+var getIterFn = __webpack_require__(347);
 var BREAK = {};
 var RETURN = {};
 var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
@@ -6740,7 +6768,433 @@ exports.RETURN = RETURN;
 
 
 /***/ }),
-/* 48 */
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var helpers = __webpack_require__(1);
+
+function filterByPosition(array, position) {
+	return helpers.where(array, function(v) {
+		return v.position === position;
+	});
+}
+
+function sortByWeight(array, reverse) {
+	array.forEach(function(v, i) {
+		v._tmpIndex_ = i;
+		return v;
+	});
+	array.sort(function(a, b) {
+		var v0 = reverse ? b : a;
+		var v1 = reverse ? a : b;
+		return v0.weight === v1.weight ?
+			v0._tmpIndex_ - v1._tmpIndex_ :
+			v0.weight - v1.weight;
+	});
+	array.forEach(function(v) {
+		delete v._tmpIndex_;
+	});
+}
+
+/**
+ * @interface ILayoutItem
+ * @prop {String} position - The position of the item in the chart layout. Possible values are
+ * 'left', 'top', 'right', 'bottom', and 'chartArea'
+ * @prop {Number} weight - The weight used to sort the item. Higher weights are further away from the chart area
+ * @prop {Boolean} fullWidth - if true, and the item is horizontal, then push vertical boxes down
+ * @prop {Function} isHorizontal - returns true if the layout item is horizontal (ie. top or bottom)
+ * @prop {Function} update - Takes two parameters: width and height. Returns size of item
+ * @prop {Function} getPadding -  Returns an object with padding on the edges
+ * @prop {Number} width - Width of item. Must be valid after update()
+ * @prop {Number} height - Height of item. Must be valid after update()
+ * @prop {Number} left - Left edge of the item. Set by layout system and cannot be used in update
+ * @prop {Number} top - Top edge of the item. Set by layout system and cannot be used in update
+ * @prop {Number} right - Right edge of the item. Set by layout system and cannot be used in update
+ * @prop {Number} bottom - Bottom edge of the item. Set by layout system and cannot be used in update
+ */
+
+// The layout service is very self explanatory.  It's responsible for the layout within a chart.
+// Scales, Legends and Plugins all rely on the layout service and can easily register to be placed anywhere they need
+// It is this service's responsibility of carrying out that layout.
+module.exports = {
+	defaults: {},
+
+	/**
+	 * Register a box to a chart.
+	 * A box is simply a reference to an object that requires layout. eg. Scales, Legend, Title.
+	 * @param {Chart} chart - the chart to use
+	 * @param {ILayoutItem} item - the item to add to be layed out
+	 */
+	addBox: function(chart, item) {
+		if (!chart.boxes) {
+			chart.boxes = [];
+		}
+
+		// initialize item with default values
+		item.fullWidth = item.fullWidth || false;
+		item.position = item.position || 'top';
+		item.weight = item.weight || 0;
+
+		chart.boxes.push(item);
+	},
+
+	/**
+	 * Remove a layoutItem from a chart
+	 * @param {Chart} chart - the chart to remove the box from
+	 * @param {Object} layoutItem - the item to remove from the layout
+	 */
+	removeBox: function(chart, layoutItem) {
+		var index = chart.boxes ? chart.boxes.indexOf(layoutItem) : -1;
+		if (index !== -1) {
+			chart.boxes.splice(index, 1);
+		}
+	},
+
+	/**
+	 * Sets (or updates) options on the given `item`.
+	 * @param {Chart} chart - the chart in which the item lives (or will be added to)
+	 * @param {Object} item - the item to configure with the given options
+	 * @param {Object} options - the new item options.
+	 */
+	configure: function(chart, item, options) {
+		var props = ['fullWidth', 'position', 'weight'];
+		var ilen = props.length;
+		var i = 0;
+		var prop;
+
+		for (; i < ilen; ++i) {
+			prop = props[i];
+			if (options.hasOwnProperty(prop)) {
+				item[prop] = options[prop];
+			}
+		}
+	},
+
+	/**
+	 * Fits boxes of the given chart into the given size by having each box measure itself
+	 * then running a fitting algorithm
+	 * @param {Chart} chart - the chart
+	 * @param {Number} width - the width to fit into
+	 * @param {Number} height - the height to fit into
+	 */
+	update: function(chart, width, height) {
+		if (!chart) {
+			return;
+		}
+
+		var layoutOptions = chart.options.layout || {};
+		var padding = helpers.options.toPadding(layoutOptions.padding);
+		var leftPadding = padding.left;
+		var rightPadding = padding.right;
+		var topPadding = padding.top;
+		var bottomPadding = padding.bottom;
+
+		var leftBoxes = filterByPosition(chart.boxes, 'left');
+		var rightBoxes = filterByPosition(chart.boxes, 'right');
+		var topBoxes = filterByPosition(chart.boxes, 'top');
+		var bottomBoxes = filterByPosition(chart.boxes, 'bottom');
+		var chartAreaBoxes = filterByPosition(chart.boxes, 'chartArea');
+
+		// Sort boxes by weight. A higher weight is further away from the chart area
+		sortByWeight(leftBoxes, true);
+		sortByWeight(rightBoxes, false);
+		sortByWeight(topBoxes, true);
+		sortByWeight(bottomBoxes, false);
+
+		// Essentially we now have any number of boxes on each of the 4 sides.
+		// Our canvas looks like the following.
+		// The areas L1 and L2 are the left axes. R1 is the right axis, T1 is the top axis and
+		// B1 is the bottom axis
+		// There are also 4 quadrant-like locations (left to right instead of clockwise) reserved for chart overlays
+		// These locations are single-box locations only, when trying to register a chartArea location that is already taken,
+		// an error will be thrown.
+		//
+		// |----------------------------------------------------|
+		// |                  T1 (Full Width)                   |
+		// |----------------------------------------------------|
+		// |    |    |                 T2                  |    |
+		// |    |----|-------------------------------------|----|
+		// |    |    | C1 |                           | C2 |    |
+		// |    |    |----|                           |----|    |
+		// |    |    |                                     |    |
+		// | L1 | L2 |           ChartArea (C0)            | R1 |
+		// |    |    |                                     |    |
+		// |    |    |----|                           |----|    |
+		// |    |    | C3 |                           | C4 |    |
+		// |    |----|-------------------------------------|----|
+		// |    |    |                 B1                  |    |
+		// |----------------------------------------------------|
+		// |                  B2 (Full Width)                   |
+		// |----------------------------------------------------|
+		//
+		// What we do to find the best sizing, we do the following
+		// 1. Determine the minimum size of the chart area.
+		// 2. Split the remaining width equally between each vertical axis
+		// 3. Split the remaining height equally between each horizontal axis
+		// 4. Give each layout the maximum size it can be. The layout will return it's minimum size
+		// 5. Adjust the sizes of each axis based on it's minimum reported size.
+		// 6. Refit each axis
+		// 7. Position each axis in the final location
+		// 8. Tell the chart the final location of the chart area
+		// 9. Tell any axes that overlay the chart area the positions of the chart area
+
+		// Step 1
+		var chartWidth = width - leftPadding - rightPadding;
+		var chartHeight = height - topPadding - bottomPadding;
+		var chartAreaWidth = chartWidth / 2; // min 50%
+		var chartAreaHeight = chartHeight / 2; // min 50%
+
+		// Step 2
+		var verticalBoxWidth = (width - chartAreaWidth) / (leftBoxes.length + rightBoxes.length);
+
+		// Step 3
+		var horizontalBoxHeight = (height - chartAreaHeight) / (topBoxes.length + bottomBoxes.length);
+
+		// Step 4
+		var maxChartAreaWidth = chartWidth;
+		var maxChartAreaHeight = chartHeight;
+		var minBoxSizes = [];
+
+		function getMinimumBoxSize(box) {
+			var minSize;
+			var isHorizontal = box.isHorizontal();
+
+			if (isHorizontal) {
+				minSize = box.update(box.fullWidth ? chartWidth : maxChartAreaWidth, horizontalBoxHeight);
+				maxChartAreaHeight -= minSize.height;
+			} else {
+				minSize = box.update(verticalBoxWidth, maxChartAreaHeight);
+				maxChartAreaWidth -= minSize.width;
+			}
+
+			minBoxSizes.push({
+				horizontal: isHorizontal,
+				minSize: minSize,
+				box: box,
+			});
+		}
+
+		helpers.each(leftBoxes.concat(rightBoxes, topBoxes, bottomBoxes), getMinimumBoxSize);
+
+		// If a horizontal box has padding, we move the left boxes over to avoid ugly charts (see issue #2478)
+		var maxHorizontalLeftPadding = 0;
+		var maxHorizontalRightPadding = 0;
+		var maxVerticalTopPadding = 0;
+		var maxVerticalBottomPadding = 0;
+
+		helpers.each(topBoxes.concat(bottomBoxes), function(horizontalBox) {
+			if (horizontalBox.getPadding) {
+				var boxPadding = horizontalBox.getPadding();
+				maxHorizontalLeftPadding = Math.max(maxHorizontalLeftPadding, boxPadding.left);
+				maxHorizontalRightPadding = Math.max(maxHorizontalRightPadding, boxPadding.right);
+			}
+		});
+
+		helpers.each(leftBoxes.concat(rightBoxes), function(verticalBox) {
+			if (verticalBox.getPadding) {
+				var boxPadding = verticalBox.getPadding();
+				maxVerticalTopPadding = Math.max(maxVerticalTopPadding, boxPadding.top);
+				maxVerticalBottomPadding = Math.max(maxVerticalBottomPadding, boxPadding.bottom);
+			}
+		});
+
+		// At this point, maxChartAreaHeight and maxChartAreaWidth are the size the chart area could
+		// be if the axes are drawn at their minimum sizes.
+		// Steps 5 & 6
+		var totalLeftBoxesWidth = leftPadding;
+		var totalRightBoxesWidth = rightPadding;
+		var totalTopBoxesHeight = topPadding;
+		var totalBottomBoxesHeight = bottomPadding;
+
+		// Function to fit a box
+		function fitBox(box) {
+			var minBoxSize = helpers.findNextWhere(minBoxSizes, function(minBox) {
+				return minBox.box === box;
+			});
+
+			if (minBoxSize) {
+				if (box.isHorizontal()) {
+					var scaleMargin = {
+						left: Math.max(totalLeftBoxesWidth, maxHorizontalLeftPadding),
+						right: Math.max(totalRightBoxesWidth, maxHorizontalRightPadding),
+						top: 0,
+						bottom: 0
+					};
+
+					// Don't use min size here because of label rotation. When the labels are rotated, their rotation highly depends
+					// on the margin. Sometimes they need to increase in size slightly
+					box.update(box.fullWidth ? chartWidth : maxChartAreaWidth, chartHeight / 2, scaleMargin);
+				} else {
+					box.update(minBoxSize.minSize.width, maxChartAreaHeight);
+				}
+			}
+		}
+
+		// Update, and calculate the left and right margins for the horizontal boxes
+		helpers.each(leftBoxes.concat(rightBoxes), fitBox);
+
+		helpers.each(leftBoxes, function(box) {
+			totalLeftBoxesWidth += box.width;
+		});
+
+		helpers.each(rightBoxes, function(box) {
+			totalRightBoxesWidth += box.width;
+		});
+
+		// Set the Left and Right margins for the horizontal boxes
+		helpers.each(topBoxes.concat(bottomBoxes), fitBox);
+
+		// Figure out how much margin is on the top and bottom of the vertical boxes
+		helpers.each(topBoxes, function(box) {
+			totalTopBoxesHeight += box.height;
+		});
+
+		helpers.each(bottomBoxes, function(box) {
+			totalBottomBoxesHeight += box.height;
+		});
+
+		function finalFitVerticalBox(box) {
+			var minBoxSize = helpers.findNextWhere(minBoxSizes, function(minSize) {
+				return minSize.box === box;
+			});
+
+			var scaleMargin = {
+				left: 0,
+				right: 0,
+				top: totalTopBoxesHeight,
+				bottom: totalBottomBoxesHeight
+			};
+
+			if (minBoxSize) {
+				box.update(minBoxSize.minSize.width, maxChartAreaHeight, scaleMargin);
+			}
+		}
+
+		// Let the left layout know the final margin
+		helpers.each(leftBoxes.concat(rightBoxes), finalFitVerticalBox);
+
+		// Recalculate because the size of each layout might have changed slightly due to the margins (label rotation for instance)
+		totalLeftBoxesWidth = leftPadding;
+		totalRightBoxesWidth = rightPadding;
+		totalTopBoxesHeight = topPadding;
+		totalBottomBoxesHeight = bottomPadding;
+
+		helpers.each(leftBoxes, function(box) {
+			totalLeftBoxesWidth += box.width;
+		});
+
+		helpers.each(rightBoxes, function(box) {
+			totalRightBoxesWidth += box.width;
+		});
+
+		helpers.each(topBoxes, function(box) {
+			totalTopBoxesHeight += box.height;
+		});
+		helpers.each(bottomBoxes, function(box) {
+			totalBottomBoxesHeight += box.height;
+		});
+
+		// We may be adding some padding to account for rotated x axis labels
+		var leftPaddingAddition = Math.max(maxHorizontalLeftPadding - totalLeftBoxesWidth, 0);
+		totalLeftBoxesWidth += leftPaddingAddition;
+		totalRightBoxesWidth += Math.max(maxHorizontalRightPadding - totalRightBoxesWidth, 0);
+
+		var topPaddingAddition = Math.max(maxVerticalTopPadding - totalTopBoxesHeight, 0);
+		totalTopBoxesHeight += topPaddingAddition;
+		totalBottomBoxesHeight += Math.max(maxVerticalBottomPadding - totalBottomBoxesHeight, 0);
+
+		// Figure out if our chart area changed. This would occur if the dataset layout label rotation
+		// changed due to the application of the margins in step 6. Since we can only get bigger, this is safe to do
+		// without calling `fit` again
+		var newMaxChartAreaHeight = height - totalTopBoxesHeight - totalBottomBoxesHeight;
+		var newMaxChartAreaWidth = width - totalLeftBoxesWidth - totalRightBoxesWidth;
+
+		if (newMaxChartAreaWidth !== maxChartAreaWidth || newMaxChartAreaHeight !== maxChartAreaHeight) {
+			helpers.each(leftBoxes, function(box) {
+				box.height = newMaxChartAreaHeight;
+			});
+
+			helpers.each(rightBoxes, function(box) {
+				box.height = newMaxChartAreaHeight;
+			});
+
+			helpers.each(topBoxes, function(box) {
+				if (!box.fullWidth) {
+					box.width = newMaxChartAreaWidth;
+				}
+			});
+
+			helpers.each(bottomBoxes, function(box) {
+				if (!box.fullWidth) {
+					box.width = newMaxChartAreaWidth;
+				}
+			});
+
+			maxChartAreaHeight = newMaxChartAreaHeight;
+			maxChartAreaWidth = newMaxChartAreaWidth;
+		}
+
+		// Step 7 - Position the boxes
+		var left = leftPadding + leftPaddingAddition;
+		var top = topPadding + topPaddingAddition;
+
+		function placeBox(box) {
+			if (box.isHorizontal()) {
+				box.left = box.fullWidth ? leftPadding : totalLeftBoxesWidth;
+				box.right = box.fullWidth ? width - rightPadding : totalLeftBoxesWidth + maxChartAreaWidth;
+				box.top = top;
+				box.bottom = top + box.height;
+
+				// Move to next point
+				top = box.bottom;
+
+			} else {
+
+				box.left = left;
+				box.right = left + box.width;
+				box.top = totalTopBoxesHeight;
+				box.bottom = totalTopBoxesHeight + maxChartAreaHeight;
+
+				// Move to next point
+				left = box.right;
+			}
+		}
+
+		helpers.each(leftBoxes.concat(topBoxes), placeBox);
+
+		// Account for chart width and height
+		left += maxChartAreaWidth;
+		top += maxChartAreaHeight;
+
+		helpers.each(rightBoxes, placeBox);
+		helpers.each(bottomBoxes, placeBox);
+
+		// Step 8
+		chart.chartArea = {
+			left: totalLeftBoxesWidth,
+			top: totalTopBoxesHeight,
+			right: totalLeftBoxesWidth + maxChartAreaWidth,
+			bottom: totalTopBoxesHeight + maxChartAreaHeight
+		};
+
+		// Step 9
+		helpers.each(chartAreaBoxes, function(box) {
+			box.left = chart.chartArea.left;
+			box.top = chart.chartArea.top;
+			box.right = chart.chartArea.right;
+			box.bottom = chart.chartArea.bottom;
+
+			box.update(maxChartAreaWidth, maxChartAreaHeight);
+		});
+	}
+};
+
+
+/***/ }),
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6753,140 +7207,6 @@ var helpers = __webpack_require__(1);
  * @namespace Chart.Ticks
  */
 module.exports = {
-	/**
-	 * Namespace to hold generators for different types of ticks
-	 * @namespace Chart.Ticks.generators
-	 */
-	generators: {
-		/**
-		 * Interface for the options provided to the numeric tick generator
-		 * @interface INumericTickGenerationOptions
-		 */
-		/**
-		 * The maximum number of ticks to display
-		 * @name INumericTickGenerationOptions#maxTicks
-		 * @type Number
-		 */
-		/**
-		 * The distance between each tick.
-		 * @name INumericTickGenerationOptions#stepSize
-		 * @type Number
-		 * @optional
-		 */
-		/**
-		 * Forced minimum for the ticks. If not specified, the minimum of the data range is used to calculate the tick minimum
-		 * @name INumericTickGenerationOptions#min
-		 * @type Number
-		 * @optional
-		 */
-		/**
-		 * The maximum value of the ticks. If not specified, the maximum of the data range is used to calculate the tick maximum
-		 * @name INumericTickGenerationOptions#max
-		 * @type Number
-		 * @optional
-		 */
-
-		/**
-		 * Generate a set of linear ticks
-		 * @method Chart.Ticks.generators.linear
-		 * @param generationOptions {INumericTickGenerationOptions} the options used to generate the ticks
-		 * @param dataRange {IRange} the range of the data
-		 * @returns {Array<Number>} array of tick values
-		 */
-		linear: function(generationOptions, dataRange) {
-			var ticks = [];
-			// To get a "nice" value for the tick spacing, we will use the appropriately named
-			// "nice number" algorithm. See http://stackoverflow.com/questions/8506881/nice-label-algorithm-for-charts-with-minimum-ticks
-			// for details.
-
-			var spacing;
-			if (generationOptions.stepSize && generationOptions.stepSize > 0) {
-				spacing = generationOptions.stepSize;
-			} else {
-				var niceRange = helpers.niceNum(dataRange.max - dataRange.min, false);
-				spacing = helpers.niceNum(niceRange / (generationOptions.maxTicks - 1), true);
-			}
-			var niceMin = Math.floor(dataRange.min / spacing) * spacing;
-			var niceMax = Math.ceil(dataRange.max / spacing) * spacing;
-
-			// If min, max and stepSize is set and they make an evenly spaced scale use it.
-			if (generationOptions.min && generationOptions.max && generationOptions.stepSize) {
-				// If very close to our whole number, use it.
-				if (helpers.almostWhole((generationOptions.max - generationOptions.min) / generationOptions.stepSize, spacing / 1000)) {
-					niceMin = generationOptions.min;
-					niceMax = generationOptions.max;
-				}
-			}
-
-			var numSpaces = (niceMax - niceMin) / spacing;
-			// If very close to our rounded value, use it.
-			if (helpers.almostEquals(numSpaces, Math.round(numSpaces), spacing / 1000)) {
-				numSpaces = Math.round(numSpaces);
-			} else {
-				numSpaces = Math.ceil(numSpaces);
-			}
-
-			// Put the values into the ticks array
-			ticks.push(generationOptions.min !== undefined ? generationOptions.min : niceMin);
-			for (var j = 1; j < numSpaces; ++j) {
-				ticks.push(niceMin + (j * spacing));
-			}
-			ticks.push(generationOptions.max !== undefined ? generationOptions.max : niceMax);
-
-			return ticks;
-		},
-
-		/**
-		 * Generate a set of logarithmic ticks
-		 * @method Chart.Ticks.generators.logarithmic
-		 * @param generationOptions {INumericTickGenerationOptions} the options used to generate the ticks
-		 * @param dataRange {IRange} the range of the data
-		 * @returns {Array<Number>} array of tick values
-		 */
-		logarithmic: function(generationOptions, dataRange) {
-			var ticks = [];
-			var valueOrDefault = helpers.valueOrDefault;
-
-			// Figure out what the max number of ticks we can support it is based on the size of
-			// the axis area. For now, we say that the minimum tick spacing in pixels must be 50
-			// We also limit the maximum number of ticks to 11 which gives a nice 10 squares on
-			// the graph
-			var tickVal = valueOrDefault(generationOptions.min, Math.pow(10, Math.floor(helpers.log10(dataRange.min))));
-
-			var endExp = Math.floor(helpers.log10(dataRange.max));
-			var endSignificand = Math.ceil(dataRange.max / Math.pow(10, endExp));
-			var exp, significand;
-
-			if (tickVal === 0) {
-				exp = Math.floor(helpers.log10(dataRange.minNotZero));
-				significand = Math.floor(dataRange.minNotZero / Math.pow(10, exp));
-
-				ticks.push(tickVal);
-				tickVal = significand * Math.pow(10, exp);
-			} else {
-				exp = Math.floor(helpers.log10(tickVal));
-				significand = Math.floor(tickVal / Math.pow(10, exp));
-			}
-
-			do {
-				ticks.push(tickVal);
-
-				++significand;
-				if (significand === 10) {
-					significand = 1;
-					++exp;
-				}
-
-				tickVal = significand * Math.pow(10, exp);
-			} while (exp < endExp || (exp === endExp && significand < endSignificand));
-
-			var lastTick = valueOrDefault(generationOptions.max, tickVal);
-			ticks.push(lastTick);
-
-			return ticks;
-		}
-	},
-
 	/**
 	 * Namespace to hold formatters for different types of ticks
 	 * @namespace Chart.Ticks.formatters
@@ -6951,12 +7271,12 @@ module.exports = {
 
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(64),
-    getRawTag = __webpack_require__(447),
-    objectToString = __webpack_require__(448);
+var Symbol = __webpack_require__(63),
+    getRawTag = __webpack_require__(456),
+    objectToString = __webpack_require__(457);
 
 /** `Object#toString` result references. */
 var nullTag = '[object Null]',
@@ -6985,7 +7305,7 @@ module.exports = baseGetTag;
 
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports) {
 
 /**
@@ -7020,7 +7340,7 @@ module.exports = isObjectLike;
 
 
 /***/ }),
-/* 51 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7044,7 +7364,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 52 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7113,14 +7433,14 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 53 */
+/* 52 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return createLocation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return locationsAreEqual; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_resolve_pathname__ = __webpack_require__(113);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_value_equal__ = __webpack_require__(114);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_resolve_pathname__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_value_equal__ = __webpack_require__(117);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PathUtils__ = __webpack_require__(39);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -7189,64 +7509,54 @@ var locationsAreEqual = function locationsAreEqual(a, b) {
 };
 
 /***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(334), __esModule: true };
+
+/***/ }),
 /* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = { "default": __webpack_require__(328), __esModule: true };
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $at = __webpack_require__(331)(true);
-
-// 21.1.3.27 String.prototype[@@iterator]()
-__webpack_require__(85)(String, 'String', function (iterated) {
-  this._t = String(iterated); // target
-  this._i = 0;                // next index
-// 21.1.5.2.1 %StringIteratorPrototype%.next()
-}, function () {
-  var O = this._t;
-  var index = this._i;
-  var point;
-  if (index >= O.length) return { value: undefined, done: true };
-  point = $at(O, index);
-  this._i += point.length;
-  return { value: point, done: false };
-});
-
-
-/***/ }),
-/* 56 */
 /***/ (function(module, exports) {
 
 module.exports = true;
 
 
 /***/ }),
-/* 57 */
+/* 55 */
+/***/ (function(module, exports) {
+
+module.exports = function (bitmap, value) {
+  return {
+    enumerable: !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable: !(bitmap & 4),
+    value: value
+  };
+};
+
+
+/***/ }),
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject = __webpack_require__(25);
-var dPs = __webpack_require__(333);
-var enumBugKeys = __webpack_require__(90);
-var IE_PROTO = __webpack_require__(88)('IE_PROTO');
+var anObject = __webpack_require__(24);
+var dPs = __webpack_require__(339);
+var enumBugKeys = __webpack_require__(92);
+var IE_PROTO = __webpack_require__(90)('IE_PROTO');
 var Empty = function () { /* empty */ };
 var PROTOTYPE = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(86)('iframe');
+  var iframe = __webpack_require__(87)('iframe');
   var i = enumBugKeys.length;
   var lt = '<';
   var gt = '>';
   var iframeDocument;
   iframe.style.display = 'none';
-  __webpack_require__(124).appendChild(iframe);
+  __webpack_require__(127).appendChild(iframe);
   iframe.src = 'javascript:'; // eslint-disable-line no-script-url
   // createDict = iframe.contentWindow.Object;
   // html.removeChild(iframe);
@@ -7273,19 +7583,7 @@ module.exports = Object.create || function create(O, Properties) {
 
 
 /***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.1.15 ToLength
-var toInteger = __webpack_require__(83);
-var min = Math.min;
-module.exports = function (it) {
-  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
-};
-
-
-/***/ }),
-/* 59 */
+/* 57 */
 /***/ (function(module, exports) {
 
 var id = 0;
@@ -7296,14 +7594,25 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 60 */
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.13 ToObject(argument)
+var defined = __webpack_require__(85);
+module.exports = function (it) {
+  return Object(defined(it));
+};
+
+
+/***/ }),
+/* 59 */
 /***/ (function(module, exports) {
 
 exports.f = {}.propertyIsEnumerable;
 
 
 /***/ }),
-/* 61 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7649,14 +7958,14 @@ helpers.getValueAtIndexOrDefault = helpers.valueAtIndexOrDefault;
 
 
 /***/ }),
-/* 62 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var listCacheClear = __webpack_require__(436),
-    listCacheDelete = __webpack_require__(437),
-    listCacheGet = __webpack_require__(438),
-    listCacheHas = __webpack_require__(439),
-    listCacheSet = __webpack_require__(440);
+var listCacheClear = __webpack_require__(445),
+    listCacheDelete = __webpack_require__(446),
+    listCacheGet = __webpack_require__(447),
+    listCacheHas = __webpack_require__(448),
+    listCacheSet = __webpack_require__(449);
 
 /**
  * Creates an list cache object.
@@ -7687,10 +7996,10 @@ module.exports = ListCache;
 
 
 /***/ }),
-/* 63 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var eq = __webpack_require__(264);
+var eq = __webpack_require__(271);
 
 /**
  * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -7714,10 +8023,10 @@ module.exports = assocIndexOf;
 
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var root = __webpack_require__(26);
+var root = __webpack_require__(25);
 
 /** Built-in value references. */
 var Symbol = root.Symbol;
@@ -7726,7 +8035,7 @@ module.exports = Symbol;
 
 
 /***/ }),
-/* 65 */
+/* 64 */
 /***/ (function(module, exports) {
 
 /**
@@ -7763,10 +8072,10 @@ module.exports = isObject;
 
 
 /***/ }),
-/* 66 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(34);
+var getNative = __webpack_require__(33);
 
 /* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, 'create');
@@ -7775,10 +8084,10 @@ module.exports = nativeCreate;
 
 
 /***/ }),
-/* 67 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isKeyable = __webpack_require__(460);
+var isKeyable = __webpack_require__(469);
 
 /**
  * Gets the data for `map`.
@@ -7799,11 +8108,54 @@ module.exports = getMapData;
 
 
 /***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeKeys = __webpack_require__(489),
+    baseKeys = __webpack_require__(496),
+    isArrayLike = __webpack_require__(106);
+
+/**
+ * Creates an array of the own enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects. See the
+ * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * for more details.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keys(new Foo);
+ * // => ['a', 'b'] (iteration order is not guaranteed)
+ *
+ * _.keys('hi');
+ * // => ['0', '1']
+ */
+function keys(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+}
+
+module.exports = keys;
+
+
+/***/ }),
 /* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(49),
-    isObjectLike = __webpack_require__(50);
+var baseGetTag = __webpack_require__(48),
+    isObjectLike = __webpack_require__(49);
 
 /** `Object#toString` result references. */
 var symbolTag = '[object Symbol]';
@@ -7920,7 +8272,7 @@ module.exports = startOfWeek
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(37);
-  var warning = __webpack_require__(52);
+  var warning = __webpack_require__(51);
   var ReactPropTypesSecret = __webpack_require__(72);
   var loggedTypeFailures = {};
 }
@@ -7996,31 +8348,31 @@ module.exports = ReactPropTypesSecret;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(294);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(300);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(298);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(304);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(119);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(300);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(306);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(303);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(309);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(306);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(312);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(308);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(314);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(117);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(120);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(76);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(314);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(320);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(316);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(322);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(318);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(324);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(319);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(325);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
 
 
@@ -8061,11 +8413,11 @@ exports.locationsAreEqual = exports.createLocation = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _resolvePathname = __webpack_require__(113);
+var _resolvePathname = __webpack_require__(116);
 
 var _resolvePathname2 = _interopRequireDefault(_resolvePathname);
 
-var _valueEqual = __webpack_require__(114);
+var _valueEqual = __webpack_require__(117);
 
 var _valueEqual2 = _interopRequireDefault(_valueEqual);
 
@@ -8246,7 +8598,7 @@ exports.default = createTransitionManager;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -8359,7 +8711,7 @@ Router.childContextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_path_to_regexp__ = __webpack_require__(304);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_path_to_regexp__ = __webpack_require__(310);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_path_to_regexp___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_path_to_regexp__);
 
 
@@ -8520,7 +8872,7 @@ var createTransitionManager = function createTransitionManager() {
 /* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(326);
+module.exports = __webpack_require__(332);
 
 
 /***/ }),
@@ -8532,7 +8884,7 @@ module.exports = __webpack_require__(326);
 
 exports.__esModule = true;
 
-var _promise = __webpack_require__(329);
+var _promise = __webpack_require__(335);
 
 var _promise2 = _interopRequireDefault(_promise);
 
@@ -8575,6 +8927,30 @@ exports.default = function (fn) {
 
 /***/ }),
 /* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $at = __webpack_require__(337)(true);
+
+// 21.1.3.27 String.prototype[@@iterator]()
+__webpack_require__(86)(String, 'String', function (iterated) {
+  this._t = String(iterated); // target
+  this._i = 0;                // next index
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function () {
+  var O = this._t;
+  var index = this._i;
+  var point;
+  if (index >= O.length) return { value: undefined, done: true };
+  point = $at(O, index);
+  this._i += point.length;
+  return { value: point, done: false };
+});
+
+
+/***/ }),
+/* 84 */
 /***/ (function(module, exports) {
 
 // 7.1.4 ToInteger
@@ -8586,7 +8962,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports) {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -8597,20 +8973,20 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(56);
-var $export = __webpack_require__(7);
-var redefine = __webpack_require__(121);
-var hide = __webpack_require__(28);
+var LIBRARY = __webpack_require__(54);
+var $export = __webpack_require__(8);
+var redefine = __webpack_require__(124);
+var hide = __webpack_require__(29);
 var has = __webpack_require__(31);
-var Iterators = __webpack_require__(42);
-var $iterCreate = __webpack_require__(332);
-var setToStringTag = __webpack_require__(45);
-var getPrototypeOf = __webpack_require__(125);
+var Iterators = __webpack_require__(41);
+var $iterCreate = __webpack_require__(338);
+var setToStringTag = __webpack_require__(44);
+var getPrototypeOf = __webpack_require__(128);
 var ITERATOR = __webpack_require__(10)('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
 var FF_ITERATOR = '@@iterator';
@@ -8674,10 +9050,10 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(14);
+var isObject = __webpack_require__(13);
 var document = __webpack_require__(9).document;
 // typeof document.createElement is 'object' in old IE
 var is = isObject(document) && isObject(document.createElement);
@@ -8687,11 +9063,11 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(14);
+var isObject = __webpack_require__(13);
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
 module.exports = function (it, S) {
@@ -8705,18 +9081,30 @@ module.exports = function (it, S) {
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(89)('keys');
-var uid = __webpack_require__(59);
+// 7.1.15 ToLength
+var toInteger = __webpack_require__(84);
+var min = Math.min;
+module.exports = function (it) {
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var shared = __webpack_require__(91)('keys');
+var uid = __webpack_require__(57);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
 
 
 /***/ }),
-/* 89 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(9);
@@ -8728,7 +9116,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 90 */
+/* 92 */
 /***/ (function(module, exports) {
 
 // IE 8- don't enum bug keys
@@ -8738,13 +9126,13 @@ module.exports = (
 
 
 /***/ }),
-/* 91 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(336);
+__webpack_require__(342);
 var global = __webpack_require__(9);
-var hide = __webpack_require__(28);
-var Iterators = __webpack_require__(42);
+var hide = __webpack_require__(29);
+var Iterators = __webpack_require__(41);
 var TO_STRING_TAG = __webpack_require__(10)('toStringTag');
 
 var DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' +
@@ -8763,11 +9151,11 @@ for (var i = 0; i < DOMIterables.length; i++) {
 
 
 /***/ }),
-/* 92 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(44);
+var cof = __webpack_require__(43);
 var TAG = __webpack_require__(10)('toStringTag');
 // ES3 wrong here
 var ARG = cof(function () { return arguments; }()) == 'Arguments';
@@ -8792,7 +9180,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 93 */
+/* 95 */
 /***/ (function(module, exports) {
 
 module.exports = function (it, Constructor, name, forbiddenField) {
@@ -8803,7 +9191,7 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 
 
 /***/ }),
-/* 94 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8828,10 +9216,10 @@ module.exports.f = function (C) {
 
 
 /***/ }),
-/* 95 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hide = __webpack_require__(28);
+var hide = __webpack_require__(29);
 module.exports = function (target, src, safe) {
   for (var key in src) {
     if (safe && target[key]) target[key] = src[key];
@@ -8841,18 +9229,18 @@ module.exports = function (target, src, safe) {
 
 
 /***/ }),
-/* 96 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var META = __webpack_require__(59)('meta');
-var isObject = __webpack_require__(14);
+var META = __webpack_require__(57)('meta');
+var isObject = __webpack_require__(13);
 var has = __webpack_require__(31);
-var setDesc = __webpack_require__(13).f;
+var setDesc = __webpack_require__(14).f;
 var id = 0;
 var isExtensible = Object.isExtensible || function () {
   return true;
 };
-var FREEZE = !__webpack_require__(33)(function () {
+var FREEZE = !__webpack_require__(34)(function () {
   return isExtensible(Object.preventExtensions({}));
 });
 var setMeta = function (it) {
@@ -8900,21 +9288,21 @@ var meta = module.exports = {
 
 
 /***/ }),
-/* 97 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.f = __webpack_require__(10);
 
 
 /***/ }),
-/* 98 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(9);
 var core = __webpack_require__(4);
-var LIBRARY = __webpack_require__(56);
-var wksExt = __webpack_require__(97);
-var defineProperty = __webpack_require__(13).f;
+var LIBRARY = __webpack_require__(54);
+var wksExt = __webpack_require__(99);
+var defineProperty = __webpack_require__(14).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
   if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
@@ -8922,7 +9310,7 @@ module.exports = function (name) {
 
 
 /***/ }),
-/* 99 */
+/* 101 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -8950,11 +9338,11 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 100 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsEqualDeep = __webpack_require__(435),
-    isObjectLike = __webpack_require__(50);
+var baseIsEqualDeep = __webpack_require__(444),
+    isObjectLike = __webpack_require__(49);
 
 /**
  * The base implementation of `_.isEqual` which supports partial comparisons
@@ -8984,11 +9372,11 @@ module.exports = baseIsEqual;
 
 
 /***/ }),
-/* 101 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(34),
-    root = __webpack_require__(26);
+var getNative = __webpack_require__(33),
+    root = __webpack_require__(25);
 
 /* Built-in method references that are verified to be native. */
 var Map = getNative(root, 'Map');
@@ -8997,14 +9385,14 @@ module.exports = Map;
 
 
 /***/ }),
-/* 102 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mapCacheClear = __webpack_require__(452),
-    mapCacheDelete = __webpack_require__(459),
-    mapCacheGet = __webpack_require__(461),
-    mapCacheHas = __webpack_require__(462),
-    mapCacheSet = __webpack_require__(463);
+var mapCacheClear = __webpack_require__(461),
+    mapCacheDelete = __webpack_require__(468),
+    mapCacheGet = __webpack_require__(470),
+    mapCacheHas = __webpack_require__(471),
+    mapCacheSet = __webpack_require__(472);
 
 /**
  * Creates a map cache object to store key-value pairs.
@@ -9035,50 +9423,7 @@ module.exports = MapCache;
 
 
 /***/ }),
-/* 103 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayLikeKeys = __webpack_require__(480),
-    baseKeys = __webpack_require__(487),
-    isArrayLike = __webpack_require__(274);
-
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * for more details.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
-function keys(object) {
-  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
-}
-
-module.exports = keys;
-
-
-/***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -9119,10 +9464,86 @@ module.exports = isLength;
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArray = __webpack_require__(30),
+var isFunction = __webpack_require__(272),
+    isLength = __webpack_require__(105);
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+module.exports = isArrayLike;
+
+
+/***/ }),
+/* 107 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseMatches = __webpack_require__(507),
+    baseMatchesProperty = __webpack_require__(510),
+    identity = __webpack_require__(521),
+    isArray = __webpack_require__(26),
+    property = __webpack_require__(522);
+
+/**
+ * The base implementation of `_.iteratee`.
+ *
+ * @private
+ * @param {*} [value=_.identity] The value to convert to an iteratee.
+ * @returns {Function} Returns the iteratee.
+ */
+function baseIteratee(value) {
+  // Don't store the `typeof` result in a variable to avoid a JIT bug in Safari 9.
+  // See https://bugs.webkit.org/show_bug.cgi?id=156034 for more details.
+  if (typeof value == 'function') {
+    return value;
+  }
+  if (value == null) {
+    return identity;
+  }
+  if (typeof value == 'object') {
+    return isArray(value)
+      ? baseMatchesProperty(value[0], value[1])
+      : baseMatches(value);
+  }
+  return property(value);
+}
+
+module.exports = baseIteratee;
+
+
+/***/ }),
+/* 108 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isArray = __webpack_require__(26),
     isSymbol = __webpack_require__(68);
 
 /** Used to match property names within property paths. */
@@ -9154,7 +9575,7 @@ module.exports = isKey;
 
 
 /***/ }),
-/* 106 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9192,15 +9613,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(286);
+  module.exports = __webpack_require__(292);
 } else {
-  module.exports = __webpack_require__(289);
+  module.exports = __webpack_require__(295);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 107 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9239,7 +9660,7 @@ var ExecutionEnvironment = {
 module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 108 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9320,7 +9741,7 @@ module.exports = EventListener;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 109 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9362,7 +9783,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 110 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9433,7 +9854,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 111 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9448,7 +9869,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(287);
+var isTextNode = __webpack_require__(293);
 
 /*eslint-disable no-bitwise */
 
@@ -9476,7 +9897,7 @@ function containsNode(outerNode, innerNode) {
 module.exports = containsNode;
 
 /***/ }),
-/* 112 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9506,7 +9927,7 @@ function focusNode(node) {
 module.exports = focusNode;
 
 /***/ }),
-/* 113 */
+/* 116 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9583,7 +10004,7 @@ function resolvePathname(to) {
 /* harmony default export */ __webpack_exports__["default"] = (resolvePathname);
 
 /***/ }),
-/* 114 */
+/* 117 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9628,7 +10049,7 @@ function valueEqual(a, b) {
 /* harmony default export */ __webpack_exports__["default"] = (valueEqual);
 
 /***/ }),
-/* 115 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9689,13 +10110,13 @@ var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isE
 };
 
 /***/ }),
-/* 116 */
+/* 119 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
@@ -9799,18 +10220,18 @@ Link.contextTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (Link);
 
 /***/ }),
-/* 117 */
+/* 120 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Route__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Route__ = __webpack_require__(121);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_Route__["a" /* default */]);
 
 /***/ }),
-/* 118 */
+/* 121 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9820,7 +10241,7 @@ Link.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__matchPath__ = __webpack_require__(78);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -9959,7 +10380,7 @@ Route.childContextTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (Route);
 
 /***/ }),
-/* 119 */
+/* 122 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10025,29 +10446,29 @@ var isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
 };
 
 /***/ }),
-/* 120 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(16) && !__webpack_require__(33)(function () {
-  return Object.defineProperty(__webpack_require__(86)('div'), 'a', { get: function () { return 7; } }).a != 7;
+module.exports = !__webpack_require__(15) && !__webpack_require__(34)(function () {
+  return Object.defineProperty(__webpack_require__(87)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
 
 /***/ }),
-/* 121 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(28);
+module.exports = __webpack_require__(29);
 
 
 /***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(31);
 var toIObject = __webpack_require__(32);
-var arrayIndexOf = __webpack_require__(334)(false);
-var IE_PROTO = __webpack_require__(88)('IE_PROTO');
+var arrayIndexOf = __webpack_require__(340)(false);
+var IE_PROTO = __webpack_require__(90)('IE_PROTO');
 
 module.exports = function (object, names) {
   var O = toIObject(object);
@@ -10064,11 +10485,11 @@ module.exports = function (object, names) {
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(44);
+var cof = __webpack_require__(43);
 // eslint-disable-next-line no-prototype-builtins
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
@@ -10076,7 +10497,7 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var document = __webpack_require__(9).document;
@@ -10084,13 +10505,13 @@ module.exports = document && document.documentElement;
 
 
 /***/ }),
-/* 125 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(31);
-var toObject = __webpack_require__(46);
-var IE_PROTO = __webpack_require__(88)('IE_PROTO');
+var toObject = __webpack_require__(58);
+var IE_PROTO = __webpack_require__(90)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
 module.exports = Object.getPrototypeOf || function (O) {
@@ -10103,7 +10524,7 @@ module.exports = Object.getPrototypeOf || function (O) {
 
 
 /***/ }),
-/* 126 */
+/* 129 */
 /***/ (function(module, exports) {
 
 module.exports = function (done, value) {
@@ -10112,57 +10533,11 @@ module.exports = function (done, value) {
 
 
 /***/ }),
-/* 127 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// call something on iterator step with safe closing on error
-var anObject = __webpack_require__(25);
-module.exports = function (iterator, fn, value, entries) {
-  try {
-    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
-  // 7.4.6 IteratorClose(iterator, completion)
-  } catch (e) {
-    var ret = iterator['return'];
-    if (ret !== undefined) anObject(ret.call(iterator));
-    throw e;
-  }
-};
-
-
-/***/ }),
-/* 128 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// check on default Array iterator
-var Iterators = __webpack_require__(42);
-var ITERATOR = __webpack_require__(10)('iterator');
-var ArrayProto = Array.prototype;
-
-module.exports = function (it) {
-  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
-};
-
-
-/***/ }),
-/* 129 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var classof = __webpack_require__(92);
-var ITERATOR = __webpack_require__(10)('iterator');
-var Iterators = __webpack_require__(42);
-module.exports = __webpack_require__(4).getIteratorMethod = function (it) {
-  if (it != undefined) return it[ITERATOR]
-    || it['@@iterator']
-    || Iterators[classof(it)];
-};
-
-
-/***/ }),
 /* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
-var anObject = __webpack_require__(25);
+var anObject = __webpack_require__(24);
 var aFunction = __webpack_require__(40);
 var SPECIES = __webpack_require__(10)('species');
 module.exports = function (O, D) {
@@ -10176,10 +10551,10 @@ module.exports = function (O, D) {
 /* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx = __webpack_require__(24);
-var invoke = __webpack_require__(339);
-var html = __webpack_require__(124);
-var cel = __webpack_require__(86);
+var ctx = __webpack_require__(28);
+var invoke = __webpack_require__(348);
+var html = __webpack_require__(127);
+var cel = __webpack_require__(87);
 var global = __webpack_require__(9);
 var process = global.process;
 var setTask = global.setImmediate;
@@ -10219,7 +10594,7 @@ if (!setTask || !clearTask) {
     delete queue[id];
   };
   // Node.js 0.8-
-  if (__webpack_require__(44)(process) == 'process') {
+  if (__webpack_require__(43)(process) == 'process') {
     defer = function (id) {
       process.nextTick(ctx(run, id, 1));
     };
@@ -10279,9 +10654,9 @@ module.exports = function (exec) {
 /* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(25);
-var isObject = __webpack_require__(14);
-var newPromiseCapability = __webpack_require__(94);
+var anObject = __webpack_require__(24);
+var isObject = __webpack_require__(13);
+var newPromiseCapability = __webpack_require__(96);
 
 module.exports = function (C, x) {
   anObject(C);
@@ -10301,8 +10676,8 @@ module.exports = function (C, x) {
 
 var global = __webpack_require__(9);
 var core = __webpack_require__(4);
-var dP = __webpack_require__(13);
-var DESCRIPTORS = __webpack_require__(16);
+var dP = __webpack_require__(14);
+var DESCRIPTORS = __webpack_require__(15);
 var SPECIES = __webpack_require__(10)('species');
 
 module.exports = function (KEY) {
@@ -10318,35 +10693,7 @@ module.exports = function (KEY) {
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ITERATOR = __webpack_require__(10)('iterator');
-var SAFE_CLOSING = false;
-
-try {
-  var riter = [7][ITERATOR]();
-  riter['return'] = function () { SAFE_CLOSING = true; };
-  // eslint-disable-next-line no-throw-literal
-  Array.from(riter, function () { throw 2; });
-} catch (e) { /* empty */ }
-
-module.exports = function (exec, skipClosing) {
-  if (!skipClosing && !SAFE_CLOSING) return false;
-  var safe = false;
-  try {
-    var arr = [7];
-    var iter = arr[ITERATOR]();
-    iter.next = function () { return { done: safe = true }; };
-    arr[ITERATOR] = function () { return iter; };
-    exec(arr);
-  } catch (e) { /* empty */ }
-  return safe;
-};
-
-
-/***/ }),
-/* 136 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(14);
+var isObject = __webpack_require__(13);
 module.exports = function (it, TYPE) {
   if (!isObject(it) || it._t !== TYPE) throw TypeError('Incompatible receiver, ' + TYPE + ' required!');
   return it;
@@ -10354,24 +10701,24 @@ module.exports = function (it, TYPE) {
 
 
 /***/ }),
-/* 137 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.2.2 IsArray(argument)
-var cof = __webpack_require__(44);
+var cof = __webpack_require__(43);
 module.exports = Array.isArray || function isArray(arg) {
   return cof(arg) == 'Array';
 };
 
 
 /***/ }),
-/* 138 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // most Object methods by ES6 should accept primitives
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 var core = __webpack_require__(4);
-var fails = __webpack_require__(33);
+var fails = __webpack_require__(34);
 module.exports = function (KEY, exec) {
   var fn = (core.Object || {})[KEY] || Object[KEY];
   var exp = {};
@@ -10381,13 +10728,13 @@ module.exports = function (KEY, exec) {
 
 
 /***/ }),
-/* 139 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(360), __esModule: true };
+module.exports = { "default": __webpack_require__(370), __esModule: true };
 
 /***/ }),
-/* 140 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10395,11 +10742,11 @@ module.exports = { "default": __webpack_require__(360), __esModule: true };
 
 exports.__esModule = true;
 
-var _iterator = __webpack_require__(362);
+var _iterator = __webpack_require__(372);
 
 var _iterator2 = _interopRequireDefault(_iterator);
 
-var _symbol = __webpack_require__(364);
+var _symbol = __webpack_require__(374);
 
 var _symbol2 = _interopRequireDefault(_symbol);
 
@@ -10414,19 +10761,19 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 };
 
 /***/ }),
-/* 141 */
+/* 140 */
 /***/ (function(module, exports) {
 
 exports.f = Object.getOwnPropertySymbols;
 
 
 /***/ }),
-/* 142 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys = __webpack_require__(122);
-var hiddenKeys = __webpack_require__(90).concat('length', 'prototype');
+var $keys = __webpack_require__(125);
+var hiddenKeys = __webpack_require__(92).concat('length', 'prototype');
 
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
@@ -10434,18 +10781,18 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 
 
 /***/ }),
-/* 143 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE = __webpack_require__(60);
-var createDesc = __webpack_require__(41);
+var pIE = __webpack_require__(59);
+var createDesc = __webpack_require__(55);
 var toIObject = __webpack_require__(32);
-var toPrimitive = __webpack_require__(87);
+var toPrimitive = __webpack_require__(88);
 var has = __webpack_require__(31);
-var IE8_DOM_DEFINE = __webpack_require__(120);
+var IE8_DOM_DEFINE = __webpack_require__(123);
 var gOPD = Object.getOwnPropertyDescriptor;
 
-exports.f = __webpack_require__(16) ? gOPD : function getOwnPropertyDescriptor(O, P) {
+exports.f = __webpack_require__(15) ? gOPD : function getOwnPropertyDescriptor(O, P) {
   O = toIObject(O);
   P = toPrimitive(P, true);
   if (IE8_DOM_DEFINE) try {
@@ -10456,7 +10803,7 @@ exports.f = __webpack_require__(16) ? gOPD : function getOwnPropertyDescriptor(O
 
 
 /***/ }),
-/* 144 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10473,14 +10820,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaults", function() { return defaults; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_chart_js__ = __webpack_require__(386);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_chart_js__ = __webpack_require__(396);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_chart_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_chart_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_isEqual__ = __webpack_require__(434);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_isEqual__ = __webpack_require__(443);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash_isEqual___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash_isEqual__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_find__ = __webpack_require__(496);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_find__ = __webpack_require__(505);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash_find___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash_find__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_keyBy__ = __webpack_require__(530);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash_keyBy___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash_keyBy__);
 /* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "Chart", function() { return __WEBPACK_IMPORTED_MODULE_2_chart_js___default.a; });
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -10491,6 +10840,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -10511,7 +10861,7 @@ var ChartComponent = function (_React$Component) {
     }
 
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.handleOnClick = function (event) {
-      var instance = _this.chart_instance;
+      var instance = _this.chartInstance;
 
       var _this$props = _this.props,
           getDatasetAtEvent = _this$props.getDatasetAtEvent,
@@ -10530,7 +10880,7 @@ var ChartComponent = function (_React$Component) {
   }
 
   ChartComponent.prototype.componentWillMount = function componentWillMount() {
-    this.chart_instance = undefined;
+    this.chartInstance = undefined;
   };
 
   ChartComponent.prototype.componentDidMount = function componentDidMount() {
@@ -10539,7 +10889,7 @@ var ChartComponent = function (_React$Component) {
 
   ChartComponent.prototype.componentDidUpdate = function componentDidUpdate() {
     if (this.props.redraw) {
-      this.chart_instance.destroy();
+      this.chartInstance.destroy();
       this.renderChart();
       return;
     }
@@ -10588,7 +10938,7 @@ var ChartComponent = function (_React$Component) {
   };
 
   ChartComponent.prototype.componentWillUnmount = function componentWillUnmount() {
-    this.chart_instance.destroy();
+    this.chartInstance.destroy();
   };
 
   ChartComponent.prototype.transformDataProp = function transformDataProp(props) {
@@ -10632,66 +10982,49 @@ var ChartComponent = function (_React$Component) {
 
     var data = this.memoizeDataProps(this.props);
 
-    if (!this.chart_instance) return;
+    if (!this.chartInstance) return;
 
     if (options) {
-      this.chart_instance.options = __WEBPACK_IMPORTED_MODULE_2_chart_js___default.a.helpers.configMerge(this.chart_instance.options, options);
+      this.chartInstance.options = __WEBPACK_IMPORTED_MODULE_2_chart_js___default.a.helpers.configMerge(this.chartInstance.options, options);
     }
 
     // Pipe datasets to chart instance datasets enabling
     // seamless transitions
-    var currentDatasets = this.chart_instance.config.data && this.chart_instance.config.data.datasets || [];
+    var currentDatasets = this.chartInstance.config.data && this.chartInstance.config.data.datasets || [];
     var nextDatasets = data.datasets || [];
 
-    // use the key provider to work out which series have been added/removed/changed
-    var currentDatasetKeys = currentDatasets.map(this.props.datasetKeyProvider);
-    var nextDatasetKeys = nextDatasets.map(this.props.datasetKeyProvider);
-    var newDatasets = nextDatasets.filter(function (d) {
-      return currentDatasetKeys.indexOf(_this2.props.datasetKeyProvider(d)) === -1;
-    });
+    var currentDatasetsIndexed = __WEBPACK_IMPORTED_MODULE_5_lodash_keyBy___default()(currentDatasets, this.props.datasetKeyProvider);
 
-    // process the updates (via a reverse for loop so we can safely splice deleted datasets out of the array
-
-    var _loop = function _loop(idx) {
-      var currentDatasetKey = _this2.props.datasetKeyProvider(currentDatasets[idx]);
-      if (nextDatasetKeys.indexOf(currentDatasetKey) === -1) {
-        // deleted series
-        currentDatasets.splice(idx, 1);
-      } else {
-        var retainedDataset = __WEBPACK_IMPORTED_MODULE_4_lodash_find___default()(nextDatasets, function (d) {
-          return _this2.props.datasetKeyProvider(d) === currentDatasetKey;
+    // We can safely replace the dataset array, as long as we retain the _meta property
+    // on each dataset.
+    this.chartInstance.config.data.datasets = nextDatasets.map(function (next) {
+      var current = currentDatasetsIndexed[_this2.props.datasetKeyProvider(next)];
+      if (current && current.type === next.type) {
+        // The data array must be edited in place. As chart.js adds listeners to it.
+        current.data.splice(next.data.length);
+        next.data.forEach(function (point, pid) {
+          current.data[pid] = next.data[pid];
         });
-        if (retainedDataset) {
-          // update it in place if it is a retained dataset
-          currentDatasets[idx].data.splice(retainedDataset.data.length);
-          retainedDataset.data.forEach(function (point, pid) {
-            currentDatasets[idx].data[pid] = retainedDataset.data[pid];
-          });
 
-          var _data = retainedDataset.data,
-              otherProps = _objectWithoutProperties(retainedDataset, ['data']);
+        var _data = next.data,
+            otherProps = _objectWithoutProperties(next, ['data']);
+        // Merge properties. Notice a weakness here. If a property is removed
+        // from next, it will be retained by current and never disappears.
+        // Workaround is to set value to null or undefined in next.
 
-          currentDatasets[idx] = _extends({
-            data: currentDatasets[idx].data
-          }, currentDatasets[idx], otherProps);
-        }
+
+        return _extends({}, current, otherProps);
+      } else {
+        return next;
       }
-    };
-
-    for (var idx = currentDatasets.length - 1; idx >= 0; idx -= 1) {
-      _loop(idx);
-    }
-    // finally add any new series
-    newDatasets.forEach(function (d) {
-      return currentDatasets.push(d);
     });
 
     var datasets = data.datasets,
         rest = _objectWithoutProperties(data, ['datasets']);
 
-    this.chart_instance.config.data = _extends({}, this.chart_instance.config.data, rest);
+    this.chartInstance.config.data = _extends({}, this.chartInstance.config.data, rest);
 
-    this.chart_instance.update();
+    this.chartInstance.update();
   };
 
   ChartComponent.prototype.renderChart = function renderChart() {
@@ -10709,7 +11042,7 @@ var ChartComponent = function (_React$Component) {
       options.legend = legend;
     }
 
-    this.chart_instance = new __WEBPACK_IMPORTED_MODULE_2_chart_js___default.a(node, {
+    this.chartInstance = new __WEBPACK_IMPORTED_MODULE_2_chart_js___default.a(node, {
       type: type,
       data: data,
       options: options,
@@ -10788,7 +11121,7 @@ var Doughnut = function (_React$Component2) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref) {
-        return _this4.chart_instance = _ref && _ref.chart_instance;
+        return _this4.chartInstance = _ref && _ref.chartInstance;
       },
       type: 'doughnut'
     }));
@@ -10811,7 +11144,7 @@ var Pie = function (_React$Component3) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref2) {
-        return _this6.chart_instance = _ref2 && _ref2.chart_instance;
+        return _this6.chartInstance = _ref2 && _ref2.chartInstance;
       },
       type: 'pie'
     }));
@@ -10834,7 +11167,7 @@ var Line = function (_React$Component4) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref3) {
-        return _this8.chart_instance = _ref3 && _ref3.chart_instance;
+        return _this8.chartInstance = _ref3 && _ref3.chartInstance;
       },
       type: 'line'
     }));
@@ -10857,7 +11190,7 @@ var Bar = function (_React$Component5) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref4) {
-        return _this10.chart_instance = _ref4 && _ref4.chart_instance;
+        return _this10.chartInstance = _ref4 && _ref4.chartInstance;
       },
       type: 'bar'
     }));
@@ -10880,7 +11213,7 @@ var HorizontalBar = function (_React$Component6) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref5) {
-        return _this12.chart_instance = _ref5 && _ref5.chart_instance;
+        return _this12.chartInstance = _ref5 && _ref5.chartInstance;
       },
       type: 'horizontalBar'
     }));
@@ -10903,7 +11236,7 @@ var Radar = function (_React$Component7) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref6) {
-        return _this14.chart_instance = _ref6 && _ref6.chart_instance;
+        return _this14.chartInstance = _ref6 && _ref6.chartInstance;
       },
       type: 'radar'
     }));
@@ -10926,7 +11259,7 @@ var Polar = function (_React$Component8) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref7) {
-        return _this16.chart_instance = _ref7 && _ref7.chart_instance;
+        return _this16.chartInstance = _ref7 && _ref7.chartInstance;
       },
       type: 'polarArea'
     }));
@@ -10949,7 +11282,7 @@ var Bubble = function (_React$Component9) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref8) {
-        return _this18.chart_instance = _ref8 && _ref8.chart_instance;
+        return _this18.chartInstance = _ref8 && _ref8.chartInstance;
       },
       type: 'bubble'
     }));
@@ -10972,7 +11305,7 @@ var Scatter = function (_React$Component10) {
 
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ChartComponent, _extends({}, this.props, {
       ref: function ref(_ref9) {
-        return _this20.chart_instance = _ref9 && _ref9.chart_instance;
+        return _this20.chartInstance = _ref9 && _ref9.chartInstance;
       },
       type: 'scatter'
     }));
@@ -10985,12 +11318,12 @@ var defaults = __WEBPACK_IMPORTED_MODULE_2_chart_js___default.a.defaults;
 
 
 /***/ }),
-/* 145 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var convert = __webpack_require__(392);
-var string = __webpack_require__(394);
+var convert = __webpack_require__(402);
+var string = __webpack_require__(404);
 
 var Color = function (obj) {
 	if (obj instanceof Color) {
@@ -11476,7 +11809,7 @@ module.exports = Color;
 
 
 /***/ }),
-/* 146 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11813,15 +12146,15 @@ module.exports = {
 
 
 /***/ }),
-/* 147 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var helpers = __webpack_require__(1);
-var basic = __webpack_require__(400);
-var dom = __webpack_require__(401);
+var basic = __webpack_require__(410);
+var dom = __webpack_require__(411);
 
 // @TODO Make possible to select another platform at build time.
 var implementation = dom._enabled ? dom : basic;
@@ -11894,12 +12227,399 @@ module.exports = helpers.extend({
 
 
 /***/ }),
+/* 147 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(3);
+var helpers = __webpack_require__(1);
+
+defaults._set('global', {
+	plugins: {}
+});
+
+/**
+ * The plugin service singleton
+ * @namespace Chart.plugins
+ * @since 2.1.0
+ */
+module.exports = {
+	/**
+	 * Globally registered plugins.
+	 * @private
+	 */
+	_plugins: [],
+
+	/**
+	 * This identifier is used to invalidate the descriptors cache attached to each chart
+	 * when a global plugin is registered or unregistered. In this case, the cache ID is
+	 * incremented and descriptors are regenerated during following API calls.
+	 * @private
+	 */
+	_cacheId: 0,
+
+	/**
+	 * Registers the given plugin(s) if not already registered.
+	 * @param {Array|Object} plugins plugin instance(s).
+	 */
+	register: function(plugins) {
+		var p = this._plugins;
+		([]).concat(plugins).forEach(function(plugin) {
+			if (p.indexOf(plugin) === -1) {
+				p.push(plugin);
+			}
+		});
+
+		this._cacheId++;
+	},
+
+	/**
+	 * Unregisters the given plugin(s) only if registered.
+	 * @param {Array|Object} plugins plugin instance(s).
+	 */
+	unregister: function(plugins) {
+		var p = this._plugins;
+		([]).concat(plugins).forEach(function(plugin) {
+			var idx = p.indexOf(plugin);
+			if (idx !== -1) {
+				p.splice(idx, 1);
+			}
+		});
+
+		this._cacheId++;
+	},
+
+	/**
+	 * Remove all registered plugins.
+	 * @since 2.1.5
+	 */
+	clear: function() {
+		this._plugins = [];
+		this._cacheId++;
+	},
+
+	/**
+	 * Returns the number of registered plugins?
+	 * @returns {Number}
+	 * @since 2.1.5
+	 */
+	count: function() {
+		return this._plugins.length;
+	},
+
+	/**
+	 * Returns all registered plugin instances.
+	 * @returns {Array} array of plugin objects.
+	 * @since 2.1.5
+	 */
+	getAll: function() {
+		return this._plugins;
+	},
+
+	/**
+	 * Calls enabled plugins for `chart` on the specified hook and with the given args.
+	 * This method immediately returns as soon as a plugin explicitly returns false. The
+	 * returned value can be used, for instance, to interrupt the current action.
+	 * @param {Object} chart - The chart instance for which plugins should be called.
+	 * @param {String} hook - The name of the plugin method to call (e.g. 'beforeUpdate').
+	 * @param {Array} [args] - Extra arguments to apply to the hook call.
+	 * @returns {Boolean} false if any of the plugins return false, else returns true.
+	 */
+	notify: function(chart, hook, args) {
+		var descriptors = this.descriptors(chart);
+		var ilen = descriptors.length;
+		var i, descriptor, plugin, params, method;
+
+		for (i = 0; i < ilen; ++i) {
+			descriptor = descriptors[i];
+			plugin = descriptor.plugin;
+			method = plugin[hook];
+			if (typeof method === 'function') {
+				params = [chart].concat(args || []);
+				params.push(descriptor.options);
+				if (method.apply(plugin, params) === false) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	},
+
+	/**
+	 * Returns descriptors of enabled plugins for the given chart.
+	 * @returns {Array} [{ plugin, options }]
+	 * @private
+	 */
+	descriptors: function(chart) {
+		var cache = chart.$plugins || (chart.$plugins = {});
+		if (cache.id === this._cacheId) {
+			return cache.descriptors;
+		}
+
+		var plugins = [];
+		var descriptors = [];
+		var config = (chart && chart.config) || {};
+		var options = (config.options && config.options.plugins) || {};
+
+		this._plugins.concat(config.plugins || []).forEach(function(plugin) {
+			var idx = plugins.indexOf(plugin);
+			if (idx !== -1) {
+				return;
+			}
+
+			var id = plugin.id;
+			var opts = options[id];
+			if (opts === false) {
+				return;
+			}
+
+			if (opts === true) {
+				opts = helpers.clone(defaults.global.plugins[id]);
+			}
+
+			plugins.push(plugin);
+			descriptors.push({
+				plugin: plugin,
+				options: opts || {}
+			});
+		});
+
+		cache.descriptors = descriptors;
+		cache.id = this._cacheId;
+		return descriptors;
+	},
+
+	/**
+	 * Invalidates cache for the given chart: descriptors hold a reference on plugin option,
+	 * but in some cases, this reference can be changed by the user when updating options.
+	 * https://github.com/chartjs/Chart.js/issues/5111#issuecomment-355934167
+	 * @private
+	 */
+	_invalidate: function(chart) {
+		delete chart.$plugins;
+	}
+};
+
+/**
+ * Plugin extension hooks.
+ * @interface IPlugin
+ * @since 2.1.0
+ */
+/**
+ * @method IPlugin#beforeInit
+ * @desc Called before initializing `chart`.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#afterInit
+ * @desc Called after `chart` has been initialized and before the first update.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeUpdate
+ * @desc Called before updating `chart`. If any plugin returns `false`, the update
+ * is cancelled (and thus subsequent render(s)) until another `update` is triggered.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart update.
+ */
+/**
+ * @method IPlugin#afterUpdate
+ * @desc Called after `chart` has been updated and before rendering. Note that this
+ * hook will not be called if the chart update has been previously cancelled.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeDatasetsUpdate
+ * @desc Called before updating the `chart` datasets. If any plugin returns `false`,
+ * the datasets update is cancelled until another `update` is triggered.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} false to cancel the datasets update.
+ * @since version 2.1.5
+*/
+/**
+ * @method IPlugin#afterDatasetsUpdate
+ * @desc Called after the `chart` datasets have been updated. Note that this hook
+ * will not be called if the datasets update has been previously cancelled.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ * @since version 2.1.5
+ */
+/**
+ * @method IPlugin#beforeDatasetUpdate
+ * @desc Called before updating the `chart` dataset at the given `args.index`. If any plugin
+ * returns `false`, the datasets update is cancelled until another `update` is triggered.
+ * @param {Chart} chart - The chart instance.
+ * @param {Object} args - The call arguments.
+ * @param {Number} args.index - The dataset index.
+ * @param {Object} args.meta - The dataset metadata.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart datasets drawing.
+ */
+/**
+ * @method IPlugin#afterDatasetUpdate
+ * @desc Called after the `chart` datasets at the given `args.index` has been updated. Note
+ * that this hook will not be called if the datasets update has been previously cancelled.
+ * @param {Chart} chart - The chart instance.
+ * @param {Object} args - The call arguments.
+ * @param {Number} args.index - The dataset index.
+ * @param {Object} args.meta - The dataset metadata.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeLayout
+ * @desc Called before laying out `chart`. If any plugin returns `false`,
+ * the layout update is cancelled until another `update` is triggered.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart layout.
+ */
+/**
+ * @method IPlugin#afterLayout
+ * @desc Called after the `chart` has been layed out. Note that this hook will not
+ * be called if the layout update has been previously cancelled.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeRender
+ * @desc Called before rendering `chart`. If any plugin returns `false`,
+ * the rendering is cancelled until another `render` is triggered.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart rendering.
+ */
+/**
+ * @method IPlugin#afterRender
+ * @desc Called after the `chart` has been fully rendered (and animation completed). Note
+ * that this hook will not be called if the rendering has been previously cancelled.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeDraw
+ * @desc Called before drawing `chart` at every animation frame specified by the given
+ * easing value. If any plugin returns `false`, the frame drawing is cancelled until
+ * another `render` is triggered.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart drawing.
+ */
+/**
+ * @method IPlugin#afterDraw
+ * @desc Called after the `chart` has been drawn for the specific easing value. Note
+ * that this hook will not be called if the drawing has been previously cancelled.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeDatasetsDraw
+ * @desc Called before drawing the `chart` datasets. If any plugin returns `false`,
+ * the datasets drawing is cancelled until another `render` is triggered.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart datasets drawing.
+ */
+/**
+ * @method IPlugin#afterDatasetsDraw
+ * @desc Called after the `chart` datasets have been drawn. Note that this hook
+ * will not be called if the datasets drawing has been previously cancelled.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeDatasetDraw
+ * @desc Called before drawing the `chart` dataset at the given `args.index` (datasets
+ * are drawn in the reverse order). If any plugin returns `false`, the datasets drawing
+ * is cancelled until another `render` is triggered.
+ * @param {Chart} chart - The chart instance.
+ * @param {Object} args - The call arguments.
+ * @param {Number} args.index - The dataset index.
+ * @param {Object} args.meta - The dataset metadata.
+ * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart datasets drawing.
+ */
+/**
+ * @method IPlugin#afterDatasetDraw
+ * @desc Called after the `chart` datasets at the given `args.index` have been drawn
+ * (datasets are drawn in the reverse order). Note that this hook will not be called
+ * if the datasets drawing has been previously cancelled.
+ * @param {Chart} chart - The chart instance.
+ * @param {Object} args - The call arguments.
+ * @param {Number} args.index - The dataset index.
+ * @param {Object} args.meta - The dataset metadata.
+ * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeTooltipDraw
+ * @desc Called before drawing the `tooltip`. If any plugin returns `false`,
+ * the tooltip drawing is cancelled until another `render` is triggered.
+ * @param {Chart} chart - The chart instance.
+ * @param {Object} args - The call arguments.
+ * @param {Object} args.tooltip - The tooltip.
+ * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ * @returns {Boolean} `false` to cancel the chart tooltip drawing.
+ */
+/**
+ * @method IPlugin#afterTooltipDraw
+ * @desc Called after drawing the `tooltip`. Note that this hook will not
+ * be called if the tooltip drawing has been previously cancelled.
+ * @param {Chart} chart - The chart instance.
+ * @param {Object} args - The call arguments.
+ * @param {Object} args.tooltip - The tooltip.
+ * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#beforeEvent
+ * @desc Called before processing the specified `event`. If any plugin returns `false`,
+ * the event will be discarded.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {IEvent} event - The event object.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#afterEvent
+ * @desc Called after the `event` has been consumed. Note that this hook
+ * will not be called if the `event` has been previously discarded.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {IEvent} event - The event object.
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#resize
+ * @desc Called after the chart as been resized.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Number} size - The new canvas display size (eq. canvas.style width & height).
+ * @param {Object} options - The plugin options.
+ */
+/**
+ * @method IPlugin#destroy
+ * @desc Called after the chart as been destroyed.
+ * @param {Chart.Controller} chart - The chart instance.
+ * @param {Object} options - The plugin options.
+ */
+
+
+/***/ }),
 /* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Afrikaans [af]
-//! author : Werner Mollentze : https://github.com/wernerm
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -11945,6 +12665,7 @@ var af = moment.defineLocale('af', {
         future : 'oor %s',
         past : '%s gelede',
         s : '\'n paar sekondes',
+        ss : '%d sekondes',
         m : '\'n minuut',
         mm : '%d minute',
         h : '\'n uur',
@@ -11976,10 +12697,6 @@ return af;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Arabic [ar]
-//! author : Abdel Said: https://github.com/abdelsaid
-//! author : Ahmed Elkhatib
-//! author : forabi https://github.com/forabi
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -11999,8 +12716,7 @@ var symbolMap = {
     '8': '٨',
     '9': '٩',
     '0': '٠'
-};
-var numberMap = {
+}, numberMap = {
     '١': '1',
     '٢': '2',
     '٣': '3',
@@ -12011,19 +12727,16 @@ var numberMap = {
     '٨': '8',
     '٩': '9',
     '٠': '0'
-};
-var pluralForm = function (n) {
+}, pluralForm = function (n) {
     return n === 0 ? 0 : n === 1 ? 1 : n === 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5;
-};
-var plurals = {
+}, plurals = {
     s : ['أقل من ثانية', 'ثانية واحدة', ['ثانيتان', 'ثانيتين'], '%d ثوان', '%d ثانية', '%d ثانية'],
     m : ['أقل من دقيقة', 'دقيقة واحدة', ['دقيقتان', 'دقيقتين'], '%d دقائق', '%d دقيقة', '%d دقيقة'],
     h : ['أقل من ساعة', 'ساعة واحدة', ['ساعتان', 'ساعتين'], '%d ساعات', '%d ساعة', '%d ساعة'],
     d : ['أقل من يوم', 'يوم واحد', ['يومان', 'يومين'], '%d أيام', '%d يومًا', '%d يوم'],
     M : ['أقل من شهر', 'شهر واحد', ['شهران', 'شهرين'], '%d أشهر', '%d شهرا', '%d شهر'],
     y : ['أقل من عام', 'عام واحد', ['عامان', 'عامين'], '%d أعوام', '%d عامًا', '%d عام']
-};
-var pluralize = function (u) {
+}, pluralize = function (u) {
     return function (number, withoutSuffix, string, isFuture) {
         var f = pluralForm(number),
             str = plurals[u][pluralForm(number)];
@@ -12032,20 +12745,19 @@ var pluralize = function (u) {
         }
         return str.replace(/%d/i, number);
     };
-};
-var months = [
-    'كانون الثاني يناير',
-    'شباط فبراير',
-    'آذار مارس',
-    'نيسان أبريل',
-    'أيار مايو',
-    'حزيران يونيو',
-    'تموز يوليو',
-    'آب أغسطس',
-    'أيلول سبتمبر',
-    'تشرين الأول أكتوبر',
-    'تشرين الثاني نوفمبر',
-    'كانون الأول ديسمبر'
+}, months = [
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر'
 ];
 
 var ar = moment.defineLocale('ar', {
@@ -12086,6 +12798,7 @@ var ar = moment.defineLocale('ar', {
         future : 'بعد %s',
         past : 'منذ %s',
         s : pluralize('s'),
+        ss : pluralize('s'),
         m : pluralize('m'),
         mm : pluralize('m'),
         h : pluralize('h'),
@@ -12098,7 +12811,7 @@ var ar = moment.defineLocale('ar', {
         yy : pluralize('y')
     },
     preparse: function (string) {
-        return string.replace(/\u200f/g, '').replace(/[١٢٣٤٥٦٧٨٩٠]/g, function (match) {
+        return string.replace(/[١٢٣٤٥٦٧٨٩٠]/g, function (match) {
             return numberMap[match];
         }).replace(/،/g, ',');
     },
@@ -12123,8 +12836,6 @@ return ar;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Arabic (Algeria) [ar-dz]
-//! author : Noureddine LOUAHEDJ : https://github.com/noureddineme
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12160,6 +12871,7 @@ var arDz = moment.defineLocale('ar-dz', {
         future : 'في %s',
         past : 'منذ %s',
         s : 'ثوان',
+        ss : '%d ثانية',
         m : 'دقيقة',
         mm : '%d دقائق',
         h : 'ساعة',
@@ -12187,8 +12899,6 @@ return arDz;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Arabic (Kuwait) [ar-kw]
-//! author : Nusret Parlak: https://github.com/nusretparlak
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12224,6 +12934,7 @@ var arKw = moment.defineLocale('ar-kw', {
         future : 'في %s',
         past : 'منذ %s',
         s : 'ثوان',
+        ss : '%d ثانية',
         m : 'دقيقة',
         mm : '%d دقائق',
         h : 'ساعة',
@@ -12251,8 +12962,6 @@ return arKw;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Arabic (Lybia) [ar-ly]
-//! author : Ali Hmer: https://github.com/kikoanis
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12272,19 +12981,16 @@ var symbolMap = {
     '8': '8',
     '9': '9',
     '0': '0'
-};
-var pluralForm = function (n) {
+}, pluralForm = function (n) {
     return n === 0 ? 0 : n === 1 ? 1 : n === 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5;
-};
-var plurals = {
+}, plurals = {
     s : ['أقل من ثانية', 'ثانية واحدة', ['ثانيتان', 'ثانيتين'], '%d ثوان', '%d ثانية', '%d ثانية'],
     m : ['أقل من دقيقة', 'دقيقة واحدة', ['دقيقتان', 'دقيقتين'], '%d دقائق', '%d دقيقة', '%d دقيقة'],
     h : ['أقل من ساعة', 'ساعة واحدة', ['ساعتان', 'ساعتين'], '%d ساعات', '%d ساعة', '%d ساعة'],
     d : ['أقل من يوم', 'يوم واحد', ['يومان', 'يومين'], '%d أيام', '%d يومًا', '%d يوم'],
     M : ['أقل من شهر', 'شهر واحد', ['شهران', 'شهرين'], '%d أشهر', '%d شهرا', '%d شهر'],
     y : ['أقل من عام', 'عام واحد', ['عامان', 'عامين'], '%d أعوام', '%d عامًا', '%d عام']
-};
-var pluralize = function (u) {
+}, pluralize = function (u) {
     return function (number, withoutSuffix, string, isFuture) {
         var f = pluralForm(number),
             str = plurals[u][pluralForm(number)];
@@ -12293,8 +12999,7 @@ var pluralize = function (u) {
         }
         return str.replace(/%d/i, number);
     };
-};
-var months = [
+}, months = [
     'يناير',
     'فبراير',
     'مارس',
@@ -12347,6 +13052,7 @@ var arLy = moment.defineLocale('ar-ly', {
         future : 'بعد %s',
         past : 'منذ %s',
         s : pluralize('s'),
+        ss : pluralize('s'),
         m : pluralize('m'),
         mm : pluralize('m'),
         h : pluralize('h'),
@@ -12359,7 +13065,7 @@ var arLy = moment.defineLocale('ar-ly', {
         yy : pluralize('y')
     },
     preparse: function (string) {
-        return string.replace(/\u200f/g, '').replace(/،/g, ',');
+        return string.replace(/،/g, ',');
     },
     postformat: function (string) {
         return string.replace(/\d/g, function (match) {
@@ -12382,9 +13088,6 @@ return arLy;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Arabic (Morocco) [ar-ma]
-//! author : ElFadili Yassine : https://github.com/ElFadiliY
-//! author : Abdel Said : https://github.com/abdelsaid
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12420,6 +13123,7 @@ var arMa = moment.defineLocale('ar-ma', {
         future : 'في %s',
         past : 'منذ %s',
         s : 'ثوان',
+        ss : '%d ثانية',
         m : 'دقيقة',
         mm : '%d دقائق',
         h : 'ساعة',
@@ -12447,8 +13151,6 @@ return arMa;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Arabic (Saudi Arabia) [ar-sa]
-//! author : Suhail Alkowaileet : https://github.com/xsoh
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12468,8 +13170,7 @@ var symbolMap = {
     '8': '٨',
     '9': '٩',
     '0': '٠'
-};
-var numberMap = {
+}, numberMap = {
     '١': '1',
     '٢': '2',
     '٣': '3',
@@ -12520,6 +13221,7 @@ var arSa = moment.defineLocale('ar-sa', {
         future : 'في %s',
         past : 'منذ %s',
         s : 'ثوان',
+        ss : '%d ثانية',
         m : 'دقيقة',
         mm : '%d دقائق',
         h : 'ساعة',
@@ -12557,8 +13259,6 @@ return arSa;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale  :  Arabic (Tunisia) [ar-tn]
-//! author : Nader Toukabri : https://github.com/naderio
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12594,6 +13294,7 @@ var arTn = moment.defineLocale('ar-tn', {
         future: 'في %s',
         past: 'منذ %s',
         s: 'ثوان',
+        ss : '%d ثانية',
         m: 'دقيقة',
         mm: '%d دقائق',
         h: 'ساعة',
@@ -12621,8 +13322,6 @@ return arTn;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Azerbaijani [az]
-//! author : topchiyev : https://github.com/topchiyev
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12679,6 +13378,7 @@ var az = moment.defineLocale('az', {
         future : '%s sonra',
         past : '%s əvvəl',
         s : 'birneçə saniyyə',
+        ss : '%d saniyə',
         m : 'bir dəqiqə',
         mm : '%d dəqiqə',
         h : 'bir saat',
@@ -12731,10 +13431,6 @@ return az;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Belarusian [be]
-//! author : Dmitry Demidov : https://github.com/demidov91
-//! author: Praleska: http://praleska.pro/
-//! Author : Menelion Elensúle : https://github.com/Oire
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12749,6 +13445,7 @@ function plural(word, num) {
 }
 function relativeTimeWithPlural(number, withoutSuffix, key) {
     var format = {
+        'ss': withoutSuffix ? 'секунда_секунды_секунд' : 'секунду_секунды_секунд',
         'mm': withoutSuffix ? 'хвіліна_хвіліны_хвілін' : 'хвіліну_хвіліны_хвілін',
         'hh': withoutSuffix ? 'гадзіна_гадзіны_гадзін' : 'гадзіну_гадзіны_гадзін',
         'dd': 'дзень_дні_дзён',
@@ -12870,8 +13567,6 @@ return be;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Bulgarian [bg]
-//! author : Krasen Borisov : https://github.com/kraz
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12918,6 +13613,7 @@ var bg = moment.defineLocale('bg', {
         future : 'след %s',
         past : 'преди %s',
         s : 'няколко секунди',
+        ss : '%d секунди',
         m : 'минута',
         mm : '%d минути',
         h : 'час',
@@ -12965,8 +13661,68 @@ return bg;
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Bengali [bn]
-//! author : Kaushik Gandhi : https://github.com/kaushikgandhi
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var bm = moment.defineLocale('bm', {
+    months : 'Zanwuyekalo_Fewuruyekalo_Marisikalo_Awirilikalo_Mɛkalo_Zuwɛnkalo_Zuluyekalo_Utikalo_Sɛtanburukalo_ɔkutɔburukalo_Nowanburukalo_Desanburukalo'.split('_'),
+    monthsShort : 'Zan_Few_Mar_Awi_Mɛ_Zuw_Zul_Uti_Sɛt_ɔku_Now_Des'.split('_'),
+    weekdays : 'Kari_Ntɛnɛn_Tarata_Araba_Alamisa_Juma_Sibiri'.split('_'),
+    weekdaysShort : 'Kar_Ntɛ_Tar_Ara_Ala_Jum_Sib'.split('_'),
+    weekdaysMin : 'Ka_Nt_Ta_Ar_Al_Ju_Si'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'MMMM [tile] D [san] YYYY',
+        LLL : 'MMMM [tile] D [san] YYYY [lɛrɛ] HH:mm',
+        LLLL : 'dddd MMMM [tile] D [san] YYYY [lɛrɛ] HH:mm'
+    },
+    calendar : {
+        sameDay : '[Bi lɛrɛ] LT',
+        nextDay : '[Sini lɛrɛ] LT',
+        nextWeek : 'dddd [don lɛrɛ] LT',
+        lastDay : '[Kunu lɛrɛ] LT',
+        lastWeek : 'dddd [tɛmɛnen lɛrɛ] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : '%s kɔnɔ',
+        past : 'a bɛ %s bɔ',
+        s : 'sanga dama dama',
+        ss : 'sekondi %d',
+        m : 'miniti kelen',
+        mm : 'miniti %d',
+        h : 'lɛrɛ kelen',
+        hh : 'lɛrɛ %d',
+        d : 'tile kelen',
+        dd : 'tile %d',
+        M : 'kalo kelen',
+        MM : 'kalo %d',
+        y : 'san kelen',
+        yy : 'san %d'
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return bm;
+
+})));
+
+
+/***/ }),
+/* 160 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -12986,8 +13742,8 @@ var symbolMap = {
     '8': '৮',
     '9': '৯',
     '0': '০'
-};
-var numberMap = {
+},
+numberMap = {
     '১': '1',
     '২': '2',
     '৩': '3',
@@ -13026,6 +13782,7 @@ var bn = moment.defineLocale('bn', {
         future : '%s পরে',
         past : '%s আগে',
         s : 'কয়েক সেকেন্ড',
+        ss : '%d সেকেন্ড',
         m : 'এক মিনিট',
         mm : '%d মিনিট',
         h : 'এক ঘন্টা',
@@ -13085,12 +13842,10 @@ return bn;
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Tibetan [bo]
-//! author : Thupten N. Chakrishar : https://github.com/vajradog
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13110,8 +13865,8 @@ var symbolMap = {
     '8': '༨',
     '9': '༩',
     '0': '༠'
-};
-var numberMap = {
+},
+numberMap = {
     '༡': '1',
     '༢': '2',
     '༣': '3',
@@ -13150,6 +13905,7 @@ var bo = moment.defineLocale('bo', {
         future : '%s ལ་',
         past : '%s སྔན་ལ',
         s : 'ལམ་སང',
+        ss : '%d སྐར་ཆ།',
         m : 'སྐར་མ་གཅིག',
         mm : '%d སྐར་མ',
         h : 'ཆུ་ཚོད་གཅིག',
@@ -13209,12 +13965,10 @@ return bo;
 
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Breton [br]
-//! author : Jean-Baptiste Le Duigou : https://github.com/jbleduigou
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13294,6 +14048,7 @@ var br = moment.defineLocale('br', {
         future : 'a-benn %s',
         past : '%s \'zo',
         s : 'un nebeud segondennoù',
+        ss : '%d eilenn',
         m : 'ur vunutenn',
         mm : relativeTimeWithMutation,
         h : 'un eur',
@@ -13322,13 +14077,10 @@ return br;
 
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Bosnian [bs]
-//! author : Nedim Cholich : https://github.com/frontyard
-//! based on (hr) translation by Bojan Marković
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13340,6 +14092,15 @@ return br;
 function translate(number, withoutSuffix, key) {
     var result = number + ' ';
     switch (key) {
+        case 'ss':
+            if (number === 1) {
+                result += 'sekunda';
+            } else if (number === 2 || number === 3 || number === 4) {
+                result += 'sekunde';
+            } else {
+                result += 'sekundi';
+            }
+            return result;
         case 'm':
             return withoutSuffix ? 'jedna minuta' : 'jedne minute';
         case 'mm':
@@ -13445,6 +14206,7 @@ var bs = moment.defineLocale('bs', {
         future : 'za %s',
         past   : 'prije %s',
         s      : 'par sekundi',
+        ss     : translate,
         m      : translate,
         mm     : translate,
         h      : translate,
@@ -13470,12 +14232,10 @@ return bs;
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Catalan [ca]
-//! author : Juan G. Hurtado : https://github.com/juanghurtado
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13494,17 +14254,17 @@ var ca = moment.defineLocale('ca', {
     monthsParseExact : true,
     weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
     weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
-    weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+    weekdaysMin : 'dg_dl_dt_dc_dj_dv_ds'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'H:mm',
         LTS : 'H:mm:ss',
         L : 'DD/MM/YYYY',
-        LL : '[el] D MMMM [de] YYYY',
+        LL : 'D MMMM [de] YYYY',
         ll : 'D MMM YYYY',
-        LLL : '[el] D MMMM [de] YYYY [a les] H:mm',
+        LLL : 'D MMMM [de] YYYY [a les] H:mm',
         lll : 'D MMM YYYY, H:mm',
-        LLLL : '[el] dddd D MMMM [de] YYYY [a les] H:mm',
+        LLLL : 'dddd D MMMM [de] YYYY [a les] H:mm',
         llll : 'ddd D MMM YYYY, H:mm'
     },
     calendar : {
@@ -13529,6 +14289,7 @@ var ca = moment.defineLocale('ca', {
         future : 'd\'aquí %s',
         past : 'fa %s',
         s : 'uns segons',
+        ss : '%d segons',
         m : 'un minut',
         mm : '%d minuts',
         h : 'una hora',
@@ -13563,12 +14324,10 @@ return ca;
 
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Czech [cs]
-//! author : petrbela : https://github.com/petrbela
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13577,8 +14336,8 @@ return ca;
 }(this, (function (moment) { 'use strict';
 
 
-var months = 'leden_únor_březen_duben_květen_červen_červenec_srpen_září_říjen_listopad_prosinec'.split('_');
-var monthsShort = 'led_úno_bře_dub_kvě_čvn_čvc_srp_zář_říj_lis_pro'.split('_');
+var months = 'leden_únor_březen_duben_květen_červen_červenec_srpen_září_říjen_listopad_prosinec'.split('_'),
+    monthsShort = 'led_úno_bře_dub_kvě_čvn_čvc_srp_zář_říj_lis_pro'.split('_');
 function plural(n) {
     return (n > 1) && (n < 5) && (~~(n / 10) !== 1);
 }
@@ -13587,6 +14346,13 @@ function translate(number, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':  // a few seconds / in a few seconds / a few seconds ago
             return (withoutSuffix || isFuture) ? 'pár sekund' : 'pár sekundami';
+        case 'ss': // 9 seconds / in 9 seconds / 9 seconds ago
+            if (withoutSuffix || isFuture) {
+                return result + (plural(number) ? 'sekundy' : 'sekund');
+            } else {
+                return result + 'sekundami';
+            }
+            break;
         case 'm':  // a minute / in a minute / a minute ago
             return withoutSuffix ? 'minuta' : (isFuture ? 'minutu' : 'minutou');
         case 'mm': // 9 minutes / in 9 minutes / 9 minutes ago
@@ -13715,6 +14481,7 @@ var cs = moment.defineLocale('cs', {
         future : 'za %s',
         past : 'před %s',
         s : translate,
+        ss : translate,
         m : translate,
         mm : translate,
         h : translate,
@@ -13740,12 +14507,10 @@ return cs;
 
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Chuvash [cv]
-//! author : Anatoly Mironov : https://github.com/mirontoli
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13783,6 +14548,7 @@ var cv = moment.defineLocale('cv', {
         },
         past : '%s каялла',
         s : 'пӗр-ик ҫеккунт',
+        ss : '%d ҫеккунт',
         m : 'пӗр минут',
         mm : '%d минут',
         h : 'пӗр сехет',
@@ -13808,13 +14574,10 @@ return cv;
 
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Welsh [cy]
-//! author : Robert Allen : https://github.com/robgallen
-//! author : https://github.com/ryangreaves
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13851,6 +14614,7 @@ var cy = moment.defineLocale('cy', {
         future: 'mewn %s',
         past: '%s yn ôl',
         s: 'ychydig eiliadau',
+        ss: '%d eiliad',
         m: 'munud',
         mm: '%d munud',
         h: 'awr',
@@ -13894,12 +14658,10 @@ return cy;
 
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Danish [da]
-//! author : Ulrik Nielsen : https://github.com/mrbase
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13917,7 +14679,7 @@ var da = moment.defineLocale('da', {
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
-        L : 'DD/MM/YYYY',
+        L : 'DD.MM.YYYY',
         LL : 'D. MMMM YYYY',
         LLL : 'D. MMMM YYYY HH:mm',
         LLLL : 'dddd [d.] D. MMMM YYYY [kl.] HH:mm'
@@ -13934,6 +14696,7 @@ var da = moment.defineLocale('da', {
         future : 'om %s',
         past : '%s siden',
         s : 'få sekunder',
+        ss : '%d sekunder',
         m : 'et minut',
         mm : '%d minutter',
         h : 'en time',
@@ -13959,14 +14722,10 @@ return da;
 
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : German [de]
-//! author : lluchs : https://github.com/lluchs
-//! author: Menelion Elensúle: https://github.com/Oire
-//! author : Mikolaj Dadela : https://github.com/mik01aj
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -13991,7 +14750,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var de = moment.defineLocale('de', {
     months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jan._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
@@ -14017,6 +14776,7 @@ var de = moment.defineLocale('de', {
         future : 'in %s',
         past : 'vor %s',
         s : 'ein paar Sekunden',
+        ss : '%d Sekunden',
         m : processRelativeTime,
         mm : '%d Minuten',
         h : processRelativeTime,
@@ -14042,15 +14802,10 @@ return de;
 
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : German (Austria) [de-at]
-//! author : lluchs : https://github.com/lluchs
-//! author: Menelion Elensúle: https://github.com/Oire
-//! author : Martin Groller : https://github.com/MadMG
-//! author : Mikolaj Dadela : https://github.com/mik01aj
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14075,7 +14830,7 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var deAt = moment.defineLocale('de-at', {
     months : 'Jänner_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jän._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jän._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
@@ -14101,6 +14856,7 @@ var deAt = moment.defineLocale('de-at', {
         future : 'in %s',
         past : 'vor %s',
         s : 'ein paar Sekunden',
+        ss : '%d Sekunden',
         m : processRelativeTime,
         mm : '%d Minuten',
         h : processRelativeTime,
@@ -14126,12 +14882,10 @@ return deAt;
 
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : German (Switzerland) [de-ch]
-//! author : sschueller : https://github.com/sschueller
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14139,8 +14893,6 @@ return deAt;
    factory(global.moment)
 }(this, (function (moment) { 'use strict';
 
-
-// based on: https://www.bk.admin.ch/dokumentation/sprachen/04915/05016/index.html?lang=de#
 
 function processRelativeTime(number, withoutSuffix, key, isFuture) {
     var format = {
@@ -14158,19 +14910,19 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
 
 var deCh = moment.defineLocale('de-ch', {
     months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
-    monthsShort : 'Jan._Febr._März_April_Mai_Juni_Juli_Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsShort : 'Jan._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.'.split('_'),
     monthsParseExact : true,
     weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
     weekdaysShort : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
     weekdaysMin : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
-        LT: 'HH.mm',
-        LTS: 'HH.mm.ss',
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
         L : 'DD.MM.YYYY',
         LL : 'D. MMMM YYYY',
-        LLL : 'D. MMMM YYYY HH.mm',
-        LLLL : 'dddd, D. MMMM YYYY HH.mm'
+        LLL : 'D. MMMM YYYY HH:mm',
+        LLLL : 'dddd, D. MMMM YYYY HH:mm'
     },
     calendar : {
         sameDay: '[heute um] LT [Uhr]',
@@ -14184,6 +14936,7 @@ var deCh = moment.defineLocale('de-ch', {
         future : 'in %s',
         past : 'vor %s',
         s : 'ein paar Sekunden',
+        ss : '%d Sekunden',
         m : processRelativeTime,
         mm : '%d Minuten',
         h : processRelativeTime,
@@ -14209,12 +14962,10 @@ return deCh;
 
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Maldivian [dv]
-//! author : Jawish Hameed : https://github.com/jawish
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14236,8 +14987,7 @@ var months = [
     'އޮކްޓޯބަރު',
     'ނޮވެމްބަރު',
     'ޑިސެމްބަރު'
-];
-var weekdays = [
+], weekdays = [
     'އާދިއްތަ',
     'ހޯމަ',
     'އަންގާރަ',
@@ -14285,6 +15035,7 @@ var dv = moment.defineLocale('dv', {
         future : 'ތެރޭގައި %s',
         past : 'ކުރިން %s',
         s : 'ސިކުންތުކޮޅެއް',
+        ss : 'd% ސިކުންތު',
         m : 'މިނިޓެއް',
         mm : 'މިނިޓު %d',
         h : 'ގަޑިއިރެއް',
@@ -14314,12 +15065,10 @@ return dv;
 
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Greek [el]
-//! author : Aggelos Karalias : https://github.com/mehiel
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14338,7 +15087,7 @@ var el = moment.defineLocale('el', {
     months : function (momentToFormat, format) {
         if (!momentToFormat) {
             return this._monthsNominativeEl;
-        } else if (/D/.test(format.substring(0, format.indexOf('MMMM')))) { // if there is a day number before 'MMMM'
+        } else if (typeof format === 'string' && /D/.test(format.substring(0, format.indexOf('MMMM')))) { // if there is a day number before 'MMMM'
             return this._monthsGenitiveEl[momentToFormat.month()];
         } else {
             return this._monthsNominativeEl[momentToFormat.month()];
@@ -14394,6 +15143,7 @@ var el = moment.defineLocale('el', {
         future : 'σε %s',
         past : '%s πριν',
         s : 'λίγα δευτερόλεπτα',
+        ss : '%d δευτερόλεπτα',
         m : 'ένα λεπτό',
         mm : '%d λεπτά',
         h : 'μία ώρα',
@@ -14419,12 +15169,10 @@ return el;
 
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : English (Australia) [en-au]
-//! author : Jared Morse : https://github.com/jarcoal
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14459,6 +15207,7 @@ var enAu = moment.defineLocale('en-au', {
         future : 'in %s',
         past : '%s ago',
         s : 'a few seconds',
+        ss : '%d seconds',
         m : 'a minute',
         mm : '%d minutes',
         h : 'an hour',
@@ -14491,12 +15240,10 @@ return enAu;
 
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : English (Canada) [en-ca]
-//! author : Jonathan Abourbih : https://github.com/jonbca
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14531,6 +15278,7 @@ var enCa = moment.defineLocale('en-ca', {
         future : 'in %s',
         past : '%s ago',
         s : 'a few seconds',
+        ss : '%d seconds',
         m : 'a minute',
         mm : '%d minutes',
         h : 'an hour',
@@ -14559,12 +15307,10 @@ return enCa;
 
 
 /***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : English (United Kingdom) [en-gb]
-//! author : Chris Gedrim : https://github.com/chrisgedrim
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14574,6 +15320,148 @@ return enCa;
 
 
 var enGb = moment.defineLocale('en-gb', {
+    months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+    monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
+    weekdays : 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+    weekdaysShort : 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+    weekdaysMin : 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Today at] LT',
+        nextDay : '[Tomorrow at] LT',
+        nextWeek : 'dddd [at] LT',
+        lastDay : '[Yesterday at] LT',
+        lastWeek : '[Last] dddd [at] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'in %s',
+        past : '%s ago',
+        s : 'a few seconds',
+        ss : '%d seconds',
+        m : 'a minute',
+        mm : '%d minutes',
+        h : 'an hour',
+        hh : '%d hours',
+        d : 'a day',
+        dd : '%d days',
+        M : 'a month',
+        MM : '%d months',
+        y : 'a year',
+        yy : '%d years'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
+    ordinal : function (number) {
+        var b = number % 10,
+            output = (~~(number % 100 / 10) === 1) ? 'th' :
+            (b === 1) ? 'st' :
+            (b === 2) ? 'nd' :
+            (b === 3) ? 'rd' : 'th';
+        return number + output;
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return enGb;
+
+})));
+
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var enIe = moment.defineLocale('en-ie', {
+    months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
+    monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
+    weekdays : 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
+    weekdaysShort : 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
+    weekdaysMin : 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD-MM-YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Today at] LT',
+        nextDay : '[Tomorrow at] LT',
+        nextWeek : 'dddd [at] LT',
+        lastDay : '[Yesterday at] LT',
+        lastWeek : '[Last] dddd [at] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'in %s',
+        past : '%s ago',
+        s : 'a few seconds',
+        ss : '%d seconds',
+        m : 'a minute',
+        mm : '%d minutes',
+        h : 'an hour',
+        hh : '%d hours',
+        d : 'a day',
+        dd : '%d days',
+        M : 'a month',
+        MM : '%d months',
+        y : 'a year',
+        yy : '%d years'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
+    ordinal : function (number) {
+        var b = number % 10,
+            output = (~~(number % 100 / 10) === 1) ? 'th' :
+            (b === 1) ? 'st' :
+            (b === 2) ? 'nd' :
+            (b === 3) ? 'rd' : 'th';
+        return number + output;
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return enIe;
+
+})));
+
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var enIl = moment.defineLocale('en-il', {
     months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
     monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
     weekdays : 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
@@ -14618,97 +15506,19 @@ var enGb = moment.defineLocale('en-gb', {
             (b === 2) ? 'nd' :
             (b === 3) ? 'rd' : 'th';
         return number + output;
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
     }
 });
 
-return enGb;
+return enIl;
 
 })));
 
 
 /***/ }),
-/* 176 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : English (Ireland) [en-ie]
-//! author : Chris Cartlidge : https://github.com/chriscartlidge
-
-;(function (global, factory) {
-    true ? factory(__webpack_require__(0)) :
-   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
-   factory(global.moment)
-}(this, (function (moment) { 'use strict';
-
-
-var enIe = moment.defineLocale('en-ie', {
-    months : 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_'),
-    monthsShort : 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_'),
-    weekdays : 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split('_'),
-    weekdaysShort : 'Sun_Mon_Tue_Wed_Thu_Fri_Sat'.split('_'),
-    weekdaysMin : 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_'),
-    longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
-        L : 'DD-MM-YYYY',
-        LL : 'D MMMM YYYY',
-        LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd D MMMM YYYY HH:mm'
-    },
-    calendar : {
-        sameDay : '[Today at] LT',
-        nextDay : '[Tomorrow at] LT',
-        nextWeek : 'dddd [at] LT',
-        lastDay : '[Yesterday at] LT',
-        lastWeek : '[Last] dddd [at] LT',
-        sameElse : 'L'
-    },
-    relativeTime : {
-        future : 'in %s',
-        past : '%s ago',
-        s : 'a few seconds',
-        m : 'a minute',
-        mm : '%d minutes',
-        h : 'an hour',
-        hh : '%d hours',
-        d : 'a day',
-        dd : '%d days',
-        M : 'a month',
-        MM : '%d months',
-        y : 'a year',
-        yy : '%d years'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
-    ordinal : function (number) {
-        var b = number % 10,
-            output = (~~(number % 100 / 10) === 1) ? 'th' :
-            (b === 1) ? 'st' :
-            (b === 2) ? 'nd' :
-            (b === 3) ? 'rd' : 'th';
-        return number + output;
-    },
-    week : {
-        dow : 1, // Monday is the first day of the week.
-        doy : 4  // The week that contains Jan 4th is the first week of the year.
-    }
-});
-
-return enIe;
-
-})));
-
-
-/***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-//! moment.js locale configuration
-//! locale : English (New Zealand) [en-nz]
-//! author : Luke McGregor : https://github.com/lukemcgregor
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14743,6 +15553,7 @@ var enNz = moment.defineLocale('en-nz', {
         future : 'in %s',
         past : '%s ago',
         s : 'a few seconds',
+        ss : '%d seconds',
         m : 'a minute',
         mm : '%d minutes',
         h : 'an hour',
@@ -14775,14 +15586,10 @@ return enNz;
 
 
 /***/ }),
-/* 178 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Esperanto [eo]
-//! author : Colin Dean : https://github.com/colindean
-//! author : Mia Nordentoft Imperatori : https://github.com/miestasmia
-//! comment : miestasmia corrected the translation by colindean
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14828,6 +15635,7 @@ var eo = moment.defineLocale('eo', {
         future : 'post %s',
         past : 'antaŭ %s',
         s : 'sekundoj',
+        ss : '%d sekundoj',
         m : 'minuto',
         mm : '%d minutoj',
         h : 'horo',
@@ -14853,12 +15661,10 @@ return eo;
 
 
 /***/ }),
-/* 179 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Spanish [es]
-//! author : Julio Napurí : https://github.com/julionc
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14867,8 +15673,11 @@ return eo;
 }(this, (function (moment) { 'use strict';
 
 
-var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
-var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_'),
+    monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+
+var monthsParse = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
+var monthsRegex = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
 
 var es = moment.defineLocale('es', {
     months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
@@ -14881,7 +15690,13 @@ var es = moment.defineLocale('es', {
             return monthsShortDot[m.month()];
         }
     },
-    monthsParseExact : true,
+    monthsRegex : monthsRegex,
+    monthsShortRegex : monthsRegex,
+    monthsStrictRegex : /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i,
+    monthsShortStrictRegex : /^(ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i,
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
     weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
     weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
     weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
@@ -14916,6 +15731,7 @@ var es = moment.defineLocale('es', {
         future : 'en %s',
         past : 'hace %s',
         s : 'unos segundos',
+        ss : '%d segundos',
         m : 'un minuto',
         mm : '%d minutos',
         h : 'una hora',
@@ -14941,11 +15757,10 @@ return es;
 
 
 /***/ }),
-/* 180 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Spanish (Dominican Republic) [es-do]
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -14954,8 +15769,11 @@ return es;
 }(this, (function (moment) { 'use strict';
 
 
-var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
-var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_'),
+    monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+
+var monthsParse = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
+var monthsRegex = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
 
 var esDo = moment.defineLocale('es-do', {
     months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
@@ -14968,7 +15786,13 @@ var esDo = moment.defineLocale('es-do', {
             return monthsShortDot[m.month()];
         }
     },
-    monthsParseExact : true,
+    monthsRegex: monthsRegex,
+    monthsShortRegex: monthsRegex,
+    monthsStrictRegex: /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i,
+    monthsShortStrictRegex: /^(ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i,
+    monthsParse: monthsParse,
+    longMonthsParse: monthsParse,
+    shortMonthsParse: monthsParse,
     weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
     weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
     weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
@@ -15003,6 +15827,7 @@ var esDo = moment.defineLocale('es-do', {
         future : 'en %s',
         past : 'hace %s',
         s : 'unos segundos',
+        ss : '%d segundos',
         m : 'un minuto',
         mm : '%d minutos',
         h : 'una hora',
@@ -15028,13 +15853,97 @@ return esDo;
 
 
 /***/ }),
-/* 181 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Estonian [et]
-//! author : Henry Kehlmann : https://github.com/madhenry
-//! improvements : Illimar Tambek : https://github.com/ragulka
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_'),
+    monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+
+var esUs = moment.defineLocale('es-us', {
+    months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
+    monthsShort : function (m, format) {
+        if (!m) {
+            return monthsShortDot;
+        } else if (/-MMM-/.test(format)) {
+            return monthsShort[m.month()];
+        } else {
+            return monthsShortDot[m.month()];
+        }
+    },
+    monthsParseExact : true,
+    weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
+    weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
+    weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'h:mm A',
+        LTS : 'h:mm:ss A',
+        L : 'MM/DD/YYYY',
+        LL : 'MMMM [de] D [de] YYYY',
+        LLL : 'MMMM [de] D [de] YYYY h:mm A',
+        LLLL : 'dddd, MMMM [de] D [de] YYYY h:mm A'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[hoy a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextDay : function () {
+            return '[mañana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastDay : function () {
+            return '[ayer a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastWeek : function () {
+            return '[el] dddd [pasado a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'en %s',
+        past : 'hace %s',
+        s : 'unos segundos',
+        ss : '%d segundos',
+        m : 'un minuto',
+        mm : '%d minutos',
+        h : 'una hora',
+        hh : '%d horas',
+        d : 'un día',
+        dd : '%d días',
+        M : 'un mes',
+        MM : '%d meses',
+        y : 'un año',
+        yy : '%d años'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal : '%dº',
+    week : {
+        dow : 0, // Sunday is the first day of the week.
+        doy : 6  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return esUs;
+
+})));
+
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15046,6 +15955,7 @@ return esDo;
 function processRelativeTime(number, withoutSuffix, key, isFuture) {
     var format = {
         's' : ['mõne sekundi', 'mõni sekund', 'paar sekundit'],
+        'ss': [number + 'sekundi', number + 'sekundit'],
         'm' : ['ühe minuti', 'üks minut'],
         'mm': [number + ' minuti', number + ' minutit'],
         'h' : ['ühe tunni', 'tund aega', 'üks tund'],
@@ -15088,6 +15998,7 @@ var et = moment.defineLocale('et', {
         future : '%s pärast',
         past   : '%s tagasi',
         s      : processRelativeTime,
+        ss     : processRelativeTime,
         m      : processRelativeTime,
         mm     : processRelativeTime,
         h      : processRelativeTime,
@@ -15113,12 +16024,10 @@ return et;
 
 
 /***/ }),
-/* 182 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Basque [eu]
-//! author : Eneko Illarramendi : https://github.com/eillarra
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15159,6 +16068,7 @@ var eu = moment.defineLocale('eu', {
         future : '%s barru',
         past : 'duela %s',
         s : 'segundo batzuk',
+        ss : '%d segundo',
         m : 'minutu bat',
         mm : '%d minutu',
         h : 'ordu bat',
@@ -15184,12 +16094,10 @@ return eu;
 
 
 /***/ }),
-/* 183 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Persian [fa]
-//! author : Ebrahim Byagowi : https://github.com/ebraminio
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15209,8 +16117,7 @@ var symbolMap = {
     '8': '۸',
     '9': '۹',
     '0': '۰'
-};
-var numberMap = {
+}, numberMap = {
     '۱': '1',
     '۲': '2',
     '۳': '3',
@@ -15261,6 +16168,7 @@ var fa = moment.defineLocale('fa', {
         future : 'در %s',
         past : '%s پیش',
         s : 'چند ثانیه',
+        ss : 'ثانیه d%',
         m : 'یک دقیقه',
         mm : '%d دقیقه',
         h : 'یک ساعت',
@@ -15296,12 +16204,10 @@ return fa;
 
 
 /***/ }),
-/* 184 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Finnish [fi]
-//! author : Tarmo Aidantausta : https://github.com/bleadof
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15310,8 +16216,8 @@ return fa;
 }(this, (function (moment) { 'use strict';
 
 
-var numbersPast = 'nolla yksi kaksi kolme neljä viisi kuusi seitsemän kahdeksan yhdeksän'.split(' ');
-var numbersFuture = [
+var numbersPast = 'nolla yksi kaksi kolme neljä viisi kuusi seitsemän kahdeksan yhdeksän'.split(' '),
+    numbersFuture = [
         'nolla', 'yhden', 'kahden', 'kolmen', 'neljän', 'viiden', 'kuuden',
         numbersPast[7], numbersPast[8], numbersPast[9]
     ];
@@ -15320,6 +16226,8 @@ function translate(number, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':
             return isFuture ? 'muutaman sekunnin' : 'muutama sekunti';
+        case 'ss':
+            return isFuture ? 'sekunnin' : 'sekuntia';
         case 'm':
             return isFuture ? 'minuutin' : 'minuutti';
         case 'mm':
@@ -15383,6 +16291,7 @@ var fi = moment.defineLocale('fi', {
         future : '%s päästä',
         past : '%s sitten',
         s : translate,
+        ss : translate,
         m : translate,
         mm : translate,
         h : translate,
@@ -15408,12 +16317,10 @@ return fi;
 
 
 /***/ }),
-/* 185 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Faroese [fo]
-//! author : Ragnar Johannesen : https://github.com/ragnar123
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15448,6 +16355,7 @@ var fo = moment.defineLocale('fo', {
         future : 'um %s',
         past : '%s síðani',
         s : 'fá sekund',
+        ss : '%d sekundir',
         m : 'ein minutt',
         mm : '%d minuttir',
         h : 'ein tími',
@@ -15473,12 +16381,10 @@ return fo;
 
 
 /***/ }),
-/* 186 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : French [fr]
-//! author : John Fischer : https://github.com/jfroffice
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15493,7 +16399,7 @@ var fr = moment.defineLocale('fr', {
     monthsParseExact : true,
     weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
     weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
-    weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+    weekdaysMin : 'di_lu_ma_me_je_ve_sa'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -15515,6 +16421,7 @@ var fr = moment.defineLocale('fr', {
         future : 'dans %s',
         past : 'il y a %s',
         s : 'quelques secondes',
+        ss : '%d secondes',
         m : 'une minute',
         mm : '%d minutes',
         h : 'une heure',
@@ -15561,12 +16468,10 @@ return fr;
 
 
 /***/ }),
-/* 187 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : French (Canada) [fr-ca]
-//! author : Jonathan Abourbih : https://github.com/jonbca
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15581,7 +16486,7 @@ var frCa = moment.defineLocale('fr-ca', {
     monthsParseExact : true,
     weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
     weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
-    weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+    weekdaysMin : 'di_lu_ma_me_je_ve_sa'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -15603,6 +16508,7 @@ var frCa = moment.defineLocale('fr-ca', {
         future : 'dans %s',
         past : 'il y a %s',
         s : 'quelques secondes',
+        ss : '%d secondes',
         m : 'une minute',
         mm : '%d minutes',
         h : 'une heure',
@@ -15640,12 +16546,10 @@ return frCa;
 
 
 /***/ }),
-/* 188 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : French (Switzerland) [fr-ch]
-//! author : Gaspard Bucher : https://github.com/gaspard
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15660,7 +16564,7 @@ var frCh = moment.defineLocale('fr-ch', {
     monthsParseExact : true,
     weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
     weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
-    weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+    weekdaysMin : 'di_lu_ma_me_je_ve_sa'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -15682,6 +16586,7 @@ var frCh = moment.defineLocale('fr-ch', {
         future : 'dans %s',
         past : 'il y a %s',
         s : 'quelques secondes',
+        ss : '%d secondes',
         m : 'une minute',
         mm : '%d minutes',
         h : 'une heure',
@@ -15723,12 +16628,10 @@ return frCh;
 
 
 /***/ }),
-/* 189 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Frisian [fy]
-//! author : Robin van der Vliet : https://github.com/robin0van0der0v
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15737,8 +16640,8 @@ return frCh;
 }(this, (function (moment) { 'use strict';
 
 
-var monthsShortWithDots = 'jan._feb._mrt._apr._mai_jun._jul._aug._sep._okt._nov._des.'.split('_');
-var monthsShortWithoutDots = 'jan_feb_mrt_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_');
+var monthsShortWithDots = 'jan._feb._mrt._apr._mai_jun._jul._aug._sep._okt._nov._des.'.split('_'),
+    monthsShortWithoutDots = 'jan_feb_mrt_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_');
 
 var fy = moment.defineLocale('fy', {
     months : 'jannewaris_febrewaris_maart_april_maaie_juny_july_augustus_septimber_oktober_novimber_desimber'.split('_'),
@@ -15776,6 +16679,7 @@ var fy = moment.defineLocale('fy', {
         future : 'oer %s',
         past : '%s lyn',
         s : 'in pear sekonden',
+        ss : '%d sekonden',
         m : 'ien minút',
         mm : '%d minuten',
         h : 'ien oere',
@@ -15803,12 +16707,10 @@ return fy;
 
 
 /***/ }),
-/* 190 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Scottish Gaelic [gd]
-//! author : Jon Ashdown : https://github.com/jonashdown
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15856,6 +16758,7 @@ var gd = moment.defineLocale('gd', {
         future : 'ann an %s',
         past : 'bho chionn %s',
         s : 'beagan diogan',
+        ss : '%d diogan',
         m : 'mionaid',
         mm : '%d mionaidean',
         h : 'uair',
@@ -15884,12 +16787,10 @@ return gd;
 
 
 /***/ }),
-/* 191 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Galician [gl]
-//! author : Juan G. Hurtado : https://github.com/juanghurtado
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15941,6 +16842,7 @@ var gl = moment.defineLocale('gl', {
         },
         past : 'hai %s',
         s : 'uns segundos',
+        ss : '%d segundos',
         m : 'un minuto',
         mm : '%d minutos',
         h : 'unha hora',
@@ -15966,12 +16868,10 @@ return gl;
 
 
 /***/ }),
-/* 192 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Konkani Latin script [gom-latn]
-//! author : The Discoverer : https://github.com/WikiDiscoverer
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -15983,6 +16883,7 @@ return gl;
 function processRelativeTime(number, withoutSuffix, key, isFuture) {
     var format = {
         's': ['thodde secondanim', 'thodde second'],
+        'ss': [number + ' secondanim', number + ' second'],
         'm': ['eka mintan', 'ek minute'],
         'mm': [number + ' mintanim', number + ' mintam'],
         'h': ['eka horan', 'ek hor'],
@@ -16026,6 +16927,7 @@ var gomLatn = moment.defineLocale('gom-latn', {
         future : '%s',
         past : '%s adim',
         s : processRelativeTime,
+        ss : processRelativeTime,
         m : processRelativeTime,
         mm : processRelativeTime,
         h : processRelativeTime,
@@ -16093,14 +16995,138 @@ return gomLatn;
 
 
 /***/ }),
-/* 193 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Hebrew [he]
-//! author : Tomer Cohen : https://github.com/tomer
-//! author : Moshe Simantov : https://github.com/DevelopmentIL
-//! author : Tal Ater : https://github.com/TalAter
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var symbolMap = {
+        '1': '૧',
+        '2': '૨',
+        '3': '૩',
+        '4': '૪',
+        '5': '૫',
+        '6': '૬',
+        '7': '૭',
+        '8': '૮',
+        '9': '૯',
+        '0': '૦'
+    },
+    numberMap = {
+        '૧': '1',
+        '૨': '2',
+        '૩': '3',
+        '૪': '4',
+        '૫': '5',
+        '૬': '6',
+        '૭': '7',
+        '૮': '8',
+        '૯': '9',
+        '૦': '0'
+    };
+
+var gu = moment.defineLocale('gu', {
+    months: 'જાન્યુઆરી_ફેબ્રુઆરી_માર્ચ_એપ્રિલ_મે_જૂન_જુલાઈ_ઑગસ્ટ_સપ્ટેમ્બર_ઑક્ટ્બર_નવેમ્બર_ડિસેમ્બર'.split('_'),
+    monthsShort: 'જાન્યુ._ફેબ્રુ._માર્ચ_એપ્રિ._મે_જૂન_જુલા._ઑગ._સપ્ટે._ઑક્ટ્._નવે._ડિસે.'.split('_'),
+    monthsParseExact: true,
+    weekdays: 'રવિવાર_સોમવાર_મંગળવાર_બુધ્વાર_ગુરુવાર_શુક્રવાર_શનિવાર'.split('_'),
+    weekdaysShort: 'રવિ_સોમ_મંગળ_બુધ્_ગુરુ_શુક્ર_શનિ'.split('_'),
+    weekdaysMin: 'ર_સો_મં_બુ_ગુ_શુ_શ'.split('_'),
+    longDateFormat: {
+        LT: 'A h:mm વાગ્યે',
+        LTS: 'A h:mm:ss વાગ્યે',
+        L: 'DD/MM/YYYY',
+        LL: 'D MMMM YYYY',
+        LLL: 'D MMMM YYYY, A h:mm વાગ્યે',
+        LLLL: 'dddd, D MMMM YYYY, A h:mm વાગ્યે'
+    },
+    calendar: {
+        sameDay: '[આજ] LT',
+        nextDay: '[કાલે] LT',
+        nextWeek: 'dddd, LT',
+        lastDay: '[ગઇકાલે] LT',
+        lastWeek: '[પાછલા] dddd, LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: '%s મા',
+        past: '%s પેહલા',
+        s: 'અમુક પળો',
+        ss: '%d સેકંડ',
+        m: 'એક મિનિટ',
+        mm: '%d મિનિટ',
+        h: 'એક કલાક',
+        hh: '%d કલાક',
+        d: 'એક દિવસ',
+        dd: '%d દિવસ',
+        M: 'એક મહિનો',
+        MM: '%d મહિનો',
+        y: 'એક વર્ષ',
+        yy: '%d વર્ષ'
+    },
+    preparse: function (string) {
+        return string.replace(/[૧૨૩૪૫૬૭૮૯૦]/g, function (match) {
+            return numberMap[match];
+        });
+    },
+    postformat: function (string) {
+        return string.replace(/\d/g, function (match) {
+            return symbolMap[match];
+        });
+    },
+    // Gujarati notation for meridiems are quite fuzzy in practice. While there exists
+    // a rigid notion of a 'Pahar' it is not used as rigidly in modern Gujarati.
+    meridiemParse: /રાત|બપોર|સવાર|સાંજ/,
+    meridiemHour: function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === 'રાત') {
+            return hour < 4 ? hour : hour + 12;
+        } else if (meridiem === 'સવાર') {
+            return hour;
+        } else if (meridiem === 'બપોર') {
+            return hour >= 10 ? hour : hour + 12;
+        } else if (meridiem === 'સાંજ') {
+            return hour + 12;
+        }
+    },
+    meridiem: function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'રાત';
+        } else if (hour < 10) {
+            return 'સવાર';
+        } else if (hour < 17) {
+            return 'બપોર';
+        } else if (hour < 20) {
+            return 'સાંજ';
+        } else {
+            return 'રાત';
+        }
+    },
+    week: {
+        dow: 0, // Sunday is the first day of the week.
+        doy: 6 // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return gu;
+
+})));
+
+
+/***/ }),
+/* 197 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16139,6 +17165,7 @@ var he = moment.defineLocale('he', {
         future : 'בעוד %s',
         past : 'לפני %s',
         s : 'מספר שניות',
+        ss : '%d שניות',
         m : 'דקה',
         mm : '%d דקות',
         h : 'שעה',
@@ -16197,12 +17224,10 @@ return he;
 
 
 /***/ }),
-/* 194 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Hindi [hi]
-//! author : Mayank Singhal : https://github.com/mayanksinghal
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16222,8 +17247,8 @@ var symbolMap = {
     '8': '८',
     '9': '९',
     '0': '०'
-};
-var numberMap = {
+},
+numberMap = {
     '१': '1',
     '२': '2',
     '३': '3',
@@ -16263,6 +17288,7 @@ var hi = moment.defineLocale('hi', {
         future : '%s में',
         past : '%s पहले',
         s : 'कुछ ही क्षण',
+        ss : '%d सेकंड',
         m : 'एक मिनट',
         mm : '%d मिनट',
         h : 'एक घंटा',
@@ -16326,12 +17352,10 @@ return hi;
 
 
 /***/ }),
-/* 195 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Croatian [hr]
-//! author : Bojan Marković : https://github.com/bmarkovic
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16343,6 +17367,15 @@ return hi;
 function translate(number, withoutSuffix, key) {
     var result = number + ' ';
     switch (key) {
+        case 'ss':
+            if (number === 1) {
+                result += 'sekunda';
+            } else if (number === 2 || number === 3 || number === 4) {
+                result += 'sekunde';
+            } else {
+                result += 'sekundi';
+            }
+            return result;
         case 'm':
             return withoutSuffix ? 'jedna minuta' : 'jedne minute';
         case 'mm':
@@ -16451,6 +17484,7 @@ var hr = moment.defineLocale('hr', {
         future : 'za %s',
         past   : 'prije %s',
         s      : 'par sekundi',
+        ss     : translate,
         m      : translate,
         mm     : translate,
         h      : translate,
@@ -16476,12 +17510,10 @@ return hr;
 
 
 /***/ }),
-/* 196 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Hungarian [hu]
-//! author : Adam Brunner : https://github.com/adambrunner
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16492,11 +17524,12 @@ return hr;
 
 var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
 function translate(number, withoutSuffix, key, isFuture) {
-    var num = number,
-        suffix;
+    var num = number;
     switch (key) {
         case 's':
             return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
+        case 'ss':
+            return num + (isFuture || withoutSuffix) ? ' másodperc' : ' másodperce';
         case 'm':
             return 'egy' + (isFuture || withoutSuffix ? ' perc' : ' perce');
         case 'mm':
@@ -16565,6 +17598,7 @@ var hu = moment.defineLocale('hu', {
         future : '%s múlva',
         past : '%s',
         s : translate,
+        ss : translate,
         m : translate,
         mm : translate,
         h : translate,
@@ -16590,12 +17624,10 @@ return hu;
 
 
 /***/ }),
-/* 197 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Armenian [hy-am]
-//! author : Armendarabyan : https://github.com/armendarabyan
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16637,6 +17669,7 @@ var hyAm = moment.defineLocale('hy-am', {
         future : '%s հետո',
         past : '%s առաջ',
         s : 'մի քանի վայրկյան',
+        ss : '%d վայրկյան',
         m : 'րոպե',
         mm : '%d րոպե',
         h : 'ժամ',
@@ -16690,13 +17723,10 @@ return hyAm;
 
 
 /***/ }),
-/* 198 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Indonesian [id]
-//! author : Mohammad Satrio Utomo : https://github.com/tyok
-//! reference: http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16707,7 +17737,7 @@ return hyAm;
 
 var id = moment.defineLocale('id', {
     months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember'.split('_'),
-    monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des'.split('_'),
+    monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Agt_Sep_Okt_Nov_Des'.split('_'),
     weekdays : 'Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu'.split('_'),
     weekdaysShort : 'Min_Sen_Sel_Rab_Kam_Jum_Sab'.split('_'),
     weekdaysMin : 'Mg_Sn_Sl_Rb_Km_Jm_Sb'.split('_'),
@@ -16755,6 +17785,7 @@ var id = moment.defineLocale('id', {
         future : 'dalam %s',
         past : '%s yang lalu',
         s : 'beberapa detik',
+        ss : '%d detik',
         m : 'semenit',
         mm : '%d menit',
         h : 'sejam',
@@ -16778,12 +17809,10 @@ return id;
 
 
 /***/ }),
-/* 199 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Icelandic [is]
-//! author : Hinrik Örn Sigurðsson : https://github.com/hinrik
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16805,6 +17834,11 @@ function translate(number, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':
             return withoutSuffix || isFuture ? 'nokkrar sekúndur' : 'nokkrum sekúndum';
+        case 'ss':
+            if (plural(number)) {
+                return result + (withoutSuffix || isFuture ? 'sekúndur' : 'sekúndum');
+            }
+            return result + 'sekúnda';
         case 'm':
             return withoutSuffix ? 'mínúta' : 'mínútu';
         case 'mm':
@@ -16885,6 +17919,7 @@ var is = moment.defineLocale('is', {
         future : 'eftir %s',
         past : 'fyrir %s síðan',
         s : translate,
+        ss : translate,
         m : translate,
         mm : translate,
         h : 'klukkustund',
@@ -16910,13 +17945,10 @@ return is;
 
 
 /***/ }),
-/* 200 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Italian [it]
-//! author : Lorenzo : https://github.com/aliem
-//! author: Mattia Larentis: https://github.com/nostalgiaz
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -16937,7 +17969,7 @@ var it = moment.defineLocale('it', {
         L : 'DD/MM/YYYY',
         LL : 'D MMMM YYYY',
         LLL : 'D MMMM YYYY HH:mm',
-        LLLL : 'dddd, D MMMM YYYY HH:mm'
+        LLLL : 'dddd D MMMM YYYY HH:mm'
     },
     calendar : {
         sameDay: '[Oggi alle] LT',
@@ -16960,6 +17992,7 @@ var it = moment.defineLocale('it', {
         },
         past : '%s fa',
         s : 'alcuni secondi',
+        ss : '%d secondi',
         m : 'un minuto',
         mm : '%d minuti',
         h : 'un\'ora',
@@ -16985,12 +18018,10 @@ return it;
 
 
 /***/ }),
-/* 201 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Japanese [ja]
-//! author : LI Long : https://github.com/baryon
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17051,6 +18082,7 @@ var ja = moment.defineLocale('ja', {
         future : '%s後',
         past : '%s前',
         s : '数秒',
+        ss : '%d秒',
         m : '1分',
         mm : '%d分',
         h : '1時間',
@@ -17070,13 +18102,10 @@ return ja;
 
 
 /***/ }),
-/* 202 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Javanese [jv]
-//! author : Rony Lantip : https://github.com/lantip
-//! reference: http://jv.wikipedia.org/wiki/Basa_Jawa
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17135,6 +18164,7 @@ var jv = moment.defineLocale('jv', {
         future : 'wonten ing %s',
         past : '%s ingkang kepengker',
         s : 'sawetawis detik',
+        ss : '%d detik',
         m : 'setunggal menit',
         mm : '%d menit',
         h : 'setunggal jam',
@@ -17158,12 +18188,10 @@ return jv;
 
 
 /***/ }),
-/* 203 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Georgian [ka]
-//! author : Irakli Janiashvili : https://github.com/irakli-janiashvili
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17216,6 +18244,7 @@ var ka = moment.defineLocale('ka', {
             }
         },
         s : 'რამდენიმე წამი',
+        ss : '%d წამი',
         m : 'წუთი',
         mm : '%d წუთი',
         h : 'საათი',
@@ -17252,12 +18281,10 @@ return ka;
 
 
 /***/ }),
-/* 204 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Kazakh [kk]
-//! authors : Nurlan Rakhimzhanov : https://github.com/nurlan
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17315,6 +18342,7 @@ var kk = moment.defineLocale('kk', {
         future : '%s ішінде',
         past : '%s бұрын',
         s : 'бірнеше секунд',
+        ss : '%d секунд',
         m : 'бір минут',
         mm : '%d минут',
         h : 'бір сағат',
@@ -17344,12 +18372,10 @@ return kk;
 
 
 /***/ }),
-/* 205 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Cambodian [km]
-//! author : Kruy Vanna : https://github.com/kruyvanna
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17384,6 +18410,7 @@ var km = moment.defineLocale('km', {
         future: '%sទៀត',
         past: '%sមុន',
         s: 'ប៉ុន្មានវិនាទី',
+        ss: '%d វិនាទី',
         m: 'មួយនាទី',
         mm: '%d នាទី',
         h: 'មួយម៉ោង',
@@ -17407,12 +18434,10 @@ return km;
 
 
 /***/ }),
-/* 206 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Kannada [kn]
-//! author : Rajeev Naik : https://github.com/rajeevnaikte
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17432,8 +18457,8 @@ var symbolMap = {
     '8': '೮',
     '9': '೯',
     '0': '೦'
-};
-var numberMap = {
+},
+numberMap = {
     '೧': '1',
     '೨': '2',
     '೩': '3',
@@ -17448,7 +18473,7 @@ var numberMap = {
 
 var kn = moment.defineLocale('kn', {
     months : 'ಜನವರಿ_ಫೆಬ್ರವರಿ_ಮಾರ್ಚ್_ಏಪ್ರಿಲ್_ಮೇ_ಜೂನ್_ಜುಲೈ_ಆಗಸ್ಟ್_ಸೆಪ್ಟೆಂಬರ್_ಅಕ್ಟೋಬರ್_ನವೆಂಬರ್_ಡಿಸೆಂಬರ್'.split('_'),
-    monthsShort : 'ಜನ_ಫೆಬ್ರ_ಮಾರ್ಚ್_ಏಪ್ರಿಲ್_ಮೇ_ಜೂನ್_ಜುಲೈ_ಆಗಸ್ಟ್_ಸೆಪ್ಟೆಂಬ_ಅಕ್ಟೋಬ_ನವೆಂಬ_ಡಿಸೆಂಬ'.split('_'),
+    monthsShort : 'ಜನ_ಫೆಬ್ರ_ಮಾರ್ಚ್_ಏಪ್ರಿಲ್_ಮೇ_ಜೂನ್_ಜುಲೈ_ಆಗಸ್ಟ್_ಸೆಪ್ಟೆಂ_ಅಕ್ಟೋ_ನವೆಂ_ಡಿಸೆಂ'.split('_'),
     monthsParseExact: true,
     weekdays : 'ಭಾನುವಾರ_ಸೋಮವಾರ_ಮಂಗಳವಾರ_ಬುಧವಾರ_ಗುರುವಾರ_ಶುಕ್ರವಾರ_ಶನಿವಾರ'.split('_'),
     weekdaysShort : 'ಭಾನು_ಸೋಮ_ಮಂಗಳ_ಬುಧ_ಗುರು_ಶುಕ್ರ_ಶನಿ'.split('_'),
@@ -17473,6 +18498,7 @@ var kn = moment.defineLocale('kn', {
         future : '%s ನಂತರ',
         past : '%s ಹಿಂದೆ',
         s : 'ಕೆಲವು ಕ್ಷಣಗಳು',
+        ss : '%d ಸೆಕೆಂಡುಗಳು',
         m : 'ಒಂದು ನಿಮಿಷ',
         mm : '%d ನಿಮಿಷ',
         h : 'ಒಂದು ಗಂಟೆ',
@@ -17538,13 +18564,10 @@ return kn;
 
 
 /***/ }),
-/* 207 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Korean [ko]
-//! author : Kyungwook, Park : https://github.com/kyungw00k
-//! author : Jeeeyul Lee <jeeeyul@gmail.com>
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17562,11 +18585,11 @@ var ko = moment.defineLocale('ko', {
     longDateFormat : {
         LT : 'A h:mm',
         LTS : 'A h:mm:ss',
-        L : 'YYYY.MM.DD',
+        L : 'YYYY.MM.DD.',
         LL : 'YYYY년 MMMM D일',
         LLL : 'YYYY년 MMMM D일 A h:mm',
         LLLL : 'YYYY년 MMMM D일 dddd A h:mm',
-        l : 'YYYY.MM.DD',
+        l : 'YYYY.MM.DD.',
         ll : 'YYYY년 MMMM D일',
         lll : 'YYYY년 MMMM D일 A h:mm',
         llll : 'YYYY년 MMMM D일 dddd A h:mm'
@@ -17595,8 +18618,22 @@ var ko = moment.defineLocale('ko', {
         y : '일 년',
         yy : '%d년'
     },
-    dayOfMonthOrdinalParse : /\d{1,2}일/,
-    ordinal : '%d일',
+    dayOfMonthOrdinalParse : /\d{1,2}(일|월|주)/,
+    ordinal : function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'DDD':
+                return number + '일';
+            case 'M':
+                return number + '월';
+            case 'w':
+            case 'W':
+                return number + '주';
+            default:
+                return number;
+        }
+    },
     meridiemParse : /오전|오후/,
     isPM : function (token) {
         return token === '오후';
@@ -17612,19 +18649,16 @@ return ko;
 
 
 /***/ }),
-/* 208 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Kyrgyz [ky]
-//! author : Chyngyz Arystan uulu : https://github.com/chyngyz
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
    typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, (function (moment) { 'use strict';
-
 
 
 var suffixes = {
@@ -17676,6 +18710,7 @@ var ky = moment.defineLocale('ky', {
         future : '%s ичинде',
         past : '%s мурун',
         s : 'бирнече секунд',
+        ss : '%d секунд',
         m : 'бир мүнөт',
         mm : '%d мүнөт',
         h : 'бир саат',
@@ -17705,13 +18740,10 @@ return ky;
 
 
 /***/ }),
-/* 209 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Luxembourgish [lb]
-//! author : mweimerskirch : https://github.com/mweimerskirch
-//! author : David Raison : https://github.com/kwisatz
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17822,6 +18854,7 @@ var lb = moment.defineLocale('lb', {
         future : processFutureTime,
         past : processPastTime,
         s : 'e puer Sekonnen',
+        ss : '%d Sekonnen',
         m : processRelativeTime,
         mm : '%d Minutten',
         h : processRelativeTime,
@@ -17847,12 +18880,10 @@ return lb;
 
 
 /***/ }),
-/* 210 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Lao [lo]
-//! author : Ryan Hart : https://github.com/ryanhart2
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17899,6 +18930,7 @@ var lo = moment.defineLocale('lo', {
         future : 'ອີກ %s',
         past : '%sຜ່ານມາ',
         s : 'ບໍ່ເທົ່າໃດວິນາທີ',
+        ss : '%d ວິນາທີ' ,
         m : '1 ນາທີ',
         mm : '%d ນາທີ',
         h : '1 ຊົ່ວໂມງ',
@@ -17922,12 +18954,10 @@ return lo;
 
 
 /***/ }),
-/* 211 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Lithuanian [lt]
-//! author : Mindaugas Mozūras : https://github.com/mmozuras
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -17937,6 +18967,7 @@ return lo;
 
 
 var units = {
+    'ss' : 'sekundė_sekundžių_sekundes',
     'm' : 'minutė_minutės_minutę',
     'mm': 'minutės_minučių_minutes',
     'h' : 'valanda_valandos_valandą',
@@ -18017,6 +19048,7 @@ var lt = moment.defineLocale('lt', {
         future : 'po %s',
         past : 'prieš %s',
         s : translateSeconds,
+        ss : translate,
         m : translateSingular,
         mm : translate,
         h : translateSingular,
@@ -18044,13 +19076,10 @@ return lt;
 
 
 /***/ }),
-/* 212 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Latvian [lv]
-//! author : Kristaps Karlsons : https://github.com/skakri
-//! author : Jānis Elmeris : https://github.com/JanisE
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18060,6 +19089,7 @@ return lt;
 
 
 var units = {
+    'ss': 'sekundes_sekundēm_sekunde_sekundes'.split('_'),
     'm': 'minūtes_minūtēm_minūte_minūtes'.split('_'),
     'mm': 'minūtes_minūtēm_minūte_minūtes'.split('_'),
     'h': 'stundas_stundām_stunda_stundas'.split('_'),
@@ -18121,6 +19151,7 @@ var lv = moment.defineLocale('lv', {
         future : 'pēc %s',
         past : 'pirms %s',
         s : relativeSeconds,
+        ss : relativeTimeWithPlural,
         m : relativeTimeWithSingular,
         mm : relativeTimeWithPlural,
         h : relativeTimeWithSingular,
@@ -18146,12 +19177,10 @@ return lv;
 
 
 /***/ }),
-/* 213 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Montenegrin [me]
-//! author : Miodrag Nikač <miodrag@restartit.me> : https://github.com/miodragnikac
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18162,6 +19191,7 @@ return lv;
 
 var translator = {
     words: { //Different grammatical cases
+        ss: ['sekund', 'sekunda', 'sekundi'],
         m: ['jedan minut', 'jednog minuta'],
         mm: ['minut', 'minuta', 'minuta'],
         h: ['jedan sat', 'jednog sata'],
@@ -18237,6 +19267,7 @@ var me = moment.defineLocale('me', {
         future : 'za %s',
         past   : 'prije %s',
         s      : 'nekoliko sekundi',
+        ss     : translator.translate,
         m      : translator.translate,
         mm     : translator.translate,
         h      : translator.translate,
@@ -18262,12 +19293,10 @@ return me;
 
 
 /***/ }),
-/* 214 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Maori [mi]
-//! author : John Corrigan <robbiecloset@gmail.com> : https://github.com/johnideal
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18306,6 +19335,7 @@ var mi = moment.defineLocale('mi', {
         future: 'i roto i %s',
         past: '%s i mua',
         s: 'te hēkona ruarua',
+        ss: '%d hēkona',
         m: 'he meneti',
         mm: '%d meneti',
         h: 'te haora',
@@ -18331,12 +19361,10 @@ return mi;
 
 
 /***/ }),
-/* 215 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Macedonian [mk]
-//! author : Borislav Mickov : https://github.com/B0k0
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18383,6 +19411,7 @@ var mk = moment.defineLocale('mk', {
         future : 'после %s',
         past : 'пред %s',
         s : 'неколку секунди',
+        ss : '%d секунди',
         m : 'минута',
         mm : '%d минути',
         h : 'час',
@@ -18426,12 +19455,10 @@ return mk;
 
 
 /***/ }),
-/* 216 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Malayalam [ml]
-//! author : Floyd Pink : https://github.com/floydpink
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18467,6 +19494,7 @@ var ml = moment.defineLocale('ml', {
         future : '%s കഴിഞ്ഞ്',
         past : '%s മുൻപ്',
         s : 'അൽപ നിമിഷങ്ങൾ',
+        ss : '%d സെക്കൻഡ്',
         m : 'ഒരു മിനിറ്റ്',
         mm : '%d മിനിറ്റ്',
         h : 'ഒരു മണിക്കൂർ',
@@ -18512,13 +19540,10 @@ return ml;
 
 
 /***/ }),
-/* 217 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Marathi [mr]
-//! author : Harshad Kale : https://github.com/kalehv
-//! author : Vivek Athalye : https://github.com/vnathalye
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18538,8 +19563,8 @@ var symbolMap = {
     '8': '८',
     '9': '९',
     '0': '०'
-};
-var numberMap = {
+},
+numberMap = {
     '१': '1',
     '२': '2',
     '३': '3',
@@ -18558,6 +19583,7 @@ function relativeTimeMr(number, withoutSuffix, string, isFuture)
     if (withoutSuffix) {
         switch (string) {
             case 's': output = 'काही सेकंद'; break;
+            case 'ss': output = '%d सेकंद'; break;
             case 'm': output = 'एक मिनिट'; break;
             case 'mm': output = '%d मिनिटे'; break;
             case 'h': output = 'एक तास'; break;
@@ -18573,6 +19599,7 @@ function relativeTimeMr(number, withoutSuffix, string, isFuture)
     else {
         switch (string) {
             case 's': output = 'काही सेकंदां'; break;
+            case 'ss': output = '%d सेकंदां'; break;
             case 'm': output = 'एका मिनिटा'; break;
             case 'mm': output = '%d मिनिटां'; break;
             case 'h': output = 'एका तासा'; break;
@@ -18615,6 +19642,7 @@ var mr = moment.defineLocale('mr', {
         future: '%sमध्ये',
         past: '%sपूर्वी',
         s: relativeTimeMr,
+        ss: relativeTimeMr,
         m: relativeTimeMr,
         mm: relativeTimeMr,
         h: relativeTimeMr,
@@ -18676,12 +19704,10 @@ return mr;
 
 
 /***/ }),
-/* 218 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Malay [ms]
-//! author : Weldan Jamili : https://github.com/weldan
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18740,6 +19766,7 @@ var ms = moment.defineLocale('ms', {
         future : 'dalam %s',
         past : '%s yang lepas',
         s : 'beberapa saat',
+        ss : '%d saat',
         m : 'seminit',
         mm : '%d minit',
         h : 'sejam',
@@ -18763,13 +19790,10 @@ return ms;
 
 
 /***/ }),
-/* 219 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Malay [ms-my]
-//! note : DEPRECATED, the correct one is [ms]
-//! author : Weldan Jamili : https://github.com/weldan
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18828,6 +19852,7 @@ var msMy = moment.defineLocale('ms-my', {
         future : 'dalam %s',
         past : '%s yang lepas',
         s : 'beberapa saat',
+        ss : '%d saat',
         m : 'seminit',
         mm : '%d minit',
         h : 'sejam',
@@ -18851,14 +19876,74 @@ return msMy;
 
 
 /***/ }),
-/* 220 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Burmese [my]
-//! author : Squar team, mysquar.com
-//! author : David Rossellat : https://github.com/gholadr
-//! author : Tin Aung Lin : https://github.com/thanyawzinmin
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var mt = moment.defineLocale('mt', {
+    months : 'Jannar_Frar_Marzu_April_Mejju_Ġunju_Lulju_Awwissu_Settembru_Ottubru_Novembru_Diċembru'.split('_'),
+    monthsShort : 'Jan_Fra_Mar_Apr_Mej_Ġun_Lul_Aww_Set_Ott_Nov_Diċ'.split('_'),
+    weekdays : 'Il-Ħadd_It-Tnejn_It-Tlieta_L-Erbgħa_Il-Ħamis_Il-Ġimgħa_Is-Sibt'.split('_'),
+    weekdaysShort : 'Ħad_Tne_Tli_Erb_Ħam_Ġim_Sib'.split('_'),
+    weekdaysMin : 'Ħa_Tn_Tl_Er_Ħa_Ġi_Si'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Illum fil-]LT',
+        nextDay : '[Għada fil-]LT',
+        nextWeek : 'dddd [fil-]LT',
+        lastDay : '[Il-bieraħ fil-]LT',
+        lastWeek : 'dddd [li għadda] [fil-]LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'f’ %s',
+        past : '%s ilu',
+        s : 'ftit sekondi',
+        ss : '%d sekondi',
+        m : 'minuta',
+        mm : '%d minuti',
+        h : 'siegħa',
+        hh : '%d siegħat',
+        d : 'ġurnata',
+        dd : '%d ġranet',
+        M : 'xahar',
+        MM : '%d xhur',
+        y : 'sena',
+        yy : '%d sni'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal: '%dº',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return mt;
+
+})));
+
+
+/***/ }),
+/* 225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18878,8 +19963,7 @@ var symbolMap = {
     '8': '၈',
     '9': '၉',
     '0': '၀'
-};
-var numberMap = {
+}, numberMap = {
     '၁': '1',
     '၂': '2',
     '၃': '3',
@@ -18919,6 +20003,7 @@ var my = moment.defineLocale('my', {
         future: 'လာမည့် %s မှာ',
         past: 'လွန်ခဲ့သော %s က',
         s: 'စက္ကန်.အနည်းငယ်',
+        ss : '%d စက္ကန့်',
         m: 'တစ်မိနစ်',
         mm: '%d မိနစ်',
         h: 'တစ်နာရီ',
@@ -18952,13 +20037,10 @@ return my;
 
 
 /***/ }),
-/* 221 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Norwegian Bokmål [nb]
-//! authors : Espen Hovlandsdal : https://github.com/rexxars
-//!           Sigurd Gartmann : https://github.com/sigurdga
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -18995,6 +20077,7 @@ var nb = moment.defineLocale('nb', {
         future : 'om %s',
         past : '%s siden',
         s : 'noen sekunder',
+        ss : '%d sekunder',
         m : 'ett minutt',
         mm : '%d minutter',
         h : 'en time',
@@ -19020,12 +20103,10 @@ return nb;
 
 
 /***/ }),
-/* 222 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Nepalese [ne]
-//! author : suvash : https://github.com/suvash
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19045,8 +20126,8 @@ var symbolMap = {
     '8': '८',
     '9': '९',
     '0': '०'
-};
-var numberMap = {
+},
+numberMap = {
     '१': '1',
     '२': '2',
     '३': '3',
@@ -19125,6 +20206,7 @@ var ne = moment.defineLocale('ne', {
         future : '%sमा',
         past : '%s अगाडि',
         s : 'केही क्षण',
+        ss : '%d सेकेण्ड',
         m : 'एक मिनेट',
         mm : '%d मिनेट',
         h : 'एक घण्टा',
@@ -19148,13 +20230,10 @@ return ne;
 
 
 /***/ }),
-/* 223 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Dutch [nl]
-//! author : Joris Röling : https://github.com/jorisroling
-//! author : Jacob Middag : https://github.com/middagj
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19163,8 +20242,8 @@ return ne;
 }(this, (function (moment) { 'use strict';
 
 
-var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
-var monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
+var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_'),
+    monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
 
 var monthsParse = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
 var monthsRegex = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
@@ -19192,7 +20271,7 @@ var nl = moment.defineLocale('nl', {
 
     weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysMin : 'zo_ma_di_wo_do_vr_za'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -19214,6 +20293,7 @@ var nl = moment.defineLocale('nl', {
         future : 'over %s',
         past : '%s geleden',
         s : 'een paar seconden',
+        ss : '%d seconden',
         m : 'één minuut',
         mm : '%d minuten',
         h : 'één uur',
@@ -19241,13 +20321,10 @@ return nl;
 
 
 /***/ }),
-/* 224 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Dutch (Belgium) [nl-be]
-//! author : Joris Röling : https://github.com/jorisroling
-//! author : Jacob Middag : https://github.com/middagj
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19256,8 +20333,8 @@ return nl;
 }(this, (function (moment) { 'use strict';
 
 
-var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
-var monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
+var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_'),
+    monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
 
 var monthsParse = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
 var monthsRegex = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
@@ -19285,7 +20362,7 @@ var nlBe = moment.defineLocale('nl-be', {
 
     weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysMin : 'zo_ma_di_wo_do_vr_za'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'HH:mm',
@@ -19307,6 +20384,7 @@ var nlBe = moment.defineLocale('nl-be', {
         future : 'over %s',
         past : '%s geleden',
         s : 'een paar seconden',
+        ss : '%d seconden',
         m : 'één minuut',
         mm : '%d minuten',
         h : 'één uur',
@@ -19334,12 +20412,10 @@ return nlBe;
 
 
 /***/ }),
-/* 225 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Nynorsk [nn]
-//! author : https://github.com/mechuwind
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19374,6 +20450,7 @@ var nn = moment.defineLocale('nn', {
         future : 'om %s',
         past : '%s sidan',
         s : 'nokre sekund',
+        ss : '%d sekund',
         m : 'eit minutt',
         mm : '%d minutt',
         h : 'ein time',
@@ -19399,12 +20476,10 @@ return nn;
 
 
 /***/ }),
-/* 226 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Punjabi (India) [pa-in]
-//! author : Harpreet Singh : https://github.com/harpreetkhalsagtbit
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19424,8 +20499,8 @@ var symbolMap = {
     '8': '੮',
     '9': '੯',
     '0': '੦'
-};
-var numberMap = {
+},
+numberMap = {
     '੧': '1',
     '੨': '2',
     '੩': '3',
@@ -19465,6 +20540,7 @@ var paIn = moment.defineLocale('pa-in', {
         future : '%s ਵਿੱਚ',
         past : '%s ਪਿਛਲੇ',
         s : 'ਕੁਝ ਸਕਿੰਟ',
+        ss : '%d ਸਕਿੰਟ',
         m : 'ਇਕ ਮਿੰਟ',
         mm : '%d ਮਿੰਟ',
         h : 'ਇੱਕ ਘੰਟਾ',
@@ -19528,12 +20604,10 @@ return paIn;
 
 
 /***/ }),
-/* 227 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Polish [pl]
-//! author : Rafal Hirsz : https://github.com/evoL
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19542,14 +20616,16 @@ return paIn;
 }(this, (function (moment) { 'use strict';
 
 
-var monthsNominative = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_');
-var monthsSubjective = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia'.split('_');
+var monthsNominative = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_'),
+    monthsSubjective = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia'.split('_');
 function plural(n) {
     return (n % 10 < 5) && (n % 10 > 1) && ((~~(n / 10) % 10) !== 1);
 }
 function translate(number, withoutSuffix, key) {
     var result = number + ' ';
     switch (key) {
+        case 'ss':
+            return result + (plural(number) ? 'sekundy' : 'sekund');
         case 'm':
             return withoutSuffix ? 'minuta' : 'minutę';
         case 'mm':
@@ -19595,7 +20671,24 @@ var pl = moment.defineLocale('pl', {
     calendar : {
         sameDay: '[Dziś o] LT',
         nextDay: '[Jutro o] LT',
-        nextWeek: '[W] dddd [o] LT',
+        nextWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[W niedzielę o] LT';
+
+                case 2:
+                    return '[We wtorek o] LT';
+
+                case 3:
+                    return '[W środę o] LT';
+
+                case 6:
+                    return '[W sobotę o] LT';
+
+                default:
+                    return '[W] dddd [o] LT';
+            }
+        },
         lastDay: '[Wczoraj o] LT',
         lastWeek: function () {
             switch (this.day()) {
@@ -19615,6 +20708,7 @@ var pl = moment.defineLocale('pl', {
         future : 'za %s',
         past : '%s temu',
         s : 'kilka sekund',
+        ss : translate,
         m : translate,
         mm : translate,
         h : translate,
@@ -19640,12 +20734,10 @@ return pl;
 
 
 /***/ }),
-/* 228 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Portuguese [pt]
-//! author : Jefferson : https://github.com/jalex79
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19655,9 +20747,9 @@ return pl;
 
 
 var pt = moment.defineLocale('pt', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
-    weekdays : 'Domingo_Segunda-Feira_Terça-Feira_Quarta-Feira_Quinta-Feira_Sexta-Feira_Sábado'.split('_'),
+    months : 'janeiro_fevereiro_março_abril_maio_junho_julho_agosto_setembro_outubro_novembro_dezembro'.split('_'),
+    monthsShort : 'jan_fev_mar_abr_mai_jun_jul_ago_set_out_nov_dez'.split('_'),
+    weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
     weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
     weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
     weekdaysParseExact : true,
@@ -19685,6 +20777,7 @@ var pt = moment.defineLocale('pt', {
         future : 'em %s',
         past : 'há %s',
         s : 'segundos',
+        ss : '%d segundos',
         m : 'um minuto',
         mm : '%d minutos',
         h : 'uma hora',
@@ -19710,12 +20803,10 @@ return pt;
 
 
 /***/ }),
-/* 229 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Portuguese (Brazil) [pt-br]
-//! author : Caio Ribeiro Pereira : https://github.com/caio-ribeiro-pereira
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19725,8 +20816,8 @@ return pt;
 
 
 var ptBr = moment.defineLocale('pt-br', {
-    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    months : 'janeiro_fevereiro_março_abril_maio_junho_julho_agosto_setembro_outubro_novembro_dezembro'.split('_'),
+    monthsShort : 'jan_fev_mar_abr_mai_jun_jul_ago_set_out_nov_dez'.split('_'),
     weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
     weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
     weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
@@ -19753,8 +20844,9 @@ var ptBr = moment.defineLocale('pt-br', {
     },
     relativeTime : {
         future : 'em %s',
-        past : '%s atrás',
+        past : 'há %s',
         s : 'poucos segundos',
+        ss : '%d segundos',
         m : 'um minuto',
         mm : '%d minutos',
         h : 'uma hora',
@@ -19776,13 +20868,10 @@ return ptBr;
 
 
 /***/ }),
-/* 230 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Romanian [ro]
-//! author : Vlad Gurdiga : https://github.com/gurdiga
-//! author : Valentin Agachi : https://github.com/avaly
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19793,6 +20882,7 @@ return ptBr;
 
 function relativeTimeWithPlural(number, withoutSuffix, key) {
     var format = {
+            'ss': 'secunde',
             'mm': 'minute',
             'hh': 'ore',
             'dd': 'zile',
@@ -19833,6 +20923,7 @@ var ro = moment.defineLocale('ro', {
         future : 'peste %s',
         past : '%s în urmă',
         s : 'câteva secunde',
+        ss : relativeTimeWithPlural,
         m : 'un minut',
         mm : relativeTimeWithPlural,
         h : 'o oră',
@@ -19856,14 +20947,10 @@ return ro;
 
 
 /***/ }),
-/* 231 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Russian [ru]
-//! author : Viktorminator : https://github.com/Viktorminator
-//! Author : Menelion Elensúle : https://github.com/Oire
-//! author : Коренберг Марк : https://github.com/socketpair
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -19878,6 +20965,7 @@ function plural(word, num) {
 }
 function relativeTimeWithPlural(number, withoutSuffix, key) {
     var format = {
+        'ss': withoutSuffix ? 'секунда_секунды_секунд' : 'секунду_секунды_секунд',
         'mm': withoutSuffix ? 'минута_минуты_минут' : 'минуту_минуты_минут',
         'hh': 'час_часа_часов',
         'dd': 'день_дня_дней',
@@ -19929,12 +21017,12 @@ var ru = moment.defineLocale('ru', {
     // Выражение, которое соотвествует только сокращённым формам
     monthsShortStrictRegex: /^(янв\.|февр?\.|мар[т.]|апр\.|ма[яй]|июн[ья.]|июл[ья.]|авг\.|сент?\.|окт\.|нояб?\.|дек\.)/i,
     longDateFormat : {
-        LT : 'HH:mm',
-        LTS : 'HH:mm:ss',
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
         L : 'DD.MM.YYYY',
         LL : 'D MMMM YYYY г.',
-        LLL : 'D MMMM YYYY г., HH:mm',
-        LLLL : 'dddd, D MMMM YYYY г., HH:mm'
+        LLL : 'D MMMM YYYY г., H:mm',
+        LLLL : 'dddd, D MMMM YYYY г., H:mm'
     },
     calendar : {
         sameDay: '[Сегодня в] LT',
@@ -19990,6 +21078,7 @@ var ru = moment.defineLocale('ru', {
         future : 'через %s',
         past : '%s назад',
         s : 'несколько секунд',
+        ss : relativeTimeWithPlural,
         m : relativeTimeWithPlural,
         mm : relativeTimeWithPlural,
         h : 'час',
@@ -20034,7 +21123,7 @@ var ru = moment.defineLocale('ru', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
     }
 });
 
@@ -20044,12 +21133,10 @@ return ru;
 
 
 /***/ }),
-/* 232 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Sindhi [sd]
-//! author : Narain Sagar : https://github.com/narainsagar
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20118,6 +21205,7 @@ var sd = moment.defineLocale('sd', {
         future : '%s پوء',
         past : '%s اڳ',
         s : 'چند سيڪنڊ',
+        ss : '%d سيڪنڊ',
         m : 'هڪ منٽ',
         mm : '%d منٽ',
         h : 'هڪ ڪلاڪ',
@@ -20147,19 +21235,16 @@ return sd;
 
 
 /***/ }),
-/* 233 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Northern Sami [se]
-//! authors : Bård Rolstad Henriksen : https://github.com/karamell
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
    typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, (function (moment) { 'use strict';
-
 
 
 var se = moment.defineLocale('se', {
@@ -20188,6 +21273,7 @@ var se = moment.defineLocale('se', {
         future : '%s geažes',
         past : 'maŋit %s',
         s : 'moadde sekunddat',
+        ss: '%d sekunddat',
         m : 'okta minuhta',
         mm : '%d minuhtat',
         h : 'okta diimmu',
@@ -20213,12 +21299,10 @@ return se;
 
 
 /***/ }),
-/* 234 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Sinhalese [si]
-//! author : Sampath Sitinamaluwa : https://github.com/sampathsris
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20255,6 +21339,7 @@ var si = moment.defineLocale('si', {
         future : '%sකින්',
         past : '%sකට පෙර',
         s : 'තත්පර කිහිපය',
+        ss : 'තත්පර %d',
         m : 'මිනිත්තුව',
         mm : 'මිනිත්තු %d',
         h : 'පැය',
@@ -20289,13 +21374,10 @@ return si;
 
 
 /***/ }),
-/* 235 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Slovak [sk]
-//! author : Martin Minka : https://github.com/k2s
-//! based on work of petrbela : https://github.com/petrbela
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20304,8 +21386,8 @@ return si;
 }(this, (function (moment) { 'use strict';
 
 
-var months = 'január_február_marec_apríl_máj_jún_júl_august_september_október_november_december'.split('_');
-var monthsShort = 'jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec'.split('_');
+var months = 'január_február_marec_apríl_máj_jún_júl_august_september_október_november_december'.split('_'),
+    monthsShort = 'jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec'.split('_');
 function plural(n) {
     return (n > 1) && (n < 5);
 }
@@ -20314,6 +21396,13 @@ function translate(number, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':  // a few seconds / in a few seconds / a few seconds ago
             return (withoutSuffix || isFuture) ? 'pár sekúnd' : 'pár sekundami';
+        case 'ss': // 9 seconds / in 9 seconds / 9 seconds ago
+            if (withoutSuffix || isFuture) {
+                return result + (plural(number) ? 'sekundy' : 'sekúnd');
+            } else {
+                return result + 'sekundami';
+            }
+            break;
         case 'm':  // a minute / in a minute / a minute ago
             return withoutSuffix ? 'minúta' : (isFuture ? 'minútu' : 'minútou');
         case 'mm': // 9 minutes / in 9 minutes / 9 minutes ago
@@ -20419,6 +21508,7 @@ var sk = moment.defineLocale('sk', {
         future : 'za %s',
         past : 'pred %s',
         s : translate,
+        ss : translate,
         m : translate,
         mm : translate,
         h : translate,
@@ -20444,12 +21534,10 @@ return sk;
 
 
 /***/ }),
-/* 236 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Slovenian [sl]
-//! author : Robert Sedovšek : https://github.com/sedovsek
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20463,6 +21551,17 @@ function processRelativeTime(number, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':
             return withoutSuffix || isFuture ? 'nekaj sekund' : 'nekaj sekundami';
+        case 'ss':
+            if (number === 1) {
+                result += withoutSuffix ? 'sekundo' : 'sekundi';
+            } else if (number === 2) {
+                result += withoutSuffix || isFuture ? 'sekundi' : 'sekundah';
+            } else if (number < 5) {
+                result += withoutSuffix || isFuture ? 'sekunde' : 'sekundah';
+            } else {
+                result += withoutSuffix || isFuture ? 'sekund' : 'sekund';
+            }
+            return result;
         case 'm':
             return withoutSuffix ? 'ena minuta' : 'eno minuto';
         case 'mm':
@@ -20586,6 +21685,7 @@ var sl = moment.defineLocale('sl', {
         future : 'čez %s',
         past   : 'pred %s',
         s      : processRelativeTime,
+        ss     : processRelativeTime,
         m      : processRelativeTime,
         mm     : processRelativeTime,
         h      : processRelativeTime,
@@ -20611,14 +21711,10 @@ return sl;
 
 
 /***/ }),
-/* 237 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Albanian [sq]
-//! author : Flakërim Ismani : https://github.com/flakerimi
-//! author : Menelion Elensúle : https://github.com/Oire
-//! author : Oerd Cukalla : https://github.com/oerd
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20661,6 +21757,7 @@ var sq = moment.defineLocale('sq', {
         future : 'në %s',
         past : '%s më parë',
         s : 'disa sekonda',
+        ss : '%d sekonda',
         m : 'një minutë',
         mm : '%d minuta',
         h : 'një orë',
@@ -20686,12 +21783,10 @@ return sq;
 
 
 /***/ }),
-/* 238 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Serbian [sr]
-//! author : Milan Janačković<milanjanackovic@gmail.com> : https://github.com/milan-j
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20702,6 +21797,7 @@ return sq;
 
 var translator = {
     words: { //Different grammatical cases
+        ss: ['sekunda', 'sekunde', 'sekundi'],
         m: ['jedan minut', 'jedne minute'],
         mm: ['minut', 'minute', 'minuta'],
         h: ['jedan sat', 'jednog sata'],
@@ -20776,6 +21872,7 @@ var sr = moment.defineLocale('sr', {
         future : 'za %s',
         past   : 'pre %s',
         s      : 'nekoliko sekundi',
+        ss     : translator.translate,
         m      : translator.translate,
         mm     : translator.translate,
         h      : translator.translate,
@@ -20801,12 +21898,10 @@ return sr;
 
 
 /***/ }),
-/* 239 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Serbian Cyrillic [sr-cyrl]
-//! author : Milan Janačković<milanjanackovic@gmail.com> : https://github.com/milan-j
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -20817,6 +21912,7 @@ return sr;
 
 var translator = {
     words: { //Different grammatical cases
+        ss: ['секунда', 'секунде', 'секунди'],
         m: ['један минут', 'једне минуте'],
         mm: ['минут', 'минуте', 'минута'],
         h: ['један сат', 'једног сата'],
@@ -20891,6 +21987,7 @@ var srCyrl = moment.defineLocale('sr-cyrl', {
         future : 'за %s',
         past   : 'пре %s',
         s      : 'неколико секунди',
+        ss     : translator.translate,
         m      : translator.translate,
         mm     : translator.translate,
         h      : translator.translate,
@@ -20916,19 +22013,16 @@ return srCyrl;
 
 
 /***/ }),
-/* 240 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : siSwati [ss]
-//! author : Nicolai Davies<mail@nicolai.io> : https://github.com/nicolaidavies
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
    typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, (function (moment) { 'use strict';
-
 
 
 var ss = moment.defineLocale('ss', {
@@ -20958,6 +22052,7 @@ var ss = moment.defineLocale('ss', {
         future : 'nga %s',
         past : 'wenteka nga %s',
         s : 'emizuzwana lomcane',
+        ss : '%d mzuzwana',
         m : 'umzuzu',
         mm : '%d emizuzu',
         h : 'lihora',
@@ -21010,12 +22105,10 @@ return ss;
 
 
 /***/ }),
-/* 241 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Swedish [sv]
-//! author : Jens Alm : https://github.com/ulmus
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21052,6 +22145,7 @@ var sv = moment.defineLocale('sv', {
         future : 'om %s',
         past : 'för %s sedan',
         s : 'några sekunder',
+        ss : '%d sekunder',
         m : 'en minut',
         mm : '%d minuter',
         h : 'en timme',
@@ -21084,12 +22178,10 @@ return sv;
 
 
 /***/ }),
-/* 242 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Swahili [sw]
-//! author : Fahad Kassim : https://github.com/fadsel
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21125,6 +22217,7 @@ var sw = moment.defineLocale('sw', {
         future : '%s baadaye',
         past : 'tokea %s',
         s : 'hivi punde',
+        ss : 'sekunde %d',
         m : 'dakika moja',
         mm : 'dakika %d',
         h : 'saa limoja',
@@ -21148,12 +22241,10 @@ return sw;
 
 
 /***/ }),
-/* 243 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Tamil [ta]
-//! author : Arjunkumar Krishnamoorthy : https://github.com/tk120404
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21173,8 +22264,7 @@ var symbolMap = {
     '8': '௮',
     '9': '௯',
     '0': '௦'
-};
-var numberMap = {
+}, numberMap = {
     '௧': '1',
     '௨': '2',
     '௩': '3',
@@ -21213,6 +22303,7 @@ var ta = moment.defineLocale('ta', {
         future : '%s இல்',
         past : '%s முன்',
         s : 'ஒரு சில விநாடிகள்',
+        ss : '%d விநாடிகள்',
         m : 'ஒரு நிமிடம்',
         mm : '%d நிமிடங்கள்',
         h : 'ஒரு மணி நேரம்',
@@ -21283,12 +22374,10 @@ return ta;
 
 
 /***/ }),
-/* 244 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Telugu [te]
-//! author : Krishna Chaitanya Thota : https://github.com/kcthota
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21324,6 +22413,7 @@ var te = moment.defineLocale('te', {
         future : '%s లో',
         past : '%s క్రితం',
         s : 'కొన్ని క్షణాలు',
+        ss : '%d సెకన్లు',
         m : 'ఒక నిమిషం',
         mm : '%d నిమిషాలు',
         h : 'ఒక గంట',
@@ -21377,13 +22467,10 @@ return te;
 
 
 /***/ }),
-/* 245 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Tetun Dili (East Timor) [tet]
-//! author : Joshua Brooks : https://github.com/joshbrooks
-//! author : Onorio De J. Afonso : https://github.com/marobo
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21393,11 +22480,11 @@ return te;
 
 
 var tet = moment.defineLocale('tet', {
-    months : 'Janeiru_Fevereiru_Marsu_Abril_Maiu_Juniu_Juliu_Augustu_Setembru_Outubru_Novembru_Dezembru'.split('_'),
-    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Aug_Set_Out_Nov_Dez'.split('_'),
-    weekdays : 'Domingu_Segunda_Tersa_Kuarta_Kinta_Sexta_Sabadu'.split('_'),
-    weekdaysShort : 'Dom_Seg_Ters_Kua_Kint_Sext_Sab'.split('_'),
-    weekdaysMin : 'Do_Seg_Te_Ku_Ki_Sex_Sa'.split('_'),
+    months : 'Janeiru_Fevereiru_Marsu_Abril_Maiu_Juñu_Jullu_Agustu_Setembru_Outubru_Novembru_Dezembru'.split('_'),
+    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    weekdays : 'Domingu_Segunda_Tersa_Kuarta_Kinta_Sesta_Sabadu'.split('_'),
+    weekdaysShort : 'Dom_Seg_Ters_Kua_Kint_Sest_Sab'.split('_'),
+    weekdaysMin : 'Do_Seg_Te_Ku_Ki_Ses_Sa'.split('_'),
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
@@ -21418,10 +22505,11 @@ var tet = moment.defineLocale('tet', {
         future : 'iha %s',
         past : '%s liuba',
         s : 'minutu balun',
+        ss : 'minutu %d',
         m : 'minutu ida',
-        mm : 'minutus %d',
-        h : 'horas ida',
-        hh : 'horas %d',
+        mm : 'minutu %d',
+        h : 'oras ida',
+        hh : 'oras %d',
         d : 'loron ida',
         dd : 'loron %d',
         M : 'fulan ida',
@@ -21450,12 +22538,130 @@ return tet;
 
 
 /***/ }),
-/* 246 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Thai [th]
-//! author : Kridsada Thanabulpong : https://github.com/sirn
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var suffixes = {
+    0: '-ум',
+    1: '-ум',
+    2: '-юм',
+    3: '-юм',
+    4: '-ум',
+    5: '-ум',
+    6: '-ум',
+    7: '-ум',
+    8: '-ум',
+    9: '-ум',
+    10: '-ум',
+    12: '-ум',
+    13: '-ум',
+    20: '-ум',
+    30: '-юм',
+    40: '-ум',
+    50: '-ум',
+    60: '-ум',
+    70: '-ум',
+    80: '-ум',
+    90: '-ум',
+    100: '-ум'
+};
+
+var tg = moment.defineLocale('tg', {
+    months : 'январ_феврал_март_апрел_май_июн_июл_август_сентябр_октябр_ноябр_декабр'.split('_'),
+    monthsShort : 'янв_фев_мар_апр_май_июн_июл_авг_сен_окт_ноя_дек'.split('_'),
+    weekdays : 'якшанбе_душанбе_сешанбе_чоршанбе_панҷшанбе_ҷумъа_шанбе'.split('_'),
+    weekdaysShort : 'яшб_дшб_сшб_чшб_пшб_ҷум_шнб'.split('_'),
+    weekdaysMin : 'яш_дш_сш_чш_пш_ҷм_шб'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Имрӯз соати] LT',
+        nextDay : '[Пагоҳ соати] LT',
+        lastDay : '[Дирӯз соати] LT',
+        nextWeek : 'dddd[и] [ҳафтаи оянда соати] LT',
+        lastWeek : 'dddd[и] [ҳафтаи гузашта соати] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'баъди %s',
+        past : '%s пеш',
+        s : 'якчанд сония',
+        m : 'як дақиқа',
+        mm : '%d дақиқа',
+        h : 'як соат',
+        hh : '%d соат',
+        d : 'як рӯз',
+        dd : '%d рӯз',
+        M : 'як моҳ',
+        MM : '%d моҳ',
+        y : 'як сол',
+        yy : '%d сол'
+    },
+    meridiemParse: /шаб|субҳ|рӯз|бегоҳ/,
+    meridiemHour: function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === 'шаб') {
+            return hour < 4 ? hour : hour + 12;
+        } else if (meridiem === 'субҳ') {
+            return hour;
+        } else if (meridiem === 'рӯз') {
+            return hour >= 11 ? hour : hour + 12;
+        } else if (meridiem === 'бегоҳ') {
+            return hour + 12;
+        }
+    },
+    meridiem: function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'шаб';
+        } else if (hour < 11) {
+            return 'субҳ';
+        } else if (hour < 16) {
+            return 'рӯз';
+        } else if (hour < 19) {
+            return 'бегоҳ';
+        } else {
+            return 'шаб';
+        }
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(ум|юм)/,
+    ordinal: function (number) {
+        var a = number % 10,
+            b = number >= 100 ? 100 : null;
+        return number + (suffixes[number] || suffixes[a] || suffixes[b]);
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1th is the first week of the year.
+    }
+});
+
+return tg;
+
+})));
+
+
+/***/ }),
+/* 252 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21503,6 +22709,7 @@ var th = moment.defineLocale('th', {
         future : 'อีก %s',
         past : '%sที่แล้ว',
         s : 'ไม่กี่วินาที',
+        ss : '%d วินาที',
         m : '1 นาที',
         mm : '%d นาที',
         h : '1 ชั่วโมง',
@@ -21522,12 +22729,10 @@ return th;
 
 
 /***/ }),
-/* 247 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Tagalog (Philippines) [tl-ph]
-//! author : Dan Hagman : https://github.com/hagmandan
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21562,6 +22767,7 @@ var tlPh = moment.defineLocale('tl-ph', {
         future : 'sa loob ng %s',
         past : '%s ang nakalipas',
         s : 'ilang segundo',
+        ss : '%d segundo',
         m : 'isang minuto',
         mm : '%d minuto',
         h : 'isang oras',
@@ -21589,12 +22795,10 @@ return tlPh;
 
 
 /***/ }),
-/* 248 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Klingon [tlh]
-//! author : Dominika Kruk : https://github.com/amaranthrose
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21632,6 +22836,8 @@ function translatePast(output) {
 function translate(number, withoutSuffix, string, isFuture) {
     var numberNoun = numberAsNoun(number);
     switch (string) {
+        case 'ss':
+            return numberNoun + ' lup';
         case 'mm':
             return numberNoun + ' tup';
         case 'hh':
@@ -21689,6 +22895,7 @@ var tlh = moment.defineLocale('tlh', {
         future : translateFuture,
         past : translatePast,
         s : 'puS lup',
+        ss : translate,
         m : 'wa’ tup',
         mm : translate,
         h : 'wa’ rep',
@@ -21714,20 +22921,15 @@ return tlh;
 
 
 /***/ }),
-/* 249 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
-//! moment.js locale configuration
-//! locale : Turkish [tr]
-//! authors : Erhan Gundogan : https://github.com/erhangundogan,
-//!           Burak Yiğit Kaya: https://github.com/BYK
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
    typeof define === 'function' && define.amd ? define(['../moment'], factory) :
    factory(global.moment)
 }(this, (function (moment) { 'use strict';
-
 
 var suffixes = {
     1: '\'inci',
@@ -21767,15 +22969,16 @@ var tr = moment.defineLocale('tr', {
     calendar : {
         sameDay : '[bugün saat] LT',
         nextDay : '[yarın saat] LT',
-        nextWeek : '[haftaya] dddd [saat] LT',
+        nextWeek : '[gelecek] dddd [saat] LT',
         lastDay : '[dün] LT',
-        lastWeek : '[geçen hafta] dddd [saat] LT',
+        lastWeek : '[geçen] dddd [saat] LT',
         sameElse : 'L'
     },
     relativeTime : {
         future : '%s sonra',
         past : '%s önce',
         s : 'birkaç saniye',
+        ss : '%d saniye',
         m : 'bir dakika',
         mm : '%d dakika',
         h : 'bir saat',
@@ -21787,15 +22990,22 @@ var tr = moment.defineLocale('tr', {
         y : 'bir yıl',
         yy : '%d yıl'
     },
-    dayOfMonthOrdinalParse: /\d{1,2}'(inci|nci|üncü|ncı|uncu|ıncı)/,
-    ordinal : function (number) {
-        if (number === 0) {  // special case for zero
-            return number + '\'ıncı';
+    ordinal: function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'Do':
+            case 'DD':
+                return number;
+            default:
+                if (number === 0) {  // special case for zero
+                    return number + '\'ıncı';
+                }
+                var a = number % 10,
+                    b = number % 100 - a,
+                    c = number >= 100 ? 100 : null;
+                return number + (suffixes[a] || suffixes[b] || suffixes[c]);
         }
-        var a = number % 10,
-            b = number % 100 - a,
-            c = number >= 100 ? 100 : null;
-        return number + (suffixes[a] || suffixes[b] || suffixes[c]);
     },
     week : {
         dow : 1, // Monday is the first day of the week.
@@ -21809,13 +23019,10 @@ return tr;
 
 
 /***/ }),
-/* 250 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Talossan [tzl]
-//! author : Robin van der Vliet : https://github.com/robin0van0der0v
-//! author : Iustì Canun
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21863,6 +23070,7 @@ var tzl = moment.defineLocale('tzl', {
         future : 'osprei %s',
         past : 'ja%s',
         s : processRelativeTime,
+        ss : processRelativeTime,
         m : processRelativeTime,
         mm : processRelativeTime,
         h : processRelativeTime,
@@ -21885,6 +23093,7 @@ var tzl = moment.defineLocale('tzl', {
 function processRelativeTime(number, withoutSuffix, key, isFuture) {
     var format = {
         's': ['viensas secunds', '\'iensas secunds'],
+        'ss': [number + ' secunds', '' + number + ' secunds'],
         'm': ['\'n míut', '\'iens míut'],
         'mm': [number + ' míuts', '' + number + ' míuts'],
         'h': ['\'n þora', '\'iensa þora'],
@@ -21905,12 +23114,10 @@ return tzl;
 
 
 /***/ }),
-/* 251 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Central Atlas Tamazight [tzm]
-//! author : Abdel Said : https://github.com/abdelsaid
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -21945,6 +23152,7 @@ var tzm = moment.defineLocale('tzm', {
         future : 'ⴷⴰⴷⵅ ⵙ ⵢⴰⵏ %s',
         past : 'ⵢⴰⵏ %s',
         s : 'ⵉⵎⵉⴽ',
+        ss : '%d ⵉⵎⵉⴽ',
         m : 'ⵎⵉⵏⵓⴺ',
         mm : '%d ⵎⵉⵏⵓⴺ',
         h : 'ⵙⴰⵄⴰ',
@@ -21968,12 +23176,10 @@ return tzm;
 
 
 /***/ }),
-/* 252 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Central Atlas Tamazight Latin [tzm-latn]
-//! author : Abdel Said : https://github.com/abdelsaid
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22008,6 +23214,7 @@ var tzmLatn = moment.defineLocale('tzm-latn', {
         future : 'dadkh s yan %s',
         past : 'yan %s',
         s : 'imik',
+        ss : '%d imik',
         m : 'minuḍ',
         mm : '%d minuḍ',
         h : 'saɛa',
@@ -22031,13 +23238,133 @@ return tzmLatn;
 
 
 /***/ }),
-/* 253 */
+/* 259 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js language configuration
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(0)) :
+   typeof define === 'function' && define.amd ? define(['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ugCn = moment.defineLocale('ug-cn', {
+    months: 'يانۋار_فېۋرال_مارت_ئاپرېل_ماي_ئىيۇن_ئىيۇل_ئاۋغۇست_سېنتەبىر_ئۆكتەبىر_نويابىر_دېكابىر'.split(
+        '_'
+    ),
+    monthsShort: 'يانۋار_فېۋرال_مارت_ئاپرېل_ماي_ئىيۇن_ئىيۇل_ئاۋغۇست_سېنتەبىر_ئۆكتەبىر_نويابىر_دېكابىر'.split(
+        '_'
+    ),
+    weekdays: 'يەكشەنبە_دۈشەنبە_سەيشەنبە_چارشەنبە_پەيشەنبە_جۈمە_شەنبە'.split(
+        '_'
+    ),
+    weekdaysShort: 'يە_دۈ_سە_چا_پە_جۈ_شە'.split('_'),
+    weekdaysMin: 'يە_دۈ_سە_چا_پە_جۈ_شە'.split('_'),
+    longDateFormat: {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L: 'YYYY-MM-DD',
+        LL: 'YYYY-يىلىM-ئاينىڭD-كۈنى',
+        LLL: 'YYYY-يىلىM-ئاينىڭD-كۈنى، HH:mm',
+        LLLL: 'dddd، YYYY-يىلىM-ئاينىڭD-كۈنى، HH:mm'
+    },
+    meridiemParse: /يېرىم كېچە|سەھەر|چۈشتىن بۇرۇن|چۈش|چۈشتىن كېيىن|كەچ/,
+    meridiemHour: function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (
+            meridiem === 'يېرىم كېچە' ||
+            meridiem === 'سەھەر' ||
+            meridiem === 'چۈشتىن بۇرۇن'
+        ) {
+            return hour;
+        } else if (meridiem === 'چۈشتىن كېيىن' || meridiem === 'كەچ') {
+            return hour + 12;
+        } else {
+            return hour >= 11 ? hour : hour + 12;
+        }
+    },
+    meridiem: function (hour, minute, isLower) {
+        var hm = hour * 100 + minute;
+        if (hm < 600) {
+            return 'يېرىم كېچە';
+        } else if (hm < 900) {
+            return 'سەھەر';
+        } else if (hm < 1130) {
+            return 'چۈشتىن بۇرۇن';
+        } else if (hm < 1230) {
+            return 'چۈش';
+        } else if (hm < 1800) {
+            return 'چۈشتىن كېيىن';
+        } else {
+            return 'كەچ';
+        }
+    },
+    calendar: {
+        sameDay: '[بۈگۈن سائەت] LT',
+        nextDay: '[ئەتە سائەت] LT',
+        nextWeek: '[كېلەركى] dddd [سائەت] LT',
+        lastDay: '[تۆنۈگۈن] LT',
+        lastWeek: '[ئالدىنقى] dddd [سائەت] LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: '%s كېيىن',
+        past: '%s بۇرۇن',
+        s: 'نەچچە سېكونت',
+        ss: '%d سېكونت',
+        m: 'بىر مىنۇت',
+        mm: '%d مىنۇت',
+        h: 'بىر سائەت',
+        hh: '%d سائەت',
+        d: 'بىر كۈن',
+        dd: '%d كۈن',
+        M: 'بىر ئاي',
+        MM: '%d ئاي',
+        y: 'بىر يىل',
+        yy: '%d يىل'
+    },
+
+    dayOfMonthOrdinalParse: /\d{1,2}(-كۈنى|-ئاي|-ھەپتە)/,
+    ordinal: function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'DDD':
+                return number + '-كۈنى';
+            case 'w':
+            case 'W':
+                return number + '-ھەپتە';
+            default:
+                return number;
+        }
+    },
+    preparse: function (string) {
+        return string.replace(/،/g, ',');
+    },
+    postformat: function (string) {
+        return string.replace(/,/g, '،');
+    },
+    week: {
+        // GB/T 7408-1994《数据元和交换格式·信息交换·日期和时间表示法》与ISO 8601:1988等效
+        dow: 1, // Monday is the first day of the week.
+        doy: 7 // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return ugCn;
+
+})));
+
+
+/***/ }),
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Ukrainian [uk]
-//! author : zemlanin : https://github.com/zemlanin
-//! Author : Menelion Elensúle : https://github.com/Oire
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22052,6 +23379,7 @@ function plural(word, num) {
 }
 function relativeTimeWithPlural(number, withoutSuffix, key) {
     var format = {
+        'ss': withoutSuffix ? 'секунда_секунди_секунд' : 'секунду_секунди_секунд',
         'mm': withoutSuffix ? 'хвилина_хвилини_хвилин' : 'хвилину_хвилини_хвилин',
         'hh': withoutSuffix ? 'година_години_годин' : 'годину_години_годин',
         'dd': 'день_дні_днів',
@@ -22133,6 +23461,7 @@ var uk = moment.defineLocale('uk', {
         future : 'за %s',
         past : '%s тому',
         s : 'декілька секунд',
+        ss : relativeTimeWithPlural,
         m : relativeTimeWithPlural,
         mm : relativeTimeWithPlural,
         h : 'годину',
@@ -22187,13 +23516,10 @@ return uk;
 
 
 /***/ }),
-/* 254 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Urdu [ur]
-//! author : Sawood Alam : https://github.com/ibnesayeed
-//! author : Zack : https://github.com/ZackVision
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22262,6 +23588,7 @@ var ur = moment.defineLocale('ur', {
         future : '%s بعد',
         past : '%s قبل',
         s : 'چند سیکنڈ',
+        ss : '%d سیکنڈ',
         m : 'ایک منٹ',
         mm : '%d منٹ',
         h : 'ایک گھنٹہ',
@@ -22291,12 +23618,10 @@ return ur;
 
 
 /***/ }),
-/* 255 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Uzbek [uz]
-//! author : Sardor Muminov : https://github.com/muminoff
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22331,6 +23656,7 @@ var uz = moment.defineLocale('uz', {
         future : 'Якин %s ичида',
         past : 'Бир неча %s олдин',
         s : 'фурсат',
+        ss : '%d фурсат',
         m : 'бир дакика',
         mm : '%d дакика',
         h : 'бир соат',
@@ -22354,12 +23680,10 @@ return uz;
 
 
 /***/ }),
-/* 256 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Uzbek Latin [uz-latn]
-//! author : Rasulbek Mirzayev : github.com/Rasulbeeek
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22394,6 +23718,7 @@ var uzLatn = moment.defineLocale('uz-latn', {
         future : 'Yaqin %s ichida',
         past : 'Bir necha %s oldin',
         s : 'soniya',
+        ss : '%d soniya',
         m : 'bir daqiqa',
         mm : '%d daqiqa',
         h : 'bir soat',
@@ -22417,12 +23742,10 @@ return uzLatn;
 
 
 /***/ }),
-/* 257 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Vietnamese [vi]
-//! author : Bang Nguyen : https://github.com/bangnk
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22474,6 +23797,7 @@ var vi = moment.defineLocale('vi', {
         future : '%s tới',
         past : '%s trước',
         s : 'vài giây',
+        ss : '%d giây' ,
         m : 'một phút',
         mm : '%d phút',
         h : 'một giờ',
@@ -22501,12 +23825,10 @@ return vi;
 
 
 /***/ }),
-/* 258 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Pseudo [x-pseudo]
-//! author : Andrew Hood : https://github.com/andrewhood125
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22542,6 +23864,7 @@ var xPseudo = moment.defineLocale('x-pseudo', {
         future : 'í~ñ %s',
         past : '%s á~gó',
         s : 'á ~féw ~sécó~ñds',
+        ss : '%d s~écóñ~ds',
         m : 'á ~míñ~úté',
         mm : '%d m~íñú~tés',
         h : 'á~ñ hó~úr',
@@ -22574,12 +23897,10 @@ return xPseudo;
 
 
 /***/ }),
-/* 259 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Yoruba Nigeria [yo]
-//! author : Atolagbe Abisoye : https://github.com/andela-batolagbe
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22614,6 +23935,7 @@ var yo = moment.defineLocale('yo', {
         future : 'ní %s',
         past : '%s kọjá',
         s : 'ìsẹjú aayá die',
+        ss :'aayá %d',
         m : 'ìsẹjú kan',
         mm : 'ìsẹjú %d',
         h : 'wákati kan',
@@ -22639,13 +23961,10 @@ return yo;
 
 
 /***/ }),
-/* 260 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Chinese (China) [zh-cn]
-//! author : suupic : https://github.com/suupic
-//! author : Zeno Zeng : https://github.com/zenozeng
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22663,14 +23982,14 @@ var zhCn = moment.defineLocale('zh-cn', {
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
-        L : 'YYYY年MMMD日',
-        LL : 'YYYY年MMMD日',
-        LLL : 'YYYY年MMMD日Ah点mm分',
-        LLLL : 'YYYY年MMMD日ddddAh点mm分',
-        l : 'YYYY年MMMD日',
-        ll : 'YYYY年MMMD日',
-        lll : 'YYYY年MMMD日 HH:mm',
-        llll : 'YYYY年MMMD日dddd HH:mm'
+        L : 'YYYY/MM/DD',
+        LL : 'YYYY年M月D日',
+        LLL : 'YYYY年M月D日Ah点mm分',
+        LLLL : 'YYYY年M月D日ddddAh点mm分',
+        l : 'YYYY/M/D',
+        ll : 'YYYY年M月D日',
+        lll : 'YYYY年M月D日 HH:mm',
+        llll : 'YYYY年M月D日dddd HH:mm'
     },
     meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
     meridiemHour: function (hour, meridiem) {
@@ -22731,6 +24050,7 @@ var zhCn = moment.defineLocale('zh-cn', {
         future : '%s内',
         past : '%s前',
         s : '几秒',
+        ss : '%d 秒',
         m : '1 分钟',
         mm : '%d 分钟',
         h : '1 小时',
@@ -22755,14 +24075,10 @@ return zhCn;
 
 
 /***/ }),
-/* 261 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Chinese (Hong Kong) [zh-hk]
-//! author : Ben : https://github.com/ben-lin
-//! author : Chris Lam : https://github.com/hehachris
-//! author : Konstantin : https://github.com/skfd
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22780,14 +24096,14 @@ var zhHk = moment.defineLocale('zh-hk', {
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
-        L : 'YYYY年MMMD日',
-        LL : 'YYYY年MMMD日',
-        LLL : 'YYYY年MMMD日 HH:mm',
-        LLLL : 'YYYY年MMMD日dddd HH:mm',
-        l : 'YYYY年MMMD日',
-        ll : 'YYYY年MMMD日',
-        lll : 'YYYY年MMMD日 HH:mm',
-        llll : 'YYYY年MMMD日dddd HH:mm'
+        L : 'YYYY/MM/DD',
+        LL : 'YYYY年M月D日',
+        LLL : 'YYYY年M月D日 HH:mm',
+        LLLL : 'YYYY年M月D日dddd HH:mm',
+        l : 'YYYY/M/D',
+        ll : 'YYYY年M月D日',
+        lll : 'YYYY年M月D日 HH:mm',
+        llll : 'YYYY年M月D日dddd HH:mm'
     },
     meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
     meridiemHour : function (hour, meridiem) {
@@ -22846,6 +24162,7 @@ var zhHk = moment.defineLocale('zh-hk', {
         future : '%s內',
         past : '%s前',
         s : '幾秒',
+        ss : '%d 秒',
         m : '1 分鐘',
         mm : '%d 分鐘',
         h : '1 小時',
@@ -22865,13 +24182,10 @@ return zhHk;
 
 
 /***/ }),
-/* 262 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
-//! locale : Chinese (Taiwan) [zh-tw]
-//! author : Ben : https://github.com/ben-lin
-//! author : Chris Lam : https://github.com/hehachris
 
 ;(function (global, factory) {
     true ? factory(__webpack_require__(0)) :
@@ -22889,14 +24203,14 @@ var zhTw = moment.defineLocale('zh-tw', {
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
-        L : 'YYYY年MMMD日',
-        LL : 'YYYY年MMMD日',
-        LLL : 'YYYY年MMMD日 HH:mm',
-        LLLL : 'YYYY年MMMD日dddd HH:mm',
-        l : 'YYYY年MMMD日',
-        ll : 'YYYY年MMMD日',
-        lll : 'YYYY年MMMD日 HH:mm',
-        llll : 'YYYY年MMMD日dddd HH:mm'
+        L : 'YYYY/MM/DD',
+        LL : 'YYYY年M月D日',
+        LLL : 'YYYY年M月D日 HH:mm',
+        LLLL : 'YYYY年M月D日dddd HH:mm',
+        l : 'YYYY/M/D',
+        ll : 'YYYY年M月D日',
+        lll : 'YYYY年M月D日 HH:mm',
+        llll : 'YYYY年M月D日dddd HH:mm'
     },
     meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
     meridiemHour : function (hour, meridiem) {
@@ -22955,6 +24269,7 @@ var zhTw = moment.defineLocale('zh-tw', {
         future : '%s內',
         past : '%s前',
         s : '幾秒',
+        ss : '%d 秒',
         m : '1 分鐘',
         mm : '%d 分鐘',
         h : '1 小時',
@@ -22974,15 +24289,15 @@ return zhTw;
 
 
 /***/ }),
-/* 263 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ListCache = __webpack_require__(62),
-    stackClear = __webpack_require__(441),
-    stackDelete = __webpack_require__(442),
-    stackGet = __webpack_require__(443),
-    stackHas = __webpack_require__(444),
-    stackSet = __webpack_require__(445);
+var ListCache = __webpack_require__(61),
+    stackClear = __webpack_require__(450),
+    stackDelete = __webpack_require__(451),
+    stackGet = __webpack_require__(452),
+    stackHas = __webpack_require__(453),
+    stackSet = __webpack_require__(454);
 
 /**
  * Creates a stack cache object to store key-value pairs.
@@ -23007,7 +24322,7 @@ module.exports = Stack;
 
 
 /***/ }),
-/* 264 */
+/* 271 */
 /***/ (function(module, exports) {
 
 /**
@@ -23050,11 +24365,11 @@ module.exports = eq;
 
 
 /***/ }),
-/* 265 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(49),
-    isObject = __webpack_require__(65);
+var baseGetTag = __webpack_require__(48),
+    isObject = __webpack_require__(64);
 
 /** `Object#toString` result references. */
 var asyncTag = '[object AsyncFunction]',
@@ -23093,7 +24408,7 @@ module.exports = isFunction;
 
 
 /***/ }),
-/* 266 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -23101,10 +24416,10 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(267)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(274)))
 
 /***/ }),
-/* 267 */
+/* 274 */
 /***/ (function(module, exports) {
 
 var g;
@@ -23131,7 +24446,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 268 */
+/* 275 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -23163,12 +24478,12 @@ module.exports = toSource;
 
 
 /***/ }),
-/* 269 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var SetCache = __webpack_require__(464),
-    arraySome = __webpack_require__(467),
-    cacheHas = __webpack_require__(468);
+var SetCache = __webpack_require__(473),
+    arraySome = __webpack_require__(476),
+    cacheHas = __webpack_require__(477);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -23252,11 +24567,11 @@ module.exports = equalArrays;
 
 
 /***/ }),
-/* 270 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsArguments = __webpack_require__(482),
-    isObjectLike = __webpack_require__(50);
+var baseIsArguments = __webpack_require__(491),
+    isObjectLike = __webpack_require__(49);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -23294,11 +24609,11 @@ module.exports = isArguments;
 
 
 /***/ }),
-/* 271 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(26),
-    stubFalse = __webpack_require__(483);
+/* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(25),
+    stubFalse = __webpack_require__(492);
 
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -23336,10 +24651,10 @@ var isBuffer = nativeIsBuffer || stubFalse;
 
 module.exports = isBuffer;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(99)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(101)(module)))
 
 /***/ }),
-/* 272 */
+/* 279 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -23367,12 +24682,12 @@ module.exports = isIndex;
 
 
 /***/ }),
-/* 273 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsTypedArray = __webpack_require__(484),
-    baseUnary = __webpack_require__(485),
-    nodeUtil = __webpack_require__(486);
+var baseIsTypedArray = __webpack_require__(493),
+    baseUnary = __webpack_require__(494),
+    nodeUtil = __webpack_require__(495);
 
 /* Node.js helper references. */
 var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
@@ -23400,86 +24715,10 @@ module.exports = isTypedArray;
 
 
 /***/ }),
-/* 274 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isFunction = __webpack_require__(265),
-    isLength = __webpack_require__(104);
-
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */
-function isArrayLike(value) {
-  return value != null && isLength(value.length) && !isFunction(value);
-}
-
-module.exports = isArrayLike;
-
-
-/***/ }),
-/* 275 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var baseMatches = __webpack_require__(498),
-    baseMatchesProperty = __webpack_require__(501),
-    identity = __webpack_require__(512),
-    isArray = __webpack_require__(30),
-    property = __webpack_require__(513);
-
-/**
- * The base implementation of `_.iteratee`.
- *
- * @private
- * @param {*} [value=_.identity] The value to convert to an iteratee.
- * @returns {Function} Returns the iteratee.
- */
-function baseIteratee(value) {
-  // Don't store the `typeof` result in a variable to avoid a JIT bug in Safari 9.
-  // See https://bugs.webkit.org/show_bug.cgi?id=156034 for more details.
-  if (typeof value == 'function') {
-    return value;
-  }
-  if (value == null) {
-    return identity;
-  }
-  if (typeof value == 'object') {
-    return isArray(value)
-      ? baseMatchesProperty(value[0], value[1])
-      : baseMatches(value);
-  }
-  return property(value);
-}
-
-module.exports = baseIteratee;
-
-
-/***/ }),
-/* 276 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(65);
+var isObject = __webpack_require__(64);
 
 /**
  * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
@@ -23497,7 +24736,7 @@ module.exports = isStrictComparable;
 
 
 /***/ }),
-/* 277 */
+/* 282 */
 /***/ (function(module, exports) {
 
 /**
@@ -23523,10 +24762,10 @@ module.exports = matchesStrictComparable;
 
 
 /***/ }),
-/* 278 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var castPath = __webpack_require__(279),
+var castPath = __webpack_require__(284),
     toKey = __webpack_require__(69);
 
 /**
@@ -23553,13 +24792,13 @@ module.exports = baseGet;
 
 
 /***/ }),
-/* 279 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArray = __webpack_require__(30),
-    isKey = __webpack_require__(105),
-    stringToPath = __webpack_require__(503),
-    toString = __webpack_require__(506);
+var isArray = __webpack_require__(26),
+    isKey = __webpack_require__(108),
+    stringToPath = __webpack_require__(512),
+    toString = __webpack_require__(515);
 
 /**
  * Casts `value` to a path array if it's not one.
@@ -23580,12 +24819,12 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 280 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
-var differenceInCalendarDays = __webpack_require__(523)
-var compareAsc = __webpack_require__(525)
+var differenceInCalendarDays = __webpack_require__(543)
+var compareAsc = __webpack_require__(545)
 
 /**
  * @category Day Helpers
@@ -23625,10 +24864,10 @@ module.exports = differenceInDays
 
 
 /***/ }),
-/* 281 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var addDays = __webpack_require__(533)
+var addDays = __webpack_require__(553)
 
 /**
  * @category Week Helpers
@@ -23656,11 +24895,42 @@ module.exports = addWeeks
 
 
 /***/ }),
-/* 282 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
-var getDaysInMonth = __webpack_require__(537)
+
+/**
+ * @category Common Helpers
+ * @summary Is the first date before the second one?
+ *
+ * @description
+ * Is the first date before the second one?
+ *
+ * @param {Date|String|Number} date - the date that should be before the other one to return true
+ * @param {Date|String|Number} dateToCompare - the date to compare with
+ * @returns {Boolean} the first date is before the second date
+ *
+ * @example
+ * // Is 10 July 1989 before 11 February 1987?
+ * var result = isBefore(new Date(1989, 6, 10), new Date(1987, 1, 11))
+ * //=> false
+ */
+function isBefore (dirtyDate, dirtyDateToCompare) {
+  var date = parse(dirtyDate)
+  var dateToCompare = parse(dirtyDateToCompare)
+  return date.getTime() < dateToCompare.getTime()
+}
+
+module.exports = isBefore
+
+
+/***/ }),
+/* 288 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parse = __webpack_require__(11)
+var getDaysInMonth = __webpack_require__(556)
 
 /**
  * @category Month Helpers
@@ -23696,7 +24966,7 @@ module.exports = addMonths
 
 
 /***/ }),
-/* 283 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23706,15 +24976,15 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(106);
+var _reactDom = __webpack_require__(109);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = __webpack_require__(73);
 
-__webpack_require__(322);
+__webpack_require__(328);
 
-var _App = __webpack_require__(325);
+var _App = __webpack_require__(331);
 
 var _App2 = _interopRequireDefault(_App);
 
@@ -23733,7 +25003,7 @@ _reactDom2.default.render(_react2.default.createElement(
 /* import BrowserRouter from 'react-router-dom' */
 
 /***/ }),
-/* 284 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23746,7 +25016,7 @@ _reactDom2.default.render(_react2.default.createElement(
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(36),n=__webpack_require__(51),p=__webpack_require__(27),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.call"):60104,u=q?Symbol["for"]("react.return"):60105,v=q?Symbol["for"]("react.portal"):60106,w=q?Symbol["for"]("react.fragment"):60107,x="function"===typeof Symbol&&Symbol.iterator;
+var m=__webpack_require__(36),n=__webpack_require__(50),p=__webpack_require__(27),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.call"):60104,u=q?Symbol["for"]("react.return"):60105,v=q?Symbol["for"]("react.portal"):60106,w=q?Symbol["for"]("react.fragment"):60107,x="function"===typeof Symbol&&Symbol.iterator;
 function y(a){for(var b=arguments.length-1,e="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);b=Error(e+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}
 var z={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};function A(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||z}A.prototype.isReactComponent={};A.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?y("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};A.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};
 function B(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||z}function C(){}C.prototype=A.prototype;var D=B.prototype=new C;D.constructor=B;m(D,A.prototype);D.isPureReactComponent=!0;function E(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||z}var F=E.prototype=new C;F.constructor=E;m(F,A.prototype);F.unstable_isAsyncReactComponent=!0;F.render=function(){return this.props.children};var G={current:null},H=Object.prototype.hasOwnProperty,I={key:!0,ref:!0,__self:!0,__source:!0};
@@ -23761,7 +25031,7 @@ isValidElement:K,version:"16.2.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_F
 
 
 /***/ }),
-/* 285 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23783,9 +25053,9 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var _assign = __webpack_require__(36);
-var emptyObject = __webpack_require__(51);
+var emptyObject = __webpack_require__(50);
 var invariant = __webpack_require__(37);
-var warning = __webpack_require__(52);
+var warning = __webpack_require__(51);
 var emptyFunction = __webpack_require__(27);
 var checkPropTypes = __webpack_require__(71);
 
@@ -25126,7 +26396,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 286 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25142,7 +26412,7 @@ module.exports = react;
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var aa=__webpack_require__(2),l=__webpack_require__(107),B=__webpack_require__(36),C=__webpack_require__(27),ba=__webpack_require__(108),da=__webpack_require__(109),ea=__webpack_require__(110),fa=__webpack_require__(111),ia=__webpack_require__(112),D=__webpack_require__(51);
+var aa=__webpack_require__(2),l=__webpack_require__(110),B=__webpack_require__(36),C=__webpack_require__(27),ba=__webpack_require__(111),da=__webpack_require__(112),ea=__webpack_require__(113),fa=__webpack_require__(114),ia=__webpack_require__(115),D=__webpack_require__(50);
 function E(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}aa?void 0:E("227");
 var oa={children:!0,dangerouslySetInnerHTML:!0,defaultValue:!0,defaultChecked:!0,innerHTML:!0,suppressContentEditableWarning:!0,suppressHydrationWarning:!0,style:!0};function pa(a,b){return(a&b)===b}
 var ta={MUST_USE_PROPERTY:1,HAS_BOOLEAN_VALUE:4,HAS_NUMERIC_VALUE:8,HAS_POSITIVE_NUMERIC_VALUE:24,HAS_OVERLOADED_BOOLEAN_VALUE:32,HAS_STRING_BOOLEAN_VALUE:64,injectDOMPropertyConfig:function(a){var b=ta,c=a.Properties||{},d=a.DOMAttributeNamespaces||{},e=a.DOMAttributeNames||{};a=a.DOMMutationMethods||{};for(var f in c){ua.hasOwnProperty(f)?E("48",f):void 0;var g=f.toLowerCase(),h=c[f];g={attributeName:g,attributeNamespace:null,propertyName:f,mutationMethod:null,mustUseProperty:pa(h,b.MUST_USE_PROPERTY),
@@ -25362,7 +26632,7 @@ Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",r
 
 
 /***/ }),
-/* 287 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25377,7 +26647,7 @@ Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",r
  * @typechecks
  */
 
-var isNode = __webpack_require__(288);
+var isNode = __webpack_require__(294);
 
 /**
  * @param {*} object The object to check.
@@ -25390,7 +26660,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 288 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25418,7 +26688,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 289 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25441,19 +26711,19 @@ if (process.env.NODE_ENV !== "production") {
 
 var React = __webpack_require__(2);
 var invariant = __webpack_require__(37);
-var warning = __webpack_require__(52);
-var ExecutionEnvironment = __webpack_require__(107);
+var warning = __webpack_require__(51);
+var ExecutionEnvironment = __webpack_require__(110);
 var _assign = __webpack_require__(36);
 var emptyFunction = __webpack_require__(27);
-var EventListener = __webpack_require__(108);
-var getActiveElement = __webpack_require__(109);
-var shallowEqual = __webpack_require__(110);
-var containsNode = __webpack_require__(111);
-var focusNode = __webpack_require__(112);
-var emptyObject = __webpack_require__(51);
+var EventListener = __webpack_require__(111);
+var getActiveElement = __webpack_require__(112);
+var shallowEqual = __webpack_require__(113);
+var containsNode = __webpack_require__(114);
+var focusNode = __webpack_require__(115);
+var emptyObject = __webpack_require__(50);
 var checkPropTypes = __webpack_require__(71);
-var hyphenateStyleName = __webpack_require__(290);
-var camelizeStyleName = __webpack_require__(292);
+var hyphenateStyleName = __webpack_require__(296);
+var camelizeStyleName = __webpack_require__(298);
 
 /**
  * WARNING: DO NOT manually require this module.
@@ -40820,7 +42090,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 290 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40835,7 +42105,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(291);
+var hyphenate = __webpack_require__(297);
 
 var msPattern = /^ms-/;
 
@@ -40862,7 +42132,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 291 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40898,7 +42168,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 292 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40913,7 +42183,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(293);
+var camelize = __webpack_require__(299);
 
 var msPattern = /^-ms-/;
 
@@ -40941,7 +42211,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 293 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40976,7 +42246,7 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
-/* 294 */
+/* 300 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -40984,9 +42254,9 @@ module.exports = camelize;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createBrowserHistory__ = __webpack_require__(297);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createBrowserHistory__ = __webpack_require__(303);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createBrowserHistory___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_history_createBrowserHistory__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Router__ = __webpack_require__(76);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -41043,7 +42313,7 @@ BrowserRouter.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (BrowserRouter);
 
 /***/ }),
-/* 295 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41058,7 +42328,7 @@ BrowserRouter.propTypes = {
 
 var emptyFunction = __webpack_require__(27);
 var invariant = __webpack_require__(37);
-var warning = __webpack_require__(52);
+var warning = __webpack_require__(51);
 var assign = __webpack_require__(36);
 
 var ReactPropTypesSecret = __webpack_require__(72);
@@ -41593,7 +42863,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 296 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41658,7 +42928,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 297 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41686,7 +42956,7 @@ var _createTransitionManager = __webpack_require__(75);
 
 var _createTransitionManager2 = _interopRequireDefault(_createTransitionManager);
 
-var _DOMUtils = __webpack_require__(115);
+var _DOMUtils = __webpack_require__(118);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -41971,7 +43241,7 @@ var createBrowserHistory = function createBrowserHistory() {
 exports.default = createBrowserHistory;
 
 /***/ }),
-/* 298 */
+/* 304 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41979,9 +43249,9 @@ exports.default = createBrowserHistory;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createHashHistory__ = __webpack_require__(299);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createHashHistory__ = __webpack_require__(305);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createHashHistory___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_history_createHashHistory__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Router__ = __webpack_require__(76);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42037,7 +43307,7 @@ HashRouter.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (HashRouter);
 
 /***/ }),
-/* 299 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42063,7 +43333,7 @@ var _createTransitionManager = __webpack_require__(75);
 
 var _createTransitionManager2 = _interopRequireDefault(_createTransitionManager);
 
-var _DOMUtils = __webpack_require__(115);
+var _DOMUtils = __webpack_require__(118);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42367,18 +43637,18 @@ var createHashHistory = function createHashHistory() {
 exports.default = createHashHistory;
 
 /***/ }),
-/* 300 */
+/* 306 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_MemoryRouter__ = __webpack_require__(301);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_MemoryRouter__ = __webpack_require__(307);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_MemoryRouter__["a" /* default */]);
 
 /***/ }),
-/* 301 */
+/* 307 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42386,9 +43656,9 @@ exports.default = createHashHistory;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createMemoryHistory__ = __webpack_require__(302);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createMemoryHistory__ = __webpack_require__(308);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history_createMemoryHistory___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_history_createMemoryHistory__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Router__ = __webpack_require__(77);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42445,7 +43715,7 @@ MemoryRouter.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (MemoryRouter);
 
 /***/ }),
-/* 302 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42621,16 +43891,16 @@ var createMemoryHistory = function createMemoryHistory() {
 exports.default = createMemoryHistory;
 
 /***/ }),
-/* 303 */
+/* 309 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Route__ = __webpack_require__(117);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Link__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Route__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Link__ = __webpack_require__(119);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -42702,10 +43972,10 @@ NavLink.defaultProps = {
 /* harmony default export */ __webpack_exports__["a"] = (NavLink);
 
 /***/ }),
-/* 304 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isarray = __webpack_require__(305)
+var isarray = __webpack_require__(311)
 
 /**
  * Expose `pathToRegexp`.
@@ -43134,7 +44404,7 @@ function pathToRegexp (path, keys, options) {
 
 
 /***/ }),
-/* 305 */
+/* 311 */
 /***/ (function(module, exports) {
 
 module.exports = Array.isArray || function (arr) {
@@ -43143,24 +44413,24 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 306 */
+/* 312 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Prompt__ = __webpack_require__(307);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Prompt__ = __webpack_require__(313);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_Prompt__["a" /* default */]);
 
 /***/ }),
-/* 307 */
+/* 313 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
@@ -43245,30 +44515,30 @@ Prompt.contextTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (Prompt);
 
 /***/ }),
-/* 308 */
+/* 314 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Redirect__ = __webpack_require__(309);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Redirect__ = __webpack_require__(315);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_Redirect__["a" /* default */]);
 
 /***/ }),
-/* 309 */
+/* 315 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(310);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(316);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -43364,17 +44634,17 @@ Redirect.contextTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (Redirect);
 
 /***/ }),
-/* 310 */
+/* 316 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createBrowserHistory__ = __webpack_require__(311);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createBrowserHistory__ = __webpack_require__(317);
 /* unused harmony reexport createBrowserHistory */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__createHashHistory__ = __webpack_require__(312);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__createHashHistory__ = __webpack_require__(318);
 /* unused harmony reexport createHashHistory */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createMemoryHistory__ = __webpack_require__(313);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createMemoryHistory__ = __webpack_require__(319);
 /* unused harmony reexport createMemoryHistory */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LocationUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LocationUtils__ = __webpack_require__(52);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_3__LocationUtils__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_3__LocationUtils__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PathUtils__ = __webpack_require__(39);
@@ -43391,7 +44661,7 @@ Redirect.contextTypes = {
 
 
 /***/ }),
-/* 311 */
+/* 317 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -43399,10 +44669,10 @@ Redirect.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(79);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(122);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -43695,7 +44965,7 @@ var createBrowserHistory = function createBrowserHistory() {
 /* unused harmony default export */ var _unused_webpack_default_export = (createBrowserHistory);
 
 /***/ }),
-/* 312 */
+/* 318 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -43703,10 +44973,10 @@ var createBrowserHistory = function createBrowserHistory() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(79);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(122);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 
@@ -44016,14 +45286,14 @@ var createHashHistory = function createHashHistory() {
 /* unused harmony default export */ var _unused_webpack_default_export = (createHashHistory);
 
 /***/ }),
-/* 313 */
+/* 319 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PathUtils__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__createTransitionManager__ = __webpack_require__(79);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -44184,18 +45454,18 @@ var createMemoryHistory = function createMemoryHistory() {
 /* unused harmony default export */ var _unused_webpack_default_export = (createMemoryHistory);
 
 /***/ }),
-/* 314 */
+/* 320 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_StaticRouter__ = __webpack_require__(315);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_StaticRouter__ = __webpack_require__(321);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_StaticRouter__["a" /* default */]);
 
 /***/ }),
-/* 315 */
+/* 321 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -44205,7 +45475,7 @@ var createMemoryHistory = function createMemoryHistory() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history_PathUtils__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history_PathUtils___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_history_PathUtils__);
@@ -44378,24 +45648,24 @@ StaticRouter.childContextTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (StaticRouter);
 
 /***/ }),
-/* 316 */
+/* 322 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Switch__ = __webpack_require__(317);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_Switch__ = __webpack_require__(323);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_Switch__["a" /* default */]);
 
 /***/ }),
-/* 317 */
+/* 323 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
@@ -44483,7 +45753,7 @@ Switch.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (Switch);
 
 /***/ }),
-/* 318 */
+/* 324 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -44494,28 +45764,28 @@ Switch.propTypes = {
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_matchPath__["a" /* default */]);
 
 /***/ }),
-/* 319 */
+/* 325 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_withRouter__ = __webpack_require__(320);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react_router_es_withRouter__ = __webpack_require__(326);
 // Written in this round about way for babel-transform-imports
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_withRouter__["a" /* default */]);
 
 /***/ }),
-/* 320 */
+/* 326 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics__ = __webpack_require__(321);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics__ = __webpack_require__(327);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Route__ = __webpack_require__(118);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Route__ = __webpack_require__(121);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -44550,7 +45820,7 @@ var withRouter = function withRouter(Component) {
 /* harmony default export */ __webpack_exports__["a"] = (withRouter);
 
 /***/ }),
-/* 321 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44622,41 +45892,60 @@ module.exports = function hoistNonReactStatics(targetComponent, sourceComponent,
 
 
 /***/ }),
-/* 322 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(323);
+var content = __webpack_require__(329);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./reset.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./reset.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./reset.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./reset.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 323 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -44667,7 +45956,7 @@ exports.push([module.i, "/******************************************************
 
 
 /***/ }),
-/* 324 */
+/* 330 */
 /***/ (function(module, exports) {
 
 
@@ -44734,7 +46023,7 @@ module.exports = function (css) {
 			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
 
 		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
 		  return fullMatch;
 		}
 
@@ -44762,7 +46051,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 325 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44776,7 +46065,7 @@ var _regenerator = __webpack_require__(80);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _stringify = __webpack_require__(54);
+var _stringify = __webpack_require__(53);
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
@@ -44784,27 +46073,27 @@ var _asyncToGenerator2 = __webpack_require__(81);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _set = __webpack_require__(343);
+var _set = __webpack_require__(353);
 
 var _set2 = _interopRequireDefault(_set);
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -44814,29 +46103,29 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(73);
 
-__webpack_require__(378);
+__webpack_require__(388);
 
-var _Navbar = __webpack_require__(380);
+var _Navbar = __webpack_require__(390);
 
 var _Navbar2 = _interopRequireDefault(_Navbar);
 
-var _Home = __webpack_require__(383);
+var _Home = __webpack_require__(393);
 
 var _Home2 = _interopRequireDefault(_Home);
 
-var _Loading = __webpack_require__(384);
+var _Loading = __webpack_require__(394);
 
 var _Loading2 = _interopRequireDefault(_Loading);
 
-var _Statistics = __webpack_require__(385);
+var _Statistics = __webpack_require__(395);
 
 var _Statistics2 = _interopRequireDefault(_Statistics);
 
-var _AccountsContainer = __webpack_require__(541);
+var _AccountsContainer = __webpack_require__(560);
 
 var _AccountsContainer2 = _interopRequireDefault(_AccountsContainer);
 
-var _Networth = __webpack_require__(559);
+var _Networth = __webpack_require__(573);
 
 var _Networth2 = _interopRequireDefault(_Networth);
 
@@ -44844,7 +46133,7 @@ var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-var _difference_in_days = __webpack_require__(280);
+var _difference_in_days = __webpack_require__(285);
 
 var _difference_in_days2 = _interopRequireDefault(_difference_in_days);
 
@@ -44852,15 +46141,15 @@ var _start_of_week = __webpack_require__(70);
 
 var _start_of_week2 = _interopRequireDefault(_start_of_week);
 
-var _add_weeks = __webpack_require__(281);
+var _add_weeks = __webpack_require__(286);
 
 var _add_weeks2 = _interopRequireDefault(_add_weeks);
 
-var _add_months = __webpack_require__(282);
+var _add_months = __webpack_require__(288);
 
 var _add_months2 = _interopRequireDefault(_add_months);
 
-var _start_of_month = __webpack_require__(569);
+var _start_of_month = __webpack_require__(583);
 
 var _start_of_month2 = _interopRequireDefault(_start_of_month);
 
@@ -45254,7 +46543,7 @@ var App = function (_Component) {
 exports.default = App;
 
 /***/ }),
-/* 326 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45279,7 +46568,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = __webpack_require__(327);
+module.exports = __webpack_require__(333);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -45295,7 +46584,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 327 */
+/* 333 */
 /***/ (function(module, exports) {
 
 /**
@@ -46028,7 +47317,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 328 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var core = __webpack_require__(4);
@@ -46039,30 +47328,30 @@ module.exports = function stringify(it) { // eslint-disable-line no-unused-vars
 
 
 /***/ }),
-/* 329 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(330), __esModule: true };
+module.exports = { "default": __webpack_require__(336), __esModule: true };
 
 /***/ }),
-/* 330 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(82);
-__webpack_require__(55);
-__webpack_require__(91);
-__webpack_require__(338);
-__webpack_require__(341);
-__webpack_require__(342);
+__webpack_require__(83);
+__webpack_require__(93);
+__webpack_require__(344);
+__webpack_require__(351);
+__webpack_require__(352);
 module.exports = __webpack_require__(4).Promise;
 
 
 /***/ }),
-/* 331 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(83);
-var defined = __webpack_require__(84);
+var toInteger = __webpack_require__(84);
+var defined = __webpack_require__(85);
 // true  -> String#at
 // false -> String#codePointAt
 module.exports = function (TO_STRING) {
@@ -46081,18 +47370,18 @@ module.exports = function (TO_STRING) {
 
 
 /***/ }),
-/* 332 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var create = __webpack_require__(57);
-var descriptor = __webpack_require__(41);
-var setToStringTag = __webpack_require__(45);
+var create = __webpack_require__(56);
+var descriptor = __webpack_require__(55);
+var setToStringTag = __webpack_require__(44);
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(28)(IteratorPrototype, __webpack_require__(10)('iterator'), function () { return this; });
+__webpack_require__(29)(IteratorPrototype, __webpack_require__(10)('iterator'), function () { return this; });
 
 module.exports = function (Constructor, NAME, next) {
   Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
@@ -46101,14 +47390,14 @@ module.exports = function (Constructor, NAME, next) {
 
 
 /***/ }),
-/* 333 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(13);
-var anObject = __webpack_require__(25);
-var getKeys = __webpack_require__(43);
+var dP = __webpack_require__(14);
+var anObject = __webpack_require__(24);
+var getKeys = __webpack_require__(42);
 
-module.exports = __webpack_require__(16) ? Object.defineProperties : function defineProperties(O, Properties) {
+module.exports = __webpack_require__(15) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
   var keys = getKeys(Properties);
   var length = keys.length;
@@ -46120,14 +47409,14 @@ module.exports = __webpack_require__(16) ? Object.defineProperties : function de
 
 
 /***/ }),
-/* 334 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = __webpack_require__(32);
-var toLength = __webpack_require__(58);
-var toAbsoluteIndex = __webpack_require__(335);
+var toLength = __webpack_require__(89);
+var toAbsoluteIndex = __webpack_require__(341);
 module.exports = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
     var O = toIObject($this);
@@ -46149,10 +47438,10 @@ module.exports = function (IS_INCLUDES) {
 
 
 /***/ }),
-/* 335 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(83);
+var toInteger = __webpack_require__(84);
 var max = Math.max;
 var min = Math.min;
 module.exports = function (index, length) {
@@ -46162,21 +47451,21 @@ module.exports = function (index, length) {
 
 
 /***/ }),
-/* 336 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var addToUnscopables = __webpack_require__(337);
-var step = __webpack_require__(126);
-var Iterators = __webpack_require__(42);
+var addToUnscopables = __webpack_require__(343);
+var step = __webpack_require__(129);
+var Iterators = __webpack_require__(41);
 var toIObject = __webpack_require__(32);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
 // 22.1.3.29 Array.prototype.values()
 // 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = __webpack_require__(85)(Array, 'Array', function (iterated, kind) {
+module.exports = __webpack_require__(86)(Array, 'Array', function (iterated, kind) {
   this._t = toIObject(iterated); // target
   this._i = 0;                   // next index
   this._k = kind;                // kind
@@ -46203,31 +47492,31 @@ addToUnscopables('entries');
 
 
 /***/ }),
-/* 337 */
+/* 343 */
 /***/ (function(module, exports) {
 
 module.exports = function () { /* empty */ };
 
 
 /***/ }),
-/* 338 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(56);
+var LIBRARY = __webpack_require__(54);
 var global = __webpack_require__(9);
-var ctx = __webpack_require__(24);
-var classof = __webpack_require__(92);
-var $export = __webpack_require__(7);
-var isObject = __webpack_require__(14);
+var ctx = __webpack_require__(28);
+var classof = __webpack_require__(94);
+var $export = __webpack_require__(8);
+var isObject = __webpack_require__(13);
 var aFunction = __webpack_require__(40);
-var anInstance = __webpack_require__(93);
-var forOf = __webpack_require__(47);
+var anInstance = __webpack_require__(95);
+var forOf = __webpack_require__(45);
 var speciesConstructor = __webpack_require__(130);
 var task = __webpack_require__(131).set;
-var microtask = __webpack_require__(340)();
-var newPromiseCapabilityModule = __webpack_require__(94);
+var microtask = __webpack_require__(349)();
+var newPromiseCapabilityModule = __webpack_require__(96);
 var perform = __webpack_require__(132);
 var promiseResolve = __webpack_require__(133);
 var PROMISE = 'Promise';
@@ -46392,7 +47681,7 @@ if (!USE_NATIVE) {
     this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
     this._n = false;          // <- notify
   };
-  Internal.prototype = __webpack_require__(95)($Promise.prototype, {
+  Internal.prototype = __webpack_require__(97)($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected) {
       var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
@@ -46423,7 +47712,7 @@ if (!USE_NATIVE) {
 }
 
 $export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });
-__webpack_require__(45)($Promise, PROMISE);
+__webpack_require__(44)($Promise, PROMISE);
 __webpack_require__(134)(PROMISE);
 Wrapper = __webpack_require__(4)[PROMISE];
 
@@ -46443,7 +47732,7 @@ $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
     return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);
   }
 });
-$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(135)(function (iter) {
+$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(350)(function (iter) {
   $Promise.all(iter)['catch'](empty);
 })), PROMISE, {
   // 25.4.4.1 Promise.all(iterable)
@@ -46490,7 +47779,53 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(135)(functio
 
 
 /***/ }),
-/* 339 */
+/* 345 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// call something on iterator step with safe closing on error
+var anObject = __webpack_require__(24);
+module.exports = function (iterator, fn, value, entries) {
+  try {
+    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
+  // 7.4.6 IteratorClose(iterator, completion)
+  } catch (e) {
+    var ret = iterator['return'];
+    if (ret !== undefined) anObject(ret.call(iterator));
+    throw e;
+  }
+};
+
+
+/***/ }),
+/* 346 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// check on default Array iterator
+var Iterators = __webpack_require__(41);
+var ITERATOR = __webpack_require__(10)('iterator');
+var ArrayProto = Array.prototype;
+
+module.exports = function (it) {
+  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
+};
+
+
+/***/ }),
+/* 347 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var classof = __webpack_require__(94);
+var ITERATOR = __webpack_require__(10)('iterator');
+var Iterators = __webpack_require__(41);
+module.exports = __webpack_require__(4).getIteratorMethod = function (it) {
+  if (it != undefined) return it[ITERATOR]
+    || it['@@iterator']
+    || Iterators[classof(it)];
+};
+
+
+/***/ }),
+/* 348 */
 /***/ (function(module, exports) {
 
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
@@ -46512,7 +47847,7 @@ module.exports = function (fn, args, that) {
 
 
 /***/ }),
-/* 340 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(9);
@@ -46520,7 +47855,7 @@ var macrotask = __webpack_require__(131).set;
 var Observer = global.MutationObserver || global.WebKitMutationObserver;
 var process = global.process;
 var Promise = global.Promise;
-var isNode = __webpack_require__(44)(process) == 'process';
+var isNode = __webpack_require__(43)(process) == 'process';
 
 module.exports = function () {
   var head, last, notify;
@@ -46586,13 +47921,41 @@ module.exports = function () {
 
 
 /***/ }),
-/* 341 */
+/* 350 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ITERATOR = __webpack_require__(10)('iterator');
+var SAFE_CLOSING = false;
+
+try {
+  var riter = [7][ITERATOR]();
+  riter['return'] = function () { SAFE_CLOSING = true; };
+  // eslint-disable-next-line no-throw-literal
+  Array.from(riter, function () { throw 2; });
+} catch (e) { /* empty */ }
+
+module.exports = function (exec, skipClosing) {
+  if (!skipClosing && !SAFE_CLOSING) return false;
+  var safe = false;
+  try {
+    var arr = [7];
+    var iter = arr[ITERATOR]();
+    iter.next = function () { return { done: safe = true }; };
+    arr[ITERATOR] = function () { return iter; };
+    exec(arr);
+  } catch (e) { /* empty */ }
+  return safe;
+};
+
+
+/***/ }),
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // https://github.com/tc39/proposal-promise-finally
 
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 var core = __webpack_require__(4);
 var global = __webpack_require__(9);
 var speciesConstructor = __webpack_require__(130);
@@ -46613,14 +47976,14 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 
 /***/ }),
-/* 342 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://github.com/tc39/proposal-promise-try
-var $export = __webpack_require__(7);
-var newPromiseCapability = __webpack_require__(94);
+var $export = __webpack_require__(8);
+var newPromiseCapability = __webpack_require__(96);
 var perform = __webpack_require__(132);
 
 $export($export.S, 'Promise', { 'try': function (callbackfn) {
@@ -46632,37 +47995,37 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 
 
 /***/ }),
-/* 343 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(344), __esModule: true };
+module.exports = { "default": __webpack_require__(354), __esModule: true };
 
 /***/ }),
-/* 344 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(82);
-__webpack_require__(55);
-__webpack_require__(91);
-__webpack_require__(345);
-__webpack_require__(351);
-__webpack_require__(354);
-__webpack_require__(356);
+__webpack_require__(83);
+__webpack_require__(93);
+__webpack_require__(355);
+__webpack_require__(361);
+__webpack_require__(364);
+__webpack_require__(366);
 module.exports = __webpack_require__(4).Set;
 
 
 /***/ }),
-/* 345 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var strong = __webpack_require__(346);
-var validate = __webpack_require__(136);
+var strong = __webpack_require__(356);
+var validate = __webpack_require__(135);
 var SET = 'Set';
 
 // 23.2 Set Objects
-module.exports = __webpack_require__(347)(SET, function (get) {
+module.exports = __webpack_require__(357)(SET, function (get) {
   return function Set() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
 }, {
   // 23.2.3.1 Set.prototype.add(value)
@@ -46673,23 +48036,23 @@ module.exports = __webpack_require__(347)(SET, function (get) {
 
 
 /***/ }),
-/* 346 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var dP = __webpack_require__(13).f;
-var create = __webpack_require__(57);
-var redefineAll = __webpack_require__(95);
-var ctx = __webpack_require__(24);
-var anInstance = __webpack_require__(93);
-var forOf = __webpack_require__(47);
-var $iterDefine = __webpack_require__(85);
-var step = __webpack_require__(126);
+var dP = __webpack_require__(14).f;
+var create = __webpack_require__(56);
+var redefineAll = __webpack_require__(97);
+var ctx = __webpack_require__(28);
+var anInstance = __webpack_require__(95);
+var forOf = __webpack_require__(45);
+var $iterDefine = __webpack_require__(86);
+var step = __webpack_require__(129);
 var setSpecies = __webpack_require__(134);
-var DESCRIPTORS = __webpack_require__(16);
-var fastKey = __webpack_require__(96).fastKey;
-var validate = __webpack_require__(136);
+var DESCRIPTORS = __webpack_require__(15);
+var fastKey = __webpack_require__(98).fastKey;
+var validate = __webpack_require__(135);
 var SIZE = DESCRIPTORS ? '_s' : 'size';
 
 var getEntry = function (that, key) {
@@ -46824,24 +48187,24 @@ module.exports = {
 
 
 /***/ }),
-/* 347 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var global = __webpack_require__(9);
-var $export = __webpack_require__(7);
-var meta = __webpack_require__(96);
-var fails = __webpack_require__(33);
-var hide = __webpack_require__(28);
-var redefineAll = __webpack_require__(95);
-var forOf = __webpack_require__(47);
-var anInstance = __webpack_require__(93);
-var isObject = __webpack_require__(14);
-var setToStringTag = __webpack_require__(45);
-var dP = __webpack_require__(13).f;
-var each = __webpack_require__(348)(0);
-var DESCRIPTORS = __webpack_require__(16);
+var $export = __webpack_require__(8);
+var meta = __webpack_require__(98);
+var fails = __webpack_require__(34);
+var hide = __webpack_require__(29);
+var redefineAll = __webpack_require__(97);
+var forOf = __webpack_require__(45);
+var anInstance = __webpack_require__(95);
+var isObject = __webpack_require__(13);
+var setToStringTag = __webpack_require__(44);
+var dP = __webpack_require__(14).f;
+var each = __webpack_require__(358)(0);
+var DESCRIPTORS = __webpack_require__(15);
 
 module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
   var Base = global[NAME];
@@ -46890,7 +48253,7 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 
 
 /***/ }),
-/* 348 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 0 -> Array#forEach
@@ -46900,11 +48263,11 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx = __webpack_require__(24);
-var IObject = __webpack_require__(123);
-var toObject = __webpack_require__(46);
-var toLength = __webpack_require__(58);
-var asc = __webpack_require__(349);
+var ctx = __webpack_require__(28);
+var IObject = __webpack_require__(126);
+var toObject = __webpack_require__(58);
+var toLength = __webpack_require__(89);
+var asc = __webpack_require__(359);
 module.exports = function (TYPE, $create) {
   var IS_MAP = TYPE == 1;
   var IS_FILTER = TYPE == 2;
@@ -46940,11 +48303,11 @@ module.exports = function (TYPE, $create) {
 
 
 /***/ }),
-/* 349 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-var speciesConstructor = __webpack_require__(350);
+var speciesConstructor = __webpack_require__(360);
 
 module.exports = function (original, length) {
   return new (speciesConstructor(original))(length);
@@ -46952,11 +48315,11 @@ module.exports = function (original, length) {
 
 
 /***/ }),
-/* 350 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(14);
-var isArray = __webpack_require__(137);
+var isObject = __webpack_require__(13);
+var isArray = __webpack_require__(136);
 var SPECIES = __webpack_require__(10)('species');
 
 module.exports = function (original) {
@@ -46974,22 +48337,22 @@ module.exports = function (original) {
 
 
 /***/ }),
-/* 351 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 
-$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(352)('Set') });
+$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(362)('Set') });
 
 
 /***/ }),
-/* 352 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
-var classof = __webpack_require__(92);
-var from = __webpack_require__(353);
+var classof = __webpack_require__(94);
+var from = __webpack_require__(363);
 module.exports = function (NAME) {
   return function toJSON() {
     if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
@@ -46999,10 +48362,10 @@ module.exports = function (NAME) {
 
 
 /***/ }),
-/* 353 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var forOf = __webpack_require__(47);
+var forOf = __webpack_require__(45);
 
 module.exports = function (iter, ITERATOR) {
   var result = [];
@@ -47012,21 +48375,21 @@ module.exports = function (iter, ITERATOR) {
 
 
 /***/ }),
-/* 354 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.of
-__webpack_require__(355)('Set');
+__webpack_require__(365)('Set');
 
 
 /***/ }),
-/* 355 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://tc39.github.io/proposal-setmap-offrom/
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 
 module.exports = function (COLLECTION) {
   $export($export.S, COLLECTION, { of: function of() {
@@ -47039,24 +48402,24 @@ module.exports = function (COLLECTION) {
 
 
 /***/ }),
-/* 356 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/proposal-setmap-offrom/#sec-set.from
-__webpack_require__(357)('Set');
+__webpack_require__(367)('Set');
 
 
 /***/ }),
-/* 357 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // https://tc39.github.io/proposal-setmap-offrom/
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 var aFunction = __webpack_require__(40);
-var ctx = __webpack_require__(24);
-var forOf = __webpack_require__(47);
+var ctx = __webpack_require__(28);
+var forOf = __webpack_require__(45);
 
 module.exports = function (COLLECTION) {
   $export($export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
@@ -47082,22 +48445,22 @@ module.exports = function (COLLECTION) {
 
 
 /***/ }),
-/* 358 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(359);
+__webpack_require__(369);
 module.exports = __webpack_require__(4).Object.getPrototypeOf;
 
 
 /***/ }),
-/* 359 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject = __webpack_require__(46);
-var $getPrototypeOf = __webpack_require__(125);
+var toObject = __webpack_require__(58);
+var $getPrototypeOf = __webpack_require__(128);
 
-__webpack_require__(138)('getPrototypeOf', function () {
+__webpack_require__(137)('getPrototypeOf', function () {
   return function getPrototypeOf(it) {
     return $getPrototypeOf(toObject(it));
   };
@@ -47105,10 +48468,10 @@ __webpack_require__(138)('getPrototypeOf', function () {
 
 
 /***/ }),
-/* 360 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(361);
+__webpack_require__(371);
 var $Object = __webpack_require__(4).Object;
 module.exports = function defineProperty(it, key, desc) {
   return $Object.defineProperty(it, key, desc);
@@ -47116,48 +48479,48 @@ module.exports = function defineProperty(it, key, desc) {
 
 
 /***/ }),
-/* 361 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !__webpack_require__(16), 'Object', { defineProperty: __webpack_require__(13).f });
+$export($export.S + $export.F * !__webpack_require__(15), 'Object', { defineProperty: __webpack_require__(14).f });
 
 
 /***/ }),
-/* 362 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(363), __esModule: true };
+module.exports = { "default": __webpack_require__(373), __esModule: true };
 
 /***/ }),
-/* 363 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(55);
-__webpack_require__(91);
-module.exports = __webpack_require__(97).f('iterator');
+__webpack_require__(83);
+__webpack_require__(93);
+module.exports = __webpack_require__(99).f('iterator');
 
 
 /***/ }),
-/* 364 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(365), __esModule: true };
+module.exports = { "default": __webpack_require__(375), __esModule: true };
 
 /***/ }),
-/* 365 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(366);
+__webpack_require__(376);
 __webpack_require__(82);
-__webpack_require__(369);
-__webpack_require__(370);
+__webpack_require__(379);
+__webpack_require__(380);
 module.exports = __webpack_require__(4).Symbol;
 
 
 /***/ }),
-/* 366 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47165,29 +48528,29 @@ module.exports = __webpack_require__(4).Symbol;
 // ECMAScript 6 symbols shim
 var global = __webpack_require__(9);
 var has = __webpack_require__(31);
-var DESCRIPTORS = __webpack_require__(16);
-var $export = __webpack_require__(7);
-var redefine = __webpack_require__(121);
-var META = __webpack_require__(96).KEY;
-var $fails = __webpack_require__(33);
-var shared = __webpack_require__(89);
-var setToStringTag = __webpack_require__(45);
-var uid = __webpack_require__(59);
+var DESCRIPTORS = __webpack_require__(15);
+var $export = __webpack_require__(8);
+var redefine = __webpack_require__(124);
+var META = __webpack_require__(98).KEY;
+var $fails = __webpack_require__(34);
+var shared = __webpack_require__(91);
+var setToStringTag = __webpack_require__(44);
+var uid = __webpack_require__(57);
 var wks = __webpack_require__(10);
-var wksExt = __webpack_require__(97);
-var wksDefine = __webpack_require__(98);
-var enumKeys = __webpack_require__(367);
-var isArray = __webpack_require__(137);
-var anObject = __webpack_require__(25);
-var isObject = __webpack_require__(14);
+var wksExt = __webpack_require__(99);
+var wksDefine = __webpack_require__(100);
+var enumKeys = __webpack_require__(377);
+var isArray = __webpack_require__(136);
+var anObject = __webpack_require__(24);
+var isObject = __webpack_require__(13);
 var toIObject = __webpack_require__(32);
-var toPrimitive = __webpack_require__(87);
-var createDesc = __webpack_require__(41);
-var _create = __webpack_require__(57);
-var gOPNExt = __webpack_require__(368);
-var $GOPD = __webpack_require__(143);
-var $DP = __webpack_require__(13);
-var $keys = __webpack_require__(43);
+var toPrimitive = __webpack_require__(88);
+var createDesc = __webpack_require__(55);
+var _create = __webpack_require__(56);
+var gOPNExt = __webpack_require__(378);
+var $GOPD = __webpack_require__(142);
+var $DP = __webpack_require__(14);
+var $keys = __webpack_require__(42);
 var gOPD = $GOPD.f;
 var dP = $DP.f;
 var gOPN = gOPNExt.f;
@@ -47310,11 +48673,11 @@ if (!USE_NATIVE) {
 
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f = $defineProperty;
-  __webpack_require__(142).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(60).f = $propertyIsEnumerable;
-  __webpack_require__(141).f = $getOwnPropertySymbols;
+  __webpack_require__(141).f = gOPNExt.f = $getOwnPropertyNames;
+  __webpack_require__(59).f = $propertyIsEnumerable;
+  __webpack_require__(140).f = $getOwnPropertySymbols;
 
-  if (DESCRIPTORS && !__webpack_require__(56)) {
+  if (DESCRIPTORS && !__webpack_require__(54)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 
@@ -47388,7 +48751,7 @@ $JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
 });
 
 // 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(28)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(29)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 // 19.4.3.5 Symbol.prototype[@@toStringTag]
 setToStringTag($Symbol, 'Symbol');
 // 20.2.1.9 Math[@@toStringTag]
@@ -47398,13 +48761,13 @@ setToStringTag(global.JSON, 'JSON', true);
 
 
 /***/ }),
-/* 367 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // all enumerable object keys, includes symbols
-var getKeys = __webpack_require__(43);
-var gOPS = __webpack_require__(141);
-var pIE = __webpack_require__(60);
+var getKeys = __webpack_require__(42);
+var gOPS = __webpack_require__(140);
+var pIE = __webpack_require__(59);
 module.exports = function (it) {
   var result = getKeys(it);
   var getSymbols = gOPS.f;
@@ -47419,12 +48782,12 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 368 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = __webpack_require__(32);
-var gOPN = __webpack_require__(142).f;
+var gOPN = __webpack_require__(141).f;
 var toString = {}.toString;
 
 var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -47444,50 +48807,50 @@ module.exports.f = function getOwnPropertyNames(it) {
 
 
 /***/ }),
-/* 369 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(98)('asyncIterator');
+__webpack_require__(100)('asyncIterator');
 
 
 /***/ }),
-/* 370 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(98)('observable');
+__webpack_require__(100)('observable');
 
 
 /***/ }),
-/* 371 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(372), __esModule: true };
+module.exports = { "default": __webpack_require__(382), __esModule: true };
 
 /***/ }),
-/* 372 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(373);
+__webpack_require__(383);
 module.exports = __webpack_require__(4).Object.setPrototypeOf;
 
 
 /***/ }),
-/* 373 */
+/* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.19 Object.setPrototypeOf(O, proto)
-var $export = __webpack_require__(7);
-$export($export.S, 'Object', { setPrototypeOf: __webpack_require__(374).set });
+var $export = __webpack_require__(8);
+$export($export.S, 'Object', { setPrototypeOf: __webpack_require__(384).set });
 
 
 /***/ }),
-/* 374 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
-var isObject = __webpack_require__(14);
-var anObject = __webpack_require__(25);
+var isObject = __webpack_require__(13);
+var anObject = __webpack_require__(24);
 var check = function (O, proto) {
   anObject(O);
   if (!isObject(proto) && proto !== null) throw TypeError(proto + ": can't set as prototype!");
@@ -47496,7 +48859,7 @@ module.exports = {
   set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
     function (test, buggy, set) {
       try {
-        set = __webpack_require__(24)(Function.call, __webpack_require__(143).f(Object.prototype, '__proto__').set, 2);
+        set = __webpack_require__(28)(Function.call, __webpack_require__(142).f(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
       } catch (e) { buggy = true; }
@@ -47512,16 +48875,16 @@ module.exports = {
 
 
 /***/ }),
-/* 375 */
+/* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(376), __esModule: true };
+module.exports = { "default": __webpack_require__(386), __esModule: true };
 
 /***/ }),
-/* 376 */
+/* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(377);
+__webpack_require__(387);
 var $Object = __webpack_require__(4).Object;
 module.exports = function create(P, D) {
   return $Object.create(P, D);
@@ -47529,50 +48892,69 @@ module.exports = function create(P, D) {
 
 
 /***/ }),
-/* 377 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $export = __webpack_require__(7);
+var $export = __webpack_require__(8);
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-$export($export.S, 'Object', { create: __webpack_require__(57) });
+$export($export.S, 'Object', { create: __webpack_require__(56) });
 
 
 /***/ }),
-/* 378 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(379);
+var content = __webpack_require__(389);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./app.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./app.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./app.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./app.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 379 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -47583,7 +48965,7 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 380 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47597,7 +48979,7 @@ var _regenerator = __webpack_require__(80);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _stringify = __webpack_require__(54);
+var _stringify = __webpack_require__(53);
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
@@ -47605,23 +48987,23 @@ var _asyncToGenerator2 = __webpack_require__(81);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -47631,7 +49013,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(73);
 
-__webpack_require__(381);
+__webpack_require__(391);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47778,41 +49160,60 @@ var Navbar = function (_Component) {
 exports.default = Navbar;
 
 /***/ }),
-/* 381 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(382);
+var content = __webpack_require__(392);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./navbar.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./navbar.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./navbar.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./navbar.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 382 */
+/* 392 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -47823,7 +49224,7 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 383 */
+/* 393 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47833,23 +49234,23 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -47892,7 +49293,7 @@ var Home = function (_Component) {
 exports.default = Home;
 
 /***/ }),
-/* 384 */
+/* 394 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47902,23 +49303,23 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -47957,7 +49358,7 @@ var Loading = function (_Component) {
 exports.default = Loading;
 
 /***/ }),
-/* 385 */
+/* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47967,23 +49368,23 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -47991,21 +49392,21 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactChartjs = __webpack_require__(144);
+var _reactChartjs = __webpack_require__(143);
 
-var _Budget = __webpack_require__(521);
+var _Budget = __webpack_require__(541);
 
 var _Budget2 = _interopRequireDefault(_Budget);
 
-var _is_weekend = __webpack_require__(530);
+var _is_weekend = __webpack_require__(550);
 
 var _is_weekend2 = _interopRequireDefault(_is_weekend);
 
-var _is_same_week = __webpack_require__(531);
+var _is_same_week = __webpack_require__(551);
 
 var _is_same_week2 = _interopRequireDefault(_is_same_week);
 
-var _difference_in_calendar_weeks = __webpack_require__(532);
+var _difference_in_calendar_weeks = __webpack_require__(552);
 
 var _difference_in_calendar_weeks2 = _interopRequireDefault(_difference_in_calendar_weeks);
 
@@ -48013,23 +49414,23 @@ var _start_of_week = __webpack_require__(70);
 
 var _start_of_week2 = _interopRequireDefault(_start_of_week);
 
-var _add_weeks = __webpack_require__(281);
+var _add_weeks = __webpack_require__(286);
 
 var _add_weeks2 = _interopRequireDefault(_add_weeks);
 
-var _is_before = __webpack_require__(534);
+var _is_before = __webpack_require__(287);
 
 var _is_before2 = _interopRequireDefault(_is_before);
 
-var _is_after = __webpack_require__(535);
+var _is_after = __webpack_require__(554);
 
 var _is_after2 = _interopRequireDefault(_is_after);
 
-var _sub_months = __webpack_require__(536);
+var _sub_months = __webpack_require__(555);
 
 var _sub_months2 = _interopRequireDefault(_sub_months);
 
-var _is_within_range = __webpack_require__(538);
+var _is_within_range = __webpack_require__(557);
 
 var _is_within_range2 = _interopRequireDefault(_is_within_range);
 
@@ -48037,7 +49438,7 @@ var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-__webpack_require__(539);
+__webpack_require__(558);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -48484,44 +49885,35 @@ var Statistics = function (_Component) {
 exports.default = Statistics;
 
 /***/ }),
-/* 386 */
+/* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * @namespace Chart
  */
-var Chart = __webpack_require__(387)();
+var Chart = __webpack_require__(397)();
 
 Chart.helpers = __webpack_require__(1);
 
 // @todo dispatch these helpers into appropriated helpers/helpers.* file and write unit tests!
-__webpack_require__(391)(Chart);
+__webpack_require__(401)(Chart);
 
 Chart.defaults = __webpack_require__(3);
-Chart.Element = __webpack_require__(15);
-Chart.elements = __webpack_require__(29);
-Chart.Interaction = __webpack_require__(146);
-Chart.platform = __webpack_require__(147);
+Chart.Element = __webpack_require__(21);
+Chart.elements = __webpack_require__(30);
+Chart.Interaction = __webpack_require__(145);
+Chart.layouts = __webpack_require__(46);
+Chart.platform = __webpack_require__(146);
+Chart.plugins = __webpack_require__(147);
+Chart.Ticks = __webpack_require__(47);
 
-__webpack_require__(402)(Chart);
-__webpack_require__(403)(Chart);
-__webpack_require__(404)(Chart);
-__webpack_require__(405)(Chart);
-__webpack_require__(406)(Chart);
-__webpack_require__(407)(Chart);
-__webpack_require__(408)(Chart);
-__webpack_require__(409)(Chart);
-
-__webpack_require__(410)(Chart);
-__webpack_require__(411)(Chart);
 __webpack_require__(412)(Chart);
 __webpack_require__(413)(Chart);
 __webpack_require__(414)(Chart);
 __webpack_require__(415)(Chart);
-
-// Controllers must be loaded after elements
-// See Chart.core.datasetController.dataElementType
+__webpack_require__(416)(Chart);
 __webpack_require__(417)(Chart);
+
 __webpack_require__(418)(Chart);
 __webpack_require__(419)(Chart);
 __webpack_require__(420)(Chart);
@@ -48529,24 +49921,31 @@ __webpack_require__(421)(Chart);
 __webpack_require__(422)(Chart);
 __webpack_require__(423)(Chart);
 
-__webpack_require__(424)(Chart);
+// Controllers must be loaded after elements
+// See Chart.core.datasetController.dataElementType
 __webpack_require__(425)(Chart);
 __webpack_require__(426)(Chart);
 __webpack_require__(427)(Chart);
 __webpack_require__(428)(Chart);
 __webpack_require__(429)(Chart);
 __webpack_require__(430)(Chart);
+__webpack_require__(431)(Chart);
+
+__webpack_require__(432)(Chart);
+__webpack_require__(433)(Chart);
+__webpack_require__(434)(Chart);
+__webpack_require__(435)(Chart);
+__webpack_require__(436)(Chart);
+__webpack_require__(437)(Chart);
+__webpack_require__(438)(Chart);
 
 // Loading built-it plugins
-var plugins = [];
-
-plugins.push(
-	__webpack_require__(431)(Chart),
-	__webpack_require__(432)(Chart),
-	__webpack_require__(433)(Chart)
-);
-
-Chart.plugins.register(plugins);
+var plugins = __webpack_require__(439);
+for (var k in plugins) {
+	if (plugins.hasOwnProperty(k)) {
+		Chart.plugins.register(plugins[k]);
+	}
+}
 
 Chart.platform.initialize();
 
@@ -48558,6 +49957,43 @@ if (typeof window !== 'undefined') {
 // DEPRECATIONS
 
 /**
+ * Provided for backward compatibility, not available anymore
+ * @namespace Chart.Legend
+ * @deprecated since version 2.1.5
+ * @todo remove at version 3
+ * @private
+ */
+Chart.Legend = plugins.legend._element;
+
+/**
+ * Provided for backward compatibility, not available anymore
+ * @namespace Chart.Title
+ * @deprecated since version 2.1.5
+ * @todo remove at version 3
+ * @private
+ */
+Chart.Title = plugins.title._element;
+
+/**
+ * Provided for backward compatibility, use Chart.plugins instead
+ * @namespace Chart.pluginService
+ * @deprecated since version 2.1.5
+ * @todo remove at version 3
+ * @private
+ */
+Chart.pluginService = Chart.plugins;
+
+/**
+ * Provided for backward compatibility, inheriting from Chart.PlugingBase has no
+ * effect, instead simply create/register plugins via plain JavaScript objects.
+ * @interface Chart.PluginBase
+ * @deprecated since version 2.5.0
+ * @todo remove at version 3
+ * @private
+ */
+Chart.PluginBase = Chart.Element.extend({});
+
+/**
  * Provided for backward compatibility, use Chart.helpers.canvas instead.
  * @namespace Chart.canvasHelpers
  * @deprecated since version 2.6.0
@@ -48566,9 +50002,18 @@ if (typeof window !== 'undefined') {
  */
 Chart.canvasHelpers = Chart.helpers.canvas;
 
+/**
+ * Provided for backward compatibility, use Chart.layouts instead.
+ * @namespace Chart.layoutService
+ * @deprecated since version 2.8.0
+ * @todo remove at version 3
+ * @private
+ */
+Chart.layoutService = Chart.layouts;
+
 
 /***/ }),
-/* 387 */
+/* 397 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48624,13 +50069,13 @@ module.exports = function() {
 
 
 /***/ }),
-/* 388 */
+/* 398 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(61);
+var helpers = __webpack_require__(60);
 
 /**
  * Easing functions adapted from Robert Penner's easing equations.
@@ -48881,13 +50326,13 @@ helpers.easingEffects = effects;
 
 
 /***/ }),
-/* 389 */
+/* 399 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(61);
+var helpers = __webpack_require__(60);
 
 /**
  * @namespace Chart.helpers.canvas
@@ -49102,13 +50547,13 @@ helpers.drawRoundedRectangle = function(ctx) {
 
 
 /***/ }),
-/* 390 */
+/* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var helpers = __webpack_require__(61);
+var helpers = __webpack_require__(60);
 
 /**
  * @alias Chart.helpers.options
@@ -49205,7 +50650,7 @@ module.exports = {
 
 
 /***/ }),
-/* 391 */
+/* 401 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -49213,7 +50658,7 @@ module.exports = {
 /* global document: false */
 
 
-var color = __webpack_require__(145);
+var color = __webpack_require__(144);
 var defaults = __webpack_require__(3);
 var helpers = __webpack_require__(1);
 
@@ -49370,7 +50815,13 @@ module.exports = function(Chart) {
 			return Math.log10(x);
 		} :
 		function(x) {
-			return Math.log(x) / Math.LN10;
+			var exponent = Math.log(x) * Math.LOG10E; // Math.LOG10E = 1 / Math.LN10.
+			// Check for whole powers of 10,
+			// which due to floating point rounding error should be corrected.
+			var powerOf10 = Math.round(exponent);
+			var isPowerOf10 = x === Math.pow(10, powerOf10);
+
+			return isPowerOf10 ? powerOf10 : exponent;
 		};
 	helpers.toRadians = function(degrees) {
 		return degrees * (Math.PI / 180);
@@ -49723,8 +51174,10 @@ module.exports = function(Chart) {
 		// If no style has been set on the canvas, the render size is used as display size,
 		// making the chart visually bigger, so let's enforce it to the "correct" values.
 		// See https://github.com/chartjs/Chart.js/issues/3575
-		canvas.style.height = height + 'px';
-		canvas.style.width = width + 'px';
+		if (!canvas.style.height && !canvas.style.width) {
+			canvas.style.height = height + 'px';
+			canvas.style.width = width + 'px';
+		}
 	};
 	// -- Canvas methods
 	helpers.fontString = function(pixelSize, fontStyle, fontFamily) {
@@ -49815,10 +51268,10 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 392 */
+/* 402 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var conversions = __webpack_require__(393);
+var conversions = __webpack_require__(403);
 
 var convert = function() {
    return new Converter();
@@ -49912,7 +51365,7 @@ Converter.prototype.getValues = function(space) {
 module.exports = convert;
 
 /***/ }),
-/* 393 */
+/* 403 */
 /***/ (function(module, exports) {
 
 /* MIT license */
@@ -50616,11 +52069,11 @@ for (var key in cssKeywords) {
 
 
 /***/ }),
-/* 394 */
+/* 404 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* MIT license */
-var colorNames = __webpack_require__(395);
+var colorNames = __webpack_require__(405);
 
 module.exports = {
    getRgba: getRgba,
@@ -50843,7 +52296,7 @@ for (var name in colorNames) {
 
 
 /***/ }),
-/* 395 */
+/* 405 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51002,14 +52455,14 @@ module.exports = {
 
 
 /***/ }),
-/* 396 */
+/* 406 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
 
 defaults._set('global', {
@@ -51116,14 +52569,14 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 397 */
+/* 407 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
 
 var globalDefaults = defaults.global;
@@ -51214,14 +52667,14 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 398 */
+/* 408 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
 
 var defaultColor = defaults.global.defaultColor;
@@ -51244,12 +52697,12 @@ defaults._set('global', {
 
 function xRange(mouseX) {
 	var vm = this._view;
-	return vm ? (Math.pow(mouseX - vm.x, 2) < Math.pow(vm.radius + vm.hitRadius, 2)) : false;
+	return vm ? (Math.abs(mouseX - vm.x) < vm.radius + vm.hitRadius) : false;
 }
 
 function yRange(mouseY) {
 	var vm = this._view;
-	return vm ? (Math.pow(mouseY - vm.y, 2) < Math.pow(vm.radius + vm.hitRadius, 2)) : false;
+	return vm ? (Math.abs(mouseY - vm.y) < vm.radius + vm.hitRadius) : false;
 }
 
 module.exports = Element.extend({
@@ -51327,14 +52780,14 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 399 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 
 defaults._set('global', {
 	elements: {
@@ -51551,7 +53004,7 @@ module.exports = Element.extend({
 
 
 /***/ }),
-/* 400 */
+/* 410 */
 /***/ (function(module, exports) {
 
 /**
@@ -51572,7 +53025,7 @@ module.exports = {
 
 
 /***/ }),
-/* 401 */
+/* 411 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52036,409 +53489,7 @@ helpers.removeEvent = removeEventListener;
 
 
 /***/ }),
-/* 402 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
-var helpers = __webpack_require__(1);
-
-defaults._set('global', {
-	plugins: {}
-});
-
-module.exports = function(Chart) {
-
-	/**
-	 * The plugin service singleton
-	 * @namespace Chart.plugins
-	 * @since 2.1.0
-	 */
-	Chart.plugins = {
-		/**
-		 * Globally registered plugins.
-		 * @private
-		 */
-		_plugins: [],
-
-		/**
-		 * This identifier is used to invalidate the descriptors cache attached to each chart
-		 * when a global plugin is registered or unregistered. In this case, the cache ID is
-		 * incremented and descriptors are regenerated during following API calls.
-		 * @private
-		 */
-		_cacheId: 0,
-
-		/**
-		 * Registers the given plugin(s) if not already registered.
-		 * @param {Array|Object} plugins plugin instance(s).
-		 */
-		register: function(plugins) {
-			var p = this._plugins;
-			([]).concat(plugins).forEach(function(plugin) {
-				if (p.indexOf(plugin) === -1) {
-					p.push(plugin);
-				}
-			});
-
-			this._cacheId++;
-		},
-
-		/**
-		 * Unregisters the given plugin(s) only if registered.
-		 * @param {Array|Object} plugins plugin instance(s).
-		 */
-		unregister: function(plugins) {
-			var p = this._plugins;
-			([]).concat(plugins).forEach(function(plugin) {
-				var idx = p.indexOf(plugin);
-				if (idx !== -1) {
-					p.splice(idx, 1);
-				}
-			});
-
-			this._cacheId++;
-		},
-
-		/**
-		 * Remove all registered plugins.
-		 * @since 2.1.5
-		 */
-		clear: function() {
-			this._plugins = [];
-			this._cacheId++;
-		},
-
-		/**
-		 * Returns the number of registered plugins?
-		 * @returns {Number}
-		 * @since 2.1.5
-		 */
-		count: function() {
-			return this._plugins.length;
-		},
-
-		/**
-		 * Returns all registered plugin instances.
-		 * @returns {Array} array of plugin objects.
-		 * @since 2.1.5
-		 */
-		getAll: function() {
-			return this._plugins;
-		},
-
-		/**
-		 * Calls enabled plugins for `chart` on the specified hook and with the given args.
-		 * This method immediately returns as soon as a plugin explicitly returns false. The
-		 * returned value can be used, for instance, to interrupt the current action.
-		 * @param {Object} chart - The chart instance for which plugins should be called.
-		 * @param {String} hook - The name of the plugin method to call (e.g. 'beforeUpdate').
-		 * @param {Array} [args] - Extra arguments to apply to the hook call.
-		 * @returns {Boolean} false if any of the plugins return false, else returns true.
-		 */
-		notify: function(chart, hook, args) {
-			var descriptors = this.descriptors(chart);
-			var ilen = descriptors.length;
-			var i, descriptor, plugin, params, method;
-
-			for (i = 0; i < ilen; ++i) {
-				descriptor = descriptors[i];
-				plugin = descriptor.plugin;
-				method = plugin[hook];
-				if (typeof method === 'function') {
-					params = [chart].concat(args || []);
-					params.push(descriptor.options);
-					if (method.apply(plugin, params) === false) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		},
-
-		/**
-		 * Returns descriptors of enabled plugins for the given chart.
-		 * @returns {Array} [{ plugin, options }]
-		 * @private
-		 */
-		descriptors: function(chart) {
-			var cache = chart._plugins || (chart._plugins = {});
-			if (cache.id === this._cacheId) {
-				return cache.descriptors;
-			}
-
-			var plugins = [];
-			var descriptors = [];
-			var config = (chart && chart.config) || {};
-			var options = (config.options && config.options.plugins) || {};
-
-			this._plugins.concat(config.plugins || []).forEach(function(plugin) {
-				var idx = plugins.indexOf(plugin);
-				if (idx !== -1) {
-					return;
-				}
-
-				var id = plugin.id;
-				var opts = options[id];
-				if (opts === false) {
-					return;
-				}
-
-				if (opts === true) {
-					opts = helpers.clone(defaults.global.plugins[id]);
-				}
-
-				plugins.push(plugin);
-				descriptors.push({
-					plugin: plugin,
-					options: opts || {}
-				});
-			});
-
-			cache.descriptors = descriptors;
-			cache.id = this._cacheId;
-			return descriptors;
-		}
-	};
-
-	/**
-	 * Plugin extension hooks.
-	 * @interface IPlugin
-	 * @since 2.1.0
-	 */
-	/**
-	 * @method IPlugin#beforeInit
-	 * @desc Called before initializing `chart`.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#afterInit
-	 * @desc Called after `chart` has been initialized and before the first update.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeUpdate
-	 * @desc Called before updating `chart`. If any plugin returns `false`, the update
-	 * is cancelled (and thus subsequent render(s)) until another `update` is triggered.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart update.
-	 */
-	/**
-	 * @method IPlugin#afterUpdate
-	 * @desc Called after `chart` has been updated and before rendering. Note that this
-	 * hook will not be called if the chart update has been previously cancelled.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeDatasetsUpdate
- 	 * @desc Called before updating the `chart` datasets. If any plugin returns `false`,
-	 * the datasets update is cancelled until another `update` is triggered.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} false to cancel the datasets update.
-	 * @since version 2.1.5
-	 */
-	/**
-	 * @method IPlugin#afterDatasetsUpdate
-	 * @desc Called after the `chart` datasets have been updated. Note that this hook
-	 * will not be called if the datasets update has been previously cancelled.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 * @since version 2.1.5
-	 */
-	/**
-	 * @method IPlugin#beforeDatasetUpdate
- 	 * @desc Called before updating the `chart` dataset at the given `args.index`. If any plugin
-	 * returns `false`, the datasets update is cancelled until another `update` is triggered.
-	 * @param {Chart} chart - The chart instance.
-	 * @param {Object} args - The call arguments.
-	 * @param {Number} args.index - The dataset index.
-	 * @param {Object} args.meta - The dataset metadata.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart datasets drawing.
-	 */
-	/**
-	 * @method IPlugin#afterDatasetUpdate
- 	 * @desc Called after the `chart` datasets at the given `args.index` has been updated. Note
-	 * that this hook will not be called if the datasets update has been previously cancelled.
-	 * @param {Chart} chart - The chart instance.
-	 * @param {Object} args - The call arguments.
-	 * @param {Number} args.index - The dataset index.
-	 * @param {Object} args.meta - The dataset metadata.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeLayout
-	 * @desc Called before laying out `chart`. If any plugin returns `false`,
-	 * the layout update is cancelled until another `update` is triggered.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart layout.
-	 */
-	/**
-	 * @method IPlugin#afterLayout
-	 * @desc Called after the `chart` has been layed out. Note that this hook will not
-	 * be called if the layout update has been previously cancelled.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeRender
-	 * @desc Called before rendering `chart`. If any plugin returns `false`,
-	 * the rendering is cancelled until another `render` is triggered.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart rendering.
-	 */
-	/**
-	 * @method IPlugin#afterRender
-	 * @desc Called after the `chart` has been fully rendered (and animation completed). Note
-	 * that this hook will not be called if the rendering has been previously cancelled.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeDraw
-	 * @desc Called before drawing `chart` at every animation frame specified by the given
-	 * easing value. If any plugin returns `false`, the frame drawing is cancelled until
-	 * another `render` is triggered.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart drawing.
-	 */
-	/**
-	 * @method IPlugin#afterDraw
-	 * @desc Called after the `chart` has been drawn for the specific easing value. Note
-	 * that this hook will not be called if the drawing has been previously cancelled.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeDatasetsDraw
- 	 * @desc Called before drawing the `chart` datasets. If any plugin returns `false`,
-	 * the datasets drawing is cancelled until another `render` is triggered.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart datasets drawing.
-	 */
-	/**
-	 * @method IPlugin#afterDatasetsDraw
-	 * @desc Called after the `chart` datasets have been drawn. Note that this hook
-	 * will not be called if the datasets drawing has been previously cancelled.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Number} easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#beforeDatasetDraw
- 	 * @desc Called before drawing the `chart` dataset at the given `args.index` (datasets
-	 * are drawn in the reverse order). If any plugin returns `false`, the datasets drawing
-	 * is cancelled until another `render` is triggered.
-	 * @param {Chart} chart - The chart instance.
-	 * @param {Object} args - The call arguments.
-	 * @param {Number} args.index - The dataset index.
-	 * @param {Object} args.meta - The dataset metadata.
-	 * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart datasets drawing.
-	 */
-	/**
-	 * @method IPlugin#afterDatasetDraw
- 	 * @desc Called after the `chart` datasets at the given `args.index` have been drawn
-	 * (datasets are drawn in the reverse order). Note that this hook will not be called
-	 * if the datasets drawing has been previously cancelled.
-	 * @param {Chart} chart - The chart instance.
-	 * @param {Object} args - The call arguments.
-	 * @param {Number} args.index - The dataset index.
-	 * @param {Object} args.meta - The dataset metadata.
-	 * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-  	 * @method IPlugin#beforeTooltipDraw
-	 * @desc Called before drawing the `tooltip`. If any plugin returns `false`,
-	 * the tooltip drawing is cancelled until another `render` is triggered.
-	 * @param {Chart} chart - The chart instance.
-	 * @param {Object} args - The call arguments.
-	 * @param {Object} args.tooltip - The tooltip.
-	 * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
-	 * @param {Object} options - The plugin options.
-	 * @returns {Boolean} `false` to cancel the chart tooltip drawing.
-  	 */
-	/**
- 	 * @method IPlugin#afterTooltipDraw
-  	 * @desc Called after drawing the `tooltip`. Note that this hook will not
- 	 * be called if the tooltip drawing has been previously cancelled.
- 	 * @param {Chart} chart - The chart instance.
- 	 * @param {Object} args - The call arguments.
- 	 * @param {Object} args.tooltip - The tooltip.
-	 * @param {Number} args.easingValue - The current animation value, between 0.0 and 1.0.
- 	 * @param {Object} options - The plugin options.
- 	 */
-	/**
-	 * @method IPlugin#beforeEvent
- 	 * @desc Called before processing the specified `event`. If any plugin returns `false`,
-	 * the event will be discarded.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {IEvent} event - The event object.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#afterEvent
-	 * @desc Called after the `event` has been consumed. Note that this hook
-	 * will not be called if the `event` has been previously discarded.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {IEvent} event - The event object.
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#resize
-	 * @desc Called after the chart as been resized.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Number} size - The new canvas display size (eq. canvas.style width & height).
-	 * @param {Object} options - The plugin options.
-	 */
-	/**
-	 * @method IPlugin#destroy
-	 * @desc Called after the chart as been destroyed.
-	 * @param {Chart.Controller} chart - The chart instance.
-	 * @param {Object} options - The plugin options.
-	 */
-
-	/**
-	 * Provided for backward compatibility, use Chart.plugins instead
-	 * @namespace Chart.pluginService
-	 * @deprecated since version 2.1.5
-	 * @todo remove at version 3
-	 * @private
-	 */
-	Chart.pluginService = Chart.plugins;
-
-	/**
-	 * Provided for backward compatibility, inheriting from Chart.PlugingBase has no
-	 * effect, instead simply create/register plugins via plain JavaScript objects.
-	 * @interface Chart.PluginBase
-	 * @deprecated since version 2.5.0
-	 * @todo remove at version 3
-	 * @private
-	 */
-	Chart.PluginBase = Element.extend({});
-};
-
-
-/***/ }),
-/* 403 */
+/* 412 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52446,7 +53497,7 @@ module.exports = function(Chart) {
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
 
 defaults._set('global', {
@@ -52617,7 +53668,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 404 */
+/* 413 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52625,11 +53676,12 @@ module.exports = function(Chart) {
 
 var defaults = __webpack_require__(3);
 var helpers = __webpack_require__(1);
-var Interaction = __webpack_require__(146);
-var platform = __webpack_require__(147);
+var Interaction = __webpack_require__(145);
+var layouts = __webpack_require__(46);
+var platform = __webpack_require__(146);
+var plugins = __webpack_require__(147);
 
 module.exports = function(Chart) {
-	var plugins = Chart.plugins;
 
 	// Create a dictionary of chart types, to allow for extension of existing types
 	Chart.types = {};
@@ -52668,17 +53720,21 @@ module.exports = function(Chart) {
 	function updateConfig(chart) {
 		var newOptions = chart.options;
 
-		// Update Scale(s) with options
-		if (newOptions.scale) {
-			chart.scale.options = newOptions.scale;
-		} else if (newOptions.scales) {
-			newOptions.scales.xAxes.concat(newOptions.scales.yAxes).forEach(function(scaleOptions) {
-				chart.scales[scaleOptions.id].options = scaleOptions;
-			});
-		}
+		helpers.each(chart.scales, function(scale) {
+			layouts.removeBox(chart, scale);
+		});
 
+		newOptions = helpers.configMerge(
+			Chart.defaults.global,
+			Chart.defaults[chart.config.type],
+			newOptions);
+
+		chart.options = chart.config.options = newOptions;
+		chart.ensureScalesHaveIDs();
+		chart.buildOrUpdateScales();
 		// Tooltip
 		chart.tooltip._options = newOptions.tooltips;
+		chart.tooltip.initialize();
 	}
 
 	function positionIsHorizontal(position) {
@@ -52766,7 +53822,7 @@ module.exports = function(Chart) {
 
 			// Make sure scales have IDs and are built before we build any controllers.
 			me.ensureScalesHaveIDs();
-			me.buildScales();
+			me.buildOrUpdateScales();
 			me.initToolTip();
 
 			// After init plugin notification
@@ -52846,11 +53902,15 @@ module.exports = function(Chart) {
 		/**
 		 * Builds a map of scale ID to scale object for future lookup.
 		 */
-		buildScales: function() {
+		buildOrUpdateScales: function() {
 			var me = this;
 			var options = me.options;
-			var scales = me.scales = {};
+			var scales = me.scales || {};
 			var items = [];
+			var updated = Object.keys(scales).reduce(function(obj, id) {
+				obj[id] = false;
+				return obj;
+			}, {});
 
 			if (options.scales) {
 				items = items.concat(
@@ -52874,24 +53934,35 @@ module.exports = function(Chart) {
 
 			helpers.each(items, function(item) {
 				var scaleOptions = item.options;
+				var id = scaleOptions.id;
 				var scaleType = helpers.valueOrDefault(scaleOptions.type, item.dtype);
-				var scaleClass = Chart.scaleService.getScaleConstructor(scaleType);
-				if (!scaleClass) {
-					return;
-				}
 
 				if (positionIsHorizontal(scaleOptions.position) !== positionIsHorizontal(item.dposition)) {
 					scaleOptions.position = item.dposition;
 				}
 
-				var scale = new scaleClass({
-					id: scaleOptions.id,
-					options: scaleOptions,
-					ctx: me.ctx,
-					chart: me
-				});
+				updated[id] = true;
+				var scale = null;
+				if (id in scales && scales[id].type === scaleType) {
+					scale = scales[id];
+					scale.options = scaleOptions;
+					scale.ctx = me.ctx;
+					scale.chart = me;
+				} else {
+					var scaleClass = Chart.scaleService.getScaleConstructor(scaleType);
+					if (!scaleClass) {
+						return;
+					}
+					scale = new scaleClass({
+						id: id,
+						type: scaleType,
+						options: scaleOptions,
+						ctx: me.ctx,
+						chart: me
+					});
+					scales[scale.id] = scale;
+				}
 
-				scales[scale.id] = scale;
 				scale.mergeTicksOptions();
 
 				// TODO(SB): I think we should be able to remove this custom case (options.scale)
@@ -52901,6 +53972,14 @@ module.exports = function(Chart) {
 					me.scale = scale;
 				}
 			});
+			// clear up discarded scales
+			helpers.each(updated, function(hasUpdated, id) {
+				if (!hasUpdated) {
+					delete scales[id];
+				}
+			});
+
+			me.scales = scales;
 
 			Chart.scaleService.addScalesToLayout(this);
 		},
@@ -52924,6 +54003,7 @@ module.exports = function(Chart) {
 
 				if (meta.controller) {
 					meta.controller.updateIndex(datasetIndex);
+					meta.controller.linkScales();
 				} else {
 					var ControllerClass = Chart.controllers[meta.type];
 					if (ControllerClass === undefined) {
@@ -52970,6 +54050,10 @@ module.exports = function(Chart) {
 
 			updateConfig(me);
 
+			// plugins options references might have change, let's invalidate the cache
+			// https://github.com/chartjs/Chart.js/issues/5111#issuecomment-355934167
+			plugins._invalidate(me);
+
 			if (plugins.notify(me, 'beforeUpdate') === false) {
 				return;
 			}
@@ -52988,9 +54072,11 @@ module.exports = function(Chart) {
 			me.updateLayout();
 
 			// Can only reset the new controllers after the scales have been updated
-			helpers.each(newControllers, function(controller) {
-				controller.reset();
-			});
+			if (me.options.animation && me.options.animation.duration) {
+				helpers.each(newControllers, function(controller) {
+					controller.reset();
+				});
+			}
 
 			me.updateDatasets();
 
@@ -53028,7 +54114,7 @@ module.exports = function(Chart) {
 				return;
 			}
 
-			Chart.layoutService.update(this, this.width, this.height);
+			layouts.update(this, this.width, this.height);
 
 			/**
 			 * Provided for backward compatibility, use `afterLayout` instead.
@@ -53442,7 +54528,15 @@ module.exports = function(Chart) {
 			me._bufferedRequest = null;
 
 			var changed = me.handleEvent(e);
-			changed |= tooltip && tooltip.handleEvent(e);
+			// for smooth tooltip animations issue #4989
+			// the tooltip should be the source of change
+			// Animation check workaround:
+			// tooltip._start will be null when tooltip isn't animating
+			if (tooltip) {
+				changed = tooltip._start
+					? tooltip.handleEvent(e)
+					: changed | tooltip.handleEvent(e);
+			}
 
 			plugins.notify(me, 'afterEvent', [e]);
 
@@ -53528,7 +54622,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 405 */
+/* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53645,10 +54739,10 @@ module.exports = function(Chart) {
 			var meta = me.getMeta();
 			var dataset = me.getDataset();
 
-			if (meta.xAxisID === null) {
+			if (meta.xAxisID === null || !(meta.xAxisID in me.chart.scales)) {
 				meta.xAxisID = dataset.xAxisID || me.chart.options.scales.xAxes[0].id;
 			}
-			if (meta.yAxisID === null) {
+			if (meta.yAxisID === null || !(meta.yAxisID in me.chart.scales)) {
 				meta.yAxisID = dataset.yAxisID || me.chart.options.scales.yAxes[0].id;
 			}
 		},
@@ -53865,436 +54959,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 406 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var helpers = __webpack_require__(1);
-
-module.exports = function(Chart) {
-
-	function filterByPosition(array, position) {
-		return helpers.where(array, function(v) {
-			return v.position === position;
-		});
-	}
-
-	function sortByWeight(array, reverse) {
-		array.forEach(function(v, i) {
-			v._tmpIndex_ = i;
-			return v;
-		});
-		array.sort(function(a, b) {
-			var v0 = reverse ? b : a;
-			var v1 = reverse ? a : b;
-			return v0.weight === v1.weight ?
-				v0._tmpIndex_ - v1._tmpIndex_ :
-				v0.weight - v1.weight;
-		});
-		array.forEach(function(v) {
-			delete v._tmpIndex_;
-		});
-	}
-
-	/**
-	 * @interface ILayoutItem
-	 * @prop {String} position - The position of the item in the chart layout. Possible values are
-	 * 'left', 'top', 'right', 'bottom', and 'chartArea'
-	 * @prop {Number} weight - The weight used to sort the item. Higher weights are further away from the chart area
-	 * @prop {Boolean} fullWidth - if true, and the item is horizontal, then push vertical boxes down
-	 * @prop {Function} isHorizontal - returns true if the layout item is horizontal (ie. top or bottom)
-	 * @prop {Function} update - Takes two parameters: width and height. Returns size of item
-	 * @prop {Function} getPadding -  Returns an object with padding on the edges
-	 * @prop {Number} width - Width of item. Must be valid after update()
-	 * @prop {Number} height - Height of item. Must be valid after update()
-	 * @prop {Number} left - Left edge of the item. Set by layout system and cannot be used in update
-	 * @prop {Number} top - Top edge of the item. Set by layout system and cannot be used in update
-	 * @prop {Number} right - Right edge of the item. Set by layout system and cannot be used in update
-	 * @prop {Number} bottom - Bottom edge of the item. Set by layout system and cannot be used in update
-	 */
-
-	// The layout service is very self explanatory.  It's responsible for the layout within a chart.
-	// Scales, Legends and Plugins all rely on the layout service and can easily register to be placed anywhere they need
-	// It is this service's responsibility of carrying out that layout.
-	Chart.layoutService = {
-		defaults: {},
-
-		/**
-		 * Register a box to a chart.
-		 * A box is simply a reference to an object that requires layout. eg. Scales, Legend, Title.
-		 * @param {Chart} chart - the chart to use
-		 * @param {ILayoutItem} item - the item to add to be layed out
-		 */
-		addBox: function(chart, item) {
-			if (!chart.boxes) {
-				chart.boxes = [];
-			}
-
-			// initialize item with default values
-			item.fullWidth = item.fullWidth || false;
-			item.position = item.position || 'top';
-			item.weight = item.weight || 0;
-
-			chart.boxes.push(item);
-		},
-
-		/**
-		 * Remove a layoutItem from a chart
-		 * @param {Chart} chart - the chart to remove the box from
-		 * @param {Object} layoutItem - the item to remove from the layout
-		 */
-		removeBox: function(chart, layoutItem) {
-			var index = chart.boxes ? chart.boxes.indexOf(layoutItem) : -1;
-			if (index !== -1) {
-				chart.boxes.splice(index, 1);
-			}
-		},
-
-		/**
-		 * Sets (or updates) options on the given `item`.
-		 * @param {Chart} chart - the chart in which the item lives (or will be added to)
-		 * @param {Object} item - the item to configure with the given options
-		 * @param {Object} options - the new item options.
-		 */
-		configure: function(chart, item, options) {
-			var props = ['fullWidth', 'position', 'weight'];
-			var ilen = props.length;
-			var i = 0;
-			var prop;
-
-			for (; i < ilen; ++i) {
-				prop = props[i];
-				if (options.hasOwnProperty(prop)) {
-					item[prop] = options[prop];
-				}
-			}
-		},
-
-		/**
-		 * Fits boxes of the given chart into the given size by having each box measure itself
-		 * then running a fitting algorithm
-		 * @param {Chart} chart - the chart
-		 * @param {Number} width - the width to fit into
-		 * @param {Number} height - the height to fit into
-		 */
-		update: function(chart, width, height) {
-			if (!chart) {
-				return;
-			}
-
-			var layoutOptions = chart.options.layout || {};
-			var padding = helpers.options.toPadding(layoutOptions.padding);
-			var leftPadding = padding.left;
-			var rightPadding = padding.right;
-			var topPadding = padding.top;
-			var bottomPadding = padding.bottom;
-
-			var leftBoxes = filterByPosition(chart.boxes, 'left');
-			var rightBoxes = filterByPosition(chart.boxes, 'right');
-			var topBoxes = filterByPosition(chart.boxes, 'top');
-			var bottomBoxes = filterByPosition(chart.boxes, 'bottom');
-			var chartAreaBoxes = filterByPosition(chart.boxes, 'chartArea');
-
-			// Sort boxes by weight. A higher weight is further away from the chart area
-			sortByWeight(leftBoxes, true);
-			sortByWeight(rightBoxes, false);
-			sortByWeight(topBoxes, true);
-			sortByWeight(bottomBoxes, false);
-
-			// Essentially we now have any number of boxes on each of the 4 sides.
-			// Our canvas looks like the following.
-			// The areas L1 and L2 are the left axes. R1 is the right axis, T1 is the top axis and
-			// B1 is the bottom axis
-			// There are also 4 quadrant-like locations (left to right instead of clockwise) reserved for chart overlays
-			// These locations are single-box locations only, when trying to register a chartArea location that is already taken,
-			// an error will be thrown.
-			//
-			// |----------------------------------------------------|
-			// |                  T1 (Full Width)                   |
-			// |----------------------------------------------------|
-			// |    |    |                 T2                  |    |
-			// |    |----|-------------------------------------|----|
-			// |    |    | C1 |                           | C2 |    |
-			// |    |    |----|                           |----|    |
-			// |    |    |                                     |    |
-			// | L1 | L2 |           ChartArea (C0)            | R1 |
-			// |    |    |                                     |    |
-			// |    |    |----|                           |----|    |
-			// |    |    | C3 |                           | C4 |    |
-			// |    |----|-------------------------------------|----|
-			// |    |    |                 B1                  |    |
-			// |----------------------------------------------------|
-			// |                  B2 (Full Width)                   |
-			// |----------------------------------------------------|
-			//
-			// What we do to find the best sizing, we do the following
-			// 1. Determine the minimum size of the chart area.
-			// 2. Split the remaining width equally between each vertical axis
-			// 3. Split the remaining height equally between each horizontal axis
-			// 4. Give each layout the maximum size it can be. The layout will return it's minimum size
-			// 5. Adjust the sizes of each axis based on it's minimum reported size.
-			// 6. Refit each axis
-			// 7. Position each axis in the final location
-			// 8. Tell the chart the final location of the chart area
-			// 9. Tell any axes that overlay the chart area the positions of the chart area
-
-			// Step 1
-			var chartWidth = width - leftPadding - rightPadding;
-			var chartHeight = height - topPadding - bottomPadding;
-			var chartAreaWidth = chartWidth / 2; // min 50%
-			var chartAreaHeight = chartHeight / 2; // min 50%
-
-			// Step 2
-			var verticalBoxWidth = (width - chartAreaWidth) / (leftBoxes.length + rightBoxes.length);
-
-			// Step 3
-			var horizontalBoxHeight = (height - chartAreaHeight) / (topBoxes.length + bottomBoxes.length);
-
-			// Step 4
-			var maxChartAreaWidth = chartWidth;
-			var maxChartAreaHeight = chartHeight;
-			var minBoxSizes = [];
-
-			function getMinimumBoxSize(box) {
-				var minSize;
-				var isHorizontal = box.isHorizontal();
-
-				if (isHorizontal) {
-					minSize = box.update(box.fullWidth ? chartWidth : maxChartAreaWidth, horizontalBoxHeight);
-					maxChartAreaHeight -= minSize.height;
-				} else {
-					minSize = box.update(verticalBoxWidth, chartAreaHeight);
-					maxChartAreaWidth -= minSize.width;
-				}
-
-				minBoxSizes.push({
-					horizontal: isHorizontal,
-					minSize: minSize,
-					box: box,
-				});
-			}
-
-			helpers.each(leftBoxes.concat(rightBoxes, topBoxes, bottomBoxes), getMinimumBoxSize);
-
-			// If a horizontal box has padding, we move the left boxes over to avoid ugly charts (see issue #2478)
-			var maxHorizontalLeftPadding = 0;
-			var maxHorizontalRightPadding = 0;
-			var maxVerticalTopPadding = 0;
-			var maxVerticalBottomPadding = 0;
-
-			helpers.each(topBoxes.concat(bottomBoxes), function(horizontalBox) {
-				if (horizontalBox.getPadding) {
-					var boxPadding = horizontalBox.getPadding();
-					maxHorizontalLeftPadding = Math.max(maxHorizontalLeftPadding, boxPadding.left);
-					maxHorizontalRightPadding = Math.max(maxHorizontalRightPadding, boxPadding.right);
-				}
-			});
-
-			helpers.each(leftBoxes.concat(rightBoxes), function(verticalBox) {
-				if (verticalBox.getPadding) {
-					var boxPadding = verticalBox.getPadding();
-					maxVerticalTopPadding = Math.max(maxVerticalTopPadding, boxPadding.top);
-					maxVerticalBottomPadding = Math.max(maxVerticalBottomPadding, boxPadding.bottom);
-				}
-			});
-
-			// At this point, maxChartAreaHeight and maxChartAreaWidth are the size the chart area could
-			// be if the axes are drawn at their minimum sizes.
-			// Steps 5 & 6
-			var totalLeftBoxesWidth = leftPadding;
-			var totalRightBoxesWidth = rightPadding;
-			var totalTopBoxesHeight = topPadding;
-			var totalBottomBoxesHeight = bottomPadding;
-
-			// Function to fit a box
-			function fitBox(box) {
-				var minBoxSize = helpers.findNextWhere(minBoxSizes, function(minBox) {
-					return minBox.box === box;
-				});
-
-				if (minBoxSize) {
-					if (box.isHorizontal()) {
-						var scaleMargin = {
-							left: Math.max(totalLeftBoxesWidth, maxHorizontalLeftPadding),
-							right: Math.max(totalRightBoxesWidth, maxHorizontalRightPadding),
-							top: 0,
-							bottom: 0
-						};
-
-						// Don't use min size here because of label rotation. When the labels are rotated, their rotation highly depends
-						// on the margin. Sometimes they need to increase in size slightly
-						box.update(box.fullWidth ? chartWidth : maxChartAreaWidth, chartHeight / 2, scaleMargin);
-					} else {
-						box.update(minBoxSize.minSize.width, maxChartAreaHeight);
-					}
-				}
-			}
-
-			// Update, and calculate the left and right margins for the horizontal boxes
-			helpers.each(leftBoxes.concat(rightBoxes), fitBox);
-
-			helpers.each(leftBoxes, function(box) {
-				totalLeftBoxesWidth += box.width;
-			});
-
-			helpers.each(rightBoxes, function(box) {
-				totalRightBoxesWidth += box.width;
-			});
-
-			// Set the Left and Right margins for the horizontal boxes
-			helpers.each(topBoxes.concat(bottomBoxes), fitBox);
-
-			// Figure out how much margin is on the top and bottom of the vertical boxes
-			helpers.each(topBoxes, function(box) {
-				totalTopBoxesHeight += box.height;
-			});
-
-			helpers.each(bottomBoxes, function(box) {
-				totalBottomBoxesHeight += box.height;
-			});
-
-			function finalFitVerticalBox(box) {
-				var minBoxSize = helpers.findNextWhere(minBoxSizes, function(minSize) {
-					return minSize.box === box;
-				});
-
-				var scaleMargin = {
-					left: 0,
-					right: 0,
-					top: totalTopBoxesHeight,
-					bottom: totalBottomBoxesHeight
-				};
-
-				if (minBoxSize) {
-					box.update(minBoxSize.minSize.width, maxChartAreaHeight, scaleMargin);
-				}
-			}
-
-			// Let the left layout know the final margin
-			helpers.each(leftBoxes.concat(rightBoxes), finalFitVerticalBox);
-
-			// Recalculate because the size of each layout might have changed slightly due to the margins (label rotation for instance)
-			totalLeftBoxesWidth = leftPadding;
-			totalRightBoxesWidth = rightPadding;
-			totalTopBoxesHeight = topPadding;
-			totalBottomBoxesHeight = bottomPadding;
-
-			helpers.each(leftBoxes, function(box) {
-				totalLeftBoxesWidth += box.width;
-			});
-
-			helpers.each(rightBoxes, function(box) {
-				totalRightBoxesWidth += box.width;
-			});
-
-			helpers.each(topBoxes, function(box) {
-				totalTopBoxesHeight += box.height;
-			});
-			helpers.each(bottomBoxes, function(box) {
-				totalBottomBoxesHeight += box.height;
-			});
-
-			// We may be adding some padding to account for rotated x axis labels
-			var leftPaddingAddition = Math.max(maxHorizontalLeftPadding - totalLeftBoxesWidth, 0);
-			totalLeftBoxesWidth += leftPaddingAddition;
-			totalRightBoxesWidth += Math.max(maxHorizontalRightPadding - totalRightBoxesWidth, 0);
-
-			var topPaddingAddition = Math.max(maxVerticalTopPadding - totalTopBoxesHeight, 0);
-			totalTopBoxesHeight += topPaddingAddition;
-			totalBottomBoxesHeight += Math.max(maxVerticalBottomPadding - totalBottomBoxesHeight, 0);
-
-			// Figure out if our chart area changed. This would occur if the dataset layout label rotation
-			// changed due to the application of the margins in step 6. Since we can only get bigger, this is safe to do
-			// without calling `fit` again
-			var newMaxChartAreaHeight = height - totalTopBoxesHeight - totalBottomBoxesHeight;
-			var newMaxChartAreaWidth = width - totalLeftBoxesWidth - totalRightBoxesWidth;
-
-			if (newMaxChartAreaWidth !== maxChartAreaWidth || newMaxChartAreaHeight !== maxChartAreaHeight) {
-				helpers.each(leftBoxes, function(box) {
-					box.height = newMaxChartAreaHeight;
-				});
-
-				helpers.each(rightBoxes, function(box) {
-					box.height = newMaxChartAreaHeight;
-				});
-
-				helpers.each(topBoxes, function(box) {
-					if (!box.fullWidth) {
-						box.width = newMaxChartAreaWidth;
-					}
-				});
-
-				helpers.each(bottomBoxes, function(box) {
-					if (!box.fullWidth) {
-						box.width = newMaxChartAreaWidth;
-					}
-				});
-
-				maxChartAreaHeight = newMaxChartAreaHeight;
-				maxChartAreaWidth = newMaxChartAreaWidth;
-			}
-
-			// Step 7 - Position the boxes
-			var left = leftPadding + leftPaddingAddition;
-			var top = topPadding + topPaddingAddition;
-
-			function placeBox(box) {
-				if (box.isHorizontal()) {
-					box.left = box.fullWidth ? leftPadding : totalLeftBoxesWidth;
-					box.right = box.fullWidth ? width - rightPadding : totalLeftBoxesWidth + maxChartAreaWidth;
-					box.top = top;
-					box.bottom = top + box.height;
-
-					// Move to next point
-					top = box.bottom;
-
-				} else {
-
-					box.left = left;
-					box.right = left + box.width;
-					box.top = totalTopBoxesHeight;
-					box.bottom = totalTopBoxesHeight + maxChartAreaHeight;
-
-					// Move to next point
-					left = box.right;
-				}
-			}
-
-			helpers.each(leftBoxes.concat(topBoxes), placeBox);
-
-			// Account for chart width and height
-			left += maxChartAreaWidth;
-			top += maxChartAreaHeight;
-
-			helpers.each(rightBoxes, placeBox);
-			helpers.each(bottomBoxes, placeBox);
-
-			// Step 8
-			chart.chartArea = {
-				left: totalLeftBoxesWidth,
-				top: totalTopBoxesHeight,
-				right: totalLeftBoxesWidth + maxChartAreaWidth,
-				bottom: totalTopBoxesHeight + maxChartAreaHeight
-			};
-
-			// Step 9
-			helpers.each(chartAreaBoxes, function(box) {
-				box.left = chart.chartArea.left;
-				box.top = chart.chartArea.top;
-				box.right = chart.chartArea.right;
-				box.bottom = chart.chartArea.bottom;
-
-				box.update(maxChartAreaWidth, maxChartAreaHeight);
-			});
-		}
-	};
-};
-
-
-/***/ }),
-/* 407 */
+/* 415 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -54302,6 +54967,7 @@ module.exports = function(Chart) {
 
 var defaults = __webpack_require__(3);
 var helpers = __webpack_require__(1);
+var layouts = __webpack_require__(46);
 
 module.exports = function(Chart) {
 
@@ -54338,7 +55004,7 @@ module.exports = function(Chart) {
 				scale.fullWidth = scale.options.fullWidth;
 				scale.position = scale.options.position;
 				scale.weight = scale.options.weight;
-				Chart.layoutService.addBox(chart, scale);
+				layouts.addBox(chart, scale);
 			});
 		}
 	};
@@ -54346,16 +55012,16 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 408 */
+/* 416 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(48);
+var Ticks = __webpack_require__(47);
 
 defaults._set('scale', {
 	display: true,
@@ -55057,10 +55723,11 @@ module.exports = function(Chart) {
 
 			var itemsToDraw = [];
 
-			var xTickStart = options.position === 'right' ? me.left : me.right - tl;
-			var xTickEnd = options.position === 'right' ? me.left + tl : me.right;
-			var yTickStart = options.position === 'bottom' ? me.top : me.bottom - tl;
-			var yTickEnd = options.position === 'bottom' ? me.top + tl : me.bottom;
+			var axisWidth = me.options.gridLines.lineWidth;
+			var xTickStart = options.position === 'right' ? me.right : me.right - axisWidth - tl;
+			var xTickEnd = options.position === 'right' ? me.right + tl : me.right;
+			var yTickStart = options.position === 'bottom' ? me.top + axisWidth : me.bottom - tl - axisWidth;
+			var yTickEnd = options.position === 'bottom' ? me.top + axisWidth + tl : me.bottom + axisWidth;
 
 			helpers.each(ticks, function(tick, index) {
 				// autoskipper skipped this tick (#4635)
@@ -55116,7 +55783,7 @@ module.exports = function(Chart) {
 					ty1 = yTickStart;
 					ty2 = yTickEnd;
 					y1 = chartArea.top;
-					y2 = chartArea.bottom;
+					y2 = chartArea.bottom + axisWidth;
 				} else {
 					var isLeft = options.position === 'left';
 					var labelXOffset;
@@ -55142,7 +55809,7 @@ module.exports = function(Chart) {
 					tx1 = xTickStart;
 					tx2 = xTickEnd;
 					x1 = chartArea.left;
-					x2 = chartArea.right;
+					x2 = chartArea.right + axisWidth;
 					ty1 = ty2 = y1 = y2 = yLineValue;
 				}
 
@@ -55208,11 +55875,15 @@ module.exports = function(Chart) {
 
 					var label = itemToDraw.label;
 					if (helpers.isArray(label)) {
-						for (var i = 0, y = 0; i < label.length; ++i) {
+						var lineCount = label.length;
+						var lineHeight = tickFont.size * 1.5;
+						var y = me.isHorizontal() ? 0 : -lineHeight * (lineCount - 1) / 2;
+
+						for (var i = 0; i < lineCount; ++i) {
 							// We just make sure the multiline element is a string here..
 							context.fillText('' + label[i], 0, y);
 							// apply same lineSpacing as calculated @ L#320
-							y += (tickFont.size * 1.5);
+							y += lineHeight;
 						}
 					} else {
 						context.fillText(label, 0, 0);
@@ -55258,9 +55929,9 @@ module.exports = function(Chart) {
 				context.lineWidth = helpers.valueAtIndexOrDefault(gridLines.lineWidth, 0);
 				context.strokeStyle = helpers.valueAtIndexOrDefault(gridLines.color, 0);
 				var x1 = me.left;
-				var x2 = me.right;
+				var x2 = me.right + axisWidth;
 				var y1 = me.top;
-				var y2 = me.bottom;
+				var y2 = me.bottom + axisWidth;
 
 				var aliasPixel = helpers.aliasPixel(context.lineWidth);
 				if (isHorizontal) {
@@ -55284,14 +55955,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 409 */
+/* 417 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
 
 defaults._set('global', {
@@ -55589,10 +56260,10 @@ module.exports = function(Chart) {
 		}
 
 		olf = function(x) {
-			return x + size.width > chart.width;
+			return x + size.width + model.caretSize + model.caretPadding > chart.width;
 		};
 		orf = function(x) {
-			return x - size.width < 0;
+			return x - size.width - model.caretSize - model.caretPadding < 0;
 		};
 		yf = function(y) {
 			return y <= midY ? 'top' : 'bottom';
@@ -55626,7 +56297,7 @@ module.exports = function(Chart) {
 	/**
 	 * @Helper to get the location a tooltip needs to be placed at given the initial position (via the vm) and the size and alignment
 	 */
-	function getBackgroundPoint(vm, size, alignment) {
+	function getBackgroundPoint(vm, size, alignment, chart) {
 		// Background Position
 		var x = vm.x;
 		var y = vm.y;
@@ -55643,6 +56314,12 @@ module.exports = function(Chart) {
 			x -= size.width;
 		} else if (xAlign === 'center') {
 			x -= (size.width / 2);
+			if (x + size.width > chart.width) {
+				x = chart.width - size.width;
+			}
+			if (x < 0) {
+				x = 0;
+			}
 		}
 
 		if (yAlign === 'top') {
@@ -55835,7 +56512,7 @@ module.exports = function(Chart) {
 				tooltipSize = getTooltipSize(this, model);
 				alignment = determineAlignment(this, tooltipSize);
 				// Final Size and Position
-				backgroundPoint = getBackgroundPoint(model, tooltipSize, alignment);
+				backgroundPoint = getBackgroundPoint(model, tooltipSize, alignment, me._chart);
 			} else {
 				model.opacity = 0;
 			}
@@ -55907,7 +56584,7 @@ module.exports = function(Chart) {
 					x1 = x2 - caretSize;
 					x3 = x2 + caretSize;
 				} else {
-					x2 = ptX + (width / 2);
+					x2 = vm.caretX;
 					x1 = x2 - caretSize;
 					x3 = x2 + caretSize;
 				}
@@ -56136,25 +56813,19 @@ module.exports = function(Chart) {
 			// Remember Last Actives
 			changed = !helpers.arrayEquals(me._active, me._lastActive);
 
-			// If tooltip didn't change, do not handle the target event
-			if (!changed) {
-				return false;
-			}
+			// Only handle target event on tooltip change
+			if (changed) {
+				me._lastActive = me._active;
 
-			me._lastActive = me._active;
+				if (options.enabled || options.custom) {
+					me._eventPosition = {
+						x: e.x,
+						y: e.y
+					};
 
-			if (options.enabled || options.custom) {
-				me._eventPosition = {
-					x: e.x,
-					y: e.y
-				};
-
-				var model = me._model;
-				me.update(true);
-				me.pivot();
-
-				// See if our tooltip position changed
-				changed |= (model.x !== me._model.x) || (model.y !== me._model.y);
+					me.update(true);
+					me.pivot();
+				}
 			}
 
 			return changed;
@@ -56239,14 +56910,68 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 410 */
+/* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(48);
+
+/**
+ * Generate a set of linear ticks
+ * @param generationOptions the options used to generate the ticks
+ * @param dataRange the range of the data
+ * @returns {Array<Number>} array of tick values
+ */
+function generateTicks(generationOptions, dataRange) {
+	var ticks = [];
+	// To get a "nice" value for the tick spacing, we will use the appropriately named
+	// "nice number" algorithm. See http://stackoverflow.com/questions/8506881/nice-label-algorithm-for-charts-with-minimum-ticks
+	// for details.
+
+	var spacing;
+	if (generationOptions.stepSize && generationOptions.stepSize > 0) {
+		spacing = generationOptions.stepSize;
+	} else {
+		var niceRange = helpers.niceNum(dataRange.max - dataRange.min, false);
+		spacing = helpers.niceNum(niceRange / (generationOptions.maxTicks - 1), true);
+	}
+	var niceMin = Math.floor(dataRange.min / spacing) * spacing;
+	var niceMax = Math.ceil(dataRange.max / spacing) * spacing;
+
+	// If min, max and stepSize is set and they make an evenly spaced scale use it.
+	if (generationOptions.min && generationOptions.max && generationOptions.stepSize) {
+		// If very close to our whole number, use it.
+		if (helpers.almostWhole((generationOptions.max - generationOptions.min) / generationOptions.stepSize, spacing / 1000)) {
+			niceMin = generationOptions.min;
+			niceMax = generationOptions.max;
+		}
+	}
+
+	var numSpaces = (niceMax - niceMin) / spacing;
+	// If very close to our rounded value, use it.
+	if (helpers.almostEquals(numSpaces, Math.round(numSpaces), spacing / 1000)) {
+		numSpaces = Math.round(numSpaces);
+	} else {
+		numSpaces = Math.ceil(numSpaces);
+	}
+
+	var precision = 1;
+	if (spacing < 1) {
+		precision = Math.pow(10, spacing.toString().length - 2);
+		niceMin = Math.round(niceMin * precision) / precision;
+		niceMax = Math.round(niceMax * precision) / precision;
+	}
+	ticks.push(generationOptions.min !== undefined ? generationOptions.min : niceMin);
+	for (var j = 1; j < numSpaces; ++j) {
+		ticks.push(Math.round((niceMin + j * spacing) * precision) / precision);
+	}
+	ticks.push(generationOptions.max !== undefined ? generationOptions.max : niceMax);
+
+	return ticks;
+}
+
 
 module.exports = function(Chart) {
 
@@ -56347,7 +57072,7 @@ module.exports = function(Chart) {
 				max: tickOpts.max,
 				stepSize: helpers.valueOrDefault(tickOpts.fixedStepSize, tickOpts.stepSize)
 			};
-			var ticks = me.ticks = Ticks.generators.linear(numericGeneratorOptions, me);
+			var ticks = me.ticks = generateTicks(numericGeneratorOptions, me);
 
 			me.handleDirectionalChanges();
 
@@ -56378,7 +57103,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 411 */
+/* 419 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56518,7 +57243,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 412 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56526,7 +57251,7 @@ module.exports = function(Chart) {
 
 var defaults = __webpack_require__(3);
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(48);
+var Ticks = __webpack_require__(47);
 
 module.exports = function(Chart) {
 
@@ -56694,11 +57419,10 @@ module.exports = function(Chart) {
 
 			if (me.isHorizontal()) {
 				pixel = me.left + (me.width / range * (rightValue - start));
-				return Math.round(pixel);
+			} else {
+				pixel = me.bottom - (me.height / range * (rightValue - start));
 			}
-
-			pixel = me.bottom - (me.height / range * (rightValue - start));
-			return Math.round(pixel);
+			return pixel;
 		},
 		getValueForPixel: function(pixel) {
 			var me = this;
@@ -56717,14 +57441,66 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 413 */
+/* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(48);
+var Ticks = __webpack_require__(47);
+
+/**
+ * Generate a set of logarithmic ticks
+ * @param generationOptions the options used to generate the ticks
+ * @param dataRange the range of the data
+ * @returns {Array<Number>} array of tick values
+ */
+function generateTicks(generationOptions, dataRange) {
+	var ticks = [];
+	var valueOrDefault = helpers.valueOrDefault;
+
+	// Figure out what the max number of ticks we can support it is based on the size of
+	// the axis area. For now, we say that the minimum tick spacing in pixels must be 50
+	// We also limit the maximum number of ticks to 11 which gives a nice 10 squares on
+	// the graph
+	var tickVal = valueOrDefault(generationOptions.min, Math.pow(10, Math.floor(helpers.log10(dataRange.min))));
+
+	var endExp = Math.floor(helpers.log10(dataRange.max));
+	var endSignificand = Math.ceil(dataRange.max / Math.pow(10, endExp));
+	var exp, significand;
+
+	if (tickVal === 0) {
+		exp = Math.floor(helpers.log10(dataRange.minNotZero));
+		significand = Math.floor(dataRange.minNotZero / Math.pow(10, exp));
+
+		ticks.push(tickVal);
+		tickVal = significand * Math.pow(10, exp);
+	} else {
+		exp = Math.floor(helpers.log10(tickVal));
+		significand = Math.floor(tickVal / Math.pow(10, exp));
+	}
+	var precision = exp < 0 ? Math.pow(10, Math.abs(exp)) : 1;
+
+	do {
+		ticks.push(tickVal);
+
+		++significand;
+		if (significand === 10) {
+			significand = 1;
+			++exp;
+			precision = exp >= 0 ? 1 : precision;
+		}
+
+		tickVal = Math.round(significand * Math.pow(10, exp) * precision) / precision;
+	} while (exp < endExp || (exp === endExp && significand < endSignificand));
+
+	var lastTick = valueOrDefault(generationOptions.max, tickVal);
+	ticks.push(lastTick);
+
+	return ticks;
+}
+
 
 module.exports = function(Chart) {
 
@@ -56741,11 +57517,9 @@ module.exports = function(Chart) {
 		determineDataLimits: function() {
 			var me = this;
 			var opts = me.options;
-			var tickOpts = opts.ticks;
 			var chart = me.chart;
 			var data = chart.data;
 			var datasets = data.datasets;
-			var valueOrDefault = helpers.valueOrDefault;
 			var isHorizontal = me.isHorizontal();
 			function IDMatches(meta) {
 				return isHorizontal ? meta.xAxisID === me.id : meta.yAxisID === me.id;
@@ -56791,27 +57565,23 @@ module.exports = function(Chart) {
 						helpers.each(dataset.data, function(rawValue, index) {
 							var values = valuesPerStack[key];
 							var value = +me.getRightValue(rawValue);
-							if (isNaN(value) || meta.data[index].hidden) {
+							// invalid, hidden and negative values are ignored
+							if (isNaN(value) || meta.data[index].hidden || value < 0) {
 								return;
 							}
-
 							values[index] = values[index] || 0;
-
-							if (opts.relativePoints) {
-								values[index] = 100;
-							} else {
-								// Don't need to split positive and negative since the log scale can't handle a 0 crossing
-								values[index] += value;
-							}
+							values[index] += value;
 						});
 					}
 				});
 
 				helpers.each(valuesPerStack, function(valuesForType) {
-					var minVal = helpers.min(valuesForType);
-					var maxVal = helpers.max(valuesForType);
-					me.min = me.min === null ? minVal : Math.min(me.min, minVal);
-					me.max = me.max === null ? maxVal : Math.max(me.max, maxVal);
+					if (valuesForType.length > 0) {
+						var minVal = helpers.min(valuesForType);
+						var maxVal = helpers.max(valuesForType);
+						me.min = me.min === null ? minVal : Math.min(me.min, minVal);
+						me.max = me.max === null ? maxVal : Math.max(me.max, maxVal);
+					}
 				});
 
 			} else {
@@ -56820,7 +57590,8 @@ module.exports = function(Chart) {
 					if (chart.isDatasetVisible(datasetIndex) && IDMatches(meta)) {
 						helpers.each(dataset.data, function(rawValue, index) {
 							var value = +me.getRightValue(rawValue);
-							if (isNaN(value) || meta.data[index].hidden) {
+							// invalid, hidden and negative values are ignored
+							if (isNaN(value) || meta.data[index].hidden || value < 0) {
 								return;
 							}
 
@@ -56844,6 +57615,17 @@ module.exports = function(Chart) {
 				});
 			}
 
+			// Common base implementation to handle ticks.min, ticks.max
+			this.handleTickRangeOptions();
+		},
+		handleTickRangeOptions: function() {
+			var me = this;
+			var opts = me.options;
+			var tickOpts = opts.ticks;
+			var valueOrDefault = helpers.valueOrDefault;
+			var DEFAULT_MIN = 1;
+			var DEFAULT_MAX = 10;
+
 			me.min = valueOrDefault(tickOpts.min, me.min);
 			me.max = valueOrDefault(tickOpts.max, me.max);
 
@@ -56852,8 +57634,25 @@ module.exports = function(Chart) {
 					me.min = Math.pow(10, Math.floor(helpers.log10(me.min)) - 1);
 					me.max = Math.pow(10, Math.floor(helpers.log10(me.max)) + 1);
 				} else {
-					me.min = 1;
-					me.max = 10;
+					me.min = DEFAULT_MIN;
+					me.max = DEFAULT_MAX;
+				}
+			}
+			if (me.min === null) {
+				me.min = Math.pow(10, Math.floor(helpers.log10(me.max)) - 1);
+			}
+			if (me.max === null) {
+				me.max = me.min !== 0
+					? Math.pow(10, Math.floor(helpers.log10(me.min)) + 1)
+					: DEFAULT_MAX;
+			}
+			if (me.minNotZero === null) {
+				if (me.min > 0) {
+					me.minNotZero = me.min;
+				} else if (me.max < 1) {
+					me.minNotZero = Math.pow(10, Math.floor(helpers.log10(me.max)));
+				} else {
+					me.minNotZero = DEFAULT_MIN;
 				}
 			}
 		},
@@ -56861,17 +57660,13 @@ module.exports = function(Chart) {
 			var me = this;
 			var opts = me.options;
 			var tickOpts = opts.ticks;
+			var reverse = !me.isHorizontal();
 
 			var generationOptions = {
 				min: tickOpts.min,
 				max: tickOpts.max
 			};
-			var ticks = me.ticks = Ticks.generators.logarithmic(generationOptions, me);
-
-			if (!me.isHorizontal()) {
-				// We are in a vertical orientation. The top value is the highest. So reverse the array
-				ticks.reverse();
-			}
+			var ticks = me.ticks = generateTicks(generationOptions, me);
 
 			// At this point, we need to update our max and min given the tick values since we have expanded the
 			// range of the scale
@@ -56879,13 +57674,15 @@ module.exports = function(Chart) {
 			me.min = helpers.min(ticks);
 
 			if (tickOpts.reverse) {
-				ticks.reverse();
-
+				reverse = !reverse;
 				me.start = me.max;
 				me.end = me.min;
 			} else {
 				me.start = me.min;
 				me.end = me.max;
+			}
+			if (reverse) {
+				ticks.reverse();
 			}
 		},
 		convertTicksToLabels: function() {
@@ -56900,64 +57697,94 @@ module.exports = function(Chart) {
 		getPixelForTick: function(index) {
 			return this.getPixelForValue(this.tickValues[index]);
 		},
+		/**
+		 * Returns the value of the first tick.
+		 * @param {Number} value - The minimum not zero value.
+		 * @return {Number} The first tick value.
+		 * @private
+		 */
+		_getFirstTickValue: function(value) {
+			var exp = Math.floor(helpers.log10(value));
+			var significand = Math.floor(value / Math.pow(10, exp));
+
+			return significand * Math.pow(10, exp);
+		},
 		getPixelForValue: function(value) {
 			var me = this;
-			var start = me.start;
-			var newVal = +me.getRightValue(value);
-			var opts = me.options;
-			var tickOpts = opts.ticks;
-			var innerDimension, pixel, range;
+			var reverse = me.options.ticks.reverse;
+			var log10 = helpers.log10;
+			var firstTickValue = me._getFirstTickValue(me.minNotZero);
+			var offset = 0;
+			var innerDimension, pixel, start, end, sign;
 
-			if (me.isHorizontal()) {
-				range = helpers.log10(me.end) - helpers.log10(start); // todo: if start === 0
-				if (newVal === 0) {
-					pixel = me.left;
-				} else {
-					innerDimension = me.width;
-					pixel = me.left + (innerDimension / range * (helpers.log10(newVal) - helpers.log10(start)));
-				}
+			value = +me.getRightValue(value);
+			if (reverse) {
+				start = me.end;
+				end = me.start;
+				sign = -1;
 			} else {
-				// Bottom - top since pixels increase downward on a screen
+				start = me.start;
+				end = me.end;
+				sign = 1;
+			}
+			if (me.isHorizontal()) {
+				innerDimension = me.width;
+				pixel = reverse ? me.right : me.left;
+			} else {
 				innerDimension = me.height;
-				if (start === 0 && !tickOpts.reverse) {
-					range = helpers.log10(me.end) - helpers.log10(me.minNotZero);
-					if (newVal === start) {
-						pixel = me.bottom;
-					} else if (newVal === me.minNotZero) {
-						pixel = me.bottom - innerDimension * 0.02;
-					} else {
-						pixel = me.bottom - innerDimension * 0.02 - (innerDimension * 0.98 / range * (helpers.log10(newVal) - helpers.log10(me.minNotZero)));
-					}
-				} else if (me.end === 0 && tickOpts.reverse) {
-					range = helpers.log10(me.start) - helpers.log10(me.minNotZero);
-					if (newVal === me.end) {
-						pixel = me.top;
-					} else if (newVal === me.minNotZero) {
-						pixel = me.top + innerDimension * 0.02;
-					} else {
-						pixel = me.top + innerDimension * 0.02 + (innerDimension * 0.98 / range * (helpers.log10(newVal) - helpers.log10(me.minNotZero)));
-					}
-				} else if (newVal === 0) {
-					pixel = tickOpts.reverse ? me.top : me.bottom;
-				} else {
-					range = helpers.log10(me.end) - helpers.log10(start);
-					innerDimension = me.height;
-					pixel = me.bottom - (innerDimension / range * (helpers.log10(newVal) - helpers.log10(start)));
+				sign *= -1; // invert, since the upper-left corner of the canvas is at pixel (0, 0)
+				pixel = reverse ? me.top : me.bottom;
+			}
+			if (value !== start) {
+				if (start === 0) { // include zero tick
+					offset = helpers.getValueOrDefault(
+						me.options.ticks.fontSize,
+						Chart.defaults.global.defaultFontSize
+					);
+					innerDimension -= offset;
+					start = firstTickValue;
 				}
+				if (value !== 0) {
+					offset += innerDimension / (log10(end) - log10(start)) * (log10(value) - log10(start));
+				}
+				pixel += sign * offset;
 			}
 			return pixel;
 		},
 		getValueForPixel: function(pixel) {
 			var me = this;
-			var range = helpers.log10(me.end) - helpers.log10(me.start);
-			var value, innerDimension;
+			var reverse = me.options.ticks.reverse;
+			var log10 = helpers.log10;
+			var firstTickValue = me._getFirstTickValue(me.minNotZero);
+			var innerDimension, start, end, value;
 
+			if (reverse) {
+				start = me.end;
+				end = me.start;
+			} else {
+				start = me.start;
+				end = me.end;
+			}
 			if (me.isHorizontal()) {
 				innerDimension = me.width;
-				value = me.start * Math.pow(10, (pixel - me.left) * range / innerDimension);
-			} else { // todo: if start === 0
+				value = reverse ? me.right - pixel : pixel - me.left;
+			} else {
 				innerDimension = me.height;
-				value = Math.pow(10, (me.bottom - pixel) * range / innerDimension) / me.start;
+				value = reverse ? pixel - me.top : me.bottom - pixel;
+			}
+			if (value !== start) {
+				if (start === 0) { // include zero tick
+					var offset = helpers.getValueOrDefault(
+						me.options.ticks.fontSize,
+						Chart.defaults.global.defaultFontSize
+					);
+					value -= offset;
+					innerDimension -= offset;
+					start = firstTickValue;
+				}
+				value *= log10(end) - log10(start);
+				value /= innerDimension;
+				value = Math.pow(10, log10(start) + value);
 			}
 			return value;
 		}
@@ -56968,7 +57795,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 414 */
+/* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -56976,7 +57803,7 @@ module.exports = function(Chart) {
 
 var defaults = __webpack_require__(3);
 var helpers = __webpack_require__(1);
-var Ticks = __webpack_require__(48);
+var Ticks = __webpack_require__(47);
 
 module.exports = function(Chart) {
 
@@ -57211,7 +58038,6 @@ module.exports = function(Chart) {
 
 	function drawPointLabels(scale) {
 		var ctx = scale.ctx;
-		var valueOrDefault = helpers.valueOrDefault;
 		var opts = scale.options;
 		var angleLineOpts = opts.angleLines;
 		var pointLabelOpts = opts.pointLabels;
@@ -57241,7 +58067,7 @@ module.exports = function(Chart) {
 				var pointLabelPosition = scale.getPointPosition(i, outerDistance + 5);
 
 				// Keep this in loop since we may support array properties here
-				var pointLabelFontColor = valueOrDefault(pointLabelOpts.fontColor, globalDefaults.defaultFontColor);
+				var pointLabelFontColor = helpers.valueAtIndexOrDefault(pointLabelOpts.fontColor, i, globalDefaults.defaultFontColor);
 				ctx.font = plFont.font;
 				ctx.fillStyle = pointLabelFontColor;
 
@@ -57505,7 +58331,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 415 */
+/* 423 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -57751,7 +58577,7 @@ function determineStepSize(min, max, unit, capacity) {
 	var i, ilen, factor;
 
 	if (!steps) {
-		return Math.ceil(range / ((capacity || 1) * milliseconds));
+		return Math.ceil(range / (capacity * milliseconds));
 	}
 
 	for (i = 0, ilen = steps.length; i < ilen; ++i) {
@@ -57914,6 +58740,27 @@ function ticksFromTimestamps(values, majorUnit) {
 	return ticks;
 }
 
+function determineLabelFormat(data, timeOpts) {
+	var i, momentDate, hasTime;
+	var ilen = data.length;
+
+	// find the label with the most parts (milliseconds, minutes, etc.)
+	// format all labels with the same level of detail as the most specific label
+	for (i = 0; i < ilen; i++) {
+		momentDate = momentify(data[i], timeOpts);
+		if (momentDate.millisecond() !== 0) {
+			return 'MMM D, YYYY h:mm:ss.SSS a';
+		}
+		if (momentDate.second() !== 0 || momentDate.minute() !== 0 || momentDate.hour() !== 0) {
+			hasTime = true;
+		}
+	}
+	if (hasTime) {
+		return 'MMM D, YYYY h:mm:ss a';
+	}
+	return 'MMM D, YYYY';
+}
+
 module.exports = function(Chart) {
 
 	var defaultConfig = {
@@ -58015,6 +58862,7 @@ module.exports = function(Chart) {
 			var me = this;
 			var chart = me.chart;
 			var timeOpts = me.options.time;
+			var unit = timeOpts.unit || 'day';
 			var min = MAX_INTEGER;
 			var max = MIN_INTEGER;
 			var timestamps = [];
@@ -58066,9 +58914,9 @@ module.exports = function(Chart) {
 			min = parse(timeOpts.min, me) || min;
 			max = parse(timeOpts.max, me) || max;
 
-			// In case there is no valid min/max, let's use today limits
-			min = min === MAX_INTEGER ? +moment().startOf('day') : min;
-			max = max === MIN_INTEGER ? +moment().endOf('day') + 1 : max;
+			// In case there is no valid min/max, set limits based on unit time option
+			min = min === MAX_INTEGER ? +moment().startOf(unit) : min;
+			max = max === MIN_INTEGER ? +moment().endOf(unit) + 1 : max;
 
 			// Make sure that max is strictly higher than min (required by the lookup table)
 			me.min = Math.min(min, max);
@@ -58131,6 +58979,7 @@ module.exports = function(Chart) {
 			me._majorUnit = determineMajorUnit(me._unit);
 			me._table = buildLookupTable(me._timestamps.data, min, max, options.distribution);
 			me._offsets = computeOffsets(me._table, ticks, min, max, options);
+			me._labelFormat = determineLabelFormat(me._timestamps.data, timeOpts);
 
 			return ticksFromTimestamps(ticks, me._majorUnit);
 		},
@@ -58146,10 +58995,13 @@ module.exports = function(Chart) {
 				label = me.getRightValue(value);
 			}
 			if (timeOpts.tooltipFormat) {
-				label = momentify(label, timeOpts).format(timeOpts.tooltipFormat);
+				return momentify(label, timeOpts).format(timeOpts.tooltipFormat);
+			}
+			if (typeof label === 'string') {
+				return label;
 			}
 
-			return label;
+			return momentify(label, timeOpts).format(me._labelFormat);
 		},
 
 		/**
@@ -58259,7 +59111,8 @@ module.exports = function(Chart) {
 			var tickLabelWidth = me.getLabelWidth(exampleLabel);
 			var innerWidth = me.isHorizontal() ? me.width : me.height;
 
-			return Math.floor(innerWidth / tickLabelWidth);
+			var capacity = Math.floor(innerWidth / tickLabelWidth);
+			return capacity > 0 ? capacity : 1;
 		}
 	});
 
@@ -58268,7 +59121,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 416 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -58294,214 +59147,228 @@ var map = {
 	"./be.js": 157,
 	"./bg": 158,
 	"./bg.js": 158,
-	"./bn": 159,
-	"./bn.js": 159,
-	"./bo": 160,
-	"./bo.js": 160,
-	"./br": 161,
-	"./br.js": 161,
-	"./bs": 162,
-	"./bs.js": 162,
-	"./ca": 163,
-	"./ca.js": 163,
-	"./cs": 164,
-	"./cs.js": 164,
-	"./cv": 165,
-	"./cv.js": 165,
-	"./cy": 166,
-	"./cy.js": 166,
-	"./da": 167,
-	"./da.js": 167,
-	"./de": 168,
-	"./de-at": 169,
-	"./de-at.js": 169,
-	"./de-ch": 170,
-	"./de-ch.js": 170,
-	"./de.js": 168,
-	"./dv": 171,
-	"./dv.js": 171,
-	"./el": 172,
-	"./el.js": 172,
-	"./en-au": 173,
-	"./en-au.js": 173,
-	"./en-ca": 174,
-	"./en-ca.js": 174,
-	"./en-gb": 175,
-	"./en-gb.js": 175,
-	"./en-ie": 176,
-	"./en-ie.js": 176,
-	"./en-nz": 177,
-	"./en-nz.js": 177,
-	"./eo": 178,
-	"./eo.js": 178,
-	"./es": 179,
-	"./es-do": 180,
-	"./es-do.js": 180,
-	"./es.js": 179,
-	"./et": 181,
-	"./et.js": 181,
-	"./eu": 182,
-	"./eu.js": 182,
-	"./fa": 183,
-	"./fa.js": 183,
-	"./fi": 184,
-	"./fi.js": 184,
-	"./fo": 185,
-	"./fo.js": 185,
-	"./fr": 186,
-	"./fr-ca": 187,
-	"./fr-ca.js": 187,
-	"./fr-ch": 188,
-	"./fr-ch.js": 188,
-	"./fr.js": 186,
-	"./fy": 189,
-	"./fy.js": 189,
-	"./gd": 190,
-	"./gd.js": 190,
-	"./gl": 191,
-	"./gl.js": 191,
-	"./gom-latn": 192,
-	"./gom-latn.js": 192,
-	"./he": 193,
-	"./he.js": 193,
-	"./hi": 194,
-	"./hi.js": 194,
-	"./hr": 195,
-	"./hr.js": 195,
-	"./hu": 196,
-	"./hu.js": 196,
-	"./hy-am": 197,
-	"./hy-am.js": 197,
-	"./id": 198,
-	"./id.js": 198,
-	"./is": 199,
-	"./is.js": 199,
-	"./it": 200,
-	"./it.js": 200,
-	"./ja": 201,
-	"./ja.js": 201,
-	"./jv": 202,
-	"./jv.js": 202,
-	"./ka": 203,
-	"./ka.js": 203,
-	"./kk": 204,
-	"./kk.js": 204,
-	"./km": 205,
-	"./km.js": 205,
-	"./kn": 206,
-	"./kn.js": 206,
-	"./ko": 207,
-	"./ko.js": 207,
-	"./ky": 208,
-	"./ky.js": 208,
-	"./lb": 209,
-	"./lb.js": 209,
-	"./lo": 210,
-	"./lo.js": 210,
-	"./lt": 211,
-	"./lt.js": 211,
-	"./lv": 212,
-	"./lv.js": 212,
-	"./me": 213,
-	"./me.js": 213,
-	"./mi": 214,
-	"./mi.js": 214,
-	"./mk": 215,
-	"./mk.js": 215,
-	"./ml": 216,
-	"./ml.js": 216,
-	"./mr": 217,
-	"./mr.js": 217,
-	"./ms": 218,
-	"./ms-my": 219,
-	"./ms-my.js": 219,
-	"./ms.js": 218,
-	"./my": 220,
-	"./my.js": 220,
-	"./nb": 221,
-	"./nb.js": 221,
-	"./ne": 222,
-	"./ne.js": 222,
-	"./nl": 223,
-	"./nl-be": 224,
-	"./nl-be.js": 224,
-	"./nl.js": 223,
-	"./nn": 225,
-	"./nn.js": 225,
-	"./pa-in": 226,
-	"./pa-in.js": 226,
-	"./pl": 227,
-	"./pl.js": 227,
-	"./pt": 228,
-	"./pt-br": 229,
-	"./pt-br.js": 229,
-	"./pt.js": 228,
-	"./ro": 230,
-	"./ro.js": 230,
-	"./ru": 231,
-	"./ru.js": 231,
-	"./sd": 232,
-	"./sd.js": 232,
-	"./se": 233,
-	"./se.js": 233,
-	"./si": 234,
-	"./si.js": 234,
-	"./sk": 235,
-	"./sk.js": 235,
-	"./sl": 236,
-	"./sl.js": 236,
-	"./sq": 237,
-	"./sq.js": 237,
-	"./sr": 238,
-	"./sr-cyrl": 239,
-	"./sr-cyrl.js": 239,
-	"./sr.js": 238,
-	"./ss": 240,
-	"./ss.js": 240,
-	"./sv": 241,
-	"./sv.js": 241,
-	"./sw": 242,
-	"./sw.js": 242,
-	"./ta": 243,
-	"./ta.js": 243,
-	"./te": 244,
-	"./te.js": 244,
-	"./tet": 245,
-	"./tet.js": 245,
-	"./th": 246,
-	"./th.js": 246,
-	"./tl-ph": 247,
-	"./tl-ph.js": 247,
-	"./tlh": 248,
-	"./tlh.js": 248,
-	"./tr": 249,
-	"./tr.js": 249,
-	"./tzl": 250,
-	"./tzl.js": 250,
-	"./tzm": 251,
-	"./tzm-latn": 252,
-	"./tzm-latn.js": 252,
-	"./tzm.js": 251,
-	"./uk": 253,
-	"./uk.js": 253,
-	"./ur": 254,
-	"./ur.js": 254,
-	"./uz": 255,
-	"./uz-latn": 256,
-	"./uz-latn.js": 256,
-	"./uz.js": 255,
-	"./vi": 257,
-	"./vi.js": 257,
-	"./x-pseudo": 258,
-	"./x-pseudo.js": 258,
-	"./yo": 259,
-	"./yo.js": 259,
-	"./zh-cn": 260,
-	"./zh-cn.js": 260,
-	"./zh-hk": 261,
-	"./zh-hk.js": 261,
-	"./zh-tw": 262,
-	"./zh-tw.js": 262
+	"./bm": 159,
+	"./bm.js": 159,
+	"./bn": 160,
+	"./bn.js": 160,
+	"./bo": 161,
+	"./bo.js": 161,
+	"./br": 162,
+	"./br.js": 162,
+	"./bs": 163,
+	"./bs.js": 163,
+	"./ca": 164,
+	"./ca.js": 164,
+	"./cs": 165,
+	"./cs.js": 165,
+	"./cv": 166,
+	"./cv.js": 166,
+	"./cy": 167,
+	"./cy.js": 167,
+	"./da": 168,
+	"./da.js": 168,
+	"./de": 169,
+	"./de-at": 170,
+	"./de-at.js": 170,
+	"./de-ch": 171,
+	"./de-ch.js": 171,
+	"./de.js": 169,
+	"./dv": 172,
+	"./dv.js": 172,
+	"./el": 173,
+	"./el.js": 173,
+	"./en-au": 174,
+	"./en-au.js": 174,
+	"./en-ca": 175,
+	"./en-ca.js": 175,
+	"./en-gb": 176,
+	"./en-gb.js": 176,
+	"./en-ie": 177,
+	"./en-ie.js": 177,
+	"./en-il": 178,
+	"./en-il.js": 178,
+	"./en-nz": 179,
+	"./en-nz.js": 179,
+	"./eo": 180,
+	"./eo.js": 180,
+	"./es": 181,
+	"./es-do": 182,
+	"./es-do.js": 182,
+	"./es-us": 183,
+	"./es-us.js": 183,
+	"./es.js": 181,
+	"./et": 184,
+	"./et.js": 184,
+	"./eu": 185,
+	"./eu.js": 185,
+	"./fa": 186,
+	"./fa.js": 186,
+	"./fi": 187,
+	"./fi.js": 187,
+	"./fo": 188,
+	"./fo.js": 188,
+	"./fr": 189,
+	"./fr-ca": 190,
+	"./fr-ca.js": 190,
+	"./fr-ch": 191,
+	"./fr-ch.js": 191,
+	"./fr.js": 189,
+	"./fy": 192,
+	"./fy.js": 192,
+	"./gd": 193,
+	"./gd.js": 193,
+	"./gl": 194,
+	"./gl.js": 194,
+	"./gom-latn": 195,
+	"./gom-latn.js": 195,
+	"./gu": 196,
+	"./gu.js": 196,
+	"./he": 197,
+	"./he.js": 197,
+	"./hi": 198,
+	"./hi.js": 198,
+	"./hr": 199,
+	"./hr.js": 199,
+	"./hu": 200,
+	"./hu.js": 200,
+	"./hy-am": 201,
+	"./hy-am.js": 201,
+	"./id": 202,
+	"./id.js": 202,
+	"./is": 203,
+	"./is.js": 203,
+	"./it": 204,
+	"./it.js": 204,
+	"./ja": 205,
+	"./ja.js": 205,
+	"./jv": 206,
+	"./jv.js": 206,
+	"./ka": 207,
+	"./ka.js": 207,
+	"./kk": 208,
+	"./kk.js": 208,
+	"./km": 209,
+	"./km.js": 209,
+	"./kn": 210,
+	"./kn.js": 210,
+	"./ko": 211,
+	"./ko.js": 211,
+	"./ky": 212,
+	"./ky.js": 212,
+	"./lb": 213,
+	"./lb.js": 213,
+	"./lo": 214,
+	"./lo.js": 214,
+	"./lt": 215,
+	"./lt.js": 215,
+	"./lv": 216,
+	"./lv.js": 216,
+	"./me": 217,
+	"./me.js": 217,
+	"./mi": 218,
+	"./mi.js": 218,
+	"./mk": 219,
+	"./mk.js": 219,
+	"./ml": 220,
+	"./ml.js": 220,
+	"./mr": 221,
+	"./mr.js": 221,
+	"./ms": 222,
+	"./ms-my": 223,
+	"./ms-my.js": 223,
+	"./ms.js": 222,
+	"./mt": 224,
+	"./mt.js": 224,
+	"./my": 225,
+	"./my.js": 225,
+	"./nb": 226,
+	"./nb.js": 226,
+	"./ne": 227,
+	"./ne.js": 227,
+	"./nl": 228,
+	"./nl-be": 229,
+	"./nl-be.js": 229,
+	"./nl.js": 228,
+	"./nn": 230,
+	"./nn.js": 230,
+	"./pa-in": 231,
+	"./pa-in.js": 231,
+	"./pl": 232,
+	"./pl.js": 232,
+	"./pt": 233,
+	"./pt-br": 234,
+	"./pt-br.js": 234,
+	"./pt.js": 233,
+	"./ro": 235,
+	"./ro.js": 235,
+	"./ru": 236,
+	"./ru.js": 236,
+	"./sd": 237,
+	"./sd.js": 237,
+	"./se": 238,
+	"./se.js": 238,
+	"./si": 239,
+	"./si.js": 239,
+	"./sk": 240,
+	"./sk.js": 240,
+	"./sl": 241,
+	"./sl.js": 241,
+	"./sq": 242,
+	"./sq.js": 242,
+	"./sr": 243,
+	"./sr-cyrl": 244,
+	"./sr-cyrl.js": 244,
+	"./sr.js": 243,
+	"./ss": 245,
+	"./ss.js": 245,
+	"./sv": 246,
+	"./sv.js": 246,
+	"./sw": 247,
+	"./sw.js": 247,
+	"./ta": 248,
+	"./ta.js": 248,
+	"./te": 249,
+	"./te.js": 249,
+	"./tet": 250,
+	"./tet.js": 250,
+	"./tg": 251,
+	"./tg.js": 251,
+	"./th": 252,
+	"./th.js": 252,
+	"./tl-ph": 253,
+	"./tl-ph.js": 253,
+	"./tlh": 254,
+	"./tlh.js": 254,
+	"./tr": 255,
+	"./tr.js": 255,
+	"./tzl": 256,
+	"./tzl.js": 256,
+	"./tzm": 257,
+	"./tzm-latn": 258,
+	"./tzm-latn.js": 258,
+	"./tzm.js": 257,
+	"./ug-cn": 259,
+	"./ug-cn.js": 259,
+	"./uk": 260,
+	"./uk.js": 260,
+	"./ur": 261,
+	"./ur.js": 261,
+	"./uz": 262,
+	"./uz-latn": 263,
+	"./uz-latn.js": 263,
+	"./uz.js": 262,
+	"./vi": 264,
+	"./vi.js": 264,
+	"./x-pseudo": 265,
+	"./x-pseudo.js": 265,
+	"./yo": 266,
+	"./yo.js": 266,
+	"./zh-cn": 267,
+	"./zh-cn.js": 267,
+	"./zh-hk": 268,
+	"./zh-hk.js": 268,
+	"./zh-tw": 269,
+	"./zh-tw.js": 269
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -58517,17 +59384,17 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 416;
+webpackContext.id = 424;
 
 /***/ }),
-/* 417 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('bar', {
@@ -58620,6 +59487,93 @@ defaults._set('horizontalBar', {
 		axis: 'y'
 	}
 });
+
+/**
+ * Computes the "optimal" sample size to maintain bars equally sized while preventing overlap.
+ * @private
+ */
+function computeMinSampleSize(scale, pixels) {
+	var min = scale.isHorizontal() ? scale.width : scale.height;
+	var ticks = scale.getTicks();
+	var prev, curr, i, ilen;
+
+	for (i = 1, ilen = pixels.length; i < ilen; ++i) {
+		min = Math.min(min, pixels[i] - pixels[i - 1]);
+	}
+
+	for (i = 0, ilen = ticks.length; i < ilen; ++i) {
+		curr = scale.getPixelForTick(i);
+		min = i > 0 ? Math.min(min, curr - prev) : min;
+		prev = curr;
+	}
+
+	return min;
+}
+
+/**
+ * Computes an "ideal" category based on the absolute bar thickness or, if undefined or null,
+ * uses the smallest interval (see computeMinSampleSize) that prevents bar overlapping. This
+ * mode currently always generates bars equally sized (until we introduce scriptable options?).
+ * @private
+ */
+function computeFitCategoryTraits(index, ruler, options) {
+	var thickness = options.barThickness;
+	var count = ruler.stackCount;
+	var curr = ruler.pixels[index];
+	var size, ratio;
+
+	if (helpers.isNullOrUndef(thickness)) {
+		size = ruler.min * options.categoryPercentage;
+		ratio = options.barPercentage;
+	} else {
+		// When bar thickness is enforced, category and bar percentages are ignored.
+		// Note(SB): we could add support for relative bar thickness (e.g. barThickness: '50%')
+		// and deprecate barPercentage since this value is ignored when thickness is absolute.
+		size = thickness * count;
+		ratio = 1;
+	}
+
+	return {
+		chunk: size / count,
+		ratio: ratio,
+		start: curr - (size / 2)
+	};
+}
+
+/**
+ * Computes an "optimal" category that globally arranges bars side by side (no gap when
+ * percentage options are 1), based on the previous and following categories. This mode
+ * generates bars with different widths when data are not evenly spaced.
+ * @private
+ */
+function computeFlexCategoryTraits(index, ruler, options) {
+	var pixels = ruler.pixels;
+	var curr = pixels[index];
+	var prev = index > 0 ? pixels[index - 1] : null;
+	var next = index < pixels.length - 1 ? pixels[index + 1] : null;
+	var percent = options.categoryPercentage;
+	var start, size;
+
+	if (prev === null) {
+		// first data: its size is double based on the next point or,
+		// if it's also the last data, we use the scale end extremity.
+		prev = curr - (next === null ? ruler.end - curr : next - curr);
+	}
+
+	if (next === null) {
+		// last data: its size is also double based on the previous point.
+		next = curr + curr - prev;
+	}
+
+	start = curr - ((curr - prev) / 2) * percent;
+	size = ((next - prev) / 2) * percent;
+
+	return {
+		chunk: size / ruler.stackCount,
+		ratio: options.barPercentage,
+		start: start
+	};
+}
 
 module.exports = function(Chart) {
 
@@ -58727,10 +59681,12 @@ module.exports = function(Chart) {
 		},
 
 		/**
-		 * Returns the effective number of stacks based on groups and bar visibility.
+		 * Returns the stacks based on groups and bar visibility.
+		 * @param {Number} [last] - The dataset index
+		 * @returns {Array} The stack list
 		 * @private
 		 */
-		getStackCount: function(last) {
+		_getStacks: function(last) {
 			var me = this;
 			var chart = me.chart;
 			var scale = me.getIndexScale();
@@ -58749,15 +59705,33 @@ module.exports = function(Chart) {
 				}
 			}
 
-			return stacks.length;
+			return stacks;
+		},
+
+		/**
+		 * Returns the effective number of stacks based on groups and bar visibility.
+		 * @private
+		 */
+		getStackCount: function() {
+			return this._getStacks().length;
 		},
 
 		/**
 		 * Returns the stack index for the given dataset based on groups and bar visibility.
+		 * @param {Number} [datasetIndex] - The dataset index
+		 * @param {String} [name] - The stack name to find
+		 * @returns {Number} The stack index
 		 * @private
 		 */
-		getStackIndex: function(datasetIndex) {
-			return this.getStackCount(datasetIndex) - 1;
+		getStackIndex: function(datasetIndex, name) {
+			var stacks = this._getStacks(datasetIndex);
+			var index = (name !== undefined)
+				? stacks.indexOf(name)
+				: -1; // indexOf returns -1 if element is not present
+
+			return (index === -1)
+				? stacks.length - 1
+				: index;
 		},
 
 		/**
@@ -58768,17 +59742,22 @@ module.exports = function(Chart) {
 			var scale = me.getIndexScale();
 			var stackCount = me.getStackCount();
 			var datasetIndex = me.index;
-			var pixels = [];
 			var isHorizontal = scale.isHorizontal();
 			var start = isHorizontal ? scale.left : scale.top;
 			var end = start + (isHorizontal ? scale.width : scale.height);
-			var i, ilen;
+			var pixels = [];
+			var i, ilen, min;
 
 			for (i = 0, ilen = me.getMeta().data.length; i < ilen; ++i) {
 				pixels.push(scale.getPixelForValue(null, i, datasetIndex));
 			}
 
+			min = helpers.isNullOrUndef(scale.options.barThickness)
+				? computeMinSampleSize(scale, pixels)
+				: -1;
+
 			return {
+				min: min,
 				pixels: pixels,
 				start: start,
 				end: end,
@@ -58838,50 +59817,21 @@ module.exports = function(Chart) {
 		calculateBarIndexPixels: function(datasetIndex, index, ruler) {
 			var me = this;
 			var options = ruler.scale.options;
-			var stackIndex = me.getStackIndex(datasetIndex);
-			var pixels = ruler.pixels;
-			var base = pixels[index];
-			var length = pixels.length;
-			var start = ruler.start;
-			var end = ruler.end;
-			var leftSampleSize, rightSampleSize, leftCategorySize, rightCategorySize, fullBarSize, size;
+			var range = options.barThickness === 'flex'
+				? computeFlexCategoryTraits(index, ruler, options)
+				: computeFitCategoryTraits(index, ruler, options);
 
-			if (length === 1) {
-				leftSampleSize = base > start ? base - start : end - base;
-				rightSampleSize = base < end ? end - base : base - start;
-			} else {
-				if (index > 0) {
-					leftSampleSize = (base - pixels[index - 1]) / 2;
-					if (index === length - 1) {
-						rightSampleSize = leftSampleSize;
-					}
-				}
-				if (index < length - 1) {
-					rightSampleSize = (pixels[index + 1] - base) / 2;
-					if (index === 0) {
-						leftSampleSize = rightSampleSize;
-					}
-				}
-			}
-
-			leftCategorySize = leftSampleSize * options.categoryPercentage;
-			rightCategorySize = rightSampleSize * options.categoryPercentage;
-			fullBarSize = (leftCategorySize + rightCategorySize) / ruler.stackCount;
-			size = fullBarSize * options.barPercentage;
-
-			size = Math.min(
-				helpers.valueOrDefault(options.barThickness, size),
-				helpers.valueOrDefault(options.maxBarThickness, Infinity));
-
-			base -= leftCategorySize;
-			base += fullBarSize * stackIndex;
-			base += (fullBarSize - size) / 2;
+			var stackIndex = me.getStackIndex(datasetIndex, me.getMeta().stack);
+			var center = range.start + (range.chunk * stackIndex) + (range.chunk / 2);
+			var size = Math.min(
+				helpers.valueOrDefault(options.maxBarThickness, Infinity),
+				range.chunk * range.ratio);
 
 			return {
-				size: size,
-				base: base,
-				head: base + size,
-				center: base + size / 2
+				base: center - size / 2,
+				head: center + size / 2,
+				center: center,
+				size: size
 			};
 		},
 
@@ -58948,14 +59898,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 418 */
+/* 426 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('bubble', {
@@ -59135,14 +60085,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 419 */
+/* 427 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('doughnut', {
@@ -59414,7 +60364,7 @@ module.exports = function(Chart) {
 		calculateCircumference: function(value) {
 			var total = this.getMeta().total;
 			if (total > 0 && !isNaN(value)) {
-				return (Math.PI * 2.0) * (value / total);
+				return (Math.PI * 2.0) * (Math.abs(value) / total);
 			}
 			return 0;
 		},
@@ -59441,14 +60391,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 420 */
+/* 428 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('line', {
@@ -59781,14 +60731,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 421 */
+/* 429 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('polarArea', {
@@ -60010,14 +60960,14 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 422 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('radar', {
@@ -60185,7 +61135,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 423 */
+/* 431 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60234,7 +61184,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 424 */
+/* 432 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60252,7 +61202,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 425 */
+/* 433 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60269,7 +61219,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 426 */
+/* 434 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60287,7 +61237,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 427 */
+/* 435 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60305,7 +61255,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 428 */
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60323,7 +61273,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 429 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60341,7 +61291,7 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 430 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60356,7 +61306,20 @@ module.exports = function(Chart) {
 
 
 /***/ }),
-/* 431 */
+/* 439 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {};
+module.exports.filler = __webpack_require__(440);
+module.exports.legend = __webpack_require__(441);
+module.exports.title = __webpack_require__(442);
+
+
+/***/ }),
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -60369,7 +61332,7 @@ module.exports = function(Chart) {
 
 
 var defaults = __webpack_require__(3);
-var elements = __webpack_require__(29);
+var elements = __webpack_require__(30);
 var helpers = __webpack_require__(1);
 
 defaults._set('global', {
@@ -60380,319 +61343,319 @@ defaults._set('global', {
 	}
 });
 
-module.exports = function() {
+var mappers = {
+	dataset: function(source) {
+		var index = source.fill;
+		var chart = source.chart;
+		var meta = chart.getDatasetMeta(index);
+		var visible = meta && chart.isDatasetVisible(index);
+		var points = (visible && meta.dataset._children) || [];
+		var length = points.length || 0;
 
-	var mappers = {
-		dataset: function(source) {
-			var index = source.fill;
-			var chart = source.chart;
-			var meta = chart.getDatasetMeta(index);
-			var visible = meta && chart.isDatasetVisible(index);
-			var points = (visible && meta.dataset._children) || [];
-			var length = points.length || 0;
+		return !length ? null : function(point, i) {
+			return (i < length && points[i]._view) || null;
+		};
+	},
 
-			return !length ? null : function(point, i) {
-				return (i < length && points[i]._view) || null;
+	boundary: function(source) {
+		var boundary = source.boundary;
+		var x = boundary ? boundary.x : null;
+		var y = boundary ? boundary.y : null;
+
+		return function(point) {
+			return {
+				x: x === null ? point.x : x,
+				y: y === null ? point.y : y,
 			};
-		},
+		};
+	}
+};
 
-		boundary: function(source) {
-			var boundary = source.boundary;
-			var x = boundary ? boundary.x : null;
-			var y = boundary ? boundary.y : null;
+// @todo if (fill[0] === '#')
+function decodeFill(el, index, count) {
+	var model = el._model || {};
+	var fill = model.fill;
+	var target;
 
-			return function(point) {
-				return {
-					x: x === null ? point.x : x,
-					y: y === null ? point.y : y,
-				};
-			};
-		}
-	};
-
-	// @todo if (fill[0] === '#')
-	function decodeFill(el, index, count) {
-		var model = el._model || {};
-		var fill = model.fill;
-		var target;
-
-		if (fill === undefined) {
-			fill = !!model.backgroundColor;
-		}
-
-		if (fill === false || fill === null) {
-			return false;
-		}
-
-		if (fill === true) {
-			return 'origin';
-		}
-
-		target = parseFloat(fill, 10);
-		if (isFinite(target) && Math.floor(target) === target) {
-			if (fill[0] === '-' || fill[0] === '+') {
-				target = index + target;
-			}
-
-			if (target === index || target < 0 || target >= count) {
-				return false;
-			}
-
-			return target;
-		}
-
-		switch (fill) {
-		// compatibility
-		case 'bottom':
-			return 'start';
-		case 'top':
-			return 'end';
-		case 'zero':
-			return 'origin';
-		// supported boundaries
-		case 'origin':
-		case 'start':
-		case 'end':
-			return fill;
-		// invalid fill values
-		default:
-			return false;
-		}
+	if (fill === undefined) {
+		fill = !!model.backgroundColor;
 	}
 
-	function computeBoundary(source) {
-		var model = source.el._model || {};
-		var scale = source.el._scale || {};
-		var fill = source.fill;
-		var target = null;
-		var horizontal;
-
-		if (isFinite(fill)) {
-			return null;
-		}
-
-		// Backward compatibility: until v3, we still need to support boundary values set on
-		// the model (scaleTop, scaleBottom and scaleZero) because some external plugins and
-		// controllers might still use it (e.g. the Smith chart).
-
-		if (fill === 'start') {
-			target = model.scaleBottom === undefined ? scale.bottom : model.scaleBottom;
-		} else if (fill === 'end') {
-			target = model.scaleTop === undefined ? scale.top : model.scaleTop;
-		} else if (model.scaleZero !== undefined) {
-			target = model.scaleZero;
-		} else if (scale.getBasePosition) {
-			target = scale.getBasePosition();
-		} else if (scale.getBasePixel) {
-			target = scale.getBasePixel();
-		}
-
-		if (target !== undefined && target !== null) {
-			if (target.x !== undefined && target.y !== undefined) {
-				return target;
-			}
-
-			if (typeof target === 'number' && isFinite(target)) {
-				horizontal = scale.isHorizontal();
-				return {
-					x: horizontal ? target : null,
-					y: horizontal ? null : target
-				};
-			}
-		}
-
-		return null;
-	}
-
-	function resolveTarget(sources, index, propagate) {
-		var source = sources[index];
-		var fill = source.fill;
-		var visited = [index];
-		var target;
-
-		if (!propagate) {
-			return fill;
-		}
-
-		while (fill !== false && visited.indexOf(fill) === -1) {
-			if (!isFinite(fill)) {
-				return fill;
-			}
-
-			target = sources[fill];
-			if (!target) {
-				return false;
-			}
-
-			if (target.visible) {
-				return fill;
-			}
-
-			visited.push(fill);
-			fill = target.fill;
-		}
-
+	if (fill === false || fill === null) {
 		return false;
 	}
 
-	function createMapper(source) {
-		var fill = source.fill;
-		var type = 'dataset';
+	if (fill === true) {
+		return 'origin';
+	}
 
-		if (fill === false) {
-			return null;
+	target = parseFloat(fill, 10);
+	if (isFinite(target) && Math.floor(target) === target) {
+		if (fill[0] === '-' || fill[0] === '+') {
+			target = index + target;
 		}
 
+		if (target === index || target < 0 || target >= count) {
+			return false;
+		}
+
+		return target;
+	}
+
+	switch (fill) {
+	// compatibility
+	case 'bottom':
+		return 'start';
+	case 'top':
+		return 'end';
+	case 'zero':
+		return 'origin';
+	// supported boundaries
+	case 'origin':
+	case 'start':
+	case 'end':
+		return fill;
+	// invalid fill values
+	default:
+		return false;
+	}
+}
+
+function computeBoundary(source) {
+	var model = source.el._model || {};
+	var scale = source.el._scale || {};
+	var fill = source.fill;
+	var target = null;
+	var horizontal;
+
+	if (isFinite(fill)) {
+		return null;
+	}
+
+	// Backward compatibility: until v3, we still need to support boundary values set on
+	// the model (scaleTop, scaleBottom and scaleZero) because some external plugins and
+	// controllers might still use it (e.g. the Smith chart).
+
+	if (fill === 'start') {
+		target = model.scaleBottom === undefined ? scale.bottom : model.scaleBottom;
+	} else if (fill === 'end') {
+		target = model.scaleTop === undefined ? scale.top : model.scaleTop;
+	} else if (model.scaleZero !== undefined) {
+		target = model.scaleZero;
+	} else if (scale.getBasePosition) {
+		target = scale.getBasePosition();
+	} else if (scale.getBasePixel) {
+		target = scale.getBasePixel();
+	}
+
+	if (target !== undefined && target !== null) {
+		if (target.x !== undefined && target.y !== undefined) {
+			return target;
+		}
+
+		if (typeof target === 'number' && isFinite(target)) {
+			horizontal = scale.isHorizontal();
+			return {
+				x: horizontal ? target : null,
+				y: horizontal ? null : target
+			};
+		}
+	}
+
+	return null;
+}
+
+function resolveTarget(sources, index, propagate) {
+	var source = sources[index];
+	var fill = source.fill;
+	var visited = [index];
+	var target;
+
+	if (!propagate) {
+		return fill;
+	}
+
+	while (fill !== false && visited.indexOf(fill) === -1) {
 		if (!isFinite(fill)) {
-			type = 'boundary';
+			return fill;
 		}
 
-		return mappers[type](source);
+		target = sources[fill];
+		if (!target) {
+			return false;
+		}
+
+		if (target.visible) {
+			return fill;
+		}
+
+		visited.push(fill);
+		fill = target.fill;
 	}
 
-	function isDrawable(point) {
-		return point && !point.skip;
+	return false;
+}
+
+function createMapper(source) {
+	var fill = source.fill;
+	var type = 'dataset';
+
+	if (fill === false) {
+		return null;
 	}
 
-	function drawArea(ctx, curve0, curve1, len0, len1) {
-		var i;
+	if (!isFinite(fill)) {
+		type = 'boundary';
+	}
 
-		if (!len0 || !len1) {
+	return mappers[type](source);
+}
+
+function isDrawable(point) {
+	return point && !point.skip;
+}
+
+function drawArea(ctx, curve0, curve1, len0, len1) {
+	var i;
+
+	if (!len0 || !len1) {
+		return;
+	}
+
+	// building first area curve (normal)
+	ctx.moveTo(curve0[0].x, curve0[0].y);
+	for (i = 1; i < len0; ++i) {
+		helpers.canvas.lineTo(ctx, curve0[i - 1], curve0[i]);
+	}
+
+	// joining the two area curves
+	ctx.lineTo(curve1[len1 - 1].x, curve1[len1 - 1].y);
+
+	// building opposite area curve (reverse)
+	for (i = len1 - 1; i > 0; --i) {
+		helpers.canvas.lineTo(ctx, curve1[i], curve1[i - 1], true);
+	}
+}
+
+function doFill(ctx, points, mapper, view, color, loop) {
+	var count = points.length;
+	var span = view.spanGaps;
+	var curve0 = [];
+	var curve1 = [];
+	var len0 = 0;
+	var len1 = 0;
+	var i, ilen, index, p0, p1, d0, d1;
+
+	ctx.beginPath();
+
+	for (i = 0, ilen = (count + !!loop); i < ilen; ++i) {
+		index = i % count;
+		p0 = points[index]._view;
+		p1 = mapper(p0, index, view);
+		d0 = isDrawable(p0);
+		d1 = isDrawable(p1);
+
+		if (d0 && d1) {
+			len0 = curve0.push(p0);
+			len1 = curve1.push(p1);
+		} else if (len0 && len1) {
+			if (!span) {
+				drawArea(ctx, curve0, curve1, len0, len1);
+				len0 = len1 = 0;
+				curve0 = [];
+				curve1 = [];
+			} else {
+				if (d0) {
+					curve0.push(p0);
+				}
+				if (d1) {
+					curve1.push(p1);
+				}
+			}
+		}
+	}
+
+	drawArea(ctx, curve0, curve1, len0, len1);
+
+	ctx.closePath();
+	ctx.fillStyle = color;
+	ctx.fill();
+}
+
+module.exports = {
+	id: 'filler',
+
+	afterDatasetsUpdate: function(chart, options) {
+		var count = (chart.data.datasets || []).length;
+		var propagate = options.propagate;
+		var sources = [];
+		var meta, i, el, source;
+
+		for (i = 0; i < count; ++i) {
+			meta = chart.getDatasetMeta(i);
+			el = meta.dataset;
+			source = null;
+
+			if (el && el._model && el instanceof elements.Line) {
+				source = {
+					visible: chart.isDatasetVisible(i),
+					fill: decodeFill(el, i, count),
+					chart: chart,
+					el: el
+				};
+			}
+
+			meta.$filler = source;
+			sources.push(source);
+		}
+
+		for (i = 0; i < count; ++i) {
+			source = sources[i];
+			if (!source) {
+				continue;
+			}
+
+			source.fill = resolveTarget(sources, i, propagate);
+			source.boundary = computeBoundary(source);
+			source.mapper = createMapper(source);
+		}
+	},
+
+	beforeDatasetDraw: function(chart, args) {
+		var meta = args.meta.$filler;
+		if (!meta) {
 			return;
 		}
 
-		// building first area curve (normal)
-		ctx.moveTo(curve0[0].x, curve0[0].y);
-		for (i = 1; i < len0; ++i) {
-			helpers.canvas.lineTo(ctx, curve0[i - 1], curve0[i]);
-		}
+		var ctx = chart.ctx;
+		var el = meta.el;
+		var view = el._view;
+		var points = el._children || [];
+		var mapper = meta.mapper;
+		var color = view.backgroundColor || defaults.global.defaultColor;
 
-		// joining the two area curves
-		ctx.lineTo(curve1[len1 - 1].x, curve1[len1 - 1].y);
-
-		// building opposite area curve (reverse)
-		for (i = len1 - 1; i > 0; --i) {
-			helpers.canvas.lineTo(ctx, curve1[i], curve1[i - 1], true);
+		if (mapper && color && points.length) {
+			helpers.canvas.clipArea(ctx, chart.chartArea);
+			doFill(ctx, points, mapper, view, color, el._loop);
+			helpers.canvas.unclipArea(ctx);
 		}
 	}
-
-	function doFill(ctx, points, mapper, view, color, loop) {
-		var count = points.length;
-		var span = view.spanGaps;
-		var curve0 = [];
-		var curve1 = [];
-		var len0 = 0;
-		var len1 = 0;
-		var i, ilen, index, p0, p1, d0, d1;
-
-		ctx.beginPath();
-
-		for (i = 0, ilen = (count + !!loop); i < ilen; ++i) {
-			index = i % count;
-			p0 = points[index]._view;
-			p1 = mapper(p0, index, view);
-			d0 = isDrawable(p0);
-			d1 = isDrawable(p1);
-
-			if (d0 && d1) {
-				len0 = curve0.push(p0);
-				len1 = curve1.push(p1);
-			} else if (len0 && len1) {
-				if (!span) {
-					drawArea(ctx, curve0, curve1, len0, len1);
-					len0 = len1 = 0;
-					curve0 = [];
-					curve1 = [];
-				} else {
-					if (d0) {
-						curve0.push(p0);
-					}
-					if (d1) {
-						curve1.push(p1);
-					}
-				}
-			}
-		}
-
-		drawArea(ctx, curve0, curve1, len0, len1);
-
-		ctx.closePath();
-		ctx.fillStyle = color;
-		ctx.fill();
-	}
-
-	return {
-		id: 'filler',
-
-		afterDatasetsUpdate: function(chart, options) {
-			var count = (chart.data.datasets || []).length;
-			var propagate = options.propagate;
-			var sources = [];
-			var meta, i, el, source;
-
-			for (i = 0; i < count; ++i) {
-				meta = chart.getDatasetMeta(i);
-				el = meta.dataset;
-				source = null;
-
-				if (el && el._model && el instanceof elements.Line) {
-					source = {
-						visible: chart.isDatasetVisible(i),
-						fill: decodeFill(el, i, count),
-						chart: chart,
-						el: el
-					};
-				}
-
-				meta.$filler = source;
-				sources.push(source);
-			}
-
-			for (i = 0; i < count; ++i) {
-				source = sources[i];
-				if (!source) {
-					continue;
-				}
-
-				source.fill = resolveTarget(sources, i, propagate);
-				source.boundary = computeBoundary(source);
-				source.mapper = createMapper(source);
-			}
-		},
-
-		beforeDatasetDraw: function(chart, args) {
-			var meta = args.meta.$filler;
-			if (!meta) {
-				return;
-			}
-
-			var ctx = chart.ctx;
-			var el = meta.el;
-			var view = el._view;
-			var points = el._children || [];
-			var mapper = meta.mapper;
-			var color = view.backgroundColor || defaults.global.defaultColor;
-
-			if (mapper && color && points.length) {
-				helpers.canvas.clipArea(ctx, chart.chartArea);
-				doFill(ctx, points, mapper, view, color, el._loop);
-				helpers.canvas.unclipArea(ctx);
-			}
-		}
-	};
 };
 
 
 /***/ }),
-/* 432 */
+/* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
+var layouts = __webpack_require__(46);
+
+var noop = helpers.noop;
 
 defaults._set('global', {
 	legend: {
@@ -60769,504 +61732,513 @@ defaults._set('global', {
 	}
 });
 
-module.exports = function(Chart) {
+/**
+ * Helper function to get the box width based on the usePointStyle option
+ * @param labelopts {Object} the label options on the legend
+ * @param fontSize {Number} the label font size
+ * @return {Number} width of the color box area
+ */
+function getBoxWidth(labelOpts, fontSize) {
+	return labelOpts.usePointStyle ?
+		fontSize * Math.SQRT2 :
+		labelOpts.boxWidth;
+}
 
-	var layout = Chart.layoutService;
-	var noop = helpers.noop;
+/**
+ * IMPORTANT: this class is exposed publicly as Chart.Legend, backward compatibility required!
+ */
+var Legend = Element.extend({
 
-	/**
-	 * Helper function to get the box width based on the usePointStyle option
-	 * @param labelopts {Object} the label options on the legend
-	 * @param fontSize {Number} the label font size
-	 * @return {Number} width of the color box area
-	 */
-	function getBoxWidth(labelOpts, fontSize) {
-		return labelOpts.usePointStyle ?
-			fontSize * Math.SQRT2 :
-			labelOpts.boxWidth;
-	}
+	initialize: function(config) {
+		helpers.extend(this, config);
 
-	Chart.Legend = Element.extend({
+		// Contains hit boxes for each dataset (in dataset order)
+		this.legendHitBoxes = [];
 
-		initialize: function(config) {
-			helpers.extend(this, config);
+		// Are we in doughnut mode which has a different data type
+		this.doughnutMode = false;
+	},
 
-			// Contains hit boxes for each dataset (in dataset order)
-			this.legendHitBoxes = [];
+	// These methods are ordered by lifecycle. Utilities then follow.
+	// Any function defined here is inherited by all legend types.
+	// Any function can be extended by the legend type
 
-			// Are we in doughnut mode which has a different data type
-			this.doughnutMode = false;
-		},
+	beforeUpdate: noop,
+	update: function(maxWidth, maxHeight, margins) {
+		var me = this;
 
-		// These methods are ordered by lifecycle. Utilities then follow.
-		// Any function defined here is inherited by all legend types.
-		// Any function can be extended by the legend type
+		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
+		me.beforeUpdate();
 
-		beforeUpdate: noop,
-		update: function(maxWidth, maxHeight, margins) {
-			var me = this;
+		// Absorb the master measurements
+		me.maxWidth = maxWidth;
+		me.maxHeight = maxHeight;
+		me.margins = margins;
 
-			// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
-			me.beforeUpdate();
+		// Dimensions
+		me.beforeSetDimensions();
+		me.setDimensions();
+		me.afterSetDimensions();
+		// Labels
+		me.beforeBuildLabels();
+		me.buildLabels();
+		me.afterBuildLabels();
 
-			// Absorb the master measurements
-			me.maxWidth = maxWidth;
-			me.maxHeight = maxHeight;
-			me.margins = margins;
-
-			// Dimensions
-			me.beforeSetDimensions();
-			me.setDimensions();
-			me.afterSetDimensions();
-			// Labels
-			me.beforeBuildLabels();
-			me.buildLabels();
-			me.afterBuildLabels();
-
-			// Fit
-			me.beforeFit();
-			me.fit();
-			me.afterFit();
-			//
-			me.afterUpdate();
-
-			return me.minSize;
-		},
-		afterUpdate: noop,
-
+		// Fit
+		me.beforeFit();
+		me.fit();
+		me.afterFit();
 		//
+		me.afterUpdate();
 
-		beforeSetDimensions: noop,
-		setDimensions: function() {
-			var me = this;
-			// Set the unconstrained dimension before label rotation
-			if (me.isHorizontal()) {
-				// Reset position before calculating rotation
-				me.width = me.maxWidth;
-				me.left = 0;
-				me.right = me.width;
-			} else {
-				me.height = me.maxHeight;
+		return me.minSize;
+	},
+	afterUpdate: noop,
 
-				// Reset position before calculating rotation
-				me.top = 0;
-				me.bottom = me.height;
-			}
+	//
 
-			// Reset padding
-			me.paddingLeft = 0;
-			me.paddingTop = 0;
-			me.paddingRight = 0;
-			me.paddingBottom = 0;
+	beforeSetDimensions: noop,
+	setDimensions: function() {
+		var me = this;
+		// Set the unconstrained dimension before label rotation
+		if (me.isHorizontal()) {
+			// Reset position before calculating rotation
+			me.width = me.maxWidth;
+			me.left = 0;
+			me.right = me.width;
+		} else {
+			me.height = me.maxHeight;
 
-			// Reset minSize
-			me.minSize = {
-				width: 0,
-				height: 0
-			};
-		},
-		afterSetDimensions: noop,
+			// Reset position before calculating rotation
+			me.top = 0;
+			me.bottom = me.height;
+		}
 
-		//
+		// Reset padding
+		me.paddingLeft = 0;
+		me.paddingTop = 0;
+		me.paddingRight = 0;
+		me.paddingBottom = 0;
 
-		beforeBuildLabels: noop,
-		buildLabels: function() {
-			var me = this;
-			var labelOpts = me.options.labels || {};
-			var legendItems = helpers.callback(labelOpts.generateLabels, [me.chart], me) || [];
+		// Reset minSize
+		me.minSize = {
+			width: 0,
+			height: 0
+		};
+	},
+	afterSetDimensions: noop,
 
-			if (labelOpts.filter) {
-				legendItems = legendItems.filter(function(item) {
-					return labelOpts.filter(item, me.chart.data);
+	//
+
+	beforeBuildLabels: noop,
+	buildLabels: function() {
+		var me = this;
+		var labelOpts = me.options.labels || {};
+		var legendItems = helpers.callback(labelOpts.generateLabels, [me.chart], me) || [];
+
+		if (labelOpts.filter) {
+			legendItems = legendItems.filter(function(item) {
+				return labelOpts.filter(item, me.chart.data);
+			});
+		}
+
+		if (me.options.reverse) {
+			legendItems.reverse();
+		}
+
+		me.legendItems = legendItems;
+	},
+	afterBuildLabels: noop,
+
+	//
+
+	beforeFit: noop,
+	fit: function() {
+		var me = this;
+		var opts = me.options;
+		var labelOpts = opts.labels;
+		var display = opts.display;
+
+		var ctx = me.ctx;
+
+		var globalDefault = defaults.global;
+		var valueOrDefault = helpers.valueOrDefault;
+		var fontSize = valueOrDefault(labelOpts.fontSize, globalDefault.defaultFontSize);
+		var fontStyle = valueOrDefault(labelOpts.fontStyle, globalDefault.defaultFontStyle);
+		var fontFamily = valueOrDefault(labelOpts.fontFamily, globalDefault.defaultFontFamily);
+		var labelFont = helpers.fontString(fontSize, fontStyle, fontFamily);
+
+		// Reset hit boxes
+		var hitboxes = me.legendHitBoxes = [];
+
+		var minSize = me.minSize;
+		var isHorizontal = me.isHorizontal();
+
+		if (isHorizontal) {
+			minSize.width = me.maxWidth; // fill all the width
+			minSize.height = display ? 10 : 0;
+		} else {
+			minSize.width = display ? 10 : 0;
+			minSize.height = me.maxHeight; // fill all the height
+		}
+
+		// Increase sizes here
+		if (display) {
+			ctx.font = labelFont;
+
+			if (isHorizontal) {
+				// Labels
+
+				// Width of each line of legend boxes. Labels wrap onto multiple lines when there are too many to fit on one
+				var lineWidths = me.lineWidths = [0];
+				var totalHeight = me.legendItems.length ? fontSize + (labelOpts.padding) : 0;
+
+				ctx.textAlign = 'left';
+				ctx.textBaseline = 'top';
+
+				helpers.each(me.legendItems, function(legendItem, i) {
+					var boxWidth = getBoxWidth(labelOpts, fontSize);
+					var width = boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
+
+					if (lineWidths[lineWidths.length - 1] + width + labelOpts.padding >= me.width) {
+						totalHeight += fontSize + (labelOpts.padding);
+						lineWidths[lineWidths.length] = me.left;
+					}
+
+					// Store the hitbox width and height here. Final position will be updated in `draw`
+					hitboxes[i] = {
+						left: 0,
+						top: 0,
+						width: width,
+						height: fontSize
+					};
+
+					lineWidths[lineWidths.length - 1] += width + labelOpts.padding;
 				});
+
+				minSize.height += totalHeight;
+
+			} else {
+				var vPadding = labelOpts.padding;
+				var columnWidths = me.columnWidths = [];
+				var totalWidth = labelOpts.padding;
+				var currentColWidth = 0;
+				var currentColHeight = 0;
+				var itemHeight = fontSize + vPadding;
+
+				helpers.each(me.legendItems, function(legendItem, i) {
+					var boxWidth = getBoxWidth(labelOpts, fontSize);
+					var itemWidth = boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
+
+					// If too tall, go to new column
+					if (currentColHeight + itemHeight > minSize.height) {
+						totalWidth += currentColWidth + labelOpts.padding;
+						columnWidths.push(currentColWidth); // previous column width
+
+						currentColWidth = 0;
+						currentColHeight = 0;
+					}
+
+					// Get max width
+					currentColWidth = Math.max(currentColWidth, itemWidth);
+					currentColHeight += itemHeight;
+
+					// Store the hitbox width and height here. Final position will be updated in `draw`
+					hitboxes[i] = {
+						left: 0,
+						top: 0,
+						width: itemWidth,
+						height: fontSize
+					};
+				});
+
+				totalWidth += currentColWidth;
+				columnWidths.push(currentColWidth);
+				minSize.width += totalWidth;
 			}
+		}
 
-			if (me.options.reverse) {
-				legendItems.reverse();
-			}
+		me.width = minSize.width;
+		me.height = minSize.height;
+	},
+	afterFit: noop,
 
-			me.legendItems = legendItems;
-		},
-		afterBuildLabels: noop,
+	// Shared Methods
+	isHorizontal: function() {
+		return this.options.position === 'top' || this.options.position === 'bottom';
+	},
 
-		//
+	// Actually draw the legend on the canvas
+	draw: function() {
+		var me = this;
+		var opts = me.options;
+		var labelOpts = opts.labels;
+		var globalDefault = defaults.global;
+		var lineDefault = globalDefault.elements.line;
+		var legendWidth = me.width;
+		var lineWidths = me.lineWidths;
 
-		beforeFit: noop,
-		fit: function() {
-			var me = this;
-			var opts = me.options;
-			var labelOpts = opts.labels;
-			var display = opts.display;
-
+		if (opts.display) {
 			var ctx = me.ctx;
-
-			var globalDefault = defaults.global;
 			var valueOrDefault = helpers.valueOrDefault;
+			var fontColor = valueOrDefault(labelOpts.fontColor, globalDefault.defaultFontColor);
 			var fontSize = valueOrDefault(labelOpts.fontSize, globalDefault.defaultFontSize);
 			var fontStyle = valueOrDefault(labelOpts.fontStyle, globalDefault.defaultFontStyle);
 			var fontFamily = valueOrDefault(labelOpts.fontFamily, globalDefault.defaultFontFamily);
 			var labelFont = helpers.fontString(fontSize, fontStyle, fontFamily);
+			var cursor;
 
-			// Reset hit boxes
-			var hitboxes = me.legendHitBoxes = [];
+			// Canvas setup
+			ctx.textAlign = 'left';
+			ctx.textBaseline = 'middle';
+			ctx.lineWidth = 0.5;
+			ctx.strokeStyle = fontColor; // for strikethrough effect
+			ctx.fillStyle = fontColor; // render in correct colour
+			ctx.font = labelFont;
 
-			var minSize = me.minSize;
+			var boxWidth = getBoxWidth(labelOpts, fontSize);
+			var hitboxes = me.legendHitBoxes;
+
+			// current position
+			var drawLegendBox = function(x, y, legendItem) {
+				if (isNaN(boxWidth) || boxWidth <= 0) {
+					return;
+				}
+
+				// Set the ctx for the box
+				ctx.save();
+
+				ctx.fillStyle = valueOrDefault(legendItem.fillStyle, globalDefault.defaultColor);
+				ctx.lineCap = valueOrDefault(legendItem.lineCap, lineDefault.borderCapStyle);
+				ctx.lineDashOffset = valueOrDefault(legendItem.lineDashOffset, lineDefault.borderDashOffset);
+				ctx.lineJoin = valueOrDefault(legendItem.lineJoin, lineDefault.borderJoinStyle);
+				ctx.lineWidth = valueOrDefault(legendItem.lineWidth, lineDefault.borderWidth);
+				ctx.strokeStyle = valueOrDefault(legendItem.strokeStyle, globalDefault.defaultColor);
+				var isLineWidthZero = (valueOrDefault(legendItem.lineWidth, lineDefault.borderWidth) === 0);
+
+				if (ctx.setLineDash) {
+					// IE 9 and 10 do not support line dash
+					ctx.setLineDash(valueOrDefault(legendItem.lineDash, lineDefault.borderDash));
+				}
+
+				if (opts.labels && opts.labels.usePointStyle) {
+					// Recalculate x and y for drawPoint() because its expecting
+					// x and y to be center of figure (instead of top left)
+					var radius = fontSize * Math.SQRT2 / 2;
+					var offSet = radius / Math.SQRT2;
+					var centerX = x + offSet;
+					var centerY = y + offSet;
+
+					// Draw pointStyle as legend symbol
+					helpers.canvas.drawPoint(ctx, legendItem.pointStyle, radius, centerX, centerY);
+				} else {
+					// Draw box as legend symbol
+					if (!isLineWidthZero) {
+						ctx.strokeRect(x, y, boxWidth, fontSize);
+					}
+					ctx.fillRect(x, y, boxWidth, fontSize);
+				}
+
+				ctx.restore();
+			};
+			var fillText = function(x, y, legendItem, textWidth) {
+				var halfFontSize = fontSize / 2;
+				var xLeft = boxWidth + halfFontSize + x;
+				var yMiddle = y + halfFontSize;
+
+				ctx.fillText(legendItem.text, xLeft, yMiddle);
+
+				if (legendItem.hidden) {
+					// Strikethrough the text if hidden
+					ctx.beginPath();
+					ctx.lineWidth = 2;
+					ctx.moveTo(xLeft, yMiddle);
+					ctx.lineTo(xLeft + textWidth, yMiddle);
+					ctx.stroke();
+				}
+			};
+
+			// Horizontal
 			var isHorizontal = me.isHorizontal();
-
 			if (isHorizontal) {
-				minSize.width = me.maxWidth; // fill all the width
-				minSize.height = display ? 10 : 0;
+				cursor = {
+					x: me.left + ((legendWidth - lineWidths[0]) / 2),
+					y: me.top + labelOpts.padding,
+					line: 0
+				};
 			} else {
-				minSize.width = display ? 10 : 0;
-				minSize.height = me.maxHeight; // fill all the height
+				cursor = {
+					x: me.left + labelOpts.padding,
+					y: me.top + labelOpts.padding,
+					line: 0
+				};
 			}
 
-			// Increase sizes here
-			if (display) {
-				ctx.font = labelFont;
+			var itemHeight = fontSize + labelOpts.padding;
+			helpers.each(me.legendItems, function(legendItem, i) {
+				var textWidth = ctx.measureText(legendItem.text).width;
+				var width = boxWidth + (fontSize / 2) + textWidth;
+				var x = cursor.x;
+				var y = cursor.y;
 
 				if (isHorizontal) {
-					// Labels
-
-					// Width of each line of legend boxes. Labels wrap onto multiple lines when there are too many to fit on one
-					var lineWidths = me.lineWidths = [0];
-					var totalHeight = me.legendItems.length ? fontSize + (labelOpts.padding) : 0;
-
-					ctx.textAlign = 'left';
-					ctx.textBaseline = 'top';
-
-					helpers.each(me.legendItems, function(legendItem, i) {
-						var boxWidth = getBoxWidth(labelOpts, fontSize);
-						var width = boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
-
-						if (lineWidths[lineWidths.length - 1] + width + labelOpts.padding >= me.width) {
-							totalHeight += fontSize + (labelOpts.padding);
-							lineWidths[lineWidths.length] = me.left;
-						}
-
-						// Store the hitbox width and height here. Final position will be updated in `draw`
-						hitboxes[i] = {
-							left: 0,
-							top: 0,
-							width: width,
-							height: fontSize
-						};
-
-						lineWidths[lineWidths.length - 1] += width + labelOpts.padding;
-					});
-
-					minSize.height += totalHeight;
-
-				} else {
-					var vPadding = labelOpts.padding;
-					var columnWidths = me.columnWidths = [];
-					var totalWidth = labelOpts.padding;
-					var currentColWidth = 0;
-					var currentColHeight = 0;
-					var itemHeight = fontSize + vPadding;
-
-					helpers.each(me.legendItems, function(legendItem, i) {
-						var boxWidth = getBoxWidth(labelOpts, fontSize);
-						var itemWidth = boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
-
-						// If too tall, go to new column
-						if (currentColHeight + itemHeight > minSize.height) {
-							totalWidth += currentColWidth + labelOpts.padding;
-							columnWidths.push(currentColWidth); // previous column width
-
-							currentColWidth = 0;
-							currentColHeight = 0;
-						}
-
-						// Get max width
-						currentColWidth = Math.max(currentColWidth, itemWidth);
-						currentColHeight += itemHeight;
-
-						// Store the hitbox width and height here. Final position will be updated in `draw`
-						hitboxes[i] = {
-							left: 0,
-							top: 0,
-							width: itemWidth,
-							height: fontSize
-						};
-					});
-
-					totalWidth += currentColWidth;
-					columnWidths.push(currentColWidth);
-					minSize.width += totalWidth;
-				}
-			}
-
-			me.width = minSize.width;
-			me.height = minSize.height;
-		},
-		afterFit: noop,
-
-		// Shared Methods
-		isHorizontal: function() {
-			return this.options.position === 'top' || this.options.position === 'bottom';
-		},
-
-		// Actually draw the legend on the canvas
-		draw: function() {
-			var me = this;
-			var opts = me.options;
-			var labelOpts = opts.labels;
-			var globalDefault = defaults.global;
-			var lineDefault = globalDefault.elements.line;
-			var legendWidth = me.width;
-			var lineWidths = me.lineWidths;
-
-			if (opts.display) {
-				var ctx = me.ctx;
-				var valueOrDefault = helpers.valueOrDefault;
-				var fontColor = valueOrDefault(labelOpts.fontColor, globalDefault.defaultFontColor);
-				var fontSize = valueOrDefault(labelOpts.fontSize, globalDefault.defaultFontSize);
-				var fontStyle = valueOrDefault(labelOpts.fontStyle, globalDefault.defaultFontStyle);
-				var fontFamily = valueOrDefault(labelOpts.fontFamily, globalDefault.defaultFontFamily);
-				var labelFont = helpers.fontString(fontSize, fontStyle, fontFamily);
-				var cursor;
-
-				// Canvas setup
-				ctx.textAlign = 'left';
-				ctx.textBaseline = 'middle';
-				ctx.lineWidth = 0.5;
-				ctx.strokeStyle = fontColor; // for strikethrough effect
-				ctx.fillStyle = fontColor; // render in correct colour
-				ctx.font = labelFont;
-
-				var boxWidth = getBoxWidth(labelOpts, fontSize);
-				var hitboxes = me.legendHitBoxes;
-
-				// current position
-				var drawLegendBox = function(x, y, legendItem) {
-					if (isNaN(boxWidth) || boxWidth <= 0) {
-						return;
-					}
-
-					// Set the ctx for the box
-					ctx.save();
-
-					ctx.fillStyle = valueOrDefault(legendItem.fillStyle, globalDefault.defaultColor);
-					ctx.lineCap = valueOrDefault(legendItem.lineCap, lineDefault.borderCapStyle);
-					ctx.lineDashOffset = valueOrDefault(legendItem.lineDashOffset, lineDefault.borderDashOffset);
-					ctx.lineJoin = valueOrDefault(legendItem.lineJoin, lineDefault.borderJoinStyle);
-					ctx.lineWidth = valueOrDefault(legendItem.lineWidth, lineDefault.borderWidth);
-					ctx.strokeStyle = valueOrDefault(legendItem.strokeStyle, globalDefault.defaultColor);
-					var isLineWidthZero = (valueOrDefault(legendItem.lineWidth, lineDefault.borderWidth) === 0);
-
-					if (ctx.setLineDash) {
-						// IE 9 and 10 do not support line dash
-						ctx.setLineDash(valueOrDefault(legendItem.lineDash, lineDefault.borderDash));
-					}
-
-					if (opts.labels && opts.labels.usePointStyle) {
-						// Recalculate x and y for drawPoint() because its expecting
-						// x and y to be center of figure (instead of top left)
-						var radius = fontSize * Math.SQRT2 / 2;
-						var offSet = radius / Math.SQRT2;
-						var centerX = x + offSet;
-						var centerY = y + offSet;
-
-						// Draw pointStyle as legend symbol
-						helpers.canvas.drawPoint(ctx, legendItem.pointStyle, radius, centerX, centerY);
-					} else {
-						// Draw box as legend symbol
-						if (!isLineWidthZero) {
-							ctx.strokeRect(x, y, boxWidth, fontSize);
-						}
-						ctx.fillRect(x, y, boxWidth, fontSize);
-					}
-
-					ctx.restore();
-				};
-				var fillText = function(x, y, legendItem, textWidth) {
-					var halfFontSize = fontSize / 2;
-					var xLeft = boxWidth + halfFontSize + x;
-					var yMiddle = y + halfFontSize;
-
-					ctx.fillText(legendItem.text, xLeft, yMiddle);
-
-					if (legendItem.hidden) {
-						// Strikethrough the text if hidden
-						ctx.beginPath();
-						ctx.lineWidth = 2;
-						ctx.moveTo(xLeft, yMiddle);
-						ctx.lineTo(xLeft + textWidth, yMiddle);
-						ctx.stroke();
-					}
-				};
-
-				// Horizontal
-				var isHorizontal = me.isHorizontal();
-				if (isHorizontal) {
-					cursor = {
-						x: me.left + ((legendWidth - lineWidths[0]) / 2),
-						y: me.top + labelOpts.padding,
-						line: 0
-					};
-				} else {
-					cursor = {
-						x: me.left + labelOpts.padding,
-						y: me.top + labelOpts.padding,
-						line: 0
-					};
-				}
-
-				var itemHeight = fontSize + labelOpts.padding;
-				helpers.each(me.legendItems, function(legendItem, i) {
-					var textWidth = ctx.measureText(legendItem.text).width;
-					var width = boxWidth + (fontSize / 2) + textWidth;
-					var x = cursor.x;
-					var y = cursor.y;
-
-					if (isHorizontal) {
-						if (x + width >= legendWidth) {
-							y = cursor.y += itemHeight;
-							cursor.line++;
-							x = cursor.x = me.left + ((legendWidth - lineWidths[cursor.line]) / 2);
-						}
-					} else if (y + itemHeight > me.bottom) {
-						x = cursor.x = x + me.columnWidths[cursor.line] + labelOpts.padding;
-						y = cursor.y = me.top + labelOpts.padding;
+					if (x + width >= legendWidth) {
+						y = cursor.y += itemHeight;
 						cursor.line++;
+						x = cursor.x = me.left + ((legendWidth - lineWidths[cursor.line]) / 2);
 					}
-
-					drawLegendBox(x, y, legendItem);
-
-					hitboxes[i].left = x;
-					hitboxes[i].top = y;
-
-					// Fill the actual label
-					fillText(x, y, legendItem, textWidth);
-
-					if (isHorizontal) {
-						cursor.x += width + (labelOpts.padding);
-					} else {
-						cursor.y += itemHeight;
-					}
-
-				});
-			}
-		},
-
-		/**
-		 * Handle an event
-		 * @private
-		 * @param {IEvent} event - The event to handle
-		 * @return {Boolean} true if a change occured
-		 */
-		handleEvent: function(e) {
-			var me = this;
-			var opts = me.options;
-			var type = e.type === 'mouseup' ? 'click' : e.type;
-			var changed = false;
-
-			if (type === 'mousemove') {
-				if (!opts.onHover) {
-					return;
+				} else if (y + itemHeight > me.bottom) {
+					x = cursor.x = x + me.columnWidths[cursor.line] + labelOpts.padding;
+					y = cursor.y = me.top + labelOpts.padding;
+					cursor.line++;
 				}
-			} else if (type === 'click') {
-				if (!opts.onClick) {
-					return;
+
+				drawLegendBox(x, y, legendItem);
+
+				hitboxes[i].left = x;
+				hitboxes[i].top = y;
+
+				// Fill the actual label
+				fillText(x, y, legendItem, textWidth);
+
+				if (isHorizontal) {
+					cursor.x += width + (labelOpts.padding);
+				} else {
+					cursor.y += itemHeight;
 				}
-			} else {
+
+			});
+		}
+	},
+
+	/**
+	 * Handle an event
+	 * @private
+	 * @param {IEvent} event - The event to handle
+	 * @return {Boolean} true if a change occured
+	 */
+	handleEvent: function(e) {
+		var me = this;
+		var opts = me.options;
+		var type = e.type === 'mouseup' ? 'click' : e.type;
+		var changed = false;
+
+		if (type === 'mousemove') {
+			if (!opts.onHover) {
 				return;
 			}
+		} else if (type === 'click') {
+			if (!opts.onClick) {
+				return;
+			}
+		} else {
+			return;
+		}
 
-			// Chart event already has relative position in it
-			var x = e.x;
-			var y = e.y;
+		// Chart event already has relative position in it
+		var x = e.x;
+		var y = e.y;
 
-			if (x >= me.left && x <= me.right && y >= me.top && y <= me.bottom) {
-				// See if we are touching one of the dataset boxes
-				var lh = me.legendHitBoxes;
-				for (var i = 0; i < lh.length; ++i) {
-					var hitBox = lh[i];
+		if (x >= me.left && x <= me.right && y >= me.top && y <= me.bottom) {
+			// See if we are touching one of the dataset boxes
+			var lh = me.legendHitBoxes;
+			for (var i = 0; i < lh.length; ++i) {
+				var hitBox = lh[i];
 
-					if (x >= hitBox.left && x <= hitBox.left + hitBox.width && y >= hitBox.top && y <= hitBox.top + hitBox.height) {
-						// Touching an element
-						if (type === 'click') {
-							// use e.native for backwards compatibility
-							opts.onClick.call(me, e.native, me.legendItems[i]);
-							changed = true;
-							break;
-						} else if (type === 'mousemove') {
-							// use e.native for backwards compatibility
-							opts.onHover.call(me, e.native, me.legendItems[i]);
-							changed = true;
-							break;
-						}
+				if (x >= hitBox.left && x <= hitBox.left + hitBox.width && y >= hitBox.top && y <= hitBox.top + hitBox.height) {
+					// Touching an element
+					if (type === 'click') {
+						// use e.native for backwards compatibility
+						opts.onClick.call(me, e.native, me.legendItems[i]);
+						changed = true;
+						break;
+					} else if (type === 'mousemove') {
+						// use e.native for backwards compatibility
+						opts.onHover.call(me, e.native, me.legendItems[i]);
+						changed = true;
+						break;
 					}
 				}
 			}
-
-			return changed;
 		}
+
+		return changed;
+	}
+});
+
+function createNewLegendAndAttach(chart, legendOpts) {
+	var legend = new Legend({
+		ctx: chart.ctx,
+		options: legendOpts,
+		chart: chart
 	});
 
-	function createNewLegendAndAttach(chart, legendOpts) {
-		var legend = new Chart.Legend({
-			ctx: chart.ctx,
-			options: legendOpts,
-			chart: chart
-		});
+	layouts.configure(chart, legend, legendOpts);
+	layouts.addBox(chart, legend);
+	chart.legend = legend;
+}
 
-		layout.configure(chart, legend, legendOpts);
-		layout.addBox(chart, legend);
-		chart.legend = legend;
-	}
+module.exports = {
+	id: 'legend',
 
-	return {
-		id: 'legend',
+	/**
+	 * Backward compatibility: since 2.1.5, the legend is registered as a plugin, making
+	 * Chart.Legend obsolete. To avoid a breaking change, we export the Legend as part of
+	 * the plugin, which one will be re-exposed in the chart.js file.
+	 * https://github.com/chartjs/Chart.js/pull/2640
+	 * @private
+	 */
+	_element: Legend,
 
-		beforeInit: function(chart) {
-			var legendOpts = chart.options.legend;
+	beforeInit: function(chart) {
+		var legendOpts = chart.options.legend;
 
-			if (legendOpts) {
+		if (legendOpts) {
+			createNewLegendAndAttach(chart, legendOpts);
+		}
+	},
+
+	beforeUpdate: function(chart) {
+		var legendOpts = chart.options.legend;
+		var legend = chart.legend;
+
+		if (legendOpts) {
+			helpers.mergeIf(legendOpts, defaults.global.legend);
+
+			if (legend) {
+				layouts.configure(chart, legend, legendOpts);
+				legend.options = legendOpts;
+			} else {
 				createNewLegendAndAttach(chart, legendOpts);
 			}
-		},
-
-		beforeUpdate: function(chart) {
-			var legendOpts = chart.options.legend;
-			var legend = chart.legend;
-
-			if (legendOpts) {
-				helpers.mergeIf(legendOpts, defaults.global.legend);
-
-				if (legend) {
-					layout.configure(chart, legend, legendOpts);
-					legend.options = legendOpts;
-				} else {
-					createNewLegendAndAttach(chart, legendOpts);
-				}
-			} else if (legend) {
-				layout.removeBox(chart, legend);
-				delete chart.legend;
-			}
-		},
-
-		afterEvent: function(chart, e) {
-			var legend = chart.legend;
-			if (legend) {
-				legend.handleEvent(e);
-			}
+		} else if (legend) {
+			layouts.removeBox(chart, legend);
+			delete chart.legend;
 		}
-	};
+	},
+
+	afterEvent: function(chart, e) {
+		var legend = chart.legend;
+		if (legend) {
+			legend.handleEvent(e);
+		}
+	}
 };
 
 
 /***/ }),
-/* 433 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var defaults = __webpack_require__(3);
-var Element = __webpack_require__(15);
+var Element = __webpack_require__(21);
 var helpers = __webpack_require__(1);
+var layouts = __webpack_require__(46);
+
+var noop = helpers.noop;
 
 defaults._set('global', {
 	title: {
@@ -61281,237 +62253,243 @@ defaults._set('global', {
 	}
 });
 
-module.exports = function(Chart) {
+/**
+ * IMPORTANT: this class is exposed publicly as Chart.Legend, backward compatibility required!
+ */
+var Title = Element.extend({
+	initialize: function(config) {
+		var me = this;
+		helpers.extend(me, config);
 
-	var layout = Chart.layoutService;
-	var noop = helpers.noop;
+		// Contains hit boxes for each dataset (in dataset order)
+		me.legendHitBoxes = [];
+	},
 
-	Chart.Title = Element.extend({
-		initialize: function(config) {
-			var me = this;
-			helpers.extend(me, config);
+	// These methods are ordered by lifecycle. Utilities then follow.
 
-			// Contains hit boxes for each dataset (in dataset order)
-			me.legendHitBoxes = [];
-		},
+	beforeUpdate: noop,
+	update: function(maxWidth, maxHeight, margins) {
+		var me = this;
 
-		// These methods are ordered by lifecycle. Utilities then follow.
+		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
+		me.beforeUpdate();
 
-		beforeUpdate: noop,
-		update: function(maxWidth, maxHeight, margins) {
-			var me = this;
+		// Absorb the master measurements
+		me.maxWidth = maxWidth;
+		me.maxHeight = maxHeight;
+		me.margins = margins;
 
-			// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
-			me.beforeUpdate();
+		// Dimensions
+		me.beforeSetDimensions();
+		me.setDimensions();
+		me.afterSetDimensions();
+		// Labels
+		me.beforeBuildLabels();
+		me.buildLabels();
+		me.afterBuildLabels();
 
-			// Absorb the master measurements
-			me.maxWidth = maxWidth;
-			me.maxHeight = maxHeight;
-			me.margins = margins;
-
-			// Dimensions
-			me.beforeSetDimensions();
-			me.setDimensions();
-			me.afterSetDimensions();
-			// Labels
-			me.beforeBuildLabels();
-			me.buildLabels();
-			me.afterBuildLabels();
-
-			// Fit
-			me.beforeFit();
-			me.fit();
-			me.afterFit();
-			//
-			me.afterUpdate();
-
-			return me.minSize;
-
-		},
-		afterUpdate: noop,
-
+		// Fit
+		me.beforeFit();
+		me.fit();
+		me.afterFit();
 		//
+		me.afterUpdate();
 
-		beforeSetDimensions: noop,
-		setDimensions: function() {
-			var me = this;
-			// Set the unconstrained dimension before label rotation
-			if (me.isHorizontal()) {
-				// Reset position before calculating rotation
-				me.width = me.maxWidth;
-				me.left = 0;
-				me.right = me.width;
-			} else {
-				me.height = me.maxHeight;
+		return me.minSize;
 
-				// Reset position before calculating rotation
-				me.top = 0;
-				me.bottom = me.height;
-			}
+	},
+	afterUpdate: noop,
 
-			// Reset padding
-			me.paddingLeft = 0;
-			me.paddingTop = 0;
-			me.paddingRight = 0;
-			me.paddingBottom = 0;
+	//
 
-			// Reset minSize
-			me.minSize = {
-				width: 0,
-				height: 0
-			};
-		},
-		afterSetDimensions: noop,
+	beforeSetDimensions: noop,
+	setDimensions: function() {
+		var me = this;
+		// Set the unconstrained dimension before label rotation
+		if (me.isHorizontal()) {
+			// Reset position before calculating rotation
+			me.width = me.maxWidth;
+			me.left = 0;
+			me.right = me.width;
+		} else {
+			me.height = me.maxHeight;
 
-		//
-
-		beforeBuildLabels: noop,
-		buildLabels: noop,
-		afterBuildLabels: noop,
-
-		//
-
-		beforeFit: noop,
-		fit: function() {
-			var me = this;
-			var valueOrDefault = helpers.valueOrDefault;
-			var opts = me.options;
-			var display = opts.display;
-			var fontSize = valueOrDefault(opts.fontSize, defaults.global.defaultFontSize);
-			var minSize = me.minSize;
-			var lineCount = helpers.isArray(opts.text) ? opts.text.length : 1;
-			var lineHeight = helpers.options.toLineHeight(opts.lineHeight, fontSize);
-			var textSize = display ? (lineCount * lineHeight) + (opts.padding * 2) : 0;
-
-			if (me.isHorizontal()) {
-				minSize.width = me.maxWidth; // fill all the width
-				minSize.height = textSize;
-			} else {
-				minSize.width = textSize;
-				minSize.height = me.maxHeight; // fill all the height
-			}
-
-			me.width = minSize.width;
-			me.height = minSize.height;
-
-		},
-		afterFit: noop,
-
-		// Shared Methods
-		isHorizontal: function() {
-			var pos = this.options.position;
-			return pos === 'top' || pos === 'bottom';
-		},
-
-		// Actually draw the title block on the canvas
-		draw: function() {
-			var me = this;
-			var ctx = me.ctx;
-			var valueOrDefault = helpers.valueOrDefault;
-			var opts = me.options;
-			var globalDefaults = defaults.global;
-
-			if (opts.display) {
-				var fontSize = valueOrDefault(opts.fontSize, globalDefaults.defaultFontSize);
-				var fontStyle = valueOrDefault(opts.fontStyle, globalDefaults.defaultFontStyle);
-				var fontFamily = valueOrDefault(opts.fontFamily, globalDefaults.defaultFontFamily);
-				var titleFont = helpers.fontString(fontSize, fontStyle, fontFamily);
-				var lineHeight = helpers.options.toLineHeight(opts.lineHeight, fontSize);
-				var offset = lineHeight / 2 + opts.padding;
-				var rotation = 0;
-				var top = me.top;
-				var left = me.left;
-				var bottom = me.bottom;
-				var right = me.right;
-				var maxWidth, titleX, titleY;
-
-				ctx.fillStyle = valueOrDefault(opts.fontColor, globalDefaults.defaultFontColor); // render in correct colour
-				ctx.font = titleFont;
-
-				// Horizontal
-				if (me.isHorizontal()) {
-					titleX = left + ((right - left) / 2); // midpoint of the width
-					titleY = top + offset;
-					maxWidth = right - left;
-				} else {
-					titleX = opts.position === 'left' ? left + offset : right - offset;
-					titleY = top + ((bottom - top) / 2);
-					maxWidth = bottom - top;
-					rotation = Math.PI * (opts.position === 'left' ? -0.5 : 0.5);
-				}
-
-				ctx.save();
-				ctx.translate(titleX, titleY);
-				ctx.rotate(rotation);
-				ctx.textAlign = 'center';
-				ctx.textBaseline = 'middle';
-
-				var text = opts.text;
-				if (helpers.isArray(text)) {
-					var y = 0;
-					for (var i = 0; i < text.length; ++i) {
-						ctx.fillText(text[i], 0, y, maxWidth);
-						y += lineHeight;
-					}
-				} else {
-					ctx.fillText(text, 0, 0, maxWidth);
-				}
-
-				ctx.restore();
-			}
+			// Reset position before calculating rotation
+			me.top = 0;
+			me.bottom = me.height;
 		}
+
+		// Reset padding
+		me.paddingLeft = 0;
+		me.paddingTop = 0;
+		me.paddingRight = 0;
+		me.paddingBottom = 0;
+
+		// Reset minSize
+		me.minSize = {
+			width: 0,
+			height: 0
+		};
+	},
+	afterSetDimensions: noop,
+
+	//
+
+	beforeBuildLabels: noop,
+	buildLabels: noop,
+	afterBuildLabels: noop,
+
+	//
+
+	beforeFit: noop,
+	fit: function() {
+		var me = this;
+		var valueOrDefault = helpers.valueOrDefault;
+		var opts = me.options;
+		var display = opts.display;
+		var fontSize = valueOrDefault(opts.fontSize, defaults.global.defaultFontSize);
+		var minSize = me.minSize;
+		var lineCount = helpers.isArray(opts.text) ? opts.text.length : 1;
+		var lineHeight = helpers.options.toLineHeight(opts.lineHeight, fontSize);
+		var textSize = display ? (lineCount * lineHeight) + (opts.padding * 2) : 0;
+
+		if (me.isHorizontal()) {
+			minSize.width = me.maxWidth; // fill all the width
+			minSize.height = textSize;
+		} else {
+			minSize.width = textSize;
+			minSize.height = me.maxHeight; // fill all the height
+		}
+
+		me.width = minSize.width;
+		me.height = minSize.height;
+
+	},
+	afterFit: noop,
+
+	// Shared Methods
+	isHorizontal: function() {
+		var pos = this.options.position;
+		return pos === 'top' || pos === 'bottom';
+	},
+
+	// Actually draw the title block on the canvas
+	draw: function() {
+		var me = this;
+		var ctx = me.ctx;
+		var valueOrDefault = helpers.valueOrDefault;
+		var opts = me.options;
+		var globalDefaults = defaults.global;
+
+		if (opts.display) {
+			var fontSize = valueOrDefault(opts.fontSize, globalDefaults.defaultFontSize);
+			var fontStyle = valueOrDefault(opts.fontStyle, globalDefaults.defaultFontStyle);
+			var fontFamily = valueOrDefault(opts.fontFamily, globalDefaults.defaultFontFamily);
+			var titleFont = helpers.fontString(fontSize, fontStyle, fontFamily);
+			var lineHeight = helpers.options.toLineHeight(opts.lineHeight, fontSize);
+			var offset = lineHeight / 2 + opts.padding;
+			var rotation = 0;
+			var top = me.top;
+			var left = me.left;
+			var bottom = me.bottom;
+			var right = me.right;
+			var maxWidth, titleX, titleY;
+
+			ctx.fillStyle = valueOrDefault(opts.fontColor, globalDefaults.defaultFontColor); // render in correct colour
+			ctx.font = titleFont;
+
+			// Horizontal
+			if (me.isHorizontal()) {
+				titleX = left + ((right - left) / 2); // midpoint of the width
+				titleY = top + offset;
+				maxWidth = right - left;
+			} else {
+				titleX = opts.position === 'left' ? left + offset : right - offset;
+				titleY = top + ((bottom - top) / 2);
+				maxWidth = bottom - top;
+				rotation = Math.PI * (opts.position === 'left' ? -0.5 : 0.5);
+			}
+
+			ctx.save();
+			ctx.translate(titleX, titleY);
+			ctx.rotate(rotation);
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+
+			var text = opts.text;
+			if (helpers.isArray(text)) {
+				var y = 0;
+				for (var i = 0; i < text.length; ++i) {
+					ctx.fillText(text[i], 0, y, maxWidth);
+					y += lineHeight;
+				}
+			} else {
+				ctx.fillText(text, 0, 0, maxWidth);
+			}
+
+			ctx.restore();
+		}
+	}
+});
+
+function createNewTitleBlockAndAttach(chart, titleOpts) {
+	var title = new Title({
+		ctx: chart.ctx,
+		options: titleOpts,
+		chart: chart
 	});
 
-	function createNewTitleBlockAndAttach(chart, titleOpts) {
-		var title = new Chart.Title({
-			ctx: chart.ctx,
-			options: titleOpts,
-			chart: chart
-		});
+	layouts.configure(chart, title, titleOpts);
+	layouts.addBox(chart, title);
+	chart.titleBlock = title;
+}
 
-		layout.configure(chart, title, titleOpts);
-		layout.addBox(chart, title);
-		chart.titleBlock = title;
-	}
+module.exports = {
+	id: 'title',
 
-	return {
-		id: 'title',
+	/**
+	 * Backward compatibility: since 2.1.5, the title is registered as a plugin, making
+	 * Chart.Title obsolete. To avoid a breaking change, we export the Title as part of
+	 * the plugin, which one will be re-exposed in the chart.js file.
+	 * https://github.com/chartjs/Chart.js/pull/2640
+	 * @private
+	 */
+	_element: Title,
 
-		beforeInit: function(chart) {
-			var titleOpts = chart.options.title;
+	beforeInit: function(chart) {
+		var titleOpts = chart.options.title;
 
-			if (titleOpts) {
+		if (titleOpts) {
+			createNewTitleBlockAndAttach(chart, titleOpts);
+		}
+	},
+
+	beforeUpdate: function(chart) {
+		var titleOpts = chart.options.title;
+		var titleBlock = chart.titleBlock;
+
+		if (titleOpts) {
+			helpers.mergeIf(titleOpts, defaults.global.title);
+
+			if (titleBlock) {
+				layouts.configure(chart, titleBlock, titleOpts);
+				titleBlock.options = titleOpts;
+			} else {
 				createNewTitleBlockAndAttach(chart, titleOpts);
 			}
-		},
-
-		beforeUpdate: function(chart) {
-			var titleOpts = chart.options.title;
-			var titleBlock = chart.titleBlock;
-
-			if (titleOpts) {
-				helpers.mergeIf(titleOpts, defaults.global.title);
-
-				if (titleBlock) {
-					layout.configure(chart, titleBlock, titleOpts);
-					titleBlock.options = titleOpts;
-				} else {
-					createNewTitleBlockAndAttach(chart, titleOpts);
-				}
-			} else if (titleBlock) {
-				Chart.layoutService.removeBox(chart, titleBlock);
-				delete chart.titleBlock;
-			}
+		} else if (titleBlock) {
+			layouts.removeBox(chart, titleBlock);
+			delete chart.titleBlock;
 		}
-	};
+	}
 };
 
 
 /***/ }),
-/* 434 */
+/* 443 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsEqual = __webpack_require__(100);
+var baseIsEqual = __webpack_require__(102);
 
 /**
  * Performs a deep comparison between two values to determine if they are
@@ -61549,17 +62527,17 @@ module.exports = isEqual;
 
 
 /***/ }),
-/* 435 */
+/* 444 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stack = __webpack_require__(263),
-    equalArrays = __webpack_require__(269),
-    equalByTag = __webpack_require__(469),
-    equalObjects = __webpack_require__(473),
-    getTag = __webpack_require__(491),
-    isArray = __webpack_require__(30),
-    isBuffer = __webpack_require__(271),
-    isTypedArray = __webpack_require__(273);
+var Stack = __webpack_require__(270),
+    equalArrays = __webpack_require__(276),
+    equalByTag = __webpack_require__(478),
+    equalObjects = __webpack_require__(482),
+    getTag = __webpack_require__(500),
+    isArray = __webpack_require__(26),
+    isBuffer = __webpack_require__(278),
+    isTypedArray = __webpack_require__(280);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1;
@@ -61638,7 +62616,7 @@ module.exports = baseIsEqualDeep;
 
 
 /***/ }),
-/* 436 */
+/* 445 */
 /***/ (function(module, exports) {
 
 /**
@@ -61657,10 +62635,10 @@ module.exports = listCacheClear;
 
 
 /***/ }),
-/* 437 */
+/* 446 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(63);
+var assocIndexOf = __webpack_require__(62);
 
 /** Used for built-in method references. */
 var arrayProto = Array.prototype;
@@ -61698,10 +62676,10 @@ module.exports = listCacheDelete;
 
 
 /***/ }),
-/* 438 */
+/* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(63);
+var assocIndexOf = __webpack_require__(62);
 
 /**
  * Gets the list cache value for `key`.
@@ -61723,10 +62701,10 @@ module.exports = listCacheGet;
 
 
 /***/ }),
-/* 439 */
+/* 448 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(63);
+var assocIndexOf = __webpack_require__(62);
 
 /**
  * Checks if a list cache value for `key` exists.
@@ -61745,10 +62723,10 @@ module.exports = listCacheHas;
 
 
 /***/ }),
-/* 440 */
+/* 449 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(63);
+var assocIndexOf = __webpack_require__(62);
 
 /**
  * Sets the list cache `key` to `value`.
@@ -61777,10 +62755,10 @@ module.exports = listCacheSet;
 
 
 /***/ }),
-/* 441 */
+/* 450 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ListCache = __webpack_require__(62);
+var ListCache = __webpack_require__(61);
 
 /**
  * Removes all key-value entries from the stack.
@@ -61798,7 +62776,7 @@ module.exports = stackClear;
 
 
 /***/ }),
-/* 442 */
+/* 451 */
 /***/ (function(module, exports) {
 
 /**
@@ -61822,7 +62800,7 @@ module.exports = stackDelete;
 
 
 /***/ }),
-/* 443 */
+/* 452 */
 /***/ (function(module, exports) {
 
 /**
@@ -61842,7 +62820,7 @@ module.exports = stackGet;
 
 
 /***/ }),
-/* 444 */
+/* 453 */
 /***/ (function(module, exports) {
 
 /**
@@ -61862,12 +62840,12 @@ module.exports = stackHas;
 
 
 /***/ }),
-/* 445 */
+/* 454 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ListCache = __webpack_require__(62),
-    Map = __webpack_require__(101),
-    MapCache = __webpack_require__(102);
+var ListCache = __webpack_require__(61),
+    Map = __webpack_require__(103),
+    MapCache = __webpack_require__(104);
 
 /** Used as the size to enable large array optimizations. */
 var LARGE_ARRAY_SIZE = 200;
@@ -61902,13 +62880,13 @@ module.exports = stackSet;
 
 
 /***/ }),
-/* 446 */
+/* 455 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isFunction = __webpack_require__(265),
-    isMasked = __webpack_require__(449),
-    isObject = __webpack_require__(65),
-    toSource = __webpack_require__(268);
+var isFunction = __webpack_require__(272),
+    isMasked = __webpack_require__(458),
+    isObject = __webpack_require__(64),
+    toSource = __webpack_require__(275);
 
 /**
  * Used to match `RegExp`
@@ -61955,10 +62933,10 @@ module.exports = baseIsNative;
 
 
 /***/ }),
-/* 447 */
+/* 456 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(64);
+var Symbol = __webpack_require__(63);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -62007,7 +62985,7 @@ module.exports = getRawTag;
 
 
 /***/ }),
-/* 448 */
+/* 457 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -62035,10 +63013,10 @@ module.exports = objectToString;
 
 
 /***/ }),
-/* 449 */
+/* 458 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var coreJsData = __webpack_require__(450);
+var coreJsData = __webpack_require__(459);
 
 /** Used to detect methods masquerading as native. */
 var maskSrcKey = (function() {
@@ -62061,10 +63039,10 @@ module.exports = isMasked;
 
 
 /***/ }),
-/* 450 */
+/* 459 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var root = __webpack_require__(26);
+var root = __webpack_require__(25);
 
 /** Used to detect overreaching core-js shims. */
 var coreJsData = root['__core-js_shared__'];
@@ -62073,7 +63051,7 @@ module.exports = coreJsData;
 
 
 /***/ }),
-/* 451 */
+/* 460 */
 /***/ (function(module, exports) {
 
 /**
@@ -62092,12 +63070,12 @@ module.exports = getValue;
 
 
 /***/ }),
-/* 452 */
+/* 461 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Hash = __webpack_require__(453),
-    ListCache = __webpack_require__(62),
-    Map = __webpack_require__(101);
+var Hash = __webpack_require__(462),
+    ListCache = __webpack_require__(61),
+    Map = __webpack_require__(103);
 
 /**
  * Removes all key-value entries from the map.
@@ -62119,14 +63097,14 @@ module.exports = mapCacheClear;
 
 
 /***/ }),
-/* 453 */
+/* 462 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hashClear = __webpack_require__(454),
-    hashDelete = __webpack_require__(455),
-    hashGet = __webpack_require__(456),
-    hashHas = __webpack_require__(457),
-    hashSet = __webpack_require__(458);
+var hashClear = __webpack_require__(463),
+    hashDelete = __webpack_require__(464),
+    hashGet = __webpack_require__(465),
+    hashHas = __webpack_require__(466),
+    hashSet = __webpack_require__(467);
 
 /**
  * Creates a hash object.
@@ -62157,10 +63135,10 @@ module.exports = Hash;
 
 
 /***/ }),
-/* 454 */
+/* 463 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(66);
+var nativeCreate = __webpack_require__(65);
 
 /**
  * Removes all key-value entries from the hash.
@@ -62178,7 +63156,7 @@ module.exports = hashClear;
 
 
 /***/ }),
-/* 455 */
+/* 464 */
 /***/ (function(module, exports) {
 
 /**
@@ -62201,10 +63179,10 @@ module.exports = hashDelete;
 
 
 /***/ }),
-/* 456 */
+/* 465 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(66);
+var nativeCreate = __webpack_require__(65);
 
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -62237,10 +63215,10 @@ module.exports = hashGet;
 
 
 /***/ }),
-/* 457 */
+/* 466 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(66);
+var nativeCreate = __webpack_require__(65);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -62266,10 +63244,10 @@ module.exports = hashHas;
 
 
 /***/ }),
-/* 458 */
+/* 467 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(66);
+var nativeCreate = __webpack_require__(65);
 
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -62295,10 +63273,10 @@ module.exports = hashSet;
 
 
 /***/ }),
-/* 459 */
+/* 468 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(67);
+var getMapData = __webpack_require__(66);
 
 /**
  * Removes `key` and its value from the map.
@@ -62319,7 +63297,7 @@ module.exports = mapCacheDelete;
 
 
 /***/ }),
-/* 460 */
+/* 469 */
 /***/ (function(module, exports) {
 
 /**
@@ -62340,10 +63318,10 @@ module.exports = isKeyable;
 
 
 /***/ }),
-/* 461 */
+/* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(67);
+var getMapData = __webpack_require__(66);
 
 /**
  * Gets the map value for `key`.
@@ -62362,10 +63340,10 @@ module.exports = mapCacheGet;
 
 
 /***/ }),
-/* 462 */
+/* 471 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(67);
+var getMapData = __webpack_require__(66);
 
 /**
  * Checks if a map value for `key` exists.
@@ -62384,10 +63362,10 @@ module.exports = mapCacheHas;
 
 
 /***/ }),
-/* 463 */
+/* 472 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(67);
+var getMapData = __webpack_require__(66);
 
 /**
  * Sets the map `key` to `value`.
@@ -62412,12 +63390,12 @@ module.exports = mapCacheSet;
 
 
 /***/ }),
-/* 464 */
+/* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(102),
-    setCacheAdd = __webpack_require__(465),
-    setCacheHas = __webpack_require__(466);
+var MapCache = __webpack_require__(104),
+    setCacheAdd = __webpack_require__(474),
+    setCacheHas = __webpack_require__(475);
 
 /**
  *
@@ -62445,7 +63423,7 @@ module.exports = SetCache;
 
 
 /***/ }),
-/* 465 */
+/* 474 */
 /***/ (function(module, exports) {
 
 /** Used to stand-in for `undefined` hash values. */
@@ -62470,7 +63448,7 @@ module.exports = setCacheAdd;
 
 
 /***/ }),
-/* 466 */
+/* 475 */
 /***/ (function(module, exports) {
 
 /**
@@ -62490,7 +63468,7 @@ module.exports = setCacheHas;
 
 
 /***/ }),
-/* 467 */
+/* 476 */
 /***/ (function(module, exports) {
 
 /**
@@ -62519,7 +63497,7 @@ module.exports = arraySome;
 
 
 /***/ }),
-/* 468 */
+/* 477 */
 /***/ (function(module, exports) {
 
 /**
@@ -62538,15 +63516,15 @@ module.exports = cacheHas;
 
 
 /***/ }),
-/* 469 */
+/* 478 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(64),
-    Uint8Array = __webpack_require__(470),
-    eq = __webpack_require__(264),
-    equalArrays = __webpack_require__(269),
-    mapToArray = __webpack_require__(471),
-    setToArray = __webpack_require__(472);
+var Symbol = __webpack_require__(63),
+    Uint8Array = __webpack_require__(479),
+    eq = __webpack_require__(271),
+    equalArrays = __webpack_require__(276),
+    mapToArray = __webpack_require__(480),
+    setToArray = __webpack_require__(481);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -62656,10 +63634,10 @@ module.exports = equalByTag;
 
 
 /***/ }),
-/* 470 */
+/* 479 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var root = __webpack_require__(26);
+var root = __webpack_require__(25);
 
 /** Built-in value references. */
 var Uint8Array = root.Uint8Array;
@@ -62668,7 +63646,7 @@ module.exports = Uint8Array;
 
 
 /***/ }),
-/* 471 */
+/* 480 */
 /***/ (function(module, exports) {
 
 /**
@@ -62692,7 +63670,7 @@ module.exports = mapToArray;
 
 
 /***/ }),
-/* 472 */
+/* 481 */
 /***/ (function(module, exports) {
 
 /**
@@ -62716,10 +63694,10 @@ module.exports = setToArray;
 
 
 /***/ }),
-/* 473 */
+/* 482 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getAllKeys = __webpack_require__(474);
+var getAllKeys = __webpack_require__(483);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1;
@@ -62811,12 +63789,12 @@ module.exports = equalObjects;
 
 
 /***/ }),
-/* 474 */
+/* 483 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetAllKeys = __webpack_require__(475),
-    getSymbols = __webpack_require__(477),
-    keys = __webpack_require__(103);
+var baseGetAllKeys = __webpack_require__(484),
+    getSymbols = __webpack_require__(486),
+    keys = __webpack_require__(67);
 
 /**
  * Creates an array of own enumerable property names and symbols of `object`.
@@ -62833,11 +63811,11 @@ module.exports = getAllKeys;
 
 
 /***/ }),
-/* 475 */
+/* 484 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayPush = __webpack_require__(476),
-    isArray = __webpack_require__(30);
+var arrayPush = __webpack_require__(485),
+    isArray = __webpack_require__(26);
 
 /**
  * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
@@ -62859,7 +63837,7 @@ module.exports = baseGetAllKeys;
 
 
 /***/ }),
-/* 476 */
+/* 485 */
 /***/ (function(module, exports) {
 
 /**
@@ -62885,11 +63863,11 @@ module.exports = arrayPush;
 
 
 /***/ }),
-/* 477 */
+/* 486 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayFilter = __webpack_require__(478),
-    stubArray = __webpack_require__(479);
+var arrayFilter = __webpack_require__(487),
+    stubArray = __webpack_require__(488);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -62921,7 +63899,7 @@ module.exports = getSymbols;
 
 
 /***/ }),
-/* 478 */
+/* 487 */
 /***/ (function(module, exports) {
 
 /**
@@ -62952,7 +63930,7 @@ module.exports = arrayFilter;
 
 
 /***/ }),
-/* 479 */
+/* 488 */
 /***/ (function(module, exports) {
 
 /**
@@ -62981,15 +63959,15 @@ module.exports = stubArray;
 
 
 /***/ }),
-/* 480 */
+/* 489 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseTimes = __webpack_require__(481),
-    isArguments = __webpack_require__(270),
-    isArray = __webpack_require__(30),
-    isBuffer = __webpack_require__(271),
-    isIndex = __webpack_require__(272),
-    isTypedArray = __webpack_require__(273);
+var baseTimes = __webpack_require__(490),
+    isArguments = __webpack_require__(277),
+    isArray = __webpack_require__(26),
+    isBuffer = __webpack_require__(278),
+    isIndex = __webpack_require__(279),
+    isTypedArray = __webpack_require__(280);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -63036,7 +64014,7 @@ module.exports = arrayLikeKeys;
 
 
 /***/ }),
-/* 481 */
+/* 490 */
 /***/ (function(module, exports) {
 
 /**
@@ -63062,11 +64040,11 @@ module.exports = baseTimes;
 
 
 /***/ }),
-/* 482 */
+/* 491 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(49),
-    isObjectLike = __webpack_require__(50);
+var baseGetTag = __webpack_require__(48),
+    isObjectLike = __webpack_require__(49);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]';
@@ -63086,7 +64064,7 @@ module.exports = baseIsArguments;
 
 
 /***/ }),
-/* 483 */
+/* 492 */
 /***/ (function(module, exports) {
 
 /**
@@ -63110,12 +64088,12 @@ module.exports = stubFalse;
 
 
 /***/ }),
-/* 484 */
+/* 493 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(49),
-    isLength = __webpack_require__(104),
-    isObjectLike = __webpack_require__(50);
+var baseGetTag = __webpack_require__(48),
+    isLength = __webpack_require__(105),
+    isObjectLike = __webpack_require__(49);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]',
@@ -63176,7 +64154,7 @@ module.exports = baseIsTypedArray;
 
 
 /***/ }),
-/* 485 */
+/* 494 */
 /***/ (function(module, exports) {
 
 /**
@@ -63196,10 +64174,10 @@ module.exports = baseUnary;
 
 
 /***/ }),
-/* 486 */
+/* 495 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(266);
+/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(273);
 
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -63222,14 +64200,14 @@ var nodeUtil = (function() {
 
 module.exports = nodeUtil;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(99)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(101)(module)))
 
 /***/ }),
-/* 487 */
+/* 496 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isPrototype = __webpack_require__(488),
-    nativeKeys = __webpack_require__(489);
+var isPrototype = __webpack_require__(497),
+    nativeKeys = __webpack_require__(498);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -63261,7 +64239,7 @@ module.exports = baseKeys;
 
 
 /***/ }),
-/* 488 */
+/* 497 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -63285,10 +64263,10 @@ module.exports = isPrototype;
 
 
 /***/ }),
-/* 489 */
+/* 498 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var overArg = __webpack_require__(490);
+var overArg = __webpack_require__(499);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeKeys = overArg(Object.keys, Object);
@@ -63297,7 +64275,7 @@ module.exports = nativeKeys;
 
 
 /***/ }),
-/* 490 */
+/* 499 */
 /***/ (function(module, exports) {
 
 /**
@@ -63318,16 +64296,16 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 491 */
+/* 500 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var DataView = __webpack_require__(492),
-    Map = __webpack_require__(101),
-    Promise = __webpack_require__(493),
-    Set = __webpack_require__(494),
-    WeakMap = __webpack_require__(495),
-    baseGetTag = __webpack_require__(49),
-    toSource = __webpack_require__(268);
+var DataView = __webpack_require__(501),
+    Map = __webpack_require__(103),
+    Promise = __webpack_require__(502),
+    Set = __webpack_require__(503),
+    WeakMap = __webpack_require__(504),
+    baseGetTag = __webpack_require__(48),
+    toSource = __webpack_require__(275);
 
 /** `Object#toString` result references. */
 var mapTag = '[object Map]',
@@ -63382,11 +64360,11 @@ module.exports = getTag;
 
 
 /***/ }),
-/* 492 */
+/* 501 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(34),
-    root = __webpack_require__(26);
+var getNative = __webpack_require__(33),
+    root = __webpack_require__(25);
 
 /* Built-in method references that are verified to be native. */
 var DataView = getNative(root, 'DataView');
@@ -63395,11 +64373,11 @@ module.exports = DataView;
 
 
 /***/ }),
-/* 493 */
+/* 502 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(34),
-    root = __webpack_require__(26);
+var getNative = __webpack_require__(33),
+    root = __webpack_require__(25);
 
 /* Built-in method references that are verified to be native. */
 var Promise = getNative(root, 'Promise');
@@ -63408,11 +64386,11 @@ module.exports = Promise;
 
 
 /***/ }),
-/* 494 */
+/* 503 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(34),
-    root = __webpack_require__(26);
+var getNative = __webpack_require__(33),
+    root = __webpack_require__(25);
 
 /* Built-in method references that are verified to be native. */
 var Set = getNative(root, 'Set');
@@ -63421,11 +64399,11 @@ module.exports = Set;
 
 
 /***/ }),
-/* 495 */
+/* 504 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(34),
-    root = __webpack_require__(26);
+var getNative = __webpack_require__(33),
+    root = __webpack_require__(25);
 
 /* Built-in method references that are verified to be native. */
 var WeakMap = getNative(root, 'WeakMap');
@@ -63434,11 +64412,11 @@ module.exports = WeakMap;
 
 
 /***/ }),
-/* 496 */
+/* 505 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var createFind = __webpack_require__(497),
-    findIndex = __webpack_require__(516);
+var createFind = __webpack_require__(506),
+    findIndex = __webpack_require__(525);
 
 /**
  * Iterates over elements of `collection`, returning the first element
@@ -63482,12 +64460,12 @@ module.exports = find;
 
 
 /***/ }),
-/* 497 */
+/* 506 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIteratee = __webpack_require__(275),
-    isArrayLike = __webpack_require__(274),
-    keys = __webpack_require__(103);
+var baseIteratee = __webpack_require__(107),
+    isArrayLike = __webpack_require__(106),
+    keys = __webpack_require__(67);
 
 /**
  * Creates a `_.find` or `_.findLast` function.
@@ -63513,12 +64491,12 @@ module.exports = createFind;
 
 
 /***/ }),
-/* 498 */
+/* 507 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsMatch = __webpack_require__(499),
-    getMatchData = __webpack_require__(500),
-    matchesStrictComparable = __webpack_require__(277);
+var baseIsMatch = __webpack_require__(508),
+    getMatchData = __webpack_require__(509),
+    matchesStrictComparable = __webpack_require__(282);
 
 /**
  * The base implementation of `_.matches` which doesn't clone `source`.
@@ -63541,11 +64519,11 @@ module.exports = baseMatches;
 
 
 /***/ }),
-/* 499 */
+/* 508 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stack = __webpack_require__(263),
-    baseIsEqual = __webpack_require__(100);
+var Stack = __webpack_require__(270),
+    baseIsEqual = __webpack_require__(102);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -63609,11 +64587,11 @@ module.exports = baseIsMatch;
 
 
 /***/ }),
-/* 500 */
+/* 509 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isStrictComparable = __webpack_require__(276),
-    keys = __webpack_require__(103);
+var isStrictComparable = __webpack_require__(281),
+    keys = __webpack_require__(67);
 
 /**
  * Gets the property names, values, and compare flags of `object`.
@@ -63639,15 +64617,15 @@ module.exports = getMatchData;
 
 
 /***/ }),
-/* 501 */
+/* 510 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsEqual = __webpack_require__(100),
-    get = __webpack_require__(502),
-    hasIn = __webpack_require__(509),
-    isKey = __webpack_require__(105),
-    isStrictComparable = __webpack_require__(276),
-    matchesStrictComparable = __webpack_require__(277),
+var baseIsEqual = __webpack_require__(102),
+    get = __webpack_require__(511),
+    hasIn = __webpack_require__(518),
+    isKey = __webpack_require__(108),
+    isStrictComparable = __webpack_require__(281),
+    matchesStrictComparable = __webpack_require__(282),
     toKey = __webpack_require__(69);
 
 /** Used to compose bitmasks for value comparisons. */
@@ -63678,10 +64656,10 @@ module.exports = baseMatchesProperty;
 
 
 /***/ }),
-/* 502 */
+/* 511 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGet = __webpack_require__(278);
+var baseGet = __webpack_require__(283);
 
 /**
  * Gets the value at `path` of `object`. If the resolved value is
@@ -63717,10 +64695,10 @@ module.exports = get;
 
 
 /***/ }),
-/* 503 */
+/* 512 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoizeCapped = __webpack_require__(504);
+var memoizeCapped = __webpack_require__(513);
 
 /** Used to match property names within property paths. */
 var reLeadingDot = /^\./,
@@ -63751,10 +64729,10 @@ module.exports = stringToPath;
 
 
 /***/ }),
-/* 504 */
+/* 513 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoize = __webpack_require__(505);
+var memoize = __webpack_require__(514);
 
 /** Used as the maximum memoize cache size. */
 var MAX_MEMOIZE_SIZE = 500;
@@ -63783,10 +64761,10 @@ module.exports = memoizeCapped;
 
 
 /***/ }),
-/* 505 */
+/* 514 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(102);
+var MapCache = __webpack_require__(104);
 
 /** Error message constants. */
 var FUNC_ERROR_TEXT = 'Expected a function';
@@ -63862,10 +64840,10 @@ module.exports = memoize;
 
 
 /***/ }),
-/* 506 */
+/* 515 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseToString = __webpack_require__(507);
+var baseToString = __webpack_require__(516);
 
 /**
  * Converts `value` to a string. An empty string is returned for `null`
@@ -63896,12 +64874,12 @@ module.exports = toString;
 
 
 /***/ }),
-/* 507 */
+/* 516 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(64),
-    arrayMap = __webpack_require__(508),
-    isArray = __webpack_require__(30),
+var Symbol = __webpack_require__(63),
+    arrayMap = __webpack_require__(517),
+    isArray = __webpack_require__(26),
     isSymbol = __webpack_require__(68);
 
 /** Used as references for various `Number` constants. */
@@ -63939,7 +64917,7 @@ module.exports = baseToString;
 
 
 /***/ }),
-/* 508 */
+/* 517 */
 /***/ (function(module, exports) {
 
 /**
@@ -63966,11 +64944,11 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 509 */
+/* 518 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseHasIn = __webpack_require__(510),
-    hasPath = __webpack_require__(511);
+var baseHasIn = __webpack_require__(519),
+    hasPath = __webpack_require__(520);
 
 /**
  * Checks if `path` is a direct or inherited property of `object`.
@@ -64006,7 +64984,7 @@ module.exports = hasIn;
 
 
 /***/ }),
-/* 510 */
+/* 519 */
 /***/ (function(module, exports) {
 
 /**
@@ -64025,14 +65003,14 @@ module.exports = baseHasIn;
 
 
 /***/ }),
-/* 511 */
+/* 520 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var castPath = __webpack_require__(279),
-    isArguments = __webpack_require__(270),
-    isArray = __webpack_require__(30),
-    isIndex = __webpack_require__(272),
-    isLength = __webpack_require__(104),
+var castPath = __webpack_require__(284),
+    isArguments = __webpack_require__(277),
+    isArray = __webpack_require__(26),
+    isIndex = __webpack_require__(279),
+    isLength = __webpack_require__(105),
     toKey = __webpack_require__(69);
 
 /**
@@ -64070,7 +65048,7 @@ module.exports = hasPath;
 
 
 /***/ }),
-/* 512 */
+/* 521 */
 /***/ (function(module, exports) {
 
 /**
@@ -64097,12 +65075,12 @@ module.exports = identity;
 
 
 /***/ }),
-/* 513 */
+/* 522 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseProperty = __webpack_require__(514),
-    basePropertyDeep = __webpack_require__(515),
-    isKey = __webpack_require__(105),
+var baseProperty = __webpack_require__(523),
+    basePropertyDeep = __webpack_require__(524),
+    isKey = __webpack_require__(108),
     toKey = __webpack_require__(69);
 
 /**
@@ -64135,7 +65113,7 @@ module.exports = property;
 
 
 /***/ }),
-/* 514 */
+/* 523 */
 /***/ (function(module, exports) {
 
 /**
@@ -64155,10 +65133,10 @@ module.exports = baseProperty;
 
 
 /***/ }),
-/* 515 */
+/* 524 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGet = __webpack_require__(278);
+var baseGet = __webpack_require__(283);
 
 /**
  * A specialized version of `baseProperty` which supports deep paths.
@@ -64177,12 +65155,12 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 516 */
+/* 525 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseFindIndex = __webpack_require__(517),
-    baseIteratee = __webpack_require__(275),
-    toInteger = __webpack_require__(518);
+var baseFindIndex = __webpack_require__(526),
+    baseIteratee = __webpack_require__(107),
+    toInteger = __webpack_require__(527);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -64238,7 +65216,7 @@ module.exports = findIndex;
 
 
 /***/ }),
-/* 517 */
+/* 526 */
 /***/ (function(module, exports) {
 
 /**
@@ -64268,10 +65246,10 @@ module.exports = baseFindIndex;
 
 
 /***/ }),
-/* 518 */
+/* 527 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toFinite = __webpack_require__(519);
+var toFinite = __webpack_require__(528);
 
 /**
  * Converts `value` to an integer.
@@ -64310,10 +65288,10 @@ module.exports = toInteger;
 
 
 /***/ }),
-/* 519 */
+/* 528 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toNumber = __webpack_require__(520);
+var toNumber = __webpack_require__(529);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0,
@@ -64358,10 +65336,10 @@ module.exports = toFinite;
 
 
 /***/ }),
-/* 520 */
+/* 529 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(65),
+var isObject = __webpack_require__(64),
     isSymbol = __webpack_require__(68);
 
 /** Used as references for various `Number` constants. */
@@ -64430,7 +65408,314 @@ module.exports = toNumber;
 
 
 /***/ }),
-/* 521 */
+/* 530 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseAssignValue = __webpack_require__(531),
+    createAggregator = __webpack_require__(533);
+
+/**
+ * Creates an object composed of keys generated from the results of running
+ * each element of `collection` thru `iteratee`. The corresponding value of
+ * each key is the last element responsible for generating the key. The
+ * iteratee is invoked with one argument: (value).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} [iteratee=_.identity] The iteratee to transform keys.
+ * @returns {Object} Returns the composed aggregate object.
+ * @example
+ *
+ * var array = [
+ *   { 'dir': 'left', 'code': 97 },
+ *   { 'dir': 'right', 'code': 100 }
+ * ];
+ *
+ * _.keyBy(array, function(o) {
+ *   return String.fromCharCode(o.code);
+ * });
+ * // => { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
+ *
+ * _.keyBy(array, 'dir');
+ * // => { 'left': { 'dir': 'left', 'code': 97 }, 'right': { 'dir': 'right', 'code': 100 } }
+ */
+var keyBy = createAggregator(function(result, value, key) {
+  baseAssignValue(result, key, value);
+});
+
+module.exports = keyBy;
+
+
+/***/ }),
+/* 531 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var defineProperty = __webpack_require__(532);
+
+/**
+ * The base implementation of `assignValue` and `assignMergeValue` without
+ * value checks.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {string} key The key of the property to assign.
+ * @param {*} value The value to assign.
+ */
+function baseAssignValue(object, key, value) {
+  if (key == '__proto__' && defineProperty) {
+    defineProperty(object, key, {
+      'configurable': true,
+      'enumerable': true,
+      'value': value,
+      'writable': true
+    });
+  } else {
+    object[key] = value;
+  }
+}
+
+module.exports = baseAssignValue;
+
+
+/***/ }),
+/* 532 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getNative = __webpack_require__(33);
+
+var defineProperty = (function() {
+  try {
+    var func = getNative(Object, 'defineProperty');
+    func({}, '', {});
+    return func;
+  } catch (e) {}
+}());
+
+module.exports = defineProperty;
+
+
+/***/ }),
+/* 533 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayAggregator = __webpack_require__(534),
+    baseAggregator = __webpack_require__(535),
+    baseIteratee = __webpack_require__(107),
+    isArray = __webpack_require__(26);
+
+/**
+ * Creates a function like `_.groupBy`.
+ *
+ * @private
+ * @param {Function} setter The function to set accumulator values.
+ * @param {Function} [initializer] The accumulator object initializer.
+ * @returns {Function} Returns the new aggregator function.
+ */
+function createAggregator(setter, initializer) {
+  return function(collection, iteratee) {
+    var func = isArray(collection) ? arrayAggregator : baseAggregator,
+        accumulator = initializer ? initializer() : {};
+
+    return func(collection, setter, baseIteratee(iteratee, 2), accumulator);
+  };
+}
+
+module.exports = createAggregator;
+
+
+/***/ }),
+/* 534 */
+/***/ (function(module, exports) {
+
+/**
+ * A specialized version of `baseAggregator` for arrays.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} setter The function to set `accumulator` values.
+ * @param {Function} iteratee The iteratee to transform keys.
+ * @param {Object} accumulator The initial aggregated object.
+ * @returns {Function} Returns `accumulator`.
+ */
+function arrayAggregator(array, setter, iteratee, accumulator) {
+  var index = -1,
+      length = array == null ? 0 : array.length;
+
+  while (++index < length) {
+    var value = array[index];
+    setter(accumulator, value, iteratee(value), array);
+  }
+  return accumulator;
+}
+
+module.exports = arrayAggregator;
+
+
+/***/ }),
+/* 535 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseEach = __webpack_require__(536);
+
+/**
+ * Aggregates elements of `collection` on `accumulator` with keys transformed
+ * by `iteratee` and values set by `setter`.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} setter The function to set `accumulator` values.
+ * @param {Function} iteratee The iteratee to transform keys.
+ * @param {Object} accumulator The initial aggregated object.
+ * @returns {Function} Returns `accumulator`.
+ */
+function baseAggregator(collection, setter, iteratee, accumulator) {
+  baseEach(collection, function(value, key, collection) {
+    setter(accumulator, value, iteratee(value), collection);
+  });
+  return accumulator;
+}
+
+module.exports = baseAggregator;
+
+
+/***/ }),
+/* 536 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseForOwn = __webpack_require__(537),
+    createBaseEach = __webpack_require__(540);
+
+/**
+ * The base implementation of `_.forEach` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array|Object} Returns `collection`.
+ */
+var baseEach = createBaseEach(baseForOwn);
+
+module.exports = baseEach;
+
+
+/***/ }),
+/* 537 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseFor = __webpack_require__(538),
+    keys = __webpack_require__(67);
+
+/**
+ * The base implementation of `_.forOwn` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Object} Returns `object`.
+ */
+function baseForOwn(object, iteratee) {
+  return object && baseFor(object, iteratee, keys);
+}
+
+module.exports = baseForOwn;
+
+
+/***/ }),
+/* 538 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var createBaseFor = __webpack_require__(539);
+
+/**
+ * The base implementation of `baseForOwn` which iterates over `object`
+ * properties returned by `keysFunc` and invokes `iteratee` for each property.
+ * Iteratee functions may exit iteration early by explicitly returning `false`.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @param {Function} keysFunc The function to get the keys of `object`.
+ * @returns {Object} Returns `object`.
+ */
+var baseFor = createBaseFor();
+
+module.exports = baseFor;
+
+
+/***/ }),
+/* 539 */
+/***/ (function(module, exports) {
+
+/**
+ * Creates a base function for methods like `_.forIn` and `_.forOwn`.
+ *
+ * @private
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new base function.
+ */
+function createBaseFor(fromRight) {
+  return function(object, iteratee, keysFunc) {
+    var index = -1,
+        iterable = Object(object),
+        props = keysFunc(object),
+        length = props.length;
+
+    while (length--) {
+      var key = props[fromRight ? length : ++index];
+      if (iteratee(iterable[key], key, iterable) === false) {
+        break;
+      }
+    }
+    return object;
+  };
+}
+
+module.exports = createBaseFor;
+
+
+/***/ }),
+/* 540 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isArrayLike = __webpack_require__(106);
+
+/**
+ * Creates a `baseEach` or `baseEachRight` function.
+ *
+ * @private
+ * @param {Function} eachFunc The function to iterate over a collection.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new base function.
+ */
+function createBaseEach(eachFunc, fromRight) {
+  return function(collection, iteratee) {
+    if (collection == null) {
+      return collection;
+    }
+    if (!isArrayLike(collection)) {
+      return eachFunc(collection, iteratee);
+    }
+    var length = collection.length,
+        index = fromRight ? length : -1,
+        iterable = Object(collection);
+
+    while ((fromRight ? index-- : ++index < length)) {
+      if (iteratee(iterable[index], index, iterable) === false) {
+        break;
+      }
+    }
+    return collection;
+  };
+}
+
+module.exports = createBaseEach;
+
+
+/***/ }),
+/* 541 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64440,23 +65725,23 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -64464,25 +65749,25 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactChartjs = __webpack_require__(144);
+var _reactChartjs = __webpack_require__(143);
 
 var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-var _difference_in_days = __webpack_require__(280);
+var _difference_in_days = __webpack_require__(285);
 
 var _difference_in_days2 = _interopRequireDefault(_difference_in_days);
 
-var _is_same_month = __webpack_require__(526);
+var _is_same_month = __webpack_require__(546);
 
 var _is_same_month2 = _interopRequireDefault(_is_same_month);
 
-var _is_same_year = __webpack_require__(527);
+var _is_same_year = __webpack_require__(547);
 
 var _is_same_year2 = _interopRequireDefault(_is_same_year);
 
-__webpack_require__(528);
+__webpack_require__(548);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -64645,7 +65930,7 @@ var Budget = function (_Component) {
 exports.default = Budget;
 
 /***/ }),
-/* 522 */
+/* 542 */
 /***/ (function(module, exports) {
 
 /**
@@ -64671,10 +65956,10 @@ module.exports = isDate
 
 
 /***/ }),
-/* 523 */
+/* 543 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var startOfDay = __webpack_require__(524)
+var startOfDay = __webpack_require__(544)
 
 var MILLISECONDS_IN_MINUTE = 60000
 var MILLISECONDS_IN_DAY = 86400000
@@ -64718,7 +66003,7 @@ module.exports = differenceInCalendarDays
 
 
 /***/ }),
-/* 524 */
+/* 544 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -64749,7 +66034,7 @@ module.exports = startOfDay
 
 
 /***/ }),
-/* 525 */
+/* 545 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -64806,7 +66091,7 @@ module.exports = compareAsc
 
 
 /***/ }),
-/* 526 */
+/* 546 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -64841,7 +66126,7 @@ module.exports = isSameMonth
 
 
 /***/ }),
-/* 527 */
+/* 547 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -64875,41 +66160,60 @@ module.exports = isSameYear
 
 
 /***/ }),
-/* 528 */
+/* 548 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(529);
+var content = __webpack_require__(549);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./budget.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./budget.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./budget.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./budget.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 529 */
+/* 549 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -64920,7 +66224,7 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 530 */
+/* 550 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -64950,7 +66254,7 @@ module.exports = isWeekend
 
 
 /***/ }),
-/* 531 */
+/* 551 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var startOfWeek = __webpack_require__(70)
@@ -64997,7 +66301,7 @@ module.exports = isSameWeek
 
 
 /***/ }),
-/* 532 */
+/* 552 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var startOfWeek = __webpack_require__(70)
@@ -65055,7 +66359,7 @@ module.exports = differenceInCalendarWeeks
 
 
 /***/ }),
-/* 533 */
+/* 553 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -65087,38 +66391,7 @@ module.exports = addDays
 
 
 /***/ }),
-/* 534 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(11)
-
-/**
- * @category Common Helpers
- * @summary Is the first date before the second one?
- *
- * @description
- * Is the first date before the second one?
- *
- * @param {Date|String|Number} date - the date that should be before the other one to return true
- * @param {Date|String|Number} dateToCompare - the date to compare with
- * @returns {Boolean} the first date is before the second date
- *
- * @example
- * // Is 10 July 1989 before 11 February 1987?
- * var result = isBefore(new Date(1989, 6, 10), new Date(1987, 1, 11))
- * //=> false
- */
-function isBefore (dirtyDate, dirtyDateToCompare) {
-  var date = parse(dirtyDate)
-  var dateToCompare = parse(dirtyDateToCompare)
-  return date.getTime() < dateToCompare.getTime()
-}
-
-module.exports = isBefore
-
-
-/***/ }),
-/* 535 */
+/* 554 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -65149,10 +66422,10 @@ module.exports = isAfter
 
 
 /***/ }),
-/* 536 */
+/* 555 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var addMonths = __webpack_require__(282)
+var addMonths = __webpack_require__(288)
 
 /**
  * @category Month Helpers
@@ -65179,7 +66452,7 @@ module.exports = subMonths
 
 
 /***/ }),
-/* 537 */
+/* 556 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -65213,7 +66486,7 @@ module.exports = getDaysInMonth
 
 
 /***/ }),
-/* 538 */
+/* 557 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
@@ -65261,41 +66534,60 @@ module.exports = isWithinRange
 
 
 /***/ }),
-/* 539 */
+/* 558 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(540);
+var content = __webpack_require__(559);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./statistics.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./statistics.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./statistics.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./statistics.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 540 */
+/* 559 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -65306,7 +66598,7 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 541 */
+/* 560 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65320,7 +66612,7 @@ var _regenerator = __webpack_require__(80);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _stringify = __webpack_require__(54);
+var _stringify = __webpack_require__(53);
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
@@ -65328,31 +66620,31 @@ var _asyncToGenerator2 = __webpack_require__(81);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _defineProperty2 = __webpack_require__(542);
+var _defineProperty2 = __webpack_require__(561);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _reactDom = __webpack_require__(106);
+var _reactDom = __webpack_require__(109);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
@@ -65360,25 +66652,25 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _TransactionContainer = __webpack_require__(543);
+var _TransactionContainer = __webpack_require__(562);
 
 var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
 
-var _is_before = __webpack_require__(534);
+var _is_before = __webpack_require__(287);
 
 var _is_before2 = _interopRequireDefault(_is_before);
 
-__webpack_require__(554);
+__webpack_require__(568);
 
 var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-var _reactFontawesome = __webpack_require__(556);
+var _reactFontawesome = __webpack_require__(570);
 
 var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
-var _fontawesomeFreeSolid = __webpack_require__(558);
+var _fontawesomeFreeSolid = __webpack_require__(572);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -65800,7 +67092,7 @@ var AccountsContainer = function (_Component) {
 exports.default = AccountsContainer;
 
 /***/ }),
-/* 542 */
+/* 561 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65808,7 +67100,7 @@ exports.default = AccountsContainer;
 
 exports.__esModule = true;
 
-var _defineProperty = __webpack_require__(139);
+var _defineProperty = __webpack_require__(138);
 
 var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
@@ -65830,7 +67122,7 @@ exports.default = function (obj, key, value) {
 };
 
 /***/ }),
-/* 543 */
+/* 562 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65840,23 +67132,23 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -65864,11 +67156,11 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Transaction = __webpack_require__(549);
+var _Transaction = __webpack_require__(563);
 
 var _Transaction2 = _interopRequireDefault(_Transaction);
 
-__webpack_require__(552);
+__webpack_require__(566);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -65960,12 +67252,7 @@ var TransactionContainer = function (_Component) {
 exports.default = TransactionContainer;
 
 /***/ }),
-/* 544 */,
-/* 545 */,
-/* 546 */,
-/* 547 */,
-/* 548 */,
-/* 549 */
+/* 563 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -65975,27 +67262,27 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _stringify = __webpack_require__(54);
+var _stringify = __webpack_require__(53);
 
 var _stringify2 = _interopRequireDefault(_stringify);
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -66007,7 +67294,7 @@ var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-__webpack_require__(550);
+__webpack_require__(564);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66114,41 +67401,60 @@ var Transaction = function (_Component) {
 exports.default = Transaction;
 
 /***/ }),
-/* 550 */
+/* 564 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(551);
+var content = __webpack_require__(565);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transaction.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transaction.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transaction.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transaction.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 551 */
+/* 565 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -66159,41 +67465,60 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 552 */
+/* 566 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(553);
+var content = __webpack_require__(567);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactionContainer.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactionContainer.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactionContainer.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./transactionContainer.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 553 */
+/* 567 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -66204,41 +67529,60 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 554 */
+/* 568 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(555);
+var content = __webpack_require__(569);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./accountsContainer.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./accountsContainer.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./accountsContainer.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./accountsContainer.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 555 */
+/* 569 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -66249,11 +67593,11 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 556 */
+/* 570 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, factory) {
-	 true ? module.exports = factory(__webpack_require__(557), __webpack_require__(8), __webpack_require__(2)) :
+	 true ? module.exports = factory(__webpack_require__(571), __webpack_require__(7), __webpack_require__(2)) :
 	typeof define === 'function' && define.amd ? define(['@fortawesome/fontawesome', 'prop-types', 'react'], factory) :
 	(global['react-fontawesome'] = factory(global.FontAwesome,global.PropTypes,global.React));
 }(this, (function (fontawesome,PropTypes,React) { 'use strict';
@@ -66836,10 +68180,10 @@ return FontAwesomeIcon$1;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(267), __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(274), __webpack_require__(5)))
 
 /***/ }),
-/* 557 */
+/* 571 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66854,8 +68198,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parse", function() { return parse; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findIconDefinition", function() { return findIconDefinition; });
 /*!
- * Font Awesome Free 5.0.5 by @fontawesome - http://fontawesome.com
- * License - http://fontawesome.com/license (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+ * Font Awesome Free 5.0.7 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 var noop = function noop() {};
 
@@ -67458,7 +68802,7 @@ function makeLayersTextAbstract(params) {
 
 var noop$2 = function noop() {};
 var p = config$1.measurePerformance && PERFORMANCE && PERFORMANCE.mark && PERFORMANCE.measure ? PERFORMANCE : { mark: noop$2, measure: noop$2 };
-var preamble = 'FA "5.0.5"';
+var preamble = 'FA "5.0.7"';
 
 var begin = function begin(name) {
   p.mark(preamble + ' ' + name + ' begins');
@@ -67740,6 +69084,8 @@ function disableObservation(operation) {
   disabled = false;
 }
 
+var mo = null;
+
 function observe(options) {
   if (!MUTATION_OBSERVER) return;
 
@@ -67748,7 +69094,7 @@ function observe(options) {
       pseudoElementsCallback = options.pseudoElementsCallback;
 
 
-  var mo = new MUTATION_OBSERVER(function (objects) {
+  mo = new MUTATION_OBSERVER(function (objects) {
     if (disabled) return;
 
     toArray(objects).forEach(function (mutationRecord) {
@@ -67784,6 +69130,12 @@ function observe(options) {
   mo.observe(DOCUMENT.getElementsByTagName('body')[0], {
     childList: true, attributes: true, characterData: true, subtree: true
   });
+}
+
+function disconnect() {
+  if (!mo) return;
+
+  mo.disconnect();
 }
 
 var styleParser = function (node) {
@@ -68433,8 +69785,10 @@ function resolveIcons(next) {
 }
 
 var library = new Library();
+
 var noAuto = function noAuto() {
-  return auto(false);
+  auto(false);
+  disconnect();
 };
 
 var dom = {
@@ -68563,7 +69917,7 @@ var layer = function layer(assembler) {
     var children = [];
 
     assembler(function (args) {
-      Array.isArray(args) ? children = args.map(function (a) {
+      Array.isArray(args) ? args.map(function (a) {
         children = children.concat(a.abstract);
       }) : children = children.concat(args.abstract);
     });
@@ -68652,7 +70006,7 @@ var config = api$1.config;
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(5)))
 
 /***/ }),
-/* 558 */
+/* 572 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68699,6 +70053,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBackward", function() { return faBackward; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBalanceScale", function() { return faBalanceScale; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBan", function() { return faBan; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBandAid", function() { return faBandAid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBarcode", function() { return faBarcode; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBars", function() { return faBars; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBaseballBall", function() { return faBaseballBall; });
@@ -68723,6 +70078,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBook", function() { return faBook; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBookmark", function() { return faBookmark; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBowlingBall", function() { return faBowlingBall; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBox", function() { return faBox; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBoxes", function() { return faBoxes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBraille", function() { return faBraille; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBriefcase", function() { return faBriefcase; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faBug", function() { return faBug; });
@@ -68778,6 +70135,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faCircle", function() { return faCircle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faCircleNotch", function() { return faCircleNotch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faClipboard", function() { return faClipboard; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faClipboardCheck", function() { return faClipboardCheck; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faClipboardList", function() { return faClipboardList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faClock", function() { return faClock; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faClone", function() { return faClone; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faClosedCaptioning", function() { return faClosedCaptioning; });
@@ -68806,7 +70165,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDatabase", function() { return faDatabase; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDeaf", function() { return faDeaf; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDesktop", function() { return faDesktop; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDna", function() { return faDna; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDollarSign", function() { return faDollarSign; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDolly", function() { return faDolly; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDollyFlatbed", function() { return faDollyFlatbed; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDotCircle", function() { return faDotCircle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faDownload", function() { return faDownload; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faEdit", function() { return faEdit; });
@@ -68849,6 +70211,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFilter", function() { return faFilter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFire", function() { return faFire; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFireExtinguisher", function() { return faFireExtinguisher; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFirstAid", function() { return faFirstAid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFlag", function() { return faFlag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFlagCheckered", function() { return faFlagCheckered; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faFlask", function() { return faFlask; });
@@ -68891,6 +70254,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHockeyPuck", function() { return faHockeyPuck; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHome", function() { return faHome; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHospital", function() { return faHospital; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHospitalSymbol", function() { return faHospitalSymbol; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHourglass", function() { return faHourglass; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHourglassEnd", function() { return faHourglassEnd; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faHourglassHalf", function() { return faHourglassHalf; });
@@ -68965,6 +70329,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faObjectUngroup", function() { return faObjectUngroup; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faOutdent", function() { return faOutdent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPaintBrush", function() { return faPaintBrush; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPallet", function() { return faPallet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPaperPlane", function() { return faPaperPlane; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPaperclip", function() { return faPaperclip; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faParagraph", function() { return faParagraph; });
@@ -68978,6 +70343,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPhone", function() { return faPhone; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPhoneSquare", function() { return faPhoneSquare; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPhoneVolume", function() { return faPhoneVolume; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPills", function() { return faPills; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPlane", function() { return faPlane; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPlay", function() { return faPlay; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faPlayCircle", function() { return faPlayCircle; });
@@ -69022,6 +70388,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShekelSign", function() { return faShekelSign; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShieldAlt", function() { return faShieldAlt; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShip", function() { return faShip; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShippingFast", function() { return faShippingFast; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShoppingBag", function() { return faShoppingBag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShoppingBasket", function() { return faShoppingBasket; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faShoppingCart", function() { return faShoppingCart; });
@@ -69065,6 +70432,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faSuperscript", function() { return faSuperscript; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faSync", function() { return faSync; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faSyncAlt", function() { return faSyncAlt; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faSyringe", function() { return faSyringe; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faTable", function() { return faTable; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faTableTennis", function() { return faTableTennis; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faTablet", function() { return faTablet; });
@@ -69080,6 +70448,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faTh", function() { return faTh; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faThLarge", function() { return faThLarge; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faThList", function() { return faThList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faThermometer", function() { return faThermometer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faThermometerEmpty", function() { return faThermometerEmpty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faThermometerFull", function() { return faThermometerFull; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faThermometerHalf", function() { return faThermometerHalf; });
@@ -69132,6 +70501,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faVolumeDown", function() { return faVolumeDown; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faVolumeOff", function() { return faVolumeOff; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faVolumeUp", function() { return faVolumeUp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faWarehouse", function() { return faWarehouse; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faWeight", function() { return faWeight; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faWheelchair", function() { return faWheelchair; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faWifi", function() { return faWifi; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faWindowClose", function() { return faWindowClose; });
@@ -69142,8 +70513,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faWrench", function() { return faWrench; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "faYenSign", function() { return faYenSign; });
 /*!
- * Font Awesome Free 5.0.6 by @fontawesome - http://fontawesome.com
- * License - http://fontawesome.com/license (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+ * Font Awesome Free 5.0.8 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 var _WINDOW = {};
 try {
@@ -69261,7 +70632,7 @@ var faAlignCenter = { prefix: 'fas', iconName: 'align-center', icon: [448, 512, 
 var faAlignJustify = { prefix: 'fas', iconName: 'align-justify', icon: [448, 512, [], "f039", "M0 84V44c0-8.837 7.163-16 16-16h416c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H16c-8.837 0-16-7.163-16-16zm16 144h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 256h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0-128h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"] };
 var faAlignLeft = { prefix: 'fas', iconName: 'align-left', icon: [448, 512, [], "f036", "M288 44v40c0 8.837-7.163 16-16 16H16c-8.837 0-16-7.163-16-16V44c0-8.837 7.163-16 16-16h256c8.837 0 16 7.163 16 16zM0 172v40c0 8.837 7.163 16 16 16h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16zm16 312h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm256-200H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16h256c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16z"] };
 var faAlignRight = { prefix: 'fas', iconName: 'align-right', icon: [448, 512, [], "f038", "M160 84V44c0-8.837 7.163-16 16-16h256c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H176c-8.837 0-16-7.163-16-16zM16 228h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 256h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm160-128h256c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H176c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"] };
-var faAmbulance = { prefix: 'fas', iconName: 'ambulance', icon: [640, 512, [], "f0f9", "M592 0H272c-26.51 0-48 21.49-48 48v48h-44.118a48 48 0 0 0-33.941 14.059l-99.882 99.882A48 48 0 0 0 32 243.882V352h-8c-13.255 0-24 10.745-24 24v16c0 13.255 10.745 24 24 24h40c0 53.019 42.981 96 96 96s96-42.981 96-96h128c0 53.019 42.981 96 96 96s96-42.981 96-96h40c13.255 0 24-10.745 24-24V48c0-26.51-21.49-48-48-48zM160 464c-26.467 0-48-21.533-48-48s21.533-48 48-48 48 21.533 48 48-21.533 48-48 48zm64-208H80v-12.118L179.882 144H224v112zm256 208c-26.467 0-48-21.533-48-48s21.533-48 48-48 48 21.533 48 48-21.533 48-48 48zm32-288v32c0 6.627-5.373 12-12 12h-56v56c0 6.627-5.373 12-12 12h-32c-6.627 0-12-5.373-12-12v-56h-56c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h56v-56c0-6.627 5.373-12 12-12h32c6.627 0 12 5.373 12 12v56h56c6.627 0 12 5.373 12 12z"] };
+var faAmbulance = { prefix: 'fas', iconName: 'ambulance', icon: [640, 512, [], "f0f9", "M624 352h-16V243.9c0-12.7-5.1-24.9-14.1-33.9L494 110.1c-9-9-21.2-14.1-33.9-14.1H416V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h16c0 53 43 96 96 96s96-43 96-96h128c0 53 43 96 96 96s96-43 96-96h48c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM160 464c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm144-248c0 4.4-3.6 8-8 8h-56v56c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8v-56h-56c-4.4 0-8-3.6-8-8v-48c0-4.4 3.6-8 8-8h56v-56c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v56h56c4.4 0 8 3.6 8 8v48zm176 248c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-208H416V144h44.1l99.9 99.9V256z"] };
 var faAmericanSignLanguageInterpreting = { prefix: 'fas', iconName: 'american-sign-language-interpreting', icon: [640, 512, [], "f2a3", "M290.547 189.039c-20.295-10.149-44.147-11.199-64.739-3.89 42.606 0 71.208 20.475 85.578 50.576 8.576 17.899-5.148 38.071-23.617 38.071 18.429 0 32.211 20.136 23.617 38.071-14.725 30.846-46.123 50.854-80.298 50.854-.557 0-94.471-8.615-94.471-8.615l-66.406 33.347c-9.384 4.693-19.815.379-23.895-7.781L1.86 290.747c-4.167-8.615-1.111-18.897 6.946-23.621l58.072-33.069L108 159.861c6.39-57.245 34.731-109.767 79.743-146.726 11.391-9.448 28.341-7.781 37.51 3.613 9.446 11.394 7.78 28.067-3.612 37.516-12.503 10.559-23.618 22.509-32.509 35.57 21.672-14.729 46.679-24.732 74.186-28.067 14.725-1.945 28.063 8.336 29.73 23.065 1.945 14.728-8.336 28.067-23.062 29.734-16.116 1.945-31.12 7.503-44.178 15.284 26.114-5.713 58.712-3.138 88.079 11.115 13.336 6.669 18.893 22.509 12.224 35.848-6.389 13.06-22.504 18.617-35.564 12.226zm-27.229 69.472c-6.112-12.505-18.338-20.286-32.231-20.286a35.46 35.46 0 0 0-35.565 35.57c0 21.428 17.808 35.57 35.565 35.57 13.893 0 26.119-7.781 32.231-20.286 4.446-9.449 13.614-15.006 23.339-15.284-9.725-.277-18.893-5.835-23.339-15.284zm374.821-37.237c4.168 8.615 1.111 18.897-6.946 23.621l-58.071 33.069L532 352.16c-6.39 57.245-34.731 109.767-79.743 146.726-10.932 9.112-27.799 8.144-37.51-3.613-9.446-11.394-7.78-28.067 3.613-37.516 12.503-10.559 23.617-22.509 32.508-35.57-21.672 14.729-46.679 24.732-74.186 28.067-10.021 2.506-27.552-5.643-29.73-23.065-1.945-14.728 8.336-28.067 23.062-29.734 16.116-1.946 31.12-7.503 44.178-15.284-26.114 5.713-58.712 3.138-88.079-11.115-13.336-6.669-18.893-22.509-12.224-35.848 6.389-13.061 22.505-18.619 35.565-12.227 20.295 10.149 44.147 11.199 64.739 3.89-42.606 0-71.208-20.475-85.578-50.576-8.576-17.899 5.148-38.071 23.617-38.071-18.429 0-32.211-20.136-23.617-38.071 14.033-29.396 44.039-50.887 81.966-50.854l92.803 8.615 66.406-33.347c9.408-4.704 19.828-.354 23.894 7.781l44.455 88.926zm-229.227-18.618c-13.893 0-26.119 7.781-32.231 20.286-4.446 9.449-13.614 15.006-23.339 15.284 9.725.278 18.893 5.836 23.339 15.284 6.112 12.505 18.338 20.286 32.231 20.286a35.46 35.46 0 0 0 35.565-35.57c0-21.429-17.808-35.57-35.565-35.57z"] };
 var faAnchor = { prefix: 'fas', iconName: 'anchor', icon: [576, 512, [], "f13d", "M12.971 352h32.394C67.172 454.735 181.944 512 288 512c106.229 0 220.853-57.38 242.635-160h32.394c10.691 0 16.045-12.926 8.485-20.485l-67.029-67.029c-4.686-4.686-12.284-4.686-16.971 0l-67.029 67.029c-7.56 7.56-2.206 20.485 8.485 20.485h35.146c-20.29 54.317-84.963 86.588-144.117 94.015V256h52c6.627 0 12-5.373 12-12v-40c0-6.627-5.373-12-12-12h-52v-5.47c37.281-13.178 63.995-48.725 64-90.518C384.005 43.772 341.605.738 289.37.01 235.723-.739 192 42.525 192 96c0 41.798 26.716 77.35 64 90.53V192h-52c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h52v190.015c-58.936-7.399-123.82-39.679-144.117-94.015h35.146c10.691 0 16.045-12.926 8.485-20.485l-67.029-67.029c-4.686-4.686-12.284-4.686-16.971 0L4.485 331.515C-3.074 339.074 2.28 352 12.971 352zM288 64c17.645 0 32 14.355 32 32s-14.355 32-32 32-32-14.355-32-32 14.355-32 32-32z"] };
 var faAngleDoubleDown = { prefix: 'fas', iconName: 'angle-double-down', icon: [320, 512, [], "f103", "M143 256.3L7 120.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0L313 86.3c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.4 9.5-24.6 9.5-34 .1zm34 192l136-136c9.4-9.4 9.4-24.6 0-33.9l-22.6-22.6c-9.4-9.4-24.6-9.4-33.9 0L160 352.1l-96.4-96.4c-9.4-9.4-24.6-9.4-33.9 0L7 278.3c-9.4 9.4-9.4 24.6 0 33.9l136 136c9.4 9.5 24.6 9.5 34 .1z"] };
@@ -69295,6 +70666,7 @@ var faAudioDescription = { prefix: 'fas', iconName: 'audio-description', icon: [
 var faBackward = { prefix: 'fas', iconName: 'backward', icon: [512, 512, [], "f04a", "M11.5 280.6l192 160c20.6 17.2 52.5 2.8 52.5-24.6V96c0-27.4-31.9-41.8-52.5-24.6l-192 160c-15.3 12.8-15.3 36.4 0 49.2zm256 0l192 160c20.6 17.2 52.5 2.8 52.5-24.6V96c0-27.4-31.9-41.8-52.5-24.6l-192 160c-15.3 12.8-15.3 36.4 0 49.2z"] };
 var faBalanceScale = { prefix: 'fas', iconName: 'balance-scale', icon: [640, 512, [], "f24e", "M352 448h168c13.255 0 24 10.745 24 24v16c0 13.255-10.745 24-24 24H120c-13.255 0-24-10.745-24-24v-16c0-13.255 10.745-24 24-24h168V153.324C264.469 143.04 246.836 121.778 241.603 96H120c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h135.999C270.594 12.57 293.828 0 320 0s49.406 12.57 64.001 32H520c13.255 0 24 10.745 24 24v16c0 13.255-10.745 24-24 24H398.397c-5.233 25.778-22.866 47.04-46.397 57.324V448zm287.981-112c.001-16.182 1.342-8.726-85.048-181.506-17.647-35.294-68.186-35.358-85.865 0C381.94 328.75 384.019 320.331 384.019 336H384c0 44.183 57.308 80 128 80s128-35.817 128-80h-.019zM512 176l72 144H440l72-144zM255.981 336c.001-16.182 1.342-8.726-85.048-181.506-17.647-35.294-68.186-35.358-85.865 0C-2.06 328.75.019 320.331.019 336H0c0 44.183 57.308 80 128 80s128-35.817 128-80h-.019zM128 176l72 144H56l72-144z"] };
 var faBan = { prefix: 'fas', iconName: 'ban', icon: [512, 512, [], "f05e", "M256 8C119.034 8 8 119.033 8 256s111.034 248 248 248 248-111.034 248-248S392.967 8 256 8zm130.108 117.892c65.448 65.448 70 165.481 20.677 235.637L150.47 105.216c70.204-49.356 170.226-44.735 235.638 20.676zM125.892 386.108c-65.448-65.448-70-165.481-20.677-235.637L361.53 406.784c-70.203 49.356-170.226 44.736-235.638-20.676z"] };
+var faBandAid = { prefix: 'fas', iconName: 'band-aid', icon: [640, 512, [], "f462", "M0 160v192c0 35.3 28.7 64 64 64h96V96H64c-35.3 0-64 28.7-64 64zm576-64h-96v320h96c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64zM192 416h256V96H192v320zm176-232c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm0 96c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm-96-96c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm0 96c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24z"] };
 var faBarcode = { prefix: 'fas', iconName: 'barcode', icon: [512, 512, [], "f02a", "M0 448V64h18v384H0zm26.857-.273V64H36v383.727h-9.143zm27.143 0V64h8.857v383.727H54zm44.857 0V64h8.857v383.727h-8.857zm36 0V64h17.714v383.727h-17.714zm44.857 0V64h8.857v383.727h-8.857zm18 0V64h8.857v383.727h-8.857zm18 0V64h8.857v383.727h-8.857zm35.715 0V64h18v383.727h-18zm44.857 0V64h18v383.727h-18zm35.999 0V64h18.001v383.727h-18.001zm36.001 0V64h18.001v383.727h-18.001zm26.857 0V64h18v383.727h-18zm45.143 0V64h26.857v383.727h-26.857zm35.714 0V64h9.143v383.727H476zm18 .273V64h18v384h-18z"] };
 var faBars = { prefix: 'fas', iconName: 'bars', icon: [448, 512, [], "f0c9", "M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"] };
 var faBaseballBall = { prefix: 'fas', iconName: 'baseball-ball', icon: [496, 512, [], "f433", "M368.5 363.9l28.8-13.9c11.1 22.9 26 43.2 44.1 60.9 34-42.5 54.5-96.3 54.5-154.9 0-58.5-20.4-112.2-54.2-154.6-17.8 17.3-32.6 37.1-43.6 59.5l-28.7-14.1c12.8-26 30-49 50.8-69C375.6 34.7 315 8 248 8 181.1 8 120.5 34.6 75.9 77.7c20.7 19.9 37.9 42.9 50.7 68.8l-28.7 14.1c-11-22.3-25.7-42.1-43.5-59.4C20.4 143.7 0 197.4 0 256c0 58.6 20.4 112.3 54.4 154.7 18.2-17.7 33.2-38 44.3-61l28.8 13.9c-12.9 26.7-30.3 50.3-51.5 70.7 44.5 43.1 105.1 69.7 172 69.7 66.8 0 127.3-26.5 171.9-69.5-21.1-20.4-38.5-43.9-51.4-70.6zm-228.3-32l-30.5-9.8c14.9-46.4 12.7-93.8-.6-134l30.4-10c15 45.6 18 99.9.7 153.8zm216.3-153.4l30.4 10c-13.2 40.1-15.5 87.5-.6 134l-30.5 9.8c-17.3-54-14.3-108.3.7-153.8z"] };
@@ -69319,6 +70691,8 @@ var faBomb = { prefix: 'fas', iconName: 'bomb', icon: [512, 512, [], "f1e2", "M4
 var faBook = { prefix: 'fas', iconName: 'book', icon: [448, 512, [], "f02d", "M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z"] };
 var faBookmark = { prefix: 'fas', iconName: 'bookmark', icon: [384, 512, [], "f02e", "M0 512V48C0 21.49 21.49 0 48 0h288c26.51 0 48 21.49 48 48v464L192 400 0 512z"] };
 var faBowlingBall = { prefix: 'fas', iconName: 'bowling-ball', icon: [496, 512, [], "f436", "M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zM120 192c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm64-96c0-17.7 14.3-32 32-32s32 14.3 32 32-14.3 32-32 32-32-14.3-32-32zm48 144c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"] };
+var faBox = { prefix: 'fas', iconName: 'box', icon: [512, 512, [], "f466", "M509.5 184.6L458.9 32.8C452.4 13.2 434.1 0 413.4 0H272v192h238.7c-.4-2.5-.4-5-1.2-7.4zM240 0H98.6c-20.7 0-39 13.2-45.5 32.8L2.5 184.6c-.8 2.4-.8 4.9-1.2 7.4H240V0zM0 224v240c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V224H0z"] };
+var faBoxes = { prefix: 'fas', iconName: 'boxes', icon: [576, 512, [], "f468", "M560 288h-80v96l-32-21.3-32 21.3v-96h-80c-8.8 0-16 7.2-16 16v192c0 8.8 7.2 16 16 16h224c8.8 0 16-7.2 16-16V304c0-8.8-7.2-16-16-16zm-384-64h224c8.8 0 16-7.2 16-16V16c0-8.8-7.2-16-16-16h-80v96l-32-21.3L256 96V0h-80c-8.8 0-16 7.2-16 16v192c0 8.8 7.2 16 16 16zm64 64h-80v96l-32-21.3L96 384v-96H16c-8.8 0-16 7.2-16 16v192c0 8.8 7.2 16 16 16h224c8.8 0 16-7.2 16-16V304c0-8.8-7.2-16-16-16z"] };
 var faBraille = { prefix: 'fas', iconName: 'braille', icon: [640, 512, [], "f2a1", "M128 256c0 35.346-28.654 64-64 64S0 291.346 0 256s28.654-64 64-64 64 28.654 64 64zM64 384c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0-352C28.654 32 0 60.654 0 96s28.654 64 64 64 64-28.654 64-64-28.654-64-64-64zm160 192c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0 160c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0-352c-35.346 0-64 28.654-64 64s28.654 64 64 64 64-28.654 64-64-28.654-64-64-64zm224 192c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0 160c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0-352c-35.346 0-64 28.654-64 64s28.654 64 64 64 64-28.654 64-64-28.654-64-64-64zm160 192c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0 160c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32zm0-320c-17.673 0-32 14.327-32 32s14.327 32 32 32 32-14.327 32-32-14.327-32-32-32z"] };
 var faBriefcase = { prefix: 'fas', iconName: 'briefcase', icon: [512, 512, [], "f0b1", "M320 288h192v144c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V288h192v20c0 6.627 5.373 12 12 12h104c6.627 0 12-5.373 12-12v-20zm192-112v80H0v-80c0-26.51 21.49-48 48-48h80V80c0-26.51 21.49-48 48-48h160c26.51 0 48 21.49 48 48v48h80c26.51 0 48 21.49 48 48zM320 96H192v32h128V96z"] };
 var faBug = { prefix: 'fas', iconName: 'bug', icon: [512, 512, [], "f188", "M511.988 288.9c-.478 17.43-15.217 31.1-32.653 31.1H424v16c0 21.864-4.882 42.584-13.6 61.145l60.228 60.228c12.496 12.497 12.496 32.758 0 45.255-12.498 12.497-32.759 12.496-45.256 0l-54.736-54.736C345.886 467.965 314.351 480 280 480V236c0-6.627-5.373-12-12-12h-24c-6.627 0-12 5.373-12 12v244c-34.351 0-65.886-12.035-90.636-32.108l-54.736 54.736c-12.498 12.497-32.759 12.496-45.256 0-12.496-12.497-12.496-32.758 0-45.255l60.228-60.228C92.882 378.584 88 357.864 88 336v-16H32.666C15.23 320 .491 306.33.013 288.9-.484 270.816 14.028 256 32 256h56v-58.745l-46.628-46.628c-12.496-12.497-12.496-32.758 0-45.255 12.498-12.497 32.758-12.497 45.256 0L141.255 160h229.489l54.627-54.627c12.498-12.497 32.758-12.497 45.256 0 12.496 12.497 12.496 32.758 0 45.255L424 197.255V256h56c17.972 0 32.484 14.816 31.988 32.9zM257 0c-61.856 0-112 50.144-112 112h224C369 50.144 318.856 0 257 0z"] };
@@ -69374,6 +70748,8 @@ var faChild = { prefix: 'fas', iconName: 'child', icon: [384, 512, [], "f1ae", "
 var faCircle = { prefix: 'fas', iconName: 'circle', icon: [512, 512, [], "f111", "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"] };
 var faCircleNotch = { prefix: 'fas', iconName: 'circle-notch', icon: [512, 512, [], "f1ce", "M288 39.056v16.659c0 10.804 7.281 20.159 17.686 23.066C383.204 100.434 440 171.518 440 256c0 101.689-82.295 184-184 184-101.689 0-184-82.295-184-184 0-84.47 56.786-155.564 134.312-177.219C216.719 75.874 224 66.517 224 55.712V39.064c0-15.709-14.834-27.153-30.046-23.234C86.603 43.482 7.394 141.206 8.003 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.788 504 256c0-115.633-79.14-212.779-186.211-240.236C302.678 11.889 288 23.456 288 39.056z"] };
 var faClipboard = { prefix: 'fas', iconName: 'clipboard', icon: [384, 512, [], "f328", "M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"] };
+var faClipboardCheck = { prefix: 'fas', iconName: 'clipboard-check', icon: [384, 512, [], "f46c", "M336 64h-80c0-35.3-28.7-64-64-64s-64 28.7-64 64H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM192 40c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm121.2 231.8l-143 141.8c-4.7 4.7-12.3 4.6-17-.1l-82.6-83.3c-4.7-4.7-4.6-12.3.1-17L99.1 285c4.7-4.7 12.3-4.6 17 .1l46 46.4 106-105.2c4.7-4.7 12.3-4.6 17 .1l28.2 28.4c4.7 4.8 4.6 12.3-.1 17z"] };
+var faClipboardList = { prefix: 'fas', iconName: 'clipboard-list', icon: [384, 512, [], "f46d", "M336 64h-80c0-35.3-28.7-64-64-64s-64 28.7-64 64H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM96 424c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm0-96c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm0-96c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24zm96-192c13.3 0 24 10.7 24 24s-10.7 24-24 24-24-10.7-24-24 10.7-24 24-24zm128 368c0 4.4-3.6 8-8 8H168c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-96c0 4.4-3.6 8-8 8H168c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-96c0 4.4-3.6 8-8 8H168c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16z"] };
 var faClock = { prefix: 'fas', iconName: 'clock', icon: [512, 512, [], "f017", "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm57.1 350.1L224.9 294c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h48c6.6 0 12 5.4 12 12v137.7l63.5 46.2c5.4 3.9 6.5 11.4 2.6 16.8l-28.2 38.8c-3.9 5.3-11.4 6.5-16.8 2.6z"] };
 var faClone = { prefix: 'fas', iconName: 'clone', icon: [512, 512, [], "f24d", "M464 0c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48H176c-26.51 0-48-21.49-48-48V48c0-26.51 21.49-48 48-48h288M176 416c-44.112 0-80-35.888-80-80V128H48c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h288c26.51 0 48-21.49 48-48v-48H176z"] };
 var faClosedCaptioning = { prefix: 'fas', iconName: 'closed-captioning', icon: [512, 512, [], "f20a", "M464 64H48C21.5 64 0 85.5 0 112v288c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48zM218.1 287.7c2.8-2.5 7.1-2.1 9.2.9l19.5 27.7c1.7 2.4 1.5 5.6-.5 7.7-53.6 56.8-172.8 32.1-172.8-67.9 0-97.3 121.7-119.5 172.5-70.1 2.1 2 2.5 3.2 1 5.7l-17.5 30.5c-1.9 3.1-6.2 4-9.1 1.7-40.8-32-94.6-14.9-94.6 31.2.1 48 51.1 70.5 92.3 32.6zm190.4 0c2.8-2.5 7.1-2.1 9.2.9l19.5 27.7c1.7 2.4 1.5 5.6-.5 7.7-53.5 56.9-172.7 32.1-172.7-67.9 0-97.3 121.7-119.5 172.5-70.1 2.1 2 2.5 3.2 1 5.7L420 222.2c-1.9 3.1-6.2 4-9.1 1.7-40.8-32-94.6-14.9-94.6 31.2 0 48 51 70.5 92.2 32.6z"] };
@@ -69402,7 +70778,10 @@ var faCut = { prefix: 'fas', iconName: 'cut', icon: [448, 512, [], "f0c4", "M444
 var faDatabase = { prefix: 'fas', iconName: 'database', icon: [448, 512, [], "f1c0", "M448 73.143v45.714C448 159.143 347.667 192 224 192S0 159.143 0 118.857V73.143C0 32.857 100.333 0 224 0s224 32.857 224 73.143zM448 176v102.857C448 319.143 347.667 352 224 352S0 319.143 0 278.857V176c48.125 33.143 136.208 48.572 224 48.572S399.874 209.143 448 176zm0 160v102.857C448 479.143 347.667 512 224 512S0 479.143 0 438.857V336c48.125 33.143 136.208 48.572 224 48.572S399.874 369.143 448 336z"] };
 var faDeaf = { prefix: 'fas', iconName: 'deaf', icon: [512, 512, [], "f2a4", "M216 260c0 15.464-12.536 28-28 28s-28-12.536-28-28c0-44.112 35.888-80 80-80s80 35.888 80 80c0 15.464-12.536 28-28 28s-28-12.536-28-28c0-13.234-10.767-24-24-24s-24 10.766-24 24zm24-176c-97.047 0-176 78.953-176 176 0 15.464 12.536 28 28 28s28-12.536 28-28c0-66.168 53.832-120 120-120s120 53.832 120 120c0 75.164-71.009 70.311-71.997 143.622L288 404c0 28.673-23.327 52-52 52-15.464 0-28 12.536-28 28s12.536 28 28 28c59.475 0 107.876-48.328 108-107.774.595-34.428 72-48.24 72-144.226 0-97.047-78.953-176-176-176zm268.485-52.201L480.2 3.515c-4.687-4.686-12.284-4.686-16.971 0L376.2 90.544c-4.686 4.686-4.686 12.284 0 16.971l28.285 28.285c4.686 4.686 12.284 4.686 16.97 0l87.03-87.029c4.687-4.688 4.687-12.286 0-16.972zM168.97 314.745c-4.686-4.686-12.284-4.686-16.97 0L3.515 463.23c-4.686 4.686-4.686 12.284 0 16.971L31.8 508.485c4.687 4.686 12.284 4.686 16.971 0L197.256 360c4.686-4.686 4.686-12.284 0-16.971l-28.286-28.284z"] };
 var faDesktop = { prefix: 'fas', iconName: 'desktop', icon: [576, 512, [], "f108", "M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"] };
+var faDna = { prefix: 'fas', iconName: 'dna', icon: [448, 512, [], "f471", "M447.9 17.9C449 8.4 441.6.1 432 .1L399.6 0c-8.1 0-14.9 5.9-16 13.9-.7 4.9-1.8 11.1-3.4 18.1H67.9c-1.6-6.9-2.9-13.2-3.5-18.1-1.1-8-7.9-14-16-13.9L16.1.1C6.5.1-1 8.4.1 17.9c4.6 37.9 25.6 129 118.9 207.7 17.6-12.4 37.1-24.2 58.5-35.4-6.2-4.6-11.4-9.4-17-14.2h127.6c-21.3 18.1-47 35.6-78.7 51.4C37.5 312.9 5.9 446.2.1 494.1c-1.1 9.5 6.3 17.8 15.9 17.8l32.3.1c8.1 0 14.9-5.9 16-13.9.7-4.9 1.8-11.1 3.4-18.1h312.4c1.6 7 2.7 13.1 3.4 18.1 1.1 8 7.9 14 16 13.9l32.3-.1c9.6 0 17.1-8.3 15.9-17.8-5-42.9-31.1-153.9-159.7-238.1C416.5 171.8 442.7 60.8 447.9 17.9zM224 292.4c25.1 13.7 46.4 28.4 64.3 43.6H159.7c17.9-15.2 39.2-30 64.3-43.6zM92.9 416c5.8-10.4 12.8-21.1 21-32h220c8.3 10.9 15.3 21.6 21 32h-262zM355.1 96c-5.8 10.4-12.8 21.1-21 32H114.6c-8.3-10.9-15.4-21.6-21.2-32h261.7z"] };
 var faDollarSign = { prefix: 'fas', iconName: 'dollar-sign', icon: [320, 512, [], "f155", "M113.411 169.375c0-23.337 21.536-38.417 54.865-38.417 26.726 0 54.116 12.263 76.461 28.333 5.88 4.229 14.13 2.354 17.575-4.017l23.552-43.549c2.649-4.898 1.596-10.991-2.575-14.68-24.281-21.477-59.135-34.09-91.289-37.806V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v49.832c-58.627 13.29-97.299 55.917-97.299 108.639 0 123.533 184.765 110.81 184.765 169.414 0 19.823-16.311 41.158-52.124 41.158-30.751 0-62.932-15.88-87.848-35.887-5.31-4.264-13.082-3.315-17.159 2.14l-30.389 40.667c-3.627 4.854-3.075 11.657 1.302 15.847 24.049 23.02 59.249 41.255 98.751 47.973V500c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12v-47.438c65.72-10.215 106.176-59.186 106.176-116.516.001-119.688-184.764-103.707-184.764-166.671z"] };
+var faDolly = { prefix: 'fas', iconName: 'dolly', icon: [576, 512, [], "f472", "M294.2 277.7c18 5 34.7 13.4 49.5 24.7l161.5-53.8c8.4-2.8 12.9-11.9 10.1-20.2L454.9 47.2c-2.8-8.4-11.9-12.9-20.2-10.1l-61.1 20.4 33.1 99.4L346 177l-33.1-99.4-61.6 20.5c-8.4 2.8-12.9 11.9-10.1 20.2l53 159.4zm281 48.7L565 296c-2.8-8.4-11.9-12.9-20.2-10.1l-213.5 71.2c-17.2-22-43.6-36.4-73.5-37L158.4 21.9C154 8.8 141.8 0 128 0H16C7.2 0 0 7.2 0 16v32c0 8.8 7.2 16 16 16h88.9l92.2 276.7c-26.1 20.4-41.7 53.6-36 90.5 6.1 39.4 37.9 72.3 77.3 79.2 60.2 10.7 112.3-34.8 113.4-92.6l213.3-71.2c8.3-2.8 12.9-11.8 10.1-20.2zM256 464c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"] };
+var faDollyFlatbed = { prefix: 'fas', iconName: 'dolly-flatbed', icon: [640, 512, [], "f474", "M208 320h384c8.8 0 16-7.2 16-16V48c0-8.8-7.2-16-16-16H448v128l-48-32-48 32V32H208c-8.8 0-16 7.2-16 16v256c0 8.8 7.2 16 16 16zm416 64H128V16c0-8.8-7.2-16-16-16H16C7.2 0 0 7.2 0 16v32c0 8.8 7.2 16 16 16h48v368c0 8.8 7.2 16 16 16h82.9c-1.8 5-2.9 10.4-2.9 16 0 26.5 21.5 48 48 48s48-21.5 48-48c0-5.6-1.2-11-2.9-16H451c-1.8 5-2.9 10.4-2.9 16 0 26.5 21.5 48 48 48s48-21.5 48-48c0-5.6-1.2-11-2.9-16H624c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16z"] };
 var faDotCircle = { prefix: 'fas', iconName: 'dot-circle', icon: [512, 512, [], "f192", "M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm80 248c0 44.112-35.888 80-80 80s-80-35.888-80-80 35.888-80 80-80 80 35.888 80 80z"] };
 var faDownload = { prefix: 'fas', iconName: 'download', icon: [512, 512, [], "f019", "M216 0h80c13.3 0 24 10.7 24 24v168h87.7c17.8 0 26.7 21.5 14.1 34.1L269.7 378.3c-7.5 7.5-19.8 7.5-27.3 0L90.1 226.1c-12.6-12.6-3.7-34.1 14.1-34.1H192V24c0-13.3 10.7-24 24-24zm296 376v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h146.7l49 49c20.1 20.1 52.5 20.1 72.6 0l49-49H488c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"] };
 var faEdit = { prefix: 'fas', iconName: 'edit', icon: [576, 512, [], "f044", "M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"] };
@@ -69445,6 +70824,7 @@ var faFilm = { prefix: 'fas', iconName: 'film', icon: [512, 512, [], "f008", "M4
 var faFilter = { prefix: 'fas', iconName: 'filter', icon: [512, 512, [], "f0b0", "M487.976 0H24.028C2.71 0-8.047 25.866 7.058 40.971L192 225.941V432c0 7.831 3.821 15.17 10.237 19.662l80 55.98C298.02 518.69 320 507.493 320 487.98V225.941l184.947-184.97C520.021 25.896 509.338 0 487.976 0z"] };
 var faFire = { prefix: 'fas', iconName: 'fire', icon: [384, 512, [], "f06d", "M216 23.858c0-23.802-30.653-32.765-44.149-13.038C48 191.851 224 200 224 288c0 35.629-29.114 64.458-64.85 63.994C123.98 351.538 96 322.22 96 287.046v-85.51c0-21.703-26.471-32.225-41.432-16.504C27.801 213.158 0 261.332 0 320c0 105.869 86.131 192 192 192s192-86.131 192-192c0-170.29-168-193.003-168-296.142z"] };
 var faFireExtinguisher = { prefix: 'fas', iconName: 'fire-extinguisher', icon: [448, 512, [], "f134", "M434.027 26.329l-168 28C254.693 56.218 256 67.8 256 72h-58.332C208.353 36.108 181.446 0 144 0c-39.435 0-66.368 39.676-52.228 76.203-52.039 13.051-75.381 54.213-90.049 90.884-4.923 12.307 1.063 26.274 13.37 31.197 12.317 4.926 26.279-1.075 31.196-13.37C75.058 112.99 106.964 120 168 120v27.076c-41.543 10.862-72 49.235-72 94.129V488c0 13.255 10.745 24 24 24h144c13.255 0 24-10.745 24-24V240c0-44.731-30.596-82.312-72-92.97V120h40c0 2.974-1.703 15.716 10.027 17.671l168 28C441.342 166.89 448 161.25 448 153.834V38.166c0-7.416-6.658-13.056-13.973-11.837zM144 72c-8.822 0-16-7.178-16-16s7.178-16 16-16 16 7.178 16 16-7.178 16-16 16z"] };
+var faFirstAid = { prefix: 'fas', iconName: 'first-aid', icon: [576, 512, [], "f479", "M0 80v352c0 26.5 21.5 48 48 48h48V32H48C21.5 32 0 53.5 0 80zm128 400h320V32H128v448zm64-248c0-4.4 3.6-8 8-8h56v-56c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v56h56c4.4 0 8 3.6 8 8v48c0 4.4-3.6 8-8 8h-56v56c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8v-56h-56c-4.4 0-8-3.6-8-8v-48zM528 32h-48v448h48c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48z"] };
 var faFlag = { prefix: 'fas', iconName: 'flag', icon: [512, 512, [], "f024", "M349.565 98.783C295.978 98.783 251.721 64 184.348 64c-24.955 0-47.309 4.384-68.045 12.013a55.947 55.947 0 0 0 3.586-23.562C118.117 24.015 94.806 1.206 66.338.048 34.345-1.254 8 24.296 8 56c0 19.026 9.497 35.825 24 45.945V488c0 13.255 10.745 24 24 24h16c13.255 0 24-10.745 24-24v-94.4c28.311-12.064 63.582-22.122 114.435-22.122 53.588 0 97.844 34.783 165.217 34.783 48.169 0 86.667-16.294 122.505-40.858C506.84 359.452 512 349.571 512 339.045v-243.1c0-23.393-24.269-38.87-45.485-29.016-34.338 15.948-76.454 31.854-116.95 31.854z"] };
 var faFlagCheckered = { prefix: 'fas', iconName: 'flag-checkered', icon: [512, 512, [], "f11e", "M466.515 66.928C487.731 57.074 512 72.551 512 95.944v243.1c0 10.526-5.161 20.407-13.843 26.358-35.837 24.564-74.335 40.858-122.505 40.858-67.373 0-111.63-34.783-165.217-34.783-50.853 0-86.124 10.058-114.435 22.122V488c0 13.255-10.745 24-24 24H56c-13.255 0-24-10.745-24-24V101.945C17.497 91.825 8 75.026 8 56 8 24.296 34.345-1.254 66.338.048c28.468 1.158 51.779 23.968 53.551 52.404.52 8.342-.81 16.31-3.586 23.562C137.039 68.384 159.393 64 184.348 64c67.373 0 111.63 34.783 165.217 34.783 40.496 0 82.612-15.906 116.95-31.855zM96 134.63v70.49c29-10.67 51.18-17.83 73.6-20.91v-71.57c-23.5 2.17-40.44 9.79-73.6 21.99zm220.8 9.19c-26.417-4.672-49.886-13.979-73.6-21.34v67.42c24.175 6.706 47.566 16.444 73.6 22.31v-68.39zm-147.2 40.39v70.04c32.796-2.978 53.91-.635 73.6 3.8V189.9c-25.247-7.035-46.581-9.423-73.6-5.69zm73.6 142.23c26.338 4.652 49.732 13.927 73.6 21.34v-67.41c-24.277-6.746-47.54-16.45-73.6-22.32v68.39zM96 342.1c23.62-8.39 47.79-13.84 73.6-16.56v-71.29c-26.11 2.35-47.36 8.04-73.6 17.36v70.49zm368-221.6c-21.3 8.85-46.59 17.64-73.6 22.47v71.91c27.31-4.36 50.03-14.1 73.6-23.89V120.5zm0 209.96v-70.49c-22.19 14.2-48.78 22.61-73.6 26.02v71.58c25.07-2.38 48.49-11.04 73.6-27.11zM316.8 212.21v68.16c25.664 7.134 46.616 9.342 73.6 5.62v-71.11c-25.999 4.187-49.943 2.676-73.6-2.67z"] };
 var faFlask = { prefix: 'fas', iconName: 'flask', icon: [448, 512, [], "f0c3", "M437.2 403.5L320 215V64h8c13.3 0 24-10.7 24-24V24c0-13.3-10.7-24-24-24H120c-13.3 0-24 10.7-24 24v16c0 13.3 10.7 24 24 24h8v151L10.8 403.5C-18.5 450.6 15.3 512 70.9 512h306.2c55.7 0 89.4-61.5 60.1-108.5zM137.9 320l48.2-77.6c3.7-5.2 5.8-11.6 5.8-18.4V64h64v160c0 6.9 2.2 13.2 5.8 18.4l48.2 77.6h-172z"] };
@@ -69482,11 +70862,12 @@ var faHdd = { prefix: 'fas', iconName: 'hdd', icon: [576, 512, [], "f0a0", "M576
 var faHeading = { prefix: 'fas', iconName: 'heading', icon: [512, 512, [], "f1dc", "M496 80V48c0-8.837-7.163-16-16-16H320c-8.837 0-16 7.163-16 16v32c0 8.837 7.163 16 16 16h37.621v128H154.379V96H192c8.837 0 16-7.163 16-16V48c0-8.837-7.163-16-16-16H32c-8.837 0-16 7.163-16 16v32c0 8.837 7.163 16 16 16h37.275v320H32c-8.837 0-16 7.163-16 16v32c0 8.837 7.163 16 16 16h160c8.837 0 16-7.163 16-16v-32c0-8.837-7.163-16-16-16h-37.621V288H357.62v128H320c-8.837 0-16 7.163-16 16v32c0 8.837 7.163 16 16 16h160c8.837 0 16-7.163 16-16v-32c0-8.837-7.163-16-16-16h-37.275V96H480c8.837 0 16-7.163 16-16z"] };
 var faHeadphones = { prefix: 'fas', iconName: 'headphones', icon: [512, 512, [], "f025", "M256 32C114.52 32 0 146.496 0 288v48a32 32 0 0 0 17.689 28.622l14.383 7.191C34.083 431.903 83.421 480 144 480h24c13.255 0 24-10.745 24-24V280c0-13.255-10.745-24-24-24h-24c-31.342 0-59.671 12.879-80 33.627V288c0-105.869 86.131-192 192-192s192 86.131 192 192v1.627C427.671 268.879 399.342 256 368 256h-24c-13.255 0-24 10.745-24 24v176c0 13.255 10.745 24 24 24h24c60.579 0 109.917-48.098 111.928-108.187l14.382-7.191A32 32 0 0 0 512 336v-48c0-141.479-114.496-256-256-256z"] };
 var faHeart = { prefix: 'fas', iconName: 'heart', icon: [576, 512, [], "f004", "M414.9 24C361.8 24 312 65.7 288 89.3 264 65.7 214.2 24 161.1 24 70.3 24 16 76.9 16 165.5c0 72.6 66.8 133.3 69.2 135.4l187 180.8c8.8 8.5 22.8 8.5 31.6 0l186.7-180.2c2.7-2.7 69.5-63.5 69.5-136C560 76.9 505.7 24 414.9 24z"] };
-var faHeartbeat = { prefix: 'fas', iconName: 'heartbeat', icon: [576, 512, [], "f21e", "M47.9 257C31.6 232.7 16 200.5 16 165.5 16 76.9 70.3 24 161.1 24 214.2 24 264 65.7 288 89.3 312 65.7 361.8 24 414.9 24 505.7 24 560 76.9 560 165.5c0 35-15.5 67.2-31.9 91.5H408l-26.4-58.6c-4.7-8.9-17.6-8.5-21.6.7l-53.3 134.6L235.4 120c-3.7-10.6-18.7-10.7-22.6-.2l-48 137.2H47.9zm348 32c-4.5 0-8.6-2.5-10.6-6.4l-12.8-32.5-56.9 142.8c-4.4 9.9-18.7 9.4-22.3-.9l-69.7-209.2-33.6 98.4c-1.7 4.7-6.2 7.8-11.2 7.8H73.4c5.3 5.7-12.8-12 198.9 192.6 8.8 8.5 22.8 8.5 31.6 0 204.3-197.2 191-184 199-192.6h-107z"] };
+var faHeartbeat = { prefix: 'fas', iconName: 'heartbeat', icon: [512, 512, [], "f21e", "M320.2 243.8l-49.7 99.4c-6 12.1-23.4 11.7-28.9-.6l-56.9-126.3-30 71.7H60.6l182.5 186.5c7.1 7.3 18.6 7.3 25.7 0L451.4 288H342.3l-22.1-44.2zM473.7 73.9l-2.4-2.5c-51.5-52.6-135.8-52.6-187.4 0L256 100l-27.9-28.5c-51.5-52.7-135.9-52.7-187.4 0l-2.4 2.4C-10.4 123.7-12.5 203 31 256h102.4l35.9-86.2c5.4-12.9 23.6-13.2 29.4-.4l58.2 129.3 49-97.9c5.9-11.8 22.7-11.8 28.6 0l27.6 55.2H481c43.5-53 41.4-132.3-7.3-182.1z"] };
 var faHistory = { prefix: 'fas', iconName: 'history', icon: [512, 512, [], "f1da", "M504 255.531c.253 136.64-111.18 248.372-247.82 248.468-59.015.042-113.223-20.53-155.822-54.911-11.077-8.94-11.905-25.541-1.839-35.607l11.267-11.267c8.609-8.609 22.353-9.551 31.891-1.984C173.062 425.135 212.781 440 256 440c101.705 0 184-82.311 184-184 0-101.705-82.311-184-184-184-48.814 0-93.149 18.969-126.068 49.932l50.754 50.754c10.08 10.08 2.941 27.314-11.313 27.314H24c-8.837 0-16-7.163-16-16V38.627c0-14.254 17.234-21.393 27.314-11.314l49.372 49.372C129.209 34.136 189.552 8 256 8c136.81 0 247.747 110.78 248 247.531zm-180.912 78.784l9.823-12.63c8.138-10.463 6.253-25.542-4.21-33.679L288 256.349V152c0-13.255-10.745-24-24-24h-16c-13.255 0-24 10.745-24 24v135.651l65.409 50.874c10.463 8.137 25.541 6.253 33.679-4.21z"] };
 var faHockeyPuck = { prefix: 'fas', iconName: 'hockey-puck', icon: [512, 512, [], "f453", "M0 160c0-53 114.6-96 256-96s256 43 256 96-114.6 96-256 96S0 213 0 160zm0 82.2V352c0 53 114.6 96 256 96s256-43 256-96V242.2c-113.4 82.3-398.5 82.4-512 0z"] };
 var faHome = { prefix: 'fas', iconName: 'home', icon: [576, 512, [], "f015", "M488 312.7V456c0 13.3-10.7 24-24 24H348c-6.6 0-12-5.4-12-12V356c0-6.6-5.4-12-12-12h-72c-6.6 0-12 5.4-12 12v112c0 6.6-5.4 12-12 12H112c-13.3 0-24-10.7-24-24V312.7c0-3.6 1.6-7 4.4-9.3l188-154.8c4.4-3.6 10.8-3.6 15.3 0l188 154.8c2.7 2.3 4.3 5.7 4.3 9.3zm83.6-60.9L488 182.9V44.4c0-6.6-5.4-12-12-12h-56c-6.6 0-12 5.4-12 12V117l-89.5-73.7c-17.7-14.6-43.3-14.6-61 0L4.4 251.8c-5.1 4.2-5.8 11.8-1.6 16.9l25.5 31c4.2 5.1 11.8 5.8 16.9 1.6l235.2-193.7c4.4-3.6 10.8-3.6 15.3 0l235.2 193.7c5.1 4.2 12.7 3.5 16.9-1.6l25.5-31c4.2-5.2 3.4-12.7-1.7-16.9z"] };
 var faHospital = { prefix: 'fas', iconName: 'hospital', icon: [448, 512, [], "f0f8", "M448 492v20H0v-20c0-6.627 5.373-12 12-12h20V120c0-13.255 10.745-24 24-24h88V24c0-13.255 10.745-24 24-24h112c13.255 0 24 10.745 24 24v72h88c13.255 0 24 10.745 24 24v360h20c6.627 0 12 5.373 12 12zM308 192h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12v-40c0-6.627-5.373-12-12-12zm-168 64h40c6.627 0 12-5.373 12-12v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12zm104 128h-40c-6.627 0-12 5.373-12 12v84h64v-84c0-6.627-5.373-12-12-12zm64-96h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12v-40c0-6.627-5.373-12-12-12zm-116 12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12v-40zM182 96h26v26a6 6 0 0 0 6 6h20a6 6 0 0 0 6-6V96h26a6 6 0 0 0 6-6V70a6 6 0 0 0-6-6h-26V38a6 6 0 0 0-6-6h-20a6 6 0 0 0-6 6v26h-26a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6z"] };
+var faHospitalSymbol = { prefix: 'fas', iconName: 'hospital-symbol', icon: [512, 512, [], "f47e", "M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm112 376c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8v-88h-96v88c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V136c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v88h96v-88c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v240z"] };
 var faHourglass = { prefix: 'fas', iconName: 'hourglass', icon: [384, 512, [], "f254", "M360 64c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24 0 90.965 51.016 167.734 120.842 192C75.016 280.266 24 357.035 24 448c-13.255 0-24 10.745-24 24v16c0 13.255 10.745 24 24 24h336c13.255 0 24-10.745 24-24v-16c0-13.255-10.745-24-24-24 0-90.965-51.016-167.734-120.842-192C308.984 231.734 360 154.965 360 64z"] };
 var faHourglassEnd = { prefix: 'fas', iconName: 'hourglass-end', icon: [384, 512, [], "f253", "M360 64c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24 0 90.965 51.016 167.734 120.842 192C75.016 280.266 24 357.035 24 448c-13.255 0-24 10.745-24 24v16c0 13.255 10.745 24 24 24h336c13.255 0 24-10.745 24-24v-16c0-13.255-10.745-24-24-24 0-90.965-51.016-167.734-120.842-192C308.984 231.734 360 154.965 360 64zM192 208c-57.787 0-104-66.518-104-144h208c0 77.945-46.51 144-104 144z"] };
 var faHourglassHalf = { prefix: 'fas', iconName: 'hourglass-half', icon: [384, 512, [], "f252", "M360 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24 0 90.965 51.016 167.734 120.842 192C75.016 280.266 24 357.035 24 448c-13.255 0-24 10.745-24 24v16c0 13.255 10.745 24 24 24h336c13.255 0 24-10.745 24-24v-16c0-13.255-10.745-24-24-24 0-90.965-51.016-167.734-120.842-192C308.984 231.734 360 154.965 360 64c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24zm-75.078 384H99.08c17.059-46.797 52.096-80 92.92-80 40.821 0 75.862 33.196 92.922 80zm.019-256H99.078C91.988 108.548 88 86.748 88 64h208c0 22.805-3.987 44.587-11.059 64z"] };
@@ -69561,6 +70942,7 @@ var faObjectGroup = { prefix: 'fas', iconName: 'object-group', icon: [512, 512, 
 var faObjectUngroup = { prefix: 'fas', iconName: 'object-ungroup', icon: [576, 512, [], "f248", "M64 320v26a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6v-52a6 6 0 0 1 6-6h26V96H6a6 6 0 0 1-6-6V38a6 6 0 0 1 6-6h52a6 6 0 0 1 6 6v26h288V38a6 6 0 0 1 6-6h52a6 6 0 0 1 6 6v52a6 6 0 0 1-6 6h-26v192h26a6 6 0 0 1 6 6v52a6 6 0 0 1-6 6h-52a6 6 0 0 1-6-6v-26H64zm480-64v-32h26a6 6 0 0 0 6-6v-52a6 6 0 0 0-6-6h-52a6 6 0 0 0-6 6v26H408v72h8c13.255 0 24 10.745 24 24v64c0 13.255-10.745 24-24 24h-64c-13.255 0-24-10.745-24-24v-8H192v72h-26a6 6 0 0 0-6 6v52a6 6 0 0 0 6 6h52a6 6 0 0 0 6-6v-26h288v26a6 6 0 0 0 6 6h52a6 6 0 0 0 6-6v-52a6 6 0 0 0-6-6h-26V256z"] };
 var faOutdent = { prefix: 'fas', iconName: 'outdent', icon: [448, 512, [], "f03b", "M0 84V44c0-8.837 7.163-16 16-16h416c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H16c-8.837 0-16-7.163-16-16zm208 144h224c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H208c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 484h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm192-128h224c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H208c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM4.687 267.313l96 95.984C110.734 373.348 128 366.224 128 351.984V160.008c0-14.329-17.325-21.304-27.313-11.313l-96 95.992c-6.249 6.248-6.249 16.378 0 22.626z"] };
 var faPaintBrush = { prefix: 'fas', iconName: 'paint-brush', icon: [512, 512, [], "f1fc", "M269.9 364.6c1.4 6.4 2.1 13 2.1 19.7 0 81.2-54.2 127.7-134.8 127.7C41.5 512 0 435.1 0 347.6c10.4 7.1 46.9 36.5 58.7 36.5 7 0 13-4 15.5-10.6 23.6-62.2 66.5-76.5 112.9-77.4 15.6 33.8 46.1 59.6 82.8 68.5zM460.6 0c-14.4 0-27.9 6.4-38.2 15.7C228.2 190 208 194.1 208 245.4c0 48.8 40.5 90.6 90.2 90.6 59 0 93.2-43.4 200.6-244.8 7-13.7 13.2-28.5 13.2-43.9C512 19.7 487.3 0 460.6 0z"] };
+var faPallet = { prefix: 'fas', iconName: 'pallet', icon: [640, 512, [], "f482", "M144 256h352c8.8 0 16-7.2 16-16V16c0-8.8-7.2-16-16-16H384v128l-64-32-64 32V0H144c-8.8 0-16 7.2-16 16v224c0 8.8 7.2 16 16 16zm480 128c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h48v64H16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h608c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-48v-64h48zm-336 64H128v-64h160v64zm224 0H352v-64h160v64z"] };
 var faPaperPlane = { prefix: 'fas', iconName: 'paper-plane', icon: [512, 512, [], "f1d8", "M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"] };
 var faPaperclip = { prefix: 'fas', iconName: 'paperclip', icon: [448, 512, [], "f0c6", "M43.246 466.142c-58.43-60.289-57.341-157.511 1.386-217.581L254.392 34c44.316-45.332 116.351-45.336 160.671 0 43.89 44.894 43.943 117.329 0 162.276L232.214 383.128c-29.855 30.537-78.633 30.111-107.982-.998-28.275-29.97-27.368-77.473 1.452-106.953l143.743-146.835c6.182-6.314 16.312-6.422 22.626-.241l22.861 22.379c6.315 6.182 6.422 16.312.241 22.626L171.427 319.927c-4.932 5.045-5.236 13.428-.648 18.292 4.372 4.634 11.245 4.711 15.688.165l182.849-186.851c19.613-20.062 19.613-52.725-.011-72.798-19.189-19.627-49.957-19.637-69.154 0L90.39 293.295c-34.763 35.56-35.299 93.12-1.191 128.313 34.01 35.093 88.985 35.137 123.058.286l172.06-175.999c6.177-6.319 16.307-6.433 22.626-.256l22.877 22.364c6.319 6.177 6.434 16.307.256 22.626l-172.06 175.998c-59.576 60.938-155.943 60.216-214.77-.485z"] };
 var faParagraph = { prefix: 'fas', iconName: 'paragraph', icon: [448, 512, [], "f1dd", "M408 32H177.531C88.948 32 16.045 103.335 16 191.918 15.956 280.321 87.607 352 176 352v104c0 13.255 10.745 24 24 24h32c13.255 0 24-10.745 24-24V112h32v344c0 13.255 10.745 24 24 24h32c13.255 0 24-10.745 24-24V112h40c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24z"] };
@@ -69574,6 +70956,7 @@ var faPercent = { prefix: 'fas', iconName: 'percent', icon: [448, 512, [], "f295
 var faPhone = { prefix: 'fas', iconName: 'phone', icon: [512, 512, [], "f095", "M493.397 24.615l-104-23.997c-11.314-2.611-22.879 3.252-27.456 13.931l-48 111.997a24 24 0 0 0 6.862 28.029l60.617 49.596c-35.973 76.675-98.938 140.508-177.249 177.248l-49.596-60.616a24 24 0 0 0-28.029-6.862l-111.997 48C3.873 366.516-1.994 378.08.618 389.397l23.997 104C27.109 504.204 36.748 512 48 512c256.087 0 464-207.532 464-464 0-11.176-7.714-20.873-18.603-23.385z"] };
 var faPhoneSquare = { prefix: 'fas', iconName: 'phone-square', icon: [448, 512, [], "f098", "M400 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM94 416c-7.033 0-13.057-4.873-14.616-11.627l-14.998-65a15 15 0 0 1 8.707-17.16l69.998-29.999a15 15 0 0 1 17.518 4.289l30.997 37.885c48.944-22.963 88.297-62.858 110.781-110.78l-37.886-30.997a15.001 15.001 0 0 1-4.289-17.518l30-69.998a15 15 0 0 1 17.16-8.707l65 14.998A14.997 14.997 0 0 1 384 126c0 160.292-129.945 290-290 290z"] };
 var faPhoneVolume = { prefix: 'fas', iconName: 'phone-volume', icon: [384, 512, [], "f2a0", "M97.333 506.966c-129.874-129.874-129.681-340.252 0-469.933 5.698-5.698 14.527-6.632 21.263-2.422l64.817 40.513a17.187 17.187 0 0 1 6.849 20.958l-32.408 81.021a17.188 17.188 0 0 1-17.669 10.719l-55.81-5.58c-21.051 58.261-20.612 122.471 0 179.515l55.811-5.581a17.188 17.188 0 0 1 17.669 10.719l32.408 81.022a17.188 17.188 0 0 1-6.849 20.958l-64.817 40.513a17.19 17.19 0 0 1-21.264-2.422zM247.126 95.473c11.832 20.047 11.832 45.008 0 65.055-3.95 6.693-13.108 7.959-18.718 2.581l-5.975-5.726c-3.911-3.748-4.793-9.622-2.261-14.41a32.063 32.063 0 0 0 0-29.945c-2.533-4.788-1.65-10.662 2.261-14.41l5.975-5.726c5.61-5.378 14.768-4.112 18.718 2.581zm91.787-91.187c60.14 71.604 60.092 175.882 0 247.428-4.474 5.327-12.53 5.746-17.552.933l-5.798-5.557c-4.56-4.371-4.977-11.529-.93-16.379 49.687-59.538 49.646-145.933 0-205.422-4.047-4.85-3.631-12.008.93-16.379l5.798-5.557c5.022-4.813 13.078-4.394 17.552.933zm-45.972 44.941c36.05 46.322 36.108 111.149 0 157.546-4.39 5.641-12.697 6.251-17.856 1.304l-5.818-5.579c-4.4-4.219-4.998-11.095-1.285-15.931 26.536-34.564 26.534-82.572 0-117.134-3.713-4.836-3.115-11.711 1.285-15.931l5.818-5.579c5.159-4.947 13.466-4.337 17.856 1.304z"] };
+var faPills = { prefix: 'fas', iconName: 'pills', icon: [576, 512, [], "f484", "M112 32C50.1 32 0 82.1 0 144v224c0 61.9 50.1 112 112 112s112-50.1 112-112V144c0-61.9-50.1-112-112-112zm48 224H64V144c0-26.5 21.5-48 48-48s48 21.5 48 48v112zm139.7-29.7c-3.5-3.5-9.4-3.1-12.3.8-45.3 62.5-40.4 150.1 15.9 206.4 56.3 56.3 143.9 61.2 206.4 15.9 4-2.9 4.3-8.8.8-12.3L299.7 226.3zm229.8-19c-56.3-56.3-143.9-61.2-206.4-15.9-4 2.9-4.3 8.8-.8 12.3l210.8 210.8c3.5 3.5 9.4 3.1 12.3-.8 45.3-62.6 40.5-150.1-15.9-206.4z"] };
 var faPlane = { prefix: 'fas', iconName: 'plane', icon: [576, 512, [], "f072", "M472 200H360.211L256.013 5.711A12 12 0 0 0 245.793 0h-57.787c-7.85 0-13.586 7.413-11.616 15.011L209.624 200H99.766l-34.904-58.174A12 12 0 0 0 54.572 136H12.004c-7.572 0-13.252 6.928-11.767 14.353l21.129 105.648L.237 361.646c-1.485 7.426 4.195 14.354 11.768 14.353l42.568-.002c4.215 0 8.121-2.212 10.289-5.826L99.766 312h109.858L176.39 496.989c-1.97 7.599 3.766 15.011 11.616 15.011h57.787a12 12 0 0 0 10.22-5.711L360.212 312H472c57.438 0 104-25.072 104-56s-46.562-56-104-56z"] };
 var faPlay = { prefix: 'fas', iconName: 'play', icon: [448, 512, [], "f04b", "M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"] };
 var faPlayCircle = { prefix: 'fas', iconName: 'play-circle', icon: [512, 512, [], "f144", "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm115.7 272l-176 101c-15.8 8.8-35.7-2.5-35.7-21V152c0-18.4 19.8-29.8 35.7-21l176 107c16.4 9.2 16.4 32.9 0 42z"] };
@@ -69618,6 +71001,7 @@ var faShareSquare = { prefix: 'fas', iconName: 'share-square', icon: [576, 512, 
 var faShekelSign = { prefix: 'fas', iconName: 'shekel-sign', icon: [448, 512, [], "f20b", "M170.12 96H80v372c0 6.627-5.373 12-12 12H12c-6.627 0-12-5.373-12-12V44c0-6.627 5.373-12 12-12h168.36C265.48 32 325 89.6 325 175.071V359c0 6.627-5.373 12-12 12h-44c-13.255 0-24-10.745-24-24V170.323C245 125.11 216.839 96 170.12 96zM436 32h-56c-6.627 0-12 5.373-12 12v372h-90.12c-46.72 0-74.88-29.11-74.88-74.323V165c0-13.255-10.745-24-24-24h-44c-6.627 0-12 5.373-12 12v183.929C123 422.4 182.52 480 267.64 480H436c6.627 0 12-5.373 12-12V44c0-6.627-5.373-12-12-12z"] };
 var faShieldAlt = { prefix: 'fas', iconName: 'shield-alt', icon: [512, 512, [], "f3ed", "M496 128c0 221.282-135.934 344.645-221.539 380.308a48 48 0 0 1-36.923 0C130.495 463.713 16 326.487 16 128a48 48 0 0 1 29.539-44.308l192-80a48 48 0 0 1 36.923 0l192 80A48 48 0 0 1 496 128zM256 446.313l.066.034c93.735-46.689 172.497-156.308 175.817-307.729L256 65.333v380.98z"] };
 var faShip = { prefix: 'fas', iconName: 'ship', icon: [640, 512, [], "f21a", "M496.616 372.639l70.012-70.012c16.899-16.9 9.942-45.771-12.836-53.092L512 236.102V96c0-17.673-14.327-32-32-32h-64V24c0-13.255-10.745-24-24-24H248c-13.255 0-24 10.745-24 24v40h-64c-17.673 0-32 14.327-32 32v140.102l-41.792 13.433c-22.753 7.313-29.754 36.173-12.836 53.092l70.012 70.012C125.828 416.287 85.587 448 24 448c-13.255 0-24 10.745-24 24v16c0 13.255 10.745 24 24 24 61.023 0 107.499-20.61 143.258-59.396C181.677 487.432 216.021 512 256 512h128c39.979 0 74.323-24.568 88.742-59.396C508.495 491.384 554.968 512 616 512c13.255 0 24-10.745 24-24v-16c0-13.255-10.745-24-24-24-60.817 0-101.542-31.001-119.384-75.361zM192 128h256v87.531l-118.208-37.995a31.995 31.995 0 0 0-19.584 0L192 215.531V128z"] };
+var faShippingFast = { prefix: 'fas', iconName: 'shipping-fast', icon: [640, 512, [], "f48b", "M624 352h-16V243.9c0-12.7-5.1-24.9-14.1-33.9L494 110.1c-9-9-21.2-14.1-33.9-14.1H416V48c0-26.5-21.5-48-48-48H112C85.5 0 64 21.5 64 48v48H8c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h272c4.4 0 8 3.6 8 8v16c0 4.4-3.6 8-8 8H40c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h208c4.4 0 8 3.6 8 8v16c0 4.4-3.6 8-8 8H8c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h208c4.4 0 8 3.6 8 8v16c0 4.4-3.6 8-8 8H64v128c0 53 43 96 96 96s96-43 96-96h128c0 53 43 96 96 96s96-43 96-96h48c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM160 464c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm320 0c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-208H416V144h44.1l99.9 99.9V256z"] };
 var faShoppingBag = { prefix: 'fas', iconName: 'shopping-bag', icon: [448, 512, [], "f290", "M352 160v-32C352 57.42 294.579 0 224 0 153.42 0 96 57.42 96 128v32H0v272c0 44.183 35.817 80 80 80h288c44.183 0 80-35.817 80-80V160h-96zm-192-32c0-35.29 28.71-64 64-64s64 28.71 64 64v32H160v-32zm160 120c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24zm-192 0c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24z"] };
 var faShoppingBasket = { prefix: 'fas', iconName: 'shopping-basket', icon: [576, 512, [], "f291", "M576 216v16c0 13.255-10.745 24-24 24h-8l-26.113 182.788C514.509 462.435 494.257 480 470.37 480H105.63c-23.887 0-44.139-17.565-47.518-41.212L32 256h-8c-13.255 0-24-10.745-24-24v-16c0-13.255 10.745-24 24-24h67.341l106.78-146.821c10.395-14.292 30.407-17.453 44.701-7.058 14.293 10.395 17.453 30.408 7.058 44.701L170.477 192h235.046L326.12 82.821c-10.395-14.292-7.234-34.306 7.059-44.701 14.291-10.395 34.306-7.235 44.701 7.058L484.659 192H552c13.255 0 24 10.745 24 24zM312 392V280c0-13.255-10.745-24-24-24s-24 10.745-24 24v112c0 13.255 10.745 24 24 24s24-10.745 24-24zm112 0V280c0-13.255-10.745-24-24-24s-24 10.745-24 24v112c0 13.255 10.745 24 24 24s24-10.745 24-24zm-224 0V280c0-13.255-10.745-24-24-24s-24 10.745-24 24v112c0 13.255 10.745 24 24 24s24-10.745 24-24z"] };
 var faShoppingCart = { prefix: 'fas', iconName: 'shopping-cart', icon: [576, 512, [], "f07a", "M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"] };
@@ -69647,7 +71031,7 @@ var faStar = { prefix: 'fas', iconName: 'star', icon: [576, 512, [], "f005", "M2
 var faStarHalf = { prefix: 'fas', iconName: 'star-half', icon: [576, 512, [], "f089", "M288 0c-11.4 0-22.8 5.9-28.7 17.8L194 150.2 47.9 171.4c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.1 23 46 46.4 33.7L288 439.6V0z"] };
 var faStepBackward = { prefix: 'fas', iconName: 'step-backward', icon: [448, 512, [], "f048", "M64 468V44c0-6.6 5.4-12 12-12h48c6.6 0 12 5.4 12 12v176.4l195.5-181C352.1 22.3 384 36.6 384 64v384c0 27.4-31.9 41.7-52.5 24.6L136 292.7V468c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12z"] };
 var faStepForward = { prefix: 'fas', iconName: 'step-forward', icon: [448, 512, [], "f051", "M384 44v424c0 6.6-5.4 12-12 12h-48c-6.6 0-12-5.4-12-12V291.6l-195.5 181C95.9 489.7 64 475.4 64 448V64c0-27.4 31.9-41.7 52.5-24.6L312 219.3V44c0-6.6 5.4-12 12-12h48c6.6 0 12 5.4 12 12z"] };
-var faStethoscope = { prefix: 'fas', iconName: 'stethoscope', icon: [512, 512, [], "f0f1", "M512 176c0-35.659-29.164-64.507-64.941-63.993-34.21.492-62.296 28.357-63.043 62.562-.531 24.282 12.476 45.558 31.984 56.848V344c0 57.346-50.243 104-112 104-60.039 0-109.189-44.096-111.878-99.24C265.005 333.847 320 269.225 320 192V36.584c0-11.44-8.075-21.29-19.293-23.534L237.81.471c-12.997-2.599-25.641 5.83-28.241 18.827l-3.138 15.689c-2.6 12.997 5.83 25.641 18.827 28.241L256 69.376v121.4c0 52.852-42.203 96.707-95.053 97.22C107.58 288.513 64 245.25 64 192V69.376l30.742-6.149c12.997-2.6 21.427-15.243 18.827-28.241l-3.138-15.689C107.831 6.3 95.188-2.129 82.19.471L19.293 13.05C8.075 15.294 0 25.144 0 36.584V192c0 77.295 55.096 141.961 128.076 156.798C130.747 439.223 208.634 512 304 512c97.047 0 176-75.364 176-168V231.417c19.124-11.068 32-31.732 32-55.417zm-64-16c8.822 0 16 7.178 16 16s-7.178 16-16 16-16-7.178-16-16 7.178-16 16-16z"] };
+var faStethoscope = { prefix: 'fas', iconName: 'stethoscope', icon: [512, 512, [], "f0f1", "M447.1 112c-34.2.5-62.3 28.4-63 62.6-.5 24.3 12.5 45.6 32 56.8V344c0 57.3-50.2 104-112 104-60 0-109.2-44.1-111.9-99.2C265 333.8 320 269.2 320 192V36.6c0-11.4-8.1-21.3-19.3-23.5L237.8.5c-13-2.6-25.6 5.8-28.2 18.8L206.4 35c-2.6 13 5.8 25.6 18.8 28.2l30.7 6.1v121.4c0 52.9-42.2 96.7-95.1 97.2-53.4.5-96.9-42.7-96.9-96V69.4l30.7-6.1c13-2.6 21.4-15.2 18.8-28.2l-3.1-15.7C107.7 6.4 95.1-2 82.1.6L19.3 13C8.1 15.3 0 25.1 0 36.6V192c0 77.3 55.1 142 128.1 156.8C130.7 439.2 208.6 512 304 512c97 0 176-75.4 176-168V231.4c19.1-11.1 32-31.7 32-55.4 0-35.7-29.2-64.5-64.9-64zm.9 80c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z"] };
 var faStickyNote = { prefix: 'fas', iconName: 'sticky-note', icon: [448, 512, [], "f249", "M312 320h136V56c0-13.3-10.7-24-24-24H24C10.7 32 0 42.7 0 56v400c0 13.3 10.7 24 24 24h264V344c0-13.2 10.8-24 24-24zm129 55l-98 98c-4.5 4.5-10.6 7-17 7h-6V352h128v6.1c0 6.3-2.5 12.4-7 16.9z"] };
 var faStop = { prefix: 'fas', iconName: 'stop', icon: [448, 512, [], "f04d", "M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48z"] };
 var faStopCircle = { prefix: 'fas', iconName: 'stop-circle', icon: [512, 512, [], "f28d", "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm96 328c0 8.8-7.2 16-16 16H176c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h160c8.8 0 16 7.2 16 16v160z"] };
@@ -69661,6 +71045,7 @@ var faSun = { prefix: 'fas', iconName: 'sun', icon: [512, 512, [], "f185", "M274
 var faSuperscript = { prefix: 'fas', iconName: 'superscript', icon: [512, 512, [], "f12b", "M395.198 256c3.461-10.526 18.796-21.28 36.265-32.425 16.625-10.605 35.467-22.626 50.341-38.862 17.458-19.054 25.944-40.175 25.944-64.567 0-60.562-50.702-88.146-97.81-88.146-42.491 0-76.378 22.016-94.432 50.447-4.654 7.329-2.592 17.036 4.623 21.865l30.328 20.296c7.032 4.706 16.46 3.084 21.63-3.614 8.022-10.394 18.818-18.225 31.667-18.225 19.387 0 26.266 12.901 26.266 23.948 0 36.159-119.437 57.023-119.437 160.024 0 6.654.561 13.014 1.415 19.331 1.076 7.964 7.834 13.928 15.87 13.928H496c8.837 0 16-7.163 16-16v-32c0-8.837-7.163-16-16-16H395.198zM272 416c8.837 0 16 7.163 16 16v32c0 8.837-7.163 16-16 16h-62.399a16 16 0 0 1-13.541-7.478l-45.701-72.615c-2.297-3.352-4.422-6.969-6.195-10.209-1.65 3.244-3.647 6.937-5.874 10.582l-44.712 72.147a15.999 15.999 0 0 1-13.6 7.572H16c-8.837 0-16-7.163-16-16v-32c0-8.837 7.163-16 16-16h26.325l56.552-82.709L46.111 256H16c-8.837 0-16-7.163-16-16v-32c0-8.837 7.163-16 16-16h68.806a16 16 0 0 1 13.645 7.644l39.882 65.126c2.072 3.523 4.053 7.171 5.727 10.37 1.777-3.244 3.92-6.954 6.237-10.537l40.332-65.035a16 16 0 0 1 13.598-7.567H272c8.837 0 16 7.163 16 16v32c0 8.837-7.163 16-16 16h-27.979l-52.69 75.671L249.974 416H272z"] };
 var faSync = { prefix: 'fas', iconName: 'sync', icon: [512, 512, [], "f021", "M440.935 12.574l3.966 82.766C399.416 41.904 331.674 8 256 8 134.813 8 33.933 94.924 12.296 209.824 10.908 217.193 16.604 224 24.103 224h49.084c5.57 0 10.377-3.842 11.676-9.259C103.407 137.408 172.931 80 256 80c60.893 0 114.512 30.856 146.104 77.801l-101.53-4.865c-6.845-.328-12.574 5.133-12.574 11.986v47.411c0 6.627 5.373 12 12 12h200.333c6.627 0 12-5.373 12-12V12c0-6.627-5.373-12-12-12h-47.411c-6.853 0-12.315 5.729-11.987 12.574zM256 432c-60.895 0-114.517-30.858-146.109-77.805l101.868 4.871c6.845.327 12.573-5.134 12.573-11.986v-47.412c0-6.627-5.373-12-12-12H12c-6.627 0-12 5.373-12 12V500c0 6.627 5.373 12 12 12h47.385c6.863 0 12.328-5.745 11.985-12.599l-4.129-82.575C112.725 470.166 180.405 504 256 504c121.187 0 222.067-86.924 243.704-201.824 1.388-7.369-4.308-14.176-11.807-14.176h-49.084c-5.57 0-10.377 3.842-11.676 9.259C408.593 374.592 339.069 432 256 432z"] };
 var faSyncAlt = { prefix: 'fas', iconName: 'sync-alt', icon: [512, 512, [], "f2f1", "M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"] };
+var faSyringe = { prefix: 'fas', iconName: 'syringe', icon: [512, 512, [], "f48e", "M201.5 174.8l55.7 55.8c3.1 3.1 3.1 8.2 0 11.3l-11.3 11.3c-3.1 3.1-8.2 3.1-11.3 0l-55.7-55.8-45.3 45.3 55.8 55.8c3.1 3.1 3.1 8.2 0 11.3l-11.3 11.3c-3.1 3.1-8.2 3.1-11.3 0L111 265.2l-26.4 26.4c-17.3 17.3-25.6 41.1-23 65.4l7.1 63.6L2.3 487c-3.1 3.1-3.1 8.2 0 11.3l11.3 11.3c3.1 3.1 8.2 3.1 11.3 0l66.3-66.3 63.6 7.1c23.9 2.6 47.9-5.4 65.4-23l181.9-181.9-135.7-135.7-64.9 65zm308.2-93.3L430.5 2.3c-3.1-3.1-8.2-3.1-11.3 0l-11.3 11.3c-3.1 3.1-3.1 8.2 0 11.3l28.3 28.3-45.3 45.3-56.6-56.6-17-17c-3.1-3.1-8.2-3.1-11.3 0l-33.9 33.9c-3.1 3.1-3.1 8.2 0 11.3l17 17L424.8 223l17 17c3.1 3.1 8.2 3.1 11.3 0l33.9-34c3.1-3.1 3.1-8.2 0-11.3l-73.5-73.5 45.3-45.3 28.3 28.3c3.1 3.1 8.2 3.1 11.3 0l11.3-11.3c3.1-3.2 3.1-8.2 0-11.4z"] };
 var faTable = { prefix: 'fas', iconName: 'table', icon: [512, 512, [], "f0ce", "M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM224 416H64v-96h160v96zm0-160H64v-96h160v96zm224 160H288v-96h160v96zm0-160H288v-96h160v96z"] };
 var faTableTennis = { prefix: 'fas', iconName: 'table-tennis', icon: [512, 512, [], "f45d", "M496.2 296.5C527.7 218.7 512 126.2 449 63.1 365.1-21 229-21 145.1 63.1l-56 56.1 211.5 211.5c46.1-62.1 131.5-77.4 195.6-34.2zm-217.9 79.7L57.9 155.9c-27.3 45.3-21.7 105 17.3 144.1l34.5 34.6L6.7 424c-8.6 7.5-9.1 20.7-1 28.8l53.4 53.5c8 8.1 21.2 7.6 28.7-1L177.1 402l35.7 35.7c19.7 19.7 44.6 30.5 70.3 33.3-7.1-17-11-35.6-11-55.1-.1-13.8 2.5-27 6.2-39.7zM416 320c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96z"] };
 var faTablet = { prefix: 'fas', iconName: 'tablet', icon: [448, 512, [], "f10a", "M400 0H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zM224 480c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"] };
@@ -69676,6 +71061,7 @@ var faTextWidth = { prefix: 'fas', iconName: 'text-width', icon: [448, 512, [], 
 var faTh = { prefix: 'fas', iconName: 'th', icon: [512, 512, [], "f00a", "M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"] };
 var faThLarge = { prefix: 'fas', iconName: 'th-large', icon: [512, 512, [], "f009", "M296 32h192c13.255 0 24 10.745 24 24v160c0 13.255-10.745 24-24 24H296c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24zm-80 0H24C10.745 32 0 42.745 0 56v160c0 13.255 10.745 24 24 24h192c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24zM0 296v160c0 13.255 10.745 24 24 24h192c13.255 0 24-10.745 24-24V296c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm296 184h192c13.255 0 24-10.745 24-24V296c0-13.255-10.745-24-24-24H296c-13.255 0-24 10.745-24 24v160c0 13.255 10.745 24 24 24z"] };
 var faThList = { prefix: 'fas', iconName: 'th-list', icon: [512, 512, [], "f00b", "M149.333 216v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24v-80c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zM125.333 32H24C10.745 32 0 42.745 0 56v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24zm80 448H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm-24-424v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24zm24 264H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24z"] };
+var faThermometer = { prefix: 'fas', iconName: 'thermometer', icon: [512, 512, [], "f491", "M476.8 20.4c-37.5-30.7-95.5-26.3-131.9 10.2l-45.7 46 50.5 50.5c3.1 3.1 3.1 8.2 0 11.3l-11.3 11.3c-3.1 3.1-8.2 3.1-11.3 0l-50.4-50.5-45.1 45.4 50.3 50.4c3.1 3.1 3.1 8.2 0 11.3l-11.3 11.3c-3.1 3.1-8.2 3.1-11.3 0L209 167.4l-45.1 45.4L214 263c3.1 3.1 3.1 8.2 0 11.3l-11.3 11.3c-3.1 3.1-8.2 3.1-11.3 0l-50.1-50.2L96 281.1V382L7 471c-9.4 9.4-9.4 24.6 0 33.9 9.4 9.4 24.6 9.4 33.9 0l89-89h99.9L484 162.6c34.9-34.9 42.2-101.5-7.2-142.2z"] };
 var faThermometerEmpty = { prefix: 'fas', iconName: 'thermometer-empty', icon: [256, 512, [], "f2cb", "M192 384c0 35.346-28.654 64-64 64s-64-28.654-64-64c0-35.346 28.654-64 64-64s64 28.654 64 64zm32-84.653c19.912 22.563 32 52.194 32 84.653 0 70.696-57.303 128-128 128-.299 0-.609-.001-.909-.003C56.789 511.509-.357 453.636.002 383.333.166 351.135 12.225 321.755 32 299.347V96c0-53.019 42.981-96 96-96s96 42.981 96 96v203.347zM208 384c0-34.339-19.37-52.19-32-66.502V96c0-26.467-21.533-48-48-48S80 69.533 80 96v221.498c-12.732 14.428-31.825 32.1-31.999 66.08-.224 43.876 35.563 80.116 79.423 80.42L128 464c44.112 0 80-35.888 80-80z"] };
 var faThermometerFull = { prefix: 'fas', iconName: 'thermometer-full', icon: [256, 512, [], "f2c7", "M224 96c0-53.019-42.981-96-96-96S32 42.981 32 96v203.347C12.225 321.756.166 351.136.002 383.333c-.359 70.303 56.787 128.176 127.089 128.664.299.002.61.003.909.003 70.698 0 128-57.304 128-128 0-32.459-12.088-62.09-32-84.653V96zm-96 368l-.576-.002c-43.86-.304-79.647-36.544-79.423-80.42.173-33.98 19.266-51.652 31.999-66.08V96c0-26.467 21.533-48 48-48s48 21.533 48 48v221.498c12.63 14.312 32 32.164 32 66.502 0 44.112-35.888 80-80 80zm64-80c0 35.346-28.654 64-64 64s-64-28.654-64-64c0-23.685 12.876-44.349 32-55.417V96c0-17.673 14.327-32 32-32s32 14.327 32 32v232.583c19.124 11.068 32 31.732 32 55.417z"] };
 var faThermometerHalf = { prefix: 'fas', iconName: 'thermometer-half', icon: [256, 512, [], "f2c9", "M192 384c0 35.346-28.654 64-64 64s-64-28.654-64-64c0-23.685 12.876-44.349 32-55.417V224c0-17.673 14.327-32 32-32s32 14.327 32 32v104.583c19.124 11.068 32 31.732 32 55.417zm32-84.653c19.912 22.563 32 52.194 32 84.653 0 70.696-57.303 128-128 128-.299 0-.609-.001-.909-.003C56.789 511.509-.357 453.636.002 383.333.166 351.135 12.225 321.755 32 299.347V96c0-53.019 42.981-96 96-96s96 42.981 96 96v203.347zM208 384c0-34.339-19.37-52.19-32-66.502V96c0-26.467-21.533-48-48-48S80 69.533 80 96v221.498c-12.732 14.428-31.825 32.1-31.999 66.08-.224 43.876 35.563 80.116 79.423 80.42L128 464c44.112 0 80-35.888 80-80z"] };
@@ -69698,7 +71084,7 @@ var faTrash = { prefix: 'fas', iconName: 'trash', icon: [448, 512, [], "f1f8", "
 var faTrashAlt = { prefix: 'fas', iconName: 'trash-alt', icon: [448, 512, [], "f2ed", "M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z"] };
 var faTree = { prefix: 'fas', iconName: 'tree', icon: [384, 512, [], "f1bb", "M377.33 375.429L293.906 288H328c21.017 0 31.872-25.207 17.448-40.479L262.79 160H296c20.878 0 31.851-24.969 17.587-40.331l-104-112.003c-9.485-10.214-25.676-10.229-35.174 0l-104 112.003C56.206 134.969 67.037 160 88 160h33.21l-82.659 87.521C24.121 262.801 34.993 288 56 288h34.094L6.665 375.429C-7.869 390.655 2.925 416 24.025 416H144c0 32.781-11.188 49.26-33.995 67.506C98.225 492.93 104.914 512 120 512h144c15.086 0 21.776-19.069 9.995-28.494-19.768-15.814-33.992-31.665-33.995-67.496V416h119.97c21.05 0 31.929-25.309 17.36-40.571z"] };
 var faTrophy = { prefix: 'fas', iconName: 'trophy', icon: [576, 512, [], "f091", "M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"] };
-var faTruck = { prefix: 'fas', iconName: 'truck', icon: [640, 512, [], "f0d1", "M592 0H272c-26.51 0-48 21.49-48 48v48h-44.118a48 48 0 0 0-33.941 14.059l-99.882 99.882A48 48 0 0 0 32 243.882V352h-8c-13.255 0-24 10.745-24 24v16c0 13.255 10.745 24 24 24h40c0 53.019 42.981 96 96 96s96-42.981 96-96h128c0 53.019 42.981 96 96 96s96-42.981 96-96h40c13.255 0 24-10.745 24-24V48c0-26.51-21.49-48-48-48zM160 464c-26.467 0-48-21.533-48-48s21.533-48 48-48 48 21.533 48 48-21.533 48-48 48zm64-208H80v-12.118L179.882 144H224v112zm256 208c-26.467 0-48-21.533-48-48s21.533-48 48-48 48 21.533 48 48-21.533 48-48 48z"] };
+var faTruck = { prefix: 'fas', iconName: 'truck', icon: [640, 512, [], "f0d1", "M624 352h-16V243.9c0-12.7-5.1-24.9-14.1-33.9L494 110.1c-9-9-21.2-14.1-33.9-14.1H416V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h16c0 53 43 96 96 96s96-43 96-96h128c0 53 43 96 96 96s96-43 96-96h48c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM160 464c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm320 0c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-208H416V144h44.1l99.9 99.9V256z"] };
 var faTty = { prefix: 'fas', iconName: 'tty', icon: [512, 512, [], "f1e4", "M5.37 103.822c138.532-138.532 362.936-138.326 501.262 0 6.078 6.078 7.074 15.496 2.583 22.681l-43.214 69.138a18.332 18.332 0 0 1-22.356 7.305l-86.422-34.569a18.335 18.335 0 0 1-11.434-18.846L351.741 90c-62.145-22.454-130.636-21.986-191.483 0l5.953 59.532a18.331 18.331 0 0 1-11.434 18.846l-86.423 34.568a18.334 18.334 0 0 1-22.356-7.305L2.787 126.502a18.333 18.333 0 0 1 2.583-22.68zM96 308v-40c0-6.627-5.373-12-12-12H44c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm-336 96v-40c0-6.627-5.373-12-12-12H92c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zM96 500v-40c0-6.627-5.373-12-12-12H44c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm288 0v-40c0-6.627-5.373-12-12-12H140c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h232c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12z"] };
 var faTv = { prefix: 'fas', iconName: 'tv', icon: [640, 512, [], "f26c", "M592 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h245.1v32h-160c-17.7 0-32 14.3-32 32s14.3 32 32 32h384c17.7 0 32-14.3 32-32s-14.3-32-32-32h-160v-32H592c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h512v288z"] };
 var faUmbrella = { prefix: 'fas', iconName: 'umbrella', icon: [576, 512, [], "f0e9", "M557.011 267.631c-51.432-45.217-107.572-43.698-158.567 30.731-5.298 7.861-14.906 7.165-19.736 0-2.483-3.624-32.218-60.808-90.708-60.808-45.766 0-70.542 31.378-90.709 60.808-4.829 7.165-14.436 7.861-19.734 0-50.904-74.285-106.613-76.406-158.567-30.731-10.21 8.264-20.912-1.109-18.696-9.481C32.146 134.573 158.516 64.612 288.001 64.612c128.793 0 256.546 69.961 287.706 193.538 2.206 8.322-8.426 17.793-18.696 9.481zM256 261.001V416c0 17.645-14.355 32-32 32s-32-14.355-32-32c0-17.673-14.327-32-32-32s-32 14.327-32 32c0 52.935 43.065 96 96 96s96-43.065 96-96V261.288c-21.836-10.806-45.425-9.737-64-.287zm64-211.007V32c0-17.673-14.327-32-32-32s-32 14.327-32 32v17.987a372.105 372.105 0 0 1 64 .007z"] };
@@ -69713,7 +71099,7 @@ var faUnlockAlt = { prefix: 'fas', iconName: 'unlock-alt', icon: [448, 512, [], 
 var faUpload = { prefix: 'fas', iconName: 'upload', icon: [512, 512, [], "f093", "M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"] };
 var faUser = { prefix: 'fas', iconName: 'user', icon: [512, 512, [], "f007", "M256 0c88.366 0 160 71.634 160 160s-71.634 160-160 160S96 248.366 96 160 167.634 0 256 0zm183.283 333.821l-71.313-17.828c-74.923 53.89-165.738 41.864-223.94 0l-71.313 17.828C29.981 344.505 0 382.903 0 426.955V464c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48v-37.045c0-44.052-29.981-82.45-72.717-93.134z"] };
 var faUserCircle = { prefix: 'fas', iconName: 'user-circle', icon: [512, 512, [], "f2bd", "M8 256C8 119.033 119.033 8 256 8s248 111.033 248 248-111.033 248-248 248S8 392.967 8 256zm72.455 125.868C119.657 436.446 183.673 472 256 472s136.343-35.554 175.545-90.132c-3.141-26.99-22.667-49.648-49.538-56.366l-32.374-8.093C323.565 339.79 290.722 352 256 352s-67.565-12.21-93.634-34.591l-32.374 8.093c-26.87 6.718-46.396 29.376-49.537 56.366zM144 208c0 61.856 50.144 112 112 112s112-50.144 112-112S317.856 96 256 96s-112 50.144-112 112z"] };
-var faUserMd = { prefix: 'fas', iconName: 'user-md', icon: [448, 512, [], "f0f0", "M224 0c77.32 0 140 62.68 140 140s-62.68 140-140 140S84 217.32 84 140 146.68 0 224 0zM80 416c0 17.645 14.355 32 32 32s32-14.355 32-32-14.355-32-32-32-32 14.355-32 32zm295.283-126.179L352 284v37.61c36.471 7.433 64 39.756 64 78.39v59.279a12 12 0 0 1-9.646 11.767l-31.449 6.29c-6.499 1.3-12.821-2.915-14.12-9.414l-1.569-7.845c-1.3-6.499 2.915-12.821 9.414-14.12l15.37-3.074V400c0-26.776-22.039-48.502-48.929-47.991-26.278.499-47.071 22.513-47.071 48.797v42.078l15.371 3.074c6.499 1.3 10.713 7.622 9.414 14.12l-1.569 7.845c-1.3 6.499-7.622 10.713-14.12 9.414l-31.449-6.29A12 12 0 0 1 256 459.28V400c0-38.634 27.529-70.957 64-78.39v-43.728c-64.33 44.953-141.527 35.141-192 .004v76.14c28.495 7.361 49.359 33.906 47.931 64.977-1.506 32.778-28.097 59.392-60.874 60.926C78.383 481.644 48 452.303 48 416c0-29.767 20.427-54.852 48-61.975V284l-23.283 5.821C29.981 300.505 0 338.903 0 382.955V464c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48v-81.045c0-44.052-29.981-82.45-72.717-93.134z"] };
+var faUserMd = { prefix: 'fas', iconName: 'user-md', icon: [448, 512, [], "f0f0", "M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zM104 424c0 13.3 10.7 24 24 24s24-10.7 24-24-10.7-24-24-24-24 10.7-24 24zm250.4-151.6l-34.4-5.7v55c36.5 7.4 64 39.8 64 78.4v56c0 7.6-5.4 14.2-12.9 15.7l-32.2 6.4c-4.3.9-8.5-1.9-9.4-6.3l-3.1-15.7c-.9-4.3 1.9-8.6 6.3-9.4l19.3-3.9V400c0-29.6-26.9-53-57.6-47.1-22.8 4.4-38.4 25.8-38.4 49v41l19.3 3.9c4.3.9 7.1 5.1 6.3 9.4l-3.1 15.7c-.9 4.3-5.1 7.1-9.4 6.3l-31.2-4.2c-7.9-1.1-13.8-7.8-13.8-15.9v-58c0-38.6 27.5-70.9 64-78.4v-47.2c-19.6 8.6-41.2 13.6-64 13.6-29.3 0-56.4-8.5-80-22.3v104.9c23.1 6.9 40 28.1 40 53.4 0 30.9-25.1 56-56 56s-56-25.1-56-56c0-25.3 16.9-46.5 40-53.4V269.3l-18.4 3.1c-54 9-93.6 55.7-93.6 110.5V480c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32v-97.1c-.1-54.8-39.7-101.5-93.7-110.5z"] };
 var faUserPlus = { prefix: 'fas', iconName: 'user-plus', icon: [640, 512, [], "f234", "M224 32c77.32 0 140 62.68 140 140s-62.68 140-140 140S84 249.32 84 172 146.68 32 224 32zm160.373 292.093l-62.399-15.6c-65.557 47.154-145.021 36.631-195.948 0l-62.399 15.6C26.233 333.442 0 367.04 0 405.585V438c0 23.196 18.804 42 42 42h364c23.196 0 42-18.804 42-42v-32.415c0-38.545-26.233-72.143-63.627-81.492zM628 224.889h-68.889V156c0-6.627-5.373-12-12-12h-38.222c-6.627 0-12 5.373-12 12l-.002 68.887-68.887.002c-6.627 0-12 5.373-12 12v38.222c0 6.627 5.373 12 12 12l68.887.002.002 68.887c0 6.627 5.373 12 12 12h38.222c6.627 0 12-5.373 12-12l.002-68.887 68.887-.002c6.627 0 12-5.373 12-12v-38.222c0-6.627-5.373-12-12-12z"] };
 var faUserSecret = { prefix: 'fas', iconName: 'user-secret', icon: [448, 512, [], "f21b", "M388.829 295.324l20.972-55.052c2.992-7.854-2.809-16.272-11.214-16.272H340.39c7.45-16.236 11.61-34.297 11.61-53.333 0-3.631-.16-7.224-.456-10.778C391.083 152.074 416 140.684 416 128c0-13.263-27.231-25.112-69.947-32.937-9.185-32.805-27.178-65.797-40.714-82.85-9.452-11.908-25.873-15.634-39.471-8.834l-27.557 13.779a31.997 31.997 0 0 1-28.622 0l-27.557-13.78c-13.599-6.799-30.02-3.074-39.471 8.834-13.536 17.053-31.529 50.045-40.714 82.85C59.231 102.888 32 114.737 32 128c0 12.684 24.917 24.074 64.456 31.889A129.362 129.362 0 0 0 96 170.667c0 19.037 4.159 37.098 11.608 53.333h-57.41c-8.615 0-14.423 8.808-11.029 16.727l22.906 53.447C25.799 307.882 0 342.925 0 384v80c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48v-80c0-39.97-24.43-74.231-59.171-88.676zM184 488l-48-192 48 24 24 40-24 128zm80 0l-24-128 24-40 48-24-48 192zm54.778-303.746c-.008.043-4.299 3.231-5.125 5.771-3.861 11.864-7.026 24.572-16.514 33.359-10.071 9.327-47.957 22.405-63.996-25.029-2.837-8.395-15.447-8.398-18.285 0-16.963 50.168-56.019 32.417-63.996 25.029-9.488-8.786-12.653-21.495-16.514-33.359-.826-2.54-5.118-5.728-5.125-5.771-.554-2.925-.981-5.884-1.22-8.85-.309-3.848 10.078-3.658 11.078-3.747 26.303-2.326 52.303-.579 78.023 5.497 2.563.606 11.553.529 13.793 0 25.72-6.076 51.72-7.824 78.023-5.497 1.002.089 11.387-.102 11.078 3.747-.239 2.966-.666 5.925-1.22 8.85z"] };
 var faUserTimes = { prefix: 'fas', iconName: 'user-times', icon: [640, 512, [], "f235", "M224 32c77.32 0 140 62.68 140 140s-62.68 140-140 140S84 249.32 84 172 146.68 32 224 32zm160.373 292.093l-62.399-15.6c-65.557 47.154-145.021 36.631-195.948 0l-62.399 15.6C26.233 333.442 0 367.04 0 405.585V438c0 23.196 18.804 42 42 42h364c23.196 0 42-18.804 42-42v-32.415c0-38.545-26.233-72.143-63.627-81.492zM587.897 256l48.596-48.598c4.675-4.675 4.675-12.256 0-16.931l-26.964-26.964c-4.675-4.675-12.256-4.675-16.931 0L544 212.105l-48.598-48.598c-4.675-4.675-12.256-4.675-16.931 0l-26.964 26.964c-4.675 4.675-4.675 12.256 0 16.931L500.103 256l-48.596 48.598c-4.675 4.675-4.675 12.256 0 16.931l26.964 26.964c4.675 4.675 12.256 4.675 16.931 0L544 299.897l48.598 48.596c4.675 4.675 12.256 4.675 16.931 0l26.964-26.964c4.675-4.675 4.675-12.256 0-16.931L587.897 256z"] };
@@ -69728,6 +71114,8 @@ var faVolleyballBall = { prefix: 'fas', iconName: 'volleyball-ball', icon: [495,
 var faVolumeDown = { prefix: 'fas', iconName: 'volume-down', icon: [384, 512, [], "f027", "M256 88.017v335.964c0 21.438-25.943 31.998-40.971 16.971L126.059 352H24c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h102.059l88.971-88.954c15.01-15.01 40.97-4.49 40.97 16.971zM384 256c0-33.717-17.186-64.35-45.972-81.944-15.079-9.214-34.775-4.463-43.992 10.616s-4.464 34.775 10.615 43.992C314.263 234.538 320 244.757 320 256a32.056 32.056 0 0 1-13.802 26.332c-14.524 10.069-18.136 30.006-8.067 44.53 10.07 14.525 30.008 18.136 44.53 8.067C368.546 316.983 384 287.478 384 256z"] };
 var faVolumeOff = { prefix: 'fas', iconName: 'volume-off', icon: [256, 512, [], "f026", "M256 88.017v335.964c0 21.438-25.943 31.998-40.971 16.971L126.059 352H24c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h102.059l88.971-88.954c15.01-15.01 40.97-4.49 40.97 16.971z"] };
 var faVolumeUp = { prefix: 'fas', iconName: 'volume-up', icon: [576, 512, [], "f028", "M256 88.017v335.964c0 21.438-25.943 31.998-40.971 16.971L126.059 352H24c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h102.059l88.971-88.954c15.01-15.01 40.97-4.49 40.97 16.971zm182.056-77.876C422.982.92 403.283 5.668 394.061 20.745c-9.221 15.077-4.473 34.774 10.604 43.995C468.967 104.063 512 174.983 512 256c0 73.431-36.077 142.292-96.507 184.206-14.522 10.072-18.129 30.01-8.057 44.532 10.076 14.528 30.016 18.126 44.531 8.057C529.633 438.927 576 350.406 576 256c0-103.244-54.579-194.877-137.944-245.859zM480 256c0-68.547-36.15-129.777-91.957-163.901-15.076-9.22-34.774-4.471-43.994 10.607-9.22 15.078-4.471 34.774 10.607 43.994C393.067 170.188 416 211.048 416 256c0 41.964-20.62 81.319-55.158 105.276-14.521 10.073-18.128 30.01-8.056 44.532 6.216 8.96 16.185 13.765 26.322 13.765a31.862 31.862 0 0 0 18.21-5.709C449.091 377.953 480 318.938 480 256zm-96 0c0-33.717-17.186-64.35-45.972-81.944-15.079-9.214-34.775-4.463-43.992 10.616s-4.464 34.775 10.615 43.992C314.263 234.538 320 244.757 320 256a32.056 32.056 0 0 1-13.802 26.332c-14.524 10.069-18.136 30.006-8.067 44.53 10.07 14.525 30.008 18.136 44.53 8.067C368.546 316.983 384 287.478 384 256z"] };
+var faWarehouse = { prefix: 'fas', iconName: 'warehouse', icon: [640, 512, [], "f494", "M504 352H136.4c-4.4 0-8 3.6-8 8l-.1 48c0 4.4 3.6 8 8 8H504c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm0 96H136.1c-4.4 0-8 3.6-8 8l-.1 48c0 4.4 3.6 8 8 8h368c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm0-192H136.6c-4.4 0-8 3.6-8 8l-.1 48c0 4.4 3.6 8 8 8H504c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm106.5-139L338.4 3.7a48.15 48.15 0 0 0-36.9 0L29.5 117C11.7 124.5 0 141.9 0 161.3V504c0 4.4 3.6 8 8 8h80c4.4 0 8-3.6 8-8V256c0-17.6 14.6-32 32.6-32h382.8c18 0 32.6 14.4 32.6 32v248c0 4.4 3.6 8 8 8h80c4.4 0 8-3.6 8-8V161.3c0-19.4-11.7-36.8-29.5-44.3z"] };
+var faWeight = { prefix: 'fas', iconName: 'weight', icon: [512, 512, [], "f496", "M448 64h-26c16.4 28.3 26 61 26 96 0 105.9-86.1 192-192 192S64 265.9 64 160c0-35 9.6-67.7 26-96H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64zM256 320c88.4 0 160-71.6 160-160S344.4 0 256 0 96 71.6 96 160s71.6 160 160 160zm-.3-151.9l33.6-78.4c3.5-8.2 12.9-11.9 21-8.4s11.9 12.9 8.4 21L285 180.9c6.7 7.1 10.9 16.6 10.9 27.1 0 22.1-17.9 40-40 40s-40-17.9-40-40c.1-22 17.9-39.8 39.8-39.9z"] };
 var faWheelchair = { prefix: 'fas', iconName: 'wheelchair', icon: [512, 512, [], "f193", "M496.101 385.669l14.227 28.663c3.929 7.915.697 17.516-7.218 21.445l-65.465 32.886c-16.049 7.967-35.556 1.194-43.189-15.055L331.679 320H192c-15.925 0-29.426-11.71-31.679-27.475C126.433 55.308 128.38 70.044 128 64c0-36.358 30.318-65.635 67.052-63.929 33.271 1.545 60.048 28.905 60.925 62.201.868 32.933-23.152 60.423-54.608 65.039l4.67 32.69H336c8.837 0 16 7.163 16 16v32c0 8.837-7.163 16-16 16H215.182l4.572 32H352a32 32 0 0 1 28.962 18.392L438.477 396.8l36.178-18.349c7.915-3.929 17.517-.697 21.446 7.218zM311.358 352h-24.506c-7.788 54.204-54.528 96-110.852 96-61.757 0-112-50.243-112-112 0-41.505 22.694-77.809 56.324-97.156-3.712-25.965-6.844-47.86-9.488-66.333C45.956 198.464 0 261.963 0 336c0 97.047 78.953 176 176 176 71.87 0 133.806-43.308 161.11-105.192L311.358 352z"] };
 var faWifi = { prefix: 'fas', iconName: 'wifi', icon: [640, 512, [], "f1eb", "M384 416c0 35.346-28.654 64-64 64s-64-28.654-64-64c0-35.346 28.654-64 64-64s64 28.654 64 64zm136.659-124.443c6.465-6.465 6.245-17.065-.564-23.167-113.793-101.985-286.526-101.869-400.19 0-6.809 6.102-7.029 16.702-.564 23.167l34.006 34.006c5.927 5.927 15.464 6.32 21.769.796 82.88-72.609 207.074-72.447 289.768 0 6.305 5.524 15.842 5.132 21.769-.796l34.006-34.006zm112.11-113.718c6.385-6.385 6.254-16.816-.35-22.973-175.768-163.86-449.134-163.8-624.837 0-6.604 6.157-6.735 16.589-.35 22.973l33.966 33.966c6.095 6.095 15.891 6.231 22.224.383 144.763-133.668 368.356-133.702 513.156 0 6.333 5.848 16.129 5.712 22.224-.383l33.967-33.966z"] };
 var faWindowClose = { prefix: 'fas', iconName: 'window-close', icon: [512, 512, [], "f410", "M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-83.6 290.5c4.8 4.8 4.8 12.6 0 17.4l-40.5 40.5c-4.8 4.8-12.6 4.8-17.4 0L256 313.3l-66.5 67.1c-4.8 4.8-12.6 4.8-17.4 0l-40.5-40.5c-4.8-4.8-4.8-12.6 0-17.4l67.1-66.5-67.1-66.5c-4.8-4.8-4.8-12.6 0-17.4l40.5-40.5c4.8-4.8 12.6-4.8 17.4 0l66.5 67.1 66.5-67.1c4.8-4.8 12.6-4.8 17.4 0l40.5 40.5c4.8 4.8 4.8 12.6 0 17.4L313.3 256l67.1 66.5z"] };
@@ -69779,6 +71167,7 @@ var icons$1 = {
   faBackward: faBackward,
   faBalanceScale: faBalanceScale,
   faBan: faBan,
+  faBandAid: faBandAid,
   faBarcode: faBarcode,
   faBars: faBars,
   faBaseballBall: faBaseballBall,
@@ -69803,6 +71192,8 @@ var icons$1 = {
   faBook: faBook,
   faBookmark: faBookmark,
   faBowlingBall: faBowlingBall,
+  faBox: faBox,
+  faBoxes: faBoxes,
   faBraille: faBraille,
   faBriefcase: faBriefcase,
   faBug: faBug,
@@ -69858,6 +71249,8 @@ var icons$1 = {
   faCircle: faCircle,
   faCircleNotch: faCircleNotch,
   faClipboard: faClipboard,
+  faClipboardCheck: faClipboardCheck,
+  faClipboardList: faClipboardList,
   faClock: faClock,
   faClone: faClone,
   faClosedCaptioning: faClosedCaptioning,
@@ -69886,7 +71279,10 @@ var icons$1 = {
   faDatabase: faDatabase,
   faDeaf: faDeaf,
   faDesktop: faDesktop,
+  faDna: faDna,
   faDollarSign: faDollarSign,
+  faDolly: faDolly,
+  faDollyFlatbed: faDollyFlatbed,
   faDotCircle: faDotCircle,
   faDownload: faDownload,
   faEdit: faEdit,
@@ -69929,6 +71325,7 @@ var icons$1 = {
   faFilter: faFilter,
   faFire: faFire,
   faFireExtinguisher: faFireExtinguisher,
+  faFirstAid: faFirstAid,
   faFlag: faFlag,
   faFlagCheckered: faFlagCheckered,
   faFlask: faFlask,
@@ -69971,6 +71368,7 @@ var icons$1 = {
   faHockeyPuck: faHockeyPuck,
   faHome: faHome,
   faHospital: faHospital,
+  faHospitalSymbol: faHospitalSymbol,
   faHourglass: faHourglass,
   faHourglassEnd: faHourglassEnd,
   faHourglassHalf: faHourglassHalf,
@@ -70045,6 +71443,7 @@ var icons$1 = {
   faObjectUngroup: faObjectUngroup,
   faOutdent: faOutdent,
   faPaintBrush: faPaintBrush,
+  faPallet: faPallet,
   faPaperPlane: faPaperPlane,
   faPaperclip: faPaperclip,
   faParagraph: faParagraph,
@@ -70058,6 +71457,7 @@ var icons$1 = {
   faPhone: faPhone,
   faPhoneSquare: faPhoneSquare,
   faPhoneVolume: faPhoneVolume,
+  faPills: faPills,
   faPlane: faPlane,
   faPlay: faPlay,
   faPlayCircle: faPlayCircle,
@@ -70102,6 +71502,7 @@ var icons$1 = {
   faShekelSign: faShekelSign,
   faShieldAlt: faShieldAlt,
   faShip: faShip,
+  faShippingFast: faShippingFast,
   faShoppingBag: faShoppingBag,
   faShoppingBasket: faShoppingBasket,
   faShoppingCart: faShoppingCart,
@@ -70145,6 +71546,7 @@ var icons$1 = {
   faSuperscript: faSuperscript,
   faSync: faSync,
   faSyncAlt: faSyncAlt,
+  faSyringe: faSyringe,
   faTable: faTable,
   faTableTennis: faTableTennis,
   faTablet: faTablet,
@@ -70160,6 +71562,7 @@ var icons$1 = {
   faTh: faTh,
   faThLarge: faThLarge,
   faThList: faThList,
+  faThermometer: faThermometer,
   faThermometerEmpty: faThermometerEmpty,
   faThermometerFull: faThermometerFull,
   faThermometerHalf: faThermometerHalf,
@@ -70212,6 +71615,8 @@ var icons$1 = {
   faVolumeDown: faVolumeDown,
   faVolumeOff: faVolumeOff,
   faVolumeUp: faVolumeUp,
+  faWarehouse: faWarehouse,
+  faWeight: faWeight,
   faWheelchair: faWheelchair,
   faWifi: faWifi,
   faWindowClose: faWindowClose,
@@ -70233,7 +71638,7 @@ bunker(function () {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(5)))
 
 /***/ }),
-/* 559 */
+/* 573 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70243,31 +71648,31 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _keys = __webpack_require__(560);
+var _keys = __webpack_require__(574);
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _entries = __webpack_require__(563);
+var _entries = __webpack_require__(577);
 
 var _entries2 = _interopRequireDefault(_entries);
 
-var _getPrototypeOf = __webpack_require__(17);
+var _getPrototypeOf = __webpack_require__(16);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _classCallCheck2 = __webpack_require__(18);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(19);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _possibleConstructorReturn2 = __webpack_require__(20);
+var _possibleConstructorReturn2 = __webpack_require__(19);
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = __webpack_require__(21);
+var _inherits2 = __webpack_require__(20);
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
@@ -70279,7 +71684,7 @@ var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-__webpack_require__(567);
+__webpack_require__(581);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -70394,28 +71799,28 @@ var Networth = function (_Component) {
 exports.default = Networth;
 
 /***/ }),
-/* 560 */
+/* 574 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(561), __esModule: true };
+module.exports = { "default": __webpack_require__(575), __esModule: true };
 
 /***/ }),
-/* 561 */
+/* 575 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(562);
+__webpack_require__(576);
 module.exports = __webpack_require__(4).Object.keys;
 
 
 /***/ }),
-/* 562 */
+/* 576 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(46);
-var $keys = __webpack_require__(43);
+var toObject = __webpack_require__(58);
+var $keys = __webpack_require__(42);
 
-__webpack_require__(138)('keys', function () {
+__webpack_require__(137)('keys', function () {
   return function keys(it) {
     return $keys(toObject(it));
   };
@@ -70423,26 +71828,26 @@ __webpack_require__(138)('keys', function () {
 
 
 /***/ }),
-/* 563 */
+/* 577 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(564), __esModule: true };
+module.exports = { "default": __webpack_require__(578), __esModule: true };
 
 /***/ }),
-/* 564 */
+/* 578 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(565);
+__webpack_require__(579);
 module.exports = __webpack_require__(4).Object.entries;
 
 
 /***/ }),
-/* 565 */
+/* 579 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-object-values-entries
-var $export = __webpack_require__(7);
-var $entries = __webpack_require__(566)(true);
+var $export = __webpack_require__(8);
+var $entries = __webpack_require__(580)(true);
 
 $export($export.S, 'Object', {
   entries: function entries(it) {
@@ -70452,12 +71857,12 @@ $export($export.S, 'Object', {
 
 
 /***/ }),
-/* 566 */
+/* 580 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getKeys = __webpack_require__(43);
+var getKeys = __webpack_require__(42);
 var toIObject = __webpack_require__(32);
-var isEnum = __webpack_require__(60).f;
+var isEnum = __webpack_require__(59).f;
 module.exports = function (isEntries) {
   return function (it) {
     var O = toIObject(it);
@@ -70474,41 +71879,60 @@ module.exports = function (isEntries) {
 
 
 /***/ }),
-/* 567 */
+/* 581 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
 
-// load the styles
-var content = __webpack_require__(568);
+var content = __webpack_require__(582);
+
 if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
+
 var transform;
+var insertInto;
+
+
 
 var options = {"hmr":true}
+
 options.transform = transform
-// add the styles to the DOM
+options.insertInto = undefined;
+
 var update = __webpack_require__(23)(content, options);
+
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
+
 if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./networth.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./networth.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
+	module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./networth.scss", function() {
+		var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./networth.scss");
+
+		if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+
+		var locals = (function(a, b) {
+			var key, idx = 0;
+
+			for(key in a) {
+				if(!b || a[key] !== b[key]) return false;
+				idx++;
+			}
+
+			for(key in b) idx--;
+
+			return idx === 0;
+		}(content.locals, newContent.locals));
+
+		if(!locals) throw new Error('Aborting CSS HMR due to changed css-modules locals.');
+
+		update(newContent);
+	});
+
 	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
-/* 568 */
+/* 582 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(22)(false);
 // imports
 
 
@@ -70519,7 +71943,7 @@ exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }
 
 
 /***/ }),
-/* 569 */
+/* 583 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var parse = __webpack_require__(11)
