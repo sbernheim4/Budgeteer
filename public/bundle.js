@@ -46514,7 +46514,7 @@ var App = function (_Component) {
 					_react2.default.createElement(
 						'p',
 						null,
-						'Please first link an account'
+						'An error has occurred, redirecting back to home page'
 					)
 				),
 				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: text }),
@@ -49443,6 +49443,7 @@ __webpack_require__(558);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint no-undef: 0*/
+/* eslint no-undefined: 0*/
 
 Chart.defaults.global.defaultFontColor = 'white';
 Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
@@ -49695,6 +49696,11 @@ var Statistics = function (_Component) {
 			// Only really care about the past 6 months, not a full year
 			var pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
+			if (pastSixMonths[0] === undefined) {
+				// account info was not properly loaded --> send them back to the homepage
+				window.location.href = location.href.slice(0, 24);
+				window.location.reload();
+			}
 			// Start date is the Monday following the first transaction
 			var firstDate = pastSixMonths[0].date;
 			var startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
@@ -66801,6 +66807,13 @@ var AccountsContainer = function (_Component) {
 
 			this.toggleCategoryViewer();
 
+			// Sort the transactions newest to oldest
+			releventTransactions.sort(function (a, b) {
+				var dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				var dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+				return dateOne - dateTwo;
+			});
+
 			// Update the state with the relevent transactions and how the user is sorting them
 			this.setState({
 				categoryTransactions: releventTransactions,
@@ -66866,26 +66879,33 @@ var AccountsContainer = function (_Component) {
 								total = _helpers2.default.formatAmount(total);
 								total = _helpers2.default.numberWithCommas(total);
 
+								// Sort the transactions newest to oldest
+								releventTransactions.sort(function (a, b) {
+									var dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+									var dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+									return dateOne - dateTwo;
+								});
+
 								this.setState({
 									categoryTransactions: releventTransactions,
 									categoryType: this.state.months[dateOne.getMonth()] + " " + dateOne.getDate() + " - " + this.state.months[dateTwo.getMonth()] + " " + dateTwo.getDate(),
 									categoryTotal: total
 								});
-								_context.next = 22;
+								_context.next = 23;
 								break;
 
-							case 19:
-								_context.prev = 19;
+							case 20:
+								_context.prev = 20;
 								_context.t0 = _context["catch"](6);
 
 								console.error(_context.t0);
 
-							case 22:
+							case 23:
 							case "end":
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[6, 19]]);
+				}, _callee, this, [[6, 20]]);
 			}));
 
 			function searchByDate(_x) {
@@ -66921,13 +66941,20 @@ var AccountsContainer = function (_Component) {
 								total = _helpers2.default.formatAmount(total);
 								total = _helpers2.default.numberWithCommas(total);
 
+								// Sort the transactions newest to oldest
+								releventTransactions.sort(function (a, b) {
+									var dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+									var dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+									return dateOne - dateTwo;
+								});
+
 								this.setState({
 									categoryType: _helpers2.default.toTitleCase(keyWord),
 									categoryTransactions: releventTransactions,
 									categoryTotal: total
 								});
 
-							case 9:
+							case 10:
 							case "end":
 								return _context2.stop();
 						}

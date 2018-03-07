@@ -66,9 +66,10 @@ app.post('/set-stored-access-token', async (req, res, next) => {
 		ACCESS_TOKENS = person.accessTokens;
 		ITEM_IDS = person.itemID;
 		console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
+		res.sendStatus(200).end();
 	} catch (err) {
 		console.log(err);
-		return res.json(err);
+		res.status(500).send(err);
 	}
 
 });

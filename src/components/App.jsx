@@ -214,30 +214,30 @@ class App extends Component {
 				<Navbar />
 
 				<div className='app-error'>
-                    <p>Please first link an account</p>
+					<p>An error has occurred, redirecting back to home page</p>
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
 				<Route exact path='/' component={text}/>
 
 				<Route path='/statistics' render={() => (
-                    <Statistics
-				        transactions={this.state.transactions}
-                    />
-                )}/>
+					<Statistics
+						transactions={this.state.transactions}
+					/>
+				)}/>
 
 				<Route path='/accounts' render={() => (
-                    <AccountsContainer
-					    transactions={this.state.transactions}
-                        accounts={this.state.accounts}
-                    />
-                )}/>
+					<AccountsContainer
+						transactions={this.state.transactions}
+						accounts={this.state.accounts}
+					/>
+				)}/>
 
 				<Route path='/networth' render={() => (
-                    <Networth
-					    netWorth={this.state.netWorth}
-                    />
-                )}/>
+					<Networth
+						netWorth={this.state.netWorth}
+					/>
+				)}/>
 
 			</div>
 		);

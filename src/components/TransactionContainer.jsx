@@ -66,7 +66,7 @@ class TransactionContainer extends Component {
 					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} transaction={t} /> )}
 				</div>
 			</div>
-			);
+		);
 	}
 }
 

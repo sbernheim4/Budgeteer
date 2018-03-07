@@ -1,4 +1,5 @@
 /* eslint no-undef: 0*/
+/* eslint no-undefined: 0*/
 
 import React, { Component } from "react";
 
@@ -257,6 +258,11 @@ class Statistics extends Component {
 		// Only really care about the past 6 months, not a full year
 		let pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
+		if (pastSixMonths[0] === undefined) {
+			// account info was not properly loaded --> send them back to the homepage
+			window.location.href = location.href.slice(0, 24);
+			window.location.reload();
+		}
 		// Start date is the Monday following the first transaction
 		let firstDate = pastSixMonths[0].date;
 		let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
@@ -414,4 +420,3 @@ class Statistics extends Component {
 }
 
 export default Statistics;
-
