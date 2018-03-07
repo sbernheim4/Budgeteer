@@ -40,7 +40,7 @@ class App extends Component {
 
 		try {
 			// First make a fetch call to get info for already linked accounts
-			fetch('plaid-api/set-stored-access-token', {
+			await fetch('plaid-api/set-stored-access-token', {
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',

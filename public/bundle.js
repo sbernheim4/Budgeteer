@@ -44901,9 +44901,8 @@ var App = function (_Component) {
 						switch (_context.prev = _context.next) {
 							case 0:
 								_context.prev = 0;
-
-								// First make a fetch call to get info for already linked accounts
-								fetch('plaid-api/set-stored-access-token', {
+								_context.next = 3;
+								return fetch('plaid-api/set-stored-access-token', {
 									method: 'POST',
 									headers: {
 										'Accept': 'application/json',
@@ -44911,19 +44910,21 @@ var App = function (_Component) {
 									}
 								});
 
+							case 3:
+
 								this.getTransactions();
 								this.getNetWorth(); // store networth
 
 								// Used for if the user wants to link a new account
-								_context.next = 6;
+								_context.next = 7;
 								return fetch('plaid-api/key-and-env');
 
-							case 6:
+							case 7:
 								keyAndEnv = _context.sent;
-								_context.next = 9;
+								_context.next = 10;
 								return keyAndEnv.json();
 
-							case 9:
+							case 10:
 								keyAndEnv = _context.sent;
 								plaid = Plaid.create({
 									apiVersion: 'v2',
@@ -44950,22 +44951,22 @@ var App = function (_Component) {
 
 								this.setState({ handler: plaid });
 
-								_context.next = 18;
+								_context.next = 19;
 								break;
 
-							case 14:
-								_context.prev = 14;
+							case 15:
+								_context.prev = 15;
 								_context.t0 = _context['catch'](0);
 
 								console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
 								console.error(_context.t0);
 
-							case 18:
+							case 19:
 							case 'end':
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[0, 14]]);
+				}, _callee, this, [[0, 15]]);
 			}));
 
 			function componentDidMount() {
