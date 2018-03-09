@@ -67137,7 +67137,7 @@ var TransactionContainer = function (_Component) {
 	}, {
 		key: "showMoreItems",
 		value: function showMoreItems() {
-			if (this.state.num + 30 > this.props.transactions.length) {
+			if (this.state.num + 20 > this.props.transactions.length) {
 				// if there are fewer than n transactions left --> Don't want to go over limit
 				this.setState({
 					transactionsToDisplay: this.props.transactions.reverse(),
@@ -67145,11 +67145,11 @@ var TransactionContainer = function (_Component) {
 				});
 			} else {
 				// if there are n or more transactions left
-				var relevent = this.props.transactions.slice(-(this.state.num + 30)).reverse();
+				var relevent = this.props.transactions.slice(-(this.state.num + 20)).reverse();
 
 				this.setState({
 					transactionsToDisplay: relevent,
-					num: this.state.num + 30
+					num: this.state.num + 20
 				});
 			}
 		}
@@ -71598,6 +71598,11 @@ var Networth = function (_Component) {
 					}
 				});
 
+				// TODO: Change the 1 to the minimum number of times you want the number of
+				// occurances to be before its considered a recurring payment.
+				//
+				// Should also work to check that the payment has been made in the past two
+				// most recent months (NOT INCLUDING THE CURRENT MONTH)
 				if (numOccurances > 1) {
 					duplicates.add((0, _stringify2.default)(val));
 				}

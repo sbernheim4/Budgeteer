@@ -175,7 +175,7 @@ class App extends Component {
 			currentAccounts = currentAccounts.sort((a, b) => {
 				return a.account_id - b.account_id
 			});
-		})
+		});
 
 		// Update accounts state variable
 		this.setState({ accounts: currentAccounts })

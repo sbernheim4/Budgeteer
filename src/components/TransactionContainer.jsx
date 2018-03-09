@@ -42,7 +42,7 @@ class TransactionContainer extends Component {
 	}
 
 	showMoreItems() {
-		if (this.state.num + 30 > this.props.transactions.length) {
+		if (this.state.num + 20 > this.props.transactions.length) {
 			// if there are fewer than n transactions left --> Don't want to go over limit
 			this.setState({
 				transactionsToDisplay: this.props.transactions.reverse(),
@@ -50,11 +50,11 @@ class TransactionContainer extends Component {
 			});
 		} else {
 			// if there are n or more transactions left
-			let relevent = this.props.transactions.slice(-(this.state.num + 30)).reverse();
+			let relevent = this.props.transactions.slice(-(this.state.num + 20)).reverse();
 
 			this.setState({
 				transactionsToDisplay: relevent,
-				num: this.state.num + 30
+				num: this.state.num + 20
 			});
 		}
 	}
