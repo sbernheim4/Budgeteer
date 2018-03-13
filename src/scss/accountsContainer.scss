@@ -2,6 +2,16 @@
 
 .accounts {
 
+	.red {
+		text-align: center;
+		color: $red;
+	}
+
+	.green {
+		text-align: center;
+		color: $green;
+	}
+
 	&--search-options {
 		margin: 0 30px 30px 30px;
 		display: flex;
@@ -188,7 +198,6 @@
 	}
 
 	&--totals {
-		/*height: 40px;*/
 		text-align: center;
 	}
 

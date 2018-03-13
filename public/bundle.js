@@ -48912,7 +48912,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.app-error {\n  position: absolute;\n  left: calc(50vw - 175px);\n  display: none;\n  margin: 15px auto;\n  width: 350px;\n  height: 60px;\n  text-align: center;\n  padding: 15px;\n  background-color: #d46363;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 2; }\n  .app-error__display {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.app-error {\n  position: absolute;\n  left: calc(50vw - 175px);\n  display: none;\n  margin: 15px auto;\n  width: 350px;\n  height: 60px;\n  text-align: center;\n  padding: 15px;\n  background-color: #d46363;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 2; }\n  .app-error__display {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
 
 // exports
 
@@ -49152,7 +49152,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.navbar {\n  width: 100vw;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -66145,7 +66145,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.budget {\n  margin: 0 2vw;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget div, .budget form {\n    width: calc(100% - 80px); }\n  .budget--doughnut-chart {\n    /*width: 400px;*/ }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.budget {\n  margin: 0 2vw;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget div, .budget form {\n    width: calc(100% - 80px); }\n  .budget--doughnut-chart {\n    /*width: 400px;*/ }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n", ""]);
 
 // exports
 
@@ -66500,7 +66500,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      font-size: 2.2vw;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: border-bottom .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      position: relative;\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 80%;\n          padding: 0;\n          display: flex;\n          justify-content: center; } }\n      @media all and (max-width: 700px) {\n        .stats--spending--doughnut {\n          width: 100%; } }\n    .stats--spending--line-chart {\n      position: relative;\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      font-size: 2.2vw;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: border-bottom .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      position: relative;\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 80%;\n          padding: 0;\n          display: flex;\n          justify-content: center; } }\n      @media all and (max-width: 700px) {\n        .stats--spending--doughnut {\n          width: 100%; } }\n    .stats--spending--line-chart {\n      position: relative;\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
@@ -66598,7 +66598,7 @@ var AccountsContainer = function (_Component) {
 			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
-			categoryTotal: 0,
+			categoryTotal: 0.00,
 			keyWord: "",
 			months: ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 		};
@@ -66639,7 +66639,6 @@ var AccountsContainer = function (_Component) {
 			});
 
 			total = _helpers2.default.formatAmount(total);
-			total = _helpers2.default.numberWithCommas(total);
 
 			// Update the state with the relevent transactions and how the user is sorting them
 			// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
@@ -66705,7 +66704,6 @@ var AccountsContainer = function (_Component) {
 			});
 
 			total = _helpers2.default.formatAmount(total);
-			total = _helpers2.default.numberWithCommas(total);
 
 			this.toggleCategoryViewer();
 
@@ -66779,7 +66777,6 @@ var AccountsContainer = function (_Component) {
 								});
 
 								total = _helpers2.default.formatAmount(total);
-								total = _helpers2.default.numberWithCommas(total);
 
 								// Sort the transactions newest to oldest
 								releventTransactions.sort(function (a, b) {
@@ -66793,21 +66790,21 @@ var AccountsContainer = function (_Component) {
 									categoryType: this.state.months[dateOne.getMonth()] + " " + dateOne.getDate() + " - " + this.state.months[dateTwo.getMonth()] + " " + dateTwo.getDate(),
 									categoryTotal: total
 								});
-								_context.next = 23;
+								_context.next = 22;
 								break;
 
-							case 20:
-								_context.prev = 20;
+							case 19:
+								_context.prev = 19;
 								_context.t0 = _context["catch"](6);
 
 								console.error(_context.t0);
 
-							case 23:
+							case 22:
 							case "end":
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[6, 20]]);
+				}, _callee, this, [[6, 19]]);
 			}));
 
 			function searchByDate(_x) {
@@ -66841,7 +66838,6 @@ var AccountsContainer = function (_Component) {
 								});
 
 								total = _helpers2.default.formatAmount(total);
-								total = _helpers2.default.numberWithCommas(total);
 
 								// Sort the transactions newest to oldest
 								releventTransactions.sort(function (a, b) {
@@ -66856,7 +66852,7 @@ var AccountsContainer = function (_Component) {
 									categoryTotal: total
 								});
 
-							case 10:
+							case 9:
 							case "end":
 								return _context2.stop();
 						}
@@ -66891,6 +66887,12 @@ var AccountsContainer = function (_Component) {
 		key: "render",
 		value: function render() {
 			var _this2 = this;
+
+			var amtColor = 'red';
+			if (this.state.categoryTotal * -1 > 0) {
+				amtColor = 'green';
+			}
+			console.log(amtColor);
 
 			return _react2.default.createElement(
 				"div",
@@ -66999,14 +67001,13 @@ var AccountsContainer = function (_Component) {
 				_react2.default.createElement(
 					"h2",
 					{ className: "accounts--totals" },
-					"Total spent on ",
 					this.state.categoryType
 				),
 				_react2.default.createElement(
 					"h2",
-					{ className: "accounts--totals" },
+					{ className: amtColor },
 					"$",
-					this.state.categoryTotal
+					_helpers2.default.numberWithCommas(this.state.categoryTotal * -1)
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions })
 			);
@@ -67165,13 +67166,9 @@ var TransactionContainer = function (_Component) {
 			return _react2.default.createElement(
 				"div",
 				{ className: "transaction-container" },
-				_react2.default.createElement(
-					"div",
-					{ className: "transaction-container--item" },
-					this.state.transactionsToDisplay.map(function (t, index) {
-						return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
-					})
-				)
+				this.state.transactionsToDisplay.map(function (t, index) {
+					return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
+				})
 			);
 		}
 	}]);
@@ -67219,6 +67216,12 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactFontawesome = __webpack_require__(570);
+
+var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
+
+var _fontawesomeFreeSolid = __webpack_require__(572);
+
 var _helpers = __webpack_require__(35);
 
 var _helpers2 = _interopRequireDefault(_helpers);
@@ -67244,18 +67247,19 @@ var Transaction = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Transaction, [{
-		key: "formatDate",
+		key: 'formatDate',
 		value: function formatDate(date) {
 			var monthNumber = parseInt(date.slice(date.indexOf("-") + 1, date.indexOf("-") + 3));
 			var day = date.slice(date.length - 3, date.length - 1);
 			var year = date.slice(1, 5);
 
-			return this.state.months[monthNumber - 1] + " " + day + " " + year;
+			return this.state.months[monthNumber - 1] + " " + day + " '" + year.slice(2);
 		}
 	}, {
-		key: "showMap",
+		key: 'showMap',
 		value: function showMap(e) {
 			var iframe = document.createElement("iframe");
+			console.log(e.target);
 
 			// TODO: Currently hardcoding latitude and longitude but it should come from:
 			// this.props.transaction.location.lat
@@ -67267,7 +67271,7 @@ var Transaction = function (_Component) {
 
 			// WITHOUT API KEY
 			if (this.props.transaction.location.lat !== null && this.props.transaction.location.lon !== null) {
-				iframe.src = "https://maps.google.com/maps?q=" + this.props.transaction.location.lat + "," + this.props.transaction.location.lon + "&z=15&output=embed";
+				iframe.src = 'https://maps.google.com/maps?q=' + this.props.transaction.location.lat + ',' + this.props.transaction.location.lon + '&z=15&output=embed';
 			} else {
 				iframe.src = "https://maps.google.com/maps?q=40.7828647,-73.9653551&z=15&output=embed";
 			}
@@ -67277,23 +67281,24 @@ var Transaction = function (_Component) {
 					val.classList.remove("transaction--map");
 				});
 
+				// Being opened
 				setTimeout(function () {
 					document.querySelectorAll("iframe").forEach(function (val) {
 						val.remove();
 					});
 				}, 301);
 			} else {
-				// close all iframes
+				// closing
 				document.querySelectorAll(".transaction--map").forEach(function (val) {
 					val.classList.remove("transaction--map");
 				});
 
-				e.target.appendChild(iframe);
 				e.target.classList.toggle("transaction--map");
+				e.target.appendChild(iframe);
 			}
 		}
 	}, {
-		key: "render",
+		key: 'render',
 		value: function render() {
 			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
 			var amount = _helpers2.default.formatAmount(this.props.transaction.amount);
@@ -67306,43 +67311,96 @@ var Transaction = function (_Component) {
 			if (this.props.transaction.category !== null && this.props.transaction.category !== undefined) {
 				category = this.props.transaction.category[0];
 			} else {
-				category = "null";
+				category = "Null";
+			}
+
+			// Determine what icon to show on the left side
+			var categoryIcon = void 0;
+			switch (category) {
+				case "Food and Drink":
+					categoryIcon = _fontawesomeFreeSolid.faUtensils;
+					break;
+				case "Travel":
+					categoryIcon = _fontawesomeFreeSolid.faPlane;
+					break;
+				case "Shops":
+					categoryIcon = _fontawesomeFreeSolid.faShoppingBag;
+					break;
+				// case "Recreation":
+				// 	categoryIcon = faUtensils;
+				// 	break;
+				case "Service":
+					categoryIcon = _fontawesomeFreeSolid.faWrench;
+					break;
+				case "Community":
+					categoryIcon = _fontawesomeFreeSolid.faUsers;
+					break;
+				case "Healthcare":
+					categoryIcon = _fontawesomeFreeSolid.faMedkit;
+					break;
+				// case "Bank Fees":
+				// 	categoryIcon = faUtensils;
+				// 	break;
+				// case "Cash Advance":
+				// 	categoryIcon = faUtensils;
+				// 	break;
+				case "Interest":
+					categoryIcon = _fontawesomeFreeSolid.faPercent;
+					break;
+				case "Payment":
+					categoryIcon = _fontawesomeFreeSolid.faMoneyBillAlt;
+					break;
+				// case "Tax":
+				// 	categoryIcon = faPlane;
+				// 	break;
+				case "Transfer":
+					categoryIcon = _fontawesomeFreeSolid.faExchangeAlt;
+					break;
+				default:
+					categoryIcon = _fontawesomeFreeSolid.faUtensils;
+			}
+
+			// Should the color of the amount be red or green based based on purchase or withdrawl
+			var amtColor = 'amount--amt';
+			if (this.props.transaction.amount * -1 > 0) {
+				amtColor = 'amount--amt__green';
 			}
 
 			return _react2.default.createElement(
-				"div",
-				{ className: "transactionTwo" },
+				'div',
+				{ className: 'transaction', onClick: this.showMap },
 				_react2.default.createElement(
-					"p",
-					null,
-					"Icon"
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "main-info" },
+					'div',
+					{ className: 'container' },
+					_react2.default.createElement(_reactFontawesome2.default, { className: 'icon', icon: categoryIcon }),
 					_react2.default.createElement(
-						"p",
-						null,
-						this.props.transaction.name
+						'div',
+						{ className: 'name-info' },
+						_react2.default.createElement(
+							'p',
+							{ className: 'name-info--name' },
+							this.props.transaction.name
+						),
+						_react2.default.createElement(
+							'p',
+							{ className: 'name-info--category' },
+							category
+						)
 					),
 					_react2.default.createElement(
-						"p",
-						null,
-						category
-					)
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "amount" },
-					_react2.default.createElement(
-						"p",
-						null,
-						this.props.transaction.amount
-					),
-					_react2.default.createElement(
-						"p",
-						null,
-						date
+						'div',
+						{ className: 'amount' },
+						_react2.default.createElement(
+							'p',
+							{ className: amtColor },
+							' $',
+							this.props.transaction.amount * -1
+						),
+						_react2.default.createElement(
+							'p',
+							{ className: 'amount--date' },
+							date
+						)
 					)
 				)
 			);
@@ -67398,7 +67456,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  border: 1px solid #ff8484;\n  border-radius: 5px;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a; }\n  .transaction h4 {\n    margin-top: 10px;\n    pointer-events: none; }\n  .transaction p {\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n\n.transactionTwo {\n  width: 500px;\n  height: 40px;\n  display: flex;\n  align-items: center; }\n  .transactionTwo .main-info {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.transaction {\n  width: 80%;\n  background-color: #252525;\n  border-bottom: 1px solid gray; }\n  @media all and (max-width: 600px) {\n    .transaction {\n      width: 100%; } }\n  .transaction iframe {\n    margin: 0;\n    width: 0;\n    height: 0;\n    transition: height .3s ease-in; }\n  .transaction--map {\n    pointer-events: none; }\n    .transaction--map iframe {\n      margin: 0 auto;\n      width: 100%;\n      height: 300px;\n      transition: height .3s ease-in;\n      display: flex;\n      justify-content: center; }\n  .transaction .container {\n    padding: 15px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    pointer-events: none; }\n    .transaction .container .icon {\n      width: 10%; }\n    .transaction .container .name-info {\n      margin: 0 20px;\n      min-width: 50%;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-start; }\n      .transaction .container .name-info--name {\n        width: 100%; }\n      .transaction .container .name-info--category {\n        width: 100%;\n        color: gray; }\n    .transaction .container .amount {\n      max-width: 100px;\n      width: 40%;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .transaction .container .amount--amt {\n        width: 100%;\n        color: #d46363; }\n        .transaction .container .amount--amt__green {\n          width: 100%;\n          color: #4d9972; }\n      .transaction .container .amount--date {\n        width: 100%;\n        color: gray; }\n  .transaction * {\n    overflow-y: hidden; }\n", ""]);
 
 // exports
 
@@ -67443,7 +67501,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction-container--item {\n    display: flex;\n    flex-direction: row;\n    justify-content: center;\n    flex-wrap: wrap; }\n    .transaction-container--item__hidden {\n      display: none; }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.transaction-container {\n  margin-top: 15px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  @media all and (max-width: 600px) {\n    .transaction-container {\n      position: absolute;\n      top: 85vh; } }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -67488,7 +67546,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.accounts--search-options {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    width: 70%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form {\n      width: 100%; }\n      .accounts--search-options--keyword-search form label input {\n        width: 80%;\n        height: 61px;\n        padding: 0 15px;\n        background-color: #323232;\n        border: 1px solid white;\n        border-radius: 6px;\n        color: white;\n        transition: all .2s ease-in; }\n        .accounts--search-options--keyword-search form label input:focus {\n          border: 1px solid #ff8484; }\n  .accounts--search-options--icon-search {\n    width: 30%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--icon-search--categorical-search {\n      margin-right: 130px;\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .accounts--search-options--icon-search--categorical-search .icon {\n        font-size: 40px;\n        cursor: pointer;\n        z-index: 1; }\n        .accounts--search-options--icon-search--categorical-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--categorical-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--categorical-search--categories {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories:before {\n          transform: translateY(-50px);\n          opacity: 0;\n          content: \"\";\n          position: absolute;\n          margin-top: 20px;\n          width: 0;\n          height: 0;\n          border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n          border-left: 25px solid transparent;\n          border-right: 25px solid transparent;\n          transition: transform .3s ease-out, opacity .3s ease-out; }\n        .accounts--search-options--icon-search--categorical-search--categories div {\n          transform: translateY(-50px);\n          visibility: hidden;\n          opacity: 0;\n          position: absolute;\n          margin-top: 60px;\n          width: 300px;\n          height: 210px;\n          padding: 20px;\n          background-color: black;\n          border-radius: 10px;\n          transition: all 0.3s ease-out;\n          display: flex;\n          justify-content: center;\n          flex-wrap: wrap; }\n          .accounts--search-options--icon-search--categorical-search--categories div .icon {\n            margin: 15px; }\n      .accounts--search-options--icon-search--categorical-search--categories__active {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories__active:before {\n          transform: translateY(0px);\n          opacity: 1; }\n        .accounts--search-options--icon-search--categorical-search--categories__active div {\n          transform: translateY(0);\n          visibility: visible;\n          opacity: 1;\n          transition: all 0.3s ease-out; }\n    .accounts--search-options--icon-search--date-search .icon {\n      font-size: 45px;\n      cursor: pointer; }\n      .accounts--search-options--icon-search--date-search .icon path {\n        transition: color .2s ease-in; }\n        .accounts--search-options--icon-search--date-search .icon path:hover {\n          color: #ff8484; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.accounts .red {\n  text-align: center;\n  color: #d46363; }\n\n.accounts .green {\n  text-align: center;\n  color: #4d9972; }\n\n.accounts--search-options {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    width: 70%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form {\n      width: 100%; }\n      .accounts--search-options--keyword-search form label input {\n        width: 80%;\n        height: 61px;\n        padding: 0 15px;\n        background-color: #323232;\n        border: 1px solid white;\n        border-radius: 6px;\n        color: white;\n        transition: all .2s ease-in; }\n        .accounts--search-options--keyword-search form label input:focus {\n          border: 1px solid #ff8484; }\n  .accounts--search-options--icon-search {\n    width: 30%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--icon-search--categorical-search {\n      margin-right: 130px;\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .accounts--search-options--icon-search--categorical-search .icon {\n        font-size: 40px;\n        cursor: pointer;\n        z-index: 1; }\n        .accounts--search-options--icon-search--categorical-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--categorical-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--categorical-search--categories {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories:before {\n          transform: translateY(-50px);\n          opacity: 0;\n          content: \"\";\n          position: absolute;\n          margin-top: 20px;\n          width: 0;\n          height: 0;\n          border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n          border-left: 25px solid transparent;\n          border-right: 25px solid transparent;\n          transition: transform .3s ease-out, opacity .3s ease-out; }\n        .accounts--search-options--icon-search--categorical-search--categories div {\n          transform: translateY(-50px);\n          visibility: hidden;\n          opacity: 0;\n          position: absolute;\n          margin-top: 60px;\n          width: 300px;\n          height: 210px;\n          padding: 20px;\n          background-color: black;\n          border-radius: 10px;\n          transition: all 0.3s ease-out;\n          display: flex;\n          justify-content: center;\n          flex-wrap: wrap; }\n          .accounts--search-options--icon-search--categorical-search--categories div .icon {\n            margin: 15px; }\n      .accounts--search-options--icon-search--categorical-search--categories__active {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories__active:before {\n          transform: translateY(0px);\n          opacity: 1; }\n        .accounts--search-options--icon-search--categorical-search--categories__active div {\n          transform: translateY(0);\n          visibility: visible;\n          opacity: 1;\n          transition: all 0.3s ease-out; }\n    .accounts--search-options--icon-search--date-search .icon {\n      font-size: 45px;\n      cursor: pointer; }\n      .accounts--search-options--icon-search--date-search .icon path {\n        transition: color .2s ease-in; }\n        .accounts--search-options--icon-search--date-search .icon path:hover {\n          color: #ff8484; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -71888,7 +71946,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

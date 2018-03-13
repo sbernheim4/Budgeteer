@@ -37,7 +37,7 @@ class AccountsContainer extends Component {
 			categoryTransactions: [],
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
-			categoryTotal: 0,
+			categoryTotal: 0.00,
 			keyWord: "",
 			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 		};
@@ -75,7 +75,6 @@ class AccountsContainer extends Component {
 		});
 
 		total = helpers.formatAmount(total);
-		total = helpers.numberWithCommas(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
@@ -140,7 +139,6 @@ class AccountsContainer extends Component {
 		});
 
 		total = helpers.formatAmount(total);
-		total = helpers.numberWithCommas(total);
 
 		this.toggleCategoryViewer();
 
@@ -199,8 +197,6 @@ class AccountsContainer extends Component {
 			});
 
 			total = helpers.formatAmount(total);
-			total = helpers.numberWithCommas(total);
-
 
 			// Sort the transactions newest to oldest
 			releventTransactions.sort((a, b) => {
@@ -237,7 +233,6 @@ class AccountsContainer extends Component {
 		});
 
 		total = helpers.formatAmount(total);
-		total = helpers.numberWithCommas(total);
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
@@ -270,6 +265,12 @@ class AccountsContainer extends Component {
 	}
 
 	render() {
+
+		let amtColor = 'red';
+		if (this.state.categoryTotal * -1 > 0) {
+			amtColor = 'green';
+		}
+		console.log(amtColor);
 
 		return (
 			<div className="accounts">
@@ -368,8 +369,8 @@ class AccountsContainer extends Component {
 					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
 				</div>
 
-				<h2 className="accounts--totals">Total spent: {this.state.categoryType}</h2>
-				<h2 className="accounts--totals">${this.state.categoryTotal}</h2>
+				<h2 className="accounts--totals">{this.state.categoryType}</h2>
+				<h2 className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</h2>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 			</div>

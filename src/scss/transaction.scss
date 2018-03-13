@@ -75,6 +75,7 @@ $transaction-background-color: rgb(80, 80, 80);
 	}
 
 	&--map {
+		pointer-events: none;
 
 		iframe {
 			// display settings
@@ -92,6 +93,7 @@ $transaction-background-color: rgb(80, 80, 80);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		pointer-events: none;
 
 		.icon {
 			// margin-right: 30px;
@@ -100,7 +102,7 @@ $transaction-background-color: rgb(80, 80, 80);
 
 		.name-info {
 			margin: 0 20px;
-			width: 50%;
+			min-width: 50%;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -117,6 +119,7 @@ $transaction-background-color: rgb(80, 80, 80);
 		}
 
 		.amount {
+			max-width: 100px;
 			width: 40%;
 			display: flex;
 			flex-direction: column;
@@ -138,11 +141,9 @@ $transaction-background-color: rgb(80, 80, 80);
 				color: gray;
 			}
 		}
-
 	}
 
 	* {
 		overflow-y: hidden;
-		pointer-events: none;
 	}
 }

@@ -148,7 +148,6 @@ class Transaction extends Component {
 			amtColor = 'amount--amt__green';
 		}
 
-
 		return (
 			<div className='transaction' onClick={this.showMap}>
 
