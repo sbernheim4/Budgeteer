@@ -368,7 +368,7 @@ class AccountsContainer extends Component {
 					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
 				</div>
 
-				<h2 className="accounts--totals">Total spent on {this.state.categoryType}</h2>
+				<h2 className="accounts--totals">Total spent: {this.state.categoryType}</h2>
 				<h2 className="accounts--totals">${this.state.categoryTotal}</h2>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />

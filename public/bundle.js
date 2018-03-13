@@ -48912,7 +48912,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.app-error {\n  position: absolute;\n  left: calc(50vw - 175px);\n  display: none;\n  margin: 15px auto;\n  width: 350px;\n  height: 60px;\n  text-align: center;\n  padding: 15px;\n  background-color: #d46363;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 2; }\n  .app-error__display {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.app-error {\n  position: absolute;\n  left: calc(50vw - 175px);\n  display: none;\n  margin: 15px auto;\n  width: 350px;\n  height: 60px;\n  text-align: center;\n  padding: 15px;\n  background-color: #d46363;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 2; }\n  .app-error__display {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
 
 // exports
 
@@ -49152,7 +49152,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.navbar {\n  width: 100vw;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -66145,7 +66145,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.budget {\n  margin: 0 2vw;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget div, .budget form {\n    width: calc(100% - 80px); }\n  .budget--doughnut-chart {\n    /*width: 400px;*/ }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.budget {\n  margin: 0 2vw;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget div, .budget form {\n    width: calc(100% - 80px); }\n  .budget--doughnut-chart {\n    /*width: 400px;*/ }\n  @media all and (max-width: 930px) {\n    .budget--form {\n      margin: 10px 0; } }\n  .budget--form label {\n    font-size: 20px;\n    font-weight: bold;\n    display: flex;\n    flex-direction: column;\n    align-items: center; }\n    .budget--form label input {\n      max-width: 90%;\n      width: 250px;\n      padding: 10px;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 15px;\n      color: black;\n      box-sizing: border-box; }\n      @media all and (max-width: 930px) {\n        .budget--form label input {\n          margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n    .budget--totals h2 {\n      overflow-y: hidden; }\n", ""]);
 
 // exports
 
@@ -66500,7 +66500,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      font-size: 2.2vw;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: border-bottom .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      position: relative;\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 80%;\n          padding: 0;\n          display: flex;\n          justify-content: center; } }\n      @media all and (max-width: 700px) {\n        .stats--spending--doughnut {\n          width: 100%; } }\n    .stats--spending--line-chart {\n      position: relative;\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      font-size: 2.2vw;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: border-bottom .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      position: relative;\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 80%;\n          padding: 0;\n          display: flex;\n          justify-content: center; } }\n      @media all and (max-width: 700px) {\n        .stats--spending--doughnut {\n          width: 100%; } }\n    .stats--spending--line-chart {\n      position: relative;\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 
@@ -67301,33 +67301,62 @@ var Transaction = function (_Component) {
 			var googleMap = "";
 			// The below URL doesn't require an API key, might be better
 			// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
+			var category = void 0;
+
+			if (this.props.transaction.category !== null && this.props.transaction.category !== undefined) {
+				category = this.props.transaction.category[0];
+			} else {
+				category = "null";
+			}
 
 			return _react2.default.createElement(
 				"div",
-				{ className: "transaction", onClick: this.showMap },
-				_react2.default.createElement(
-					"h4",
-					null,
-					JSON.parse((0, _stringify2.default)(this.props.transaction.name))
-				),
+				{ className: "transactionTwo" },
 				_react2.default.createElement(
 					"p",
 					null,
-					"$",
-					amount
+					"Icon"
 				),
 				_react2.default.createElement(
-					"p",
-					null,
-					date
+					"div",
+					{ className: "main-info" },
+					_react2.default.createElement(
+						"p",
+						null,
+						this.props.transaction.name
+					),
+					_react2.default.createElement(
+						"p",
+						null,
+						category
+					)
+				),
+				_react2.default.createElement(
+					"div",
+					{ className: "amount" },
+					_react2.default.createElement(
+						"p",
+						null,
+						this.props.transaction.amount
+					),
+					_react2.default.createElement(
+						"p",
+						null,
+						date
+					)
 				)
 			);
 		}
 	}]);
 	return Transaction;
-}(_react.Component);
+}(_react.Component); /*eslint no-undefined: 0*/
 
 exports.default = Transaction;
+/*<div className="transaction" onClick={this.showMap}>
+				<h4>{JSON.parse(JSON.stringify(this.props.transaction.name))}</h4>
+				<p>${amount}</p>
+				<p>{date}</p>
+			</div>*/
 
 /***/ }),
 /* 564 */
@@ -67369,7 +67398,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  border: 1px solid #ff8484;\n  border-radius: 5px;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a; }\n  .transaction h4 {\n    margin-top: 10px;\n    pointer-events: none; }\n  .transaction p {\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.transaction {\n  margin: 10px;\n  width: 280px;\n  min-width: 280px;\n  height: 100px;\n  padding: 5px;\n  background-color: #505050;\n  border: 1px solid #ff8484;\n  border-radius: 5px;\n  cursor: pointer;\n  text-align: center;\n  transition: all .3s ease-in;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  flex-wrap: nowrap; }\n  .transaction:hover {\n    background-color: #2a2a2a; }\n  .transaction h4 {\n    margin-top: 10px;\n    pointer-events: none; }\n  .transaction p {\n    pointer-events: none; }\n  .transaction iframe {\n    margin: 0px;\n    width: 0;\n    height: 0;\n    transition: all .3s ease-in; }\n  .transaction--map {\n    width: 520px;\n    height: 450px;\n    box-shadow: 0px 0px 0px grey; }\n    .transaction--map iframe {\n      margin: 20px;\n      width: 90%;\n      height: 70%; }\n\n.transactionTwo {\n  width: 500px;\n  height: 40px;\n  display: flex;\n  align-items: center; }\n  .transactionTwo .main-info {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
 
 // exports
 
@@ -67414,7 +67443,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction-container--item {\n    display: flex;\n    flex-direction: row;\n    justify-content: center;\n    flex-wrap: wrap; }\n    .transaction-container--item__hidden {\n      display: none; }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.transaction-container {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .transaction-container--item {\n    display: flex;\n    flex-direction: row;\n    justify-content: center;\n    flex-wrap: wrap; }\n    .transaction-container--item__hidden {\n      display: none; }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -67459,7 +67488,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.accounts--search-options {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    width: 70%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form {\n      width: 100%; }\n      .accounts--search-options--keyword-search form label input {\n        width: 80%;\n        height: 61px;\n        padding: 0 15px;\n        background-color: #323232;\n        border: 1px solid white;\n        border-radius: 6px;\n        color: white;\n        transition: all .2s ease-in; }\n        .accounts--search-options--keyword-search form label input:focus {\n          border: 1px solid #ff8484; }\n  .accounts--search-options--icon-search {\n    width: 30%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--icon-search--categorical-search {\n      margin-right: 130px;\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .accounts--search-options--icon-search--categorical-search .icon {\n        font-size: 40px;\n        cursor: pointer;\n        z-index: 1; }\n        .accounts--search-options--icon-search--categorical-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--categorical-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--categorical-search--categories {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories:before {\n          transform: translateY(-50px);\n          opacity: 0;\n          content: \"\";\n          position: absolute;\n          margin-top: 20px;\n          width: 0;\n          height: 0;\n          border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n          border-left: 25px solid transparent;\n          border-right: 25px solid transparent;\n          transition: transform .3s ease-out, opacity .3s ease-out; }\n        .accounts--search-options--icon-search--categorical-search--categories div {\n          transform: translateY(-50px);\n          visibility: hidden;\n          opacity: 0;\n          position: absolute;\n          margin-top: 60px;\n          width: 300px;\n          height: 210px;\n          padding: 20px;\n          background-color: black;\n          border-radius: 10px;\n          transition: all 0.3s ease-out;\n          display: flex;\n          justify-content: center;\n          flex-wrap: wrap; }\n          .accounts--search-options--icon-search--categorical-search--categories div .icon {\n            margin: 15px; }\n      .accounts--search-options--icon-search--categorical-search--categories__active {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories__active:before {\n          transform: translateY(0px);\n          opacity: 1; }\n        .accounts--search-options--icon-search--categorical-search--categories__active div {\n          transform: translateY(0);\n          visibility: visible;\n          opacity: 1;\n          transition: all 0.3s ease-out; }\n    .accounts--search-options--icon-search--date-search .icon {\n      font-size: 45px;\n      cursor: pointer; }\n      .accounts--search-options--icon-search--date-search .icon path {\n        transition: color .2s ease-in; }\n        .accounts--search-options--icon-search--date-search .icon path:hover {\n          color: #ff8484; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.accounts--search-options {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .accounts--search-options--keyword-search {\n    width: 70%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--keyword-search .icon {\n      padding: 15px;\n      font-size: 30px; }\n    .accounts--search-options--keyword-search form {\n      width: 100%; }\n      .accounts--search-options--keyword-search form label input {\n        width: 80%;\n        height: 61px;\n        padding: 0 15px;\n        background-color: #323232;\n        border: 1px solid white;\n        border-radius: 6px;\n        color: white;\n        transition: all .2s ease-in; }\n        .accounts--search-options--keyword-search form label input:focus {\n          border: 1px solid #ff8484; }\n  .accounts--search-options--icon-search {\n    width: 30%;\n    display: flex;\n    justify-content: flex-start;\n    align-items: center; }\n    .accounts--search-options--icon-search--categorical-search {\n      margin-right: 130px;\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .accounts--search-options--icon-search--categorical-search .icon {\n        font-size: 40px;\n        cursor: pointer;\n        z-index: 1; }\n        .accounts--search-options--icon-search--categorical-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--categorical-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--categorical-search--categories {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories:before {\n          transform: translateY(-50px);\n          opacity: 0;\n          content: \"\";\n          position: absolute;\n          margin-top: 20px;\n          width: 0;\n          height: 0;\n          border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n          border-left: 25px solid transparent;\n          border-right: 25px solid transparent;\n          transition: transform .3s ease-out, opacity .3s ease-out; }\n        .accounts--search-options--icon-search--categorical-search--categories div {\n          transform: translateY(-50px);\n          visibility: hidden;\n          opacity: 0;\n          position: absolute;\n          margin-top: 60px;\n          width: 300px;\n          height: 210px;\n          padding: 20px;\n          background-color: black;\n          border-radius: 10px;\n          transition: all 0.3s ease-out;\n          display: flex;\n          justify-content: center;\n          flex-wrap: wrap; }\n          .accounts--search-options--icon-search--categorical-search--categories div .icon {\n            margin: 15px; }\n      .accounts--search-options--icon-search--categorical-search--categories__active {\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--icon-search--categorical-search--categories__active:before {\n          transform: translateY(0px);\n          opacity: 1; }\n        .accounts--search-options--icon-search--categorical-search--categories__active div {\n          transform: translateY(0);\n          visibility: visible;\n          opacity: 1;\n          transition: all 0.3s ease-out; }\n    .accounts--search-options--icon-search--date-search .icon {\n      font-size: 45px;\n      cursor: pointer; }\n      .accounts--search-options--icon-search--date-search .icon path {\n        transition: color .2s ease-in; }\n        .accounts--search-options--icon-search--date-search .icon path:hover {\n          color: #ff8484; }\n  .accounts--search-options--date-picker {\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .accounts--search-options--date-picker input {\n      width: 100px;\n      height: 30px;\n      background-color: grey;\n      color: white;\n      align-self: center; }\n    .accounts--search-options--date-picker div {\n      margin: 10px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .accounts--search-options--date-picker div p {\n        margin-bottom: 5px; }\n      .accounts--search-options--date-picker div label input {\n        margin-left: 10px;\n        width: 100px;\n        border: 1px solid black;\n        color: black; }\n\n.accounts--totals {\n  height: 40px;\n  text-align: center; }\n\n.accounts--sort-options {\n  text-align: center; }\n\n.accounts--btns {\n  margin: 0 30px 30px 30px;\n  display: flex;\n  justify-content: center;\n  flex-wrap: wrap; }\n  .accounts--btns button {\n    margin: 10px;\n    padding: 10px;\n    background-color: grey;\n    border-radius: 5px;\n    color: white;\n    cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -71859,7 +71888,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

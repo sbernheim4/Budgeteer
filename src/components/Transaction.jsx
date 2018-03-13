@@ -1,4 +1,24 @@
+/*eslint no-undefined: 0*/
+
 import React, { Component } from "react";
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+
+import {
+	faSearch,
+	faTags,
+	faCalendar,
+	faUtensils,
+	faPlane,
+	faShoppingBag,
+	faWrench,
+	faUsers,
+	faMedkit,
+	faPercent,
+	faMoneyBillAlt,
+	faExchangeAlt
+} from '@fortawesome/fontawesome-free-solid';
+
 
 import helpers from './helpers';
 
@@ -20,7 +40,7 @@ class Transaction extends Component {
 		let day = date.slice(date.length - 3, date.length - 1);
 		let year = date.slice(1, 5);
 
-		return this.state.months[monthNumber - 1] + " " + day + " " + year;
+		return this.state.months[monthNumber - 1] + " " + day + " '" + year.slice(2,);
 	}
 
 	showMap(e) {
@@ -63,15 +83,82 @@ class Transaction extends Component {
 		let googleMap = "";
 		// The below URL doesn't require an API key, might be better
 		// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
+		let category;
+
+		if (this.props.transaction.category !== null && this.props.transaction.category !== undefined) {
+			category = this.props.transaction.category[0];
+		} else {
+			category = "Null";
+		}
+
+		let categoryIcon;
+		switch(category) {
+			case "Food and Drink":
+				categoryIcon = faUtensils;
+				break;
+			case "Travel":
+				categoryIcon = faPlane;
+				break;
+			case "Shops":
+				categoryIcon = faShoppingBag;
+				break;
+			// case "Recreation":
+			// 	categoryIcon = faUtensils;
+			// 	break;
+			case "Service":
+				categoryIcon = faWrench;
+				break;
+			case "Community":
+				categoryIcon = faUsers;
+				break;
+			case "Healthcare":
+				categoryIcon = faMedkit;
+				break;
+			// case "Bank Fees":
+			// 	categoryIcon = faUtensils;
+			// 	break;
+			// case "Cash Advance":
+			// 	categoryIcon = faUtensils;
+			// 	break;
+			case "Interest":
+				categoryIcon = faPercent;
+				break;
+			case "Payment":
+				categoryIcon = faMoneyBillAlt;
+				break;
+			// case "Tax":
+			// 	categoryIcon = faPlane;
+			// 	break;
+			case "Transfer":
+				categoryIcon = faExchangeAlt;
+				break;
+			default:
+				categoryIcon = faUtensils;
+		}
+
 
 		return (
-			<div className="transaction" onClick={this.showMap}>
-				<h4>{JSON.parse(JSON.stringify(this.props.transaction.name))}</h4>
-				<p>${amount}</p>
-				<p>{date}</p>
+			<div className='transactionTwo'>
+				<FontAwesomeIcon className="icon" icon={categoryIcon} />
+
+
+				<div className='name-info'>
+					<p className='name-info--name'>{this.props.transaction.name}</p>
+					<p className='name-info--category'>{category}</p>
+				</div>
+
+				<div className='amount'>
+					<p className='amount--amt'> $-{this.props.transaction.amount}</p>
+					<p className='amount--date'>{date}</p>
+				</div>
 			</div>
 		);
 	}
 }
 
 export default Transaction;
+/*<div className="transaction" onClick={this.showMap}>
+				<h4>{JSON.parse(JSON.stringify(this.props.transaction.name))}</h4>
+				<p>${amount}</p>
+				<p>{date}</p>
+			</div>*/

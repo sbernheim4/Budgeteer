@@ -56,3 +56,62 @@ $transaction-background-color: rgb(80, 80, 80);
 
 	}
 }
+
+.transactionTwo {
+	width: 80%;
+	padding: 15px;
+	background-color: darken($background-color, 5%);
+	border-bottom: 1px solid gray;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	@media all and (max-width: 500px) {
+		width: 100%;
+	}
+
+	.icon {
+		margin-right: 30px;
+		width: 15%;
+	}
+
+	.name-info {
+		/*margin-right: 30px;*/
+		width: 60%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-start;
+
+		&--name {
+			width: 100%;
+		}
+
+		&--category {
+			width: 100%;
+			color: gray;
+		}
+	}
+
+	.amount {
+		width: 25%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-end;
+
+		&--amt {
+			width: 100%;
+			color: $red;
+		}
+
+		&--date {
+			width: 100%;
+			color: gray;
+		}
+	}
+
+	* {
+		overflow-y: hidden;
+	}
+}
