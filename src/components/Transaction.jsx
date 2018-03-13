@@ -45,6 +45,7 @@ class Transaction extends Component {
 
 	showMap(e) {
 		let iframe = document.createElement("iframe");
+		console.log(e.target);
 
 		// TODO: Currently hardcoding latitude and longitude but it should come from:
 		// this.props.transaction.location.lat
@@ -61,19 +62,23 @@ class Transaction extends Component {
 			iframe.src = "https://maps.google.com/maps?q=40.7828647,-73.9653551&z=15&output=embed"
 		}
 
+
 		if (!!e.target.querySelector("iframe")) {
 			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
 
+			// Being opened
 			setTimeout(() => {
 				document.querySelectorAll("iframe").forEach(val => { val.remove() });
 			}, 301);
 		} else {
-			// close all iframes
+			// closing
 			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
 
-			e.target.appendChild(iframe);
+
 			e.target.classList.toggle("transaction--map");
+			e.target.appendChild(iframe);
 		}
+
 	}
 
 	render() {
@@ -91,6 +96,7 @@ class Transaction extends Component {
 			category = "Null";
 		}
 
+		// Determine what icon to show on the left side
 		let categoryIcon;
 		switch(category) {
 			case "Food and Drink":
@@ -136,20 +142,29 @@ class Transaction extends Component {
 				categoryIcon = faUtensils;
 		}
 
+		// Should the color of the amount be red or green based based on purchase or withdrawl
+		let amtColor = 'amount--amt';
+		if (this.props.transaction.amount * -1 > 0) {
+			amtColor = 'amount--amt__green';
+		}
+
 
 		return (
-			<div className='transactionTwo'>
-				<FontAwesomeIcon className="icon" icon={categoryIcon} />
+			<div className='transaction' onClick={this.showMap}>
 
+				<div className='container'>
+					<FontAwesomeIcon className="icon" icon={categoryIcon} />
 
-				<div className='name-info'>
-					<p className='name-info--name'>{this.props.transaction.name}</p>
-					<p className='name-info--category'>{category}</p>
-				</div>
+					<div className='name-info'>
+						<p className='name-info--name'>{this.props.transaction.name}</p>
+						<p className='name-info--category'>{category}</p>
+					</div>
 
-				<div className='amount'>
-					<p className='amount--amt'> $-{this.props.transaction.amount}</p>
-					<p className='amount--date'>{date}</p>
+					<div className='amount'>
+						<p className={amtColor}> ${this.props.transaction.amount * -1}</p>
+						<p className='amount--date'>{date}</p>
+					</div>
+
 				</div>
 			</div>
 		);

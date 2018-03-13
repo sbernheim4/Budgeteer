@@ -62,9 +62,9 @@ class TransactionContainer extends Component {
 	render() {
 		return (
 			<div className="transaction-container">
-				<div className='transaction-container--item'>
+				{/*<div className='transaction-container--item'>*/}
 					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} transaction={t} /> )}
-				</div>
+				{/*</div>*/}
 			</div>
 		);
 	}
