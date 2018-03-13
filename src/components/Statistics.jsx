@@ -373,14 +373,20 @@ class Statistics extends Component {
 	changeChart(chartType) {
 		let chartDisplay;
 
+		let tempOptions = {
+			legend: {
+				display: false
+			}
+		}
+
 		if (chartType === "spendingAnalysis") {
 			chartDisplay = <div className="stats--spending">
 				<div className="stats--spending--doughnut">
-					<Doughnut data={this.state.categoryDoughnutData} />
+					<Doughnut options={tempOptions} data={this.state.categoryDoughnutData} />
 				</div>
 				<hr />
 				<div className="stats--spending--line-chart">
-					<Bar data={this.state.monthlyLineChartData} />
+					<Bar options={tempOptions} data={this.state.monthlyLineChartData} />
 				</div>
 			</div>
 			} else if (chartType === "monthlyBudget") {

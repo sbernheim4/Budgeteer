@@ -49744,6 +49744,12 @@ var Statistics = function (_Component) {
 		value: function changeChart(chartType) {
 			var chartDisplay = void 0;
 
+			var tempOptions = {
+				legend: {
+					display: false
+				}
+			};
+
 			if (chartType === "spendingAnalysis") {
 				chartDisplay = _react2.default.createElement(
 					"div",
@@ -49751,13 +49757,13 @@ var Statistics = function (_Component) {
 					_react2.default.createElement(
 						"div",
 						{ className: "stats--spending--doughnut" },
-						_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.categoryDoughnutData })
+						_react2.default.createElement(_reactChartjs.Doughnut, { options: tempOptions, data: this.state.categoryDoughnutData })
 					),
 					_react2.default.createElement("hr", null),
 					_react2.default.createElement(
 						"div",
 						{ className: "stats--spending--line-chart" },
-						_react2.default.createElement(_reactChartjs.Bar, { data: this.state.monthlyLineChartData })
+						_react2.default.createElement(_reactChartjs.Bar, { options: tempOptions, data: this.state.monthlyLineChartData })
 					)
 				);
 			} else if (chartType === "monthlyBudget") {
@@ -66494,7 +66500,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      font-size: 2.2vw;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: border-bottom .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 60%; } }\n      @media all and (max-width: 800px) {\n        .stats--spending--doughnut {\n          width: 80%; } }\n    .stats--spending--line-chart {\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.stats {\n  width: 100vw; }\n  .stats--tab-container {\n    margin: 30px auto;\n    display: flex;\n    flex-direction: row;\n    justify-content: center; }\n    .stats--tab-container button {\n      margin: 0 7px;\n      width: 25%;\n      padding-bottom: 15px;\n      background-color: #323232;\n      font-size: 2.2vw;\n      border-bottom: 2px solid #191919;\n      outline: none; }\n      .stats--tab-container button:hover {\n        /*background-color: darken(rgb(50, 50, 50), 5%);*/\n        cursor: pointer; }\n    .stats--tab-container button:last-child {\n      border-right-width: 2px; }\n    .stats--tab-container .active {\n      border-bottom: 2px solid #ff8484;\n      /*background-color: darken(rgb(50, 50, 50), 5%);*/\n      transition: border-bottom .3s ease; }\n  .stats--spending {\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n    align-items: center; }\n    @media all and (max-width: 1100px) {\n      .stats--spending {\n        flex-direction: column; } }\n    .stats--spending--doughnut {\n      position: relative;\n      margin: 0 auto;\n      width: 45%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--doughnut {\n          margin: 0;\n          width: 80%;\n          padding: 0;\n          display: flex;\n          justify-content: center; } }\n      @media all and (max-width: 700px) {\n        .stats--spending--doughnut {\n          width: 100%; } }\n    .stats--spending--line-chart {\n      position: relative;\n      margin: 0 auto;\n      width: 55%;\n      min-width: 320px; }\n      @media all and (max-width: 1100px) {\n        .stats--spending--line-chart {\n          margin: 0 auto;\n          width: 80%; } }\n    .stats--spending hr {\n      margin-right: 30px;\n      width: 1px;\n      height: 320px;\n      background: #5a5a5a; }\n      @media all and (max-width: 1100px) {\n        .stats--spending hr {\n          display: none; } }\n  .stats--week-weekend {\n    margin: 0 auto;\n    max-width: 700px; }\n", ""]);
 
 // exports
 

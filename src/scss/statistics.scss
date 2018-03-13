@@ -46,21 +46,26 @@
 		}
 
 		&--doughnut {
+			position: relative;
 			margin: 0 auto;
 			width: 45%;
 			min-width: 320px;
 
 			@media all and (max-width: 1100px) {
 				margin: 0;
-				width: 60%;
+				width: 80%;
+				padding: 0;
+				display: flex;
+				justify-content: center;
 			}
 
-			@media all and (max-width: 800px) {
-				width: 80%;
+			@media all and (max-width: 700px) {
+				width: 100%;
 			}
 		}
 
 		&--line-chart {
+			position: relative;
 			margin: 0 auto;
 			width: 55%;
 			min-width: 320px;
