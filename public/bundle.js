@@ -48912,7 +48912,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.app-error {\n  margin: 15px auto;\n  width: 350px;\n  height: 30px;\n  background-color: #d46363;\n  border-radius: 10px;\n  opacity: 0;\n  transition: opacity .2s ease;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .app-error__display {\n    opacity: 1; }\n", ""]);
+exports.push([module.i, "* {\n  color: white; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  background-color: #323232; }\n\n.app-error {\n  position: absolute;\n  left: calc(50vw - 175px);\n  display: none;\n  margin: 15px auto;\n  width: 350px;\n  height: 60px;\n  text-align: center;\n  padding: 15px;\n  background-color: #d46363;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 2; }\n  .app-error__display {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
 
 // exports
 
