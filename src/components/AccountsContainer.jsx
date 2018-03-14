@@ -264,13 +264,17 @@ class AccountsContainer extends Component {
         elem.classList.toggle("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
+	closeCategoryViewer() {
+		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
+        elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+	}
+
 	render() {
 
 		let amtColor = 'red';
 		if (this.state.categoryTotal * -1 > 0) {
 			amtColor = 'green';
 		}
-		console.log(amtColor);
 
 		return (
 			<div className="accounts">
@@ -290,10 +294,10 @@ class AccountsContainer extends Component {
 					<div className="accounts--search-options--icon-search">
 
 						<div className="accounts--search-options--icon-search--categorical-search">
-							<FontAwesomeIcon className="icon" icon={faTags} onClick={this.toggleCategoryViewer} />
+							<FontAwesomeIcon className="icon" icon={faTags} onMouseEnter={this.toggleCategoryViewer} />
 
 							{/* display this div when icon above is clicked */}
-							<div className="accounts--search-options--icon-search--categorical-search--categories">
+							<div className="accounts--search-options--icon-search--categorical-search--categories" onMouseLeave={this.closeCategoryViewer}>
 								<div>
 									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
 									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />

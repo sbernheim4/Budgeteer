@@ -49152,7 +49152,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.navbar {\n  width: 100vw;\n  background-color: #323232;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n/*$background-color: rgb(50, 50, 50);*/\n.navbar {\n  width: 100vw;\n  /*background-color: $background-color;*/\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar ul li:hover:after {\n        width: 100%; }\n      .navbar ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar ul li:first-child {\n      margin-left: 15px; }\n  .navbar div {\n    display: flex;\n    align-items: center; }\n    .navbar div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n", ""]);
 
 // exports
 
@@ -66884,6 +66884,12 @@ var AccountsContainer = function (_Component) {
 			elem.classList.toggle("accounts--search-options--icon-search--categorical-search--categories__active");
 		}
 	}, {
+		key: "closeCategoryViewer",
+		value: function closeCategoryViewer() {
+			var elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
+			elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			var _this2 = this;
@@ -66892,7 +66898,6 @@ var AccountsContainer = function (_Component) {
 			if (this.state.categoryTotal * -1 > 0) {
 				amtColor = 'green';
 			}
-			console.log(amtColor);
 
 			return _react2.default.createElement(
 				"div",
@@ -66922,10 +66927,10 @@ var AccountsContainer = function (_Component) {
 						_react2.default.createElement(
 							"div",
 							{ className: "accounts--search-options--icon-search--categorical-search" },
-							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faTags, onClick: this.toggleCategoryViewer }),
+							_react2.default.createElement(_reactFontawesome2.default, { className: "icon", icon: _fontawesomeFreeSolid.faTags, onMouseEnter: this.toggleCategoryViewer }),
 							_react2.default.createElement(
 								"div",
-								{ className: "accounts--search-options--icon-search--categorical-search--categories" },
+								{ className: "accounts--search-options--icon-search--categorical-search--categories", onMouseLeave: this.closeCategoryViewer },
 								_react2.default.createElement(
 									"div",
 									null,
