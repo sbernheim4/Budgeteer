@@ -71857,6 +71857,7 @@ var Networth = function (_Component) {
 						null,
 						"Recurring Payments"
 					),
+					_react2.default.createElement("hr", null),
 					recurringPayments
 				)
 			);
@@ -71987,7 +71988,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n\n.networth--recurring-payments {\n  margin: 30px; }\n  .networth--recurring-payments hr {\n    height: 1px;\n    background-color: gray; }\n", ""]);
 
 // exports
 

@@ -99,6 +99,7 @@ class Networth extends Component {
 
 				<div className='networth--recurring-payments'>
 					<h2>Recurring Payments</h2>
+					<hr />
 					{recurringPayments}
 				</div>
 

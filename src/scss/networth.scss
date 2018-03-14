@@ -24,7 +24,6 @@
 		tbody {
 
 			tr {
-				//border: 1px solid $pink;
 
 				td {
 					width: 300px;
@@ -51,6 +50,15 @@
 				background: darken($background-color, 8%);
 				cursor: pointer;
 			}
+		}
+	}
+
+	&--recurring-payments {
+		margin: 30px;
+
+		hr {
+			height: 1px;
+			background-color: gray;
 		}
 	}
 }
