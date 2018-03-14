@@ -1,5 +1,34 @@
 @import '/global';
 
+%icon-containers {
+	transform: translateY(-50px);
+	visibility: hidden;
+	opacity: 0;
+	position: absolute;
+	margin-top: 60px;
+	padding: 20px;
+	background-color: black;
+	border-radius: 10px;
+	transition: all.3s ease-out;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+%before-div {
+	transform: translateY(-50px);
+	opacity: 0;
+	content: "";
+	position: absolute;
+	margin-top: 20px;
+	width: 0;
+	height: 0;
+	border-bottom: 50px solid rgba(0, 0, 0, 0.6);
+	border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+	transition: transform .3s ease-out, opacity .3s ease-out;
+}
+
 .accounts {
 
 	.red {
@@ -17,6 +46,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+
 		@media all and (max-width: 600px) {
 			flex-direction: column;
 		}
@@ -27,6 +57,7 @@
 			display: flex;
 			justify-content: flex-start;
 			align-items: center;
+
 			@media  all and (max-width: 600px) {
 				margin-top: 15px;
 				width: 100%;
@@ -70,6 +101,7 @@
 			display: flex;
 			justify-content: space-around;
 			align-items: center;
+
 			@media all and (max-width: 600px) {
 				margin-top: 30px;
 				width: 70%;
@@ -87,7 +119,7 @@
 
 
 					path {
-						transition: color .2s ease-in;
+						transition: color .1s ease-in;
 
 						&:hover {
 							color: $pink;
@@ -100,34 +132,13 @@
 					justify-content: center;
 
 					&:before {
-						transform: translateY(-50px);
-						opacity: 0;
-						content: "";
-						position: absolute;
-						margin-top: 20px;
-						width: 0;
-						height: 0;
-						border-bottom: 50px solid rgba(0, 0, 0, 0.6);
-						border-left: 25px solid transparent;
-						border-right: 25px solid transparent;
-						transition: transform .3s ease-out, opacity .3s ease-out;
+						@extend %before-div;
 					}
 
 					div {
-						transform: translateY(-50px);
-						visibility: hidden;
-						opacity: 0;
-						position: absolute;
-						margin-top: 60px;
+						@extend %icon-containers;
 						width: 300px;
 						height: 210px;
-						padding: 20px;
-						background-color: black;
-						border-radius: 10px;
-						transition: all.3s ease-out;
-						display: flex;
-						justify-content: center;
-						flex-wrap: wrap;
 
 						.icon {
 							margin: 15px;
@@ -149,6 +160,10 @@
 						visibility: visible;
 						opacity: 1;
 						transition: all.3s ease-out;
+
+						@media all and (max-width: 500px) {
+							margin-left: 50px;
+						}
 					}
 				}
 			}
@@ -168,6 +183,76 @@
 				}
 			}
 
+			&--accts-search {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+
+				.icon {
+					font-size: 50px;
+					cursor: pointer;
+					z-index: 1;
+
+
+					path {
+						transition: color .1s ease-in;
+
+						&:hover {
+							color: $pink;
+						}
+					}
+				}
+
+				&--accts {
+					display: flex;
+					justify-content: center;
+
+					&:before {
+						@extend %before-div;
+					}
+
+					div {
+						@extend %icon-containers;
+						width: 190px;
+						height: 300px;
+						padding: 20px;
+						justify-content: flex-start;
+
+						button {
+							background-color: black;
+							border-radius: 5px;
+							color: white;
+							cursor: pointer;
+
+							&:before {
+								content: "▪ ";
+								white-space: pre;
+							}
+						}
+					}
+				}
+
+				&--accts__active {
+					display: flex;
+					justify-content: center;
+
+					&:before {
+						transform: translateY(0px);
+						opacity: 1;
+					}
+
+					div {
+						transform: translateY(0) translateX(-23%);
+						visibility: visible;
+						opacity: 1;
+						transition: all.3s ease-out;
+
+						@media all and (max-width: 500px) {
+							// margin-right: 50px;
+						}
+					}
+				}
+			}
 		}
 
 		&--date-picker {
@@ -214,21 +299,5 @@
 
 	&--sort-options {
 		text-align: center;
-	}
-
-	&--btns {
-		margin: 0 30px 30px 30px;
-		display: flex;
-		justify-content: center;
-		flex-wrap: wrap;
-
-		button {
-			margin: 10px;
-			padding: 10px;
-			background-color: grey;
-			border-radius: 5px;
-			color: white;
-			cursor: pointer;
-		}
 	}
 }

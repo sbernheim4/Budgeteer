@@ -24,7 +24,8 @@ import {
 	faMedkit,
 	faPercent,
 	faMoneyBillAlt,
-	faExchangeAlt
+	faExchangeAlt,
+	faUniversity
 } from '@fortawesome/fontawesome-free-solid';
 
 class AccountsContainer extends Component {
@@ -261,12 +262,22 @@ class AccountsContainer extends Component {
 
 	toggleCategoryViewer() {
 		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
-        elem.classList.toggle("accounts--search-options--icon-search--categorical-search--categories__active");
+                       elem.classList.toggle("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
 	closeCategoryViewer() {
 		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
-        elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+                       elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+	}
+
+	toggleAccountsViewer() {
+		const elem = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
+                       elem.classList.toggle("accounts--search-options--icon-search--accts-search--accts__active");
+	}
+
+	closeAccountsViewer() {
+		const elem = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
+                       elem.classList.remove("accounts--search-options--icon-search--accts-search--accts__active");
 	}
 
 	render() {
@@ -320,21 +331,25 @@ class AccountsContainer extends Component {
 							<FontAwesomeIcon className="icon" icon={faCalendar} />
 						</div>
 
+						<div className="accounts--search-options--icon-search--accts-search">
+							<FontAwesomeIcon className="icon" icon={faUniversity} onMouseEnter={this.toggleAccountsViewer} />
+
+							{/* display this div when icon above is clicked */}
+							<div className="accounts--search-options--icon-search--accts-search--accts" onMouseLeave={this.closeAccountsViewer}>
+								<div>
+									<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
+
+									{/* Generate a button for each type of account connected */}
+									{this.props.accounts.map( (a, index) =>
+									<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
+									)}
+
+									<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
+								</div>
+							</div>
+						</div>
+
 					</div>
-				</div>
-
-				<h3 className="accounts--sort-options" >Sort by Account Type</h3>
-				<div className="accounts--btns">
-					{/* Show All Transactions */}
-					<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
-
-					{/* Generate a button for each type of account connected */}
-					{this.props.accounts.map( (a, index) =>
-					<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
-					)}
-
-					{/* Hide All Transactions */}
-					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
 				</div>
 
 				<h2 className="accounts--totals">{this.state.categoryType}</h2>
