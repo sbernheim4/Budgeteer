@@ -317,6 +317,33 @@ class AccountsContainer extends Component {
 						</div>
 
 					</div>
+				</div>
+
+				<h3 className="accounts--sort-options" >Sort by Account Type</h3>
+				<div className="accounts--btns">
+					{/* Show All Transactions */}
+					<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
+
+					{/* Generate a button for each type of account connected */}
+					{this.props.accounts.map( (a, index) =>
+					<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
+					)}
+
+					{/* Hide All Transactions */}
+					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
+				</div>
+
+				<h2 className="accounts--totals">{this.state.categoryType}</h2>
+				<h2 className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</h2>
+
+				<TransactionContainer transactions={this.state.categoryTransactions} />
+			</div>
+		);
+	}
+}
+
+export default AccountsContainer;
+
 
 					{/*<form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
 						<div>
@@ -353,29 +380,3 @@ class AccountsContainer extends Component {
 						<input type="submit" value="Submit" />
 					</form>*/}
 
-				</div>
-
-				<h3 className="accounts--sort-options" >Sort by Account Type</h3>
-				<div className="accounts--btns">
-					{/* Show All Transactions */}
-					<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
-
-					{/* Generate a button for each type of account connected */}
-					{this.props.accounts.map( (a, index) =>
-					<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
-					)}
-
-					{/* Hide All Transactions */}
-					<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
-				</div>
-
-				<h2 className="accounts--totals">{this.state.categoryType}</h2>
-				<h2 className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</h2>
-
-				<TransactionContainer transactions={this.state.categoryTransactions} />
-			</div>
-		);
-	}
-}
-
-export default AccountsContainer;

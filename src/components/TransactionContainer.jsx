@@ -21,7 +21,6 @@ class TransactionContainer extends Component {
 	componentDidMount() {
 		window.addEventListener("scroll", () => {
 			if (this.state.transactionsToDisplay.length !== this.props.transactions.length) {
-				console.log("Scrolling... ");
 				const num = document.documentElement.scrollTop + document.body.scrollTop;
 				const denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight)
 				const percent = num / denom * 100;
@@ -30,6 +29,12 @@ class TransactionContainer extends Component {
 					this.showMoreItems();
 				}
 			}
+		});
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener("scroll", () => {
+			console.log("removing event listener scroll");
 		});
 	}
 

@@ -17,12 +17,20 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		@media all and (max-width: 600px) {
+			flex-direction: column;
+		}
+
 
 		&--keyword-search {
 			width: 70%;
 			display: flex;
 			justify-content: flex-start;
 			align-items: center;
+			@media  all and (max-width: 600px) {
+				margin-top: 15px;
+				width: 100%;
+			}
 
 			.icon {
 				padding: 15px;
@@ -60,11 +68,14 @@
 		&--icon-search {
 			width: 30%;
 			display: flex;
-			justify-content: flex-start;
+			justify-content: space-around;
 			align-items: center;
+			@media all and (max-width: 600px) {
+				margin-top: 30px;
+				width: 70%;
+			}
 
 			&--categorical-search {
-				margin-right: 130px;
 				display: flex;
 				flex-direction: column;
 				align-items: center;
