@@ -16,7 +16,8 @@ import {
 	faMedkit,
 	faPercent,
 	faMoneyBillAlt,
-	faExchangeAlt
+	faExchangeAlt,
+	faBullseye
 } from '@fortawesome/fontawesome-free-solid';
 
 
@@ -109,7 +110,7 @@ class Transaction extends Component {
 				categoryIcon = faShoppingBag;
 				break;
 			// case "Recreation":
-			// 	categoryIcon = faUtensils;
+			// 	categoryIcon = ;
 			// 	break;
 			case "Service":
 				categoryIcon = faWrench;
@@ -121,10 +122,10 @@ class Transaction extends Component {
 				categoryIcon = faMedkit;
 				break;
 			// case "Bank Fees":
-			// 	categoryIcon = faUtensils;
+			// 	categoryIcon = ;
 			// 	break;
 			// case "Cash Advance":
-			// 	categoryIcon = faUtensils;
+			// 	categoryIcon = ;
 			// 	break;
 			case "Interest":
 				categoryIcon = faPercent;
@@ -133,13 +134,13 @@ class Transaction extends Component {
 				categoryIcon = faMoneyBillAlt;
 				break;
 			// case "Tax":
-			// 	categoryIcon = faPlane;
+			// 	categoryIcon = ;
 			// 	break;
 			case "Transfer":
 				categoryIcon = faExchangeAlt;
 				break;
 			default:
-				categoryIcon = faUtensils;
+				categoryIcon = faBullseye;
 		}
 
 		// Should the color of the amount be red or green based based on purchase or withdrawl
@@ -171,8 +172,3 @@ class Transaction extends Component {
 }
 
 export default Transaction;
-/*<div className="transaction" onClick={this.showMap}>
-				<h4>{JSON.parse(JSON.stringify(this.props.transaction.name))}</h4>
-				<p>${amount}</p>
-				<p>{date}</p>
-			</div>*/
