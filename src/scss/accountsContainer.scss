@@ -10,9 +10,6 @@
 	background-color: black;
 	border-radius: 10px;
 	transition: all.3s ease-out;
-	display: flex;
-	justify-content: center;
-	flex-wrap: wrap;
 }
 
 %before-div {
@@ -139,6 +136,9 @@
 						@extend %icon-containers;
 						width: 230px;
 						height: 210px;
+						display: flex;
+						justify-content: center;
+						flex-wrap: wrap;
 
 						.icon {
 							margin: 15px;
@@ -163,6 +163,11 @@
 
 						@media all and (max-width: 525px) {
 							margin-left: 50px;
+						}
+
+						button {
+							width: 0;
+							height: 0;
 						}
 					}
 				}
@@ -219,8 +224,11 @@
 						justify-content: flex-start;
 
 						button {
+							margin: 15px 0;
+							width: 100%;
 							background-color: black;
 							border-radius: 5px;
+							text-align: left;
 							color: white;
 							cursor: pointer;
 

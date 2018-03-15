@@ -40,7 +40,7 @@ class AccountsContainer extends Component {
 			categoryType: "",
 			categoryTotal: 0.00,
 			keyWord: "",
-			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
@@ -50,6 +50,11 @@ class AccountsContainer extends Component {
 		this.searchByKeyword = this.searchByKeyword.bind(this);
 
 		this.getKeyword = this.getKeyword.bind(this);
+	}
+
+	componentWillReceiveProps() {
+		// On first load show all transactions by default for the user
+		this.getAccountTransactions("all");
 	}
 
 	getAccountTransactions(account_id) {
@@ -316,19 +321,19 @@ class AccountsContainer extends Component {
 							{/* display this div when icon above is clicked */}
 							<div className="accounts--search-options--icon-search--categorical-search--categories" onTouchEnd={this.closeCategoryViewer} onMouseLeave={this.closeCategoryViewer}>
 								<div>
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink") }} className="icon" icon={faUtensils} />
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel") }} className="icon" icon={faPlane} />
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops") }} className="icon" icon={faShoppingBag} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Food and Drink"); this.closeCategoryViewer(); }} className="icon" icon={faUtensils} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Travel"); this.closeCategoryViewer(); }} className="icon" icon={faPlane} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Shops"); this.closeCategoryViewer(); }} className="icon" icon={faShoppingBag} />
 									{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Recreation") }} className="icon" icon={faRacquet} /> */}
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service") }} className="icon" icon={faWrench} />
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community") }} className="icon" icon={faUsers} />
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare") }} className="icon" icon={faMedkit} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Service"); this.closeCategoryViewer(); }} className="icon" icon={faWrench} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Community"); this.closeCategoryViewer(); }} className="icon" icon={faUsers} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Healthcare"); this.closeCategoryViewer(); }} className="icon" icon={faMedkit} />
 									{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Bank Fees") }} className="icon" icon={Bank fees} /> */}
 									{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Cash Advance") }} className="icon" icon={Cash advance} /> */}
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest") }} className="icon" icon={faPercent} />
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment") }} className="icon" icon={faMoneyBillAlt} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Interest"); this.closeCategoryViewer(); }} className="icon" icon={faPercent} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Payment"); this.closeCategoryViewer(); }} className="icon" icon={faMoneyBillAlt} />
 									{/* <FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Tax") }} className="icon" icon={Tax} /> */}
-									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer") }} className="icon" icon={faExchangeAlt} />
+									<FontAwesomeIcon onClick={() => { this.getCategoryTransactions("Transfer"); this.closeCategoryViewer(); }} className="icon" icon={faExchangeAlt} />
 								</div>
 							</div>
 						</div>
@@ -343,14 +348,14 @@ class AccountsContainer extends Component {
 							{/* display this div when icon above is clicked */}
 							<div className="accounts--search-options--icon-search--accts-search--accts" onTouchEnd={this.closeAccountsViewer} onMouseLeave={this.closeAccountsViewer}>
 								<div>
-									<button onClick={() => { this.getAccountTransactions("all")}}>All Transactions</button>
+									<button onClick={() => { this.getAccountTransactions("all"); this.closeAccountsViewer(); }}>All Transactions</button>
 
 									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map( (a, index) =>
-									<button key={index} onClick={() => { this.getAccountTransactions(a.account_id)}}>{a.name}</button>
+									<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
 									)}
 
-									<button onClick={() => { this.getAccountTransactions("none")}}>Hide Transactions</button>
+									<button onClick={() => { this.getAccountTransactions("none"); this.closeAccountsViewer(); }}>Hide Transactions</button>
 								</div>
 							</div>
 						</div>
@@ -368,40 +373,3 @@ class AccountsContainer extends Component {
 }
 
 export default AccountsContainer;
-
-
-					{/*<form className="accounts--search-options--date-picker" onSubmit={this.searchByDate}>
-						<div>
-							<p>Begin Date</p>
-							<label>Month
-								<input type="text" vale={this.state.monthOne} onChange={(e) => { this.getDate(e, 'monthOne') }} />
-							</label>
-
-							<label>Day
-								<input type="text" vale={this.state.dayOne} onChange={(e) => { this.getDate(e, 'dayOne') }} />
-							</label>
-
-							<label>Year
-								<input type="text" vale={this.state.yearOne} onChange={(e) => { this.getDate(e, 'yearOne') }} />
-							</label>
-						</div>
-
-						<div>
-							<p>End Date</p>
-							<label>Month
-								<input type="text" vale={this.state.monthTwo} onChange={(e) => { this.getDate(e, 'monthTwo') }} />
-							</label>
-
-							<label>Day
-								<input type="text" vale={this.state.dayTwo} onChange={(e) => { this.getDate(e, 'dayTwo') }} />
-							</label>
-
-							<label>Year
-								<input type="text" vale={this.state.YearTwo} onChange={(e) => { this.getDate(e, 'yearTwo') }} />
-							</label>
-						</div>
-
-						<br />
-						<input type="submit" value="Submit" />
-					</form>*/}
-
