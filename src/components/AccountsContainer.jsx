@@ -141,7 +141,7 @@ class AccountsContainer extends Component {
 
 		total = helpers.formatAmount(total);
 
-		this.toggleCategoryViewer();
+		this.openCategoryViewer();
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
@@ -260,9 +260,12 @@ class AccountsContainer extends Component {
 		});
 	}
 
-	toggleCategoryViewer() {
+	openCategoryViewer() {
+		let otherViewer = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
+		otherViewer.classList.remove("accounts--search-options--icon-search--accts-search--accts__active");
+
 		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
-                       elem.classList.toggle("accounts--search-options--icon-search--categorical-search--categories__active");
+                          elem.classList.add("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
 	closeCategoryViewer() {
@@ -270,9 +273,12 @@ class AccountsContainer extends Component {
                        elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
-	toggleAccountsViewer() {
+	openAccountsViewer() {
+		const otherViewer = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
+        otherViewer.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+
 		const elem = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
-                       elem.classList.toggle("accounts--search-options--icon-search--accts-search--accts__active");
+                          elem.classList.add("accounts--search-options--icon-search--accts-search--accts__active");
 	}
 
 	closeAccountsViewer() {
@@ -305,7 +311,7 @@ class AccountsContainer extends Component {
 					<div className="accounts--search-options--icon-search">
 
 						<div className="accounts--search-options--icon-search--categorical-search">
-							<FontAwesomeIcon className="icon" icon={faTags} onMouseEnter={this.toggleCategoryViewer} />
+							<FontAwesomeIcon className="icon" icon={faTags} onMouseEnter={this.openCategoryViewer} />
 
 							{/* display this div when icon above is clicked */}
 							<div className="accounts--search-options--icon-search--categorical-search--categories" onMouseLeave={this.closeCategoryViewer}>
@@ -332,7 +338,7 @@ class AccountsContainer extends Component {
 						</div>
 
 						<div className="accounts--search-options--icon-search--accts-search">
-							<FontAwesomeIcon className="icon" icon={faUniversity} onMouseEnter={this.toggleAccountsViewer} />
+							<FontAwesomeIcon className="icon" icon={faUniversity} onMouseEnter={this.openAccountsViewer} />
 
 							{/* display this div when icon above is clicked */}
 							<div className="accounts--search-options--icon-search--accts-search--accts" onMouseLeave={this.closeAccountsViewer}>
