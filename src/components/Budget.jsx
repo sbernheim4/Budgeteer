@@ -150,7 +150,7 @@ class Budget extends Component {
 				<form className="budget--form">
 					<label>
 						<span>Monthly Budget</span>
-						<input placeholder="Enter your budget" type="text" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
+						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
 					</label>
 				</form>
 
