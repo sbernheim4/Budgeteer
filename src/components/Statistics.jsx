@@ -260,7 +260,7 @@ class Statistics extends Component {
 
 		if (pastSixMonths[0] === undefined) {
 			// account info was not properly loaded --> send them back to the homepage
-			window.location.href = location.href.slice(0, 24);
+			window.location.href = "budgeteer-prod.herokuapp.com"
 			window.location.reload();
 		}
 		// Start date is the Monday following the first transaction
