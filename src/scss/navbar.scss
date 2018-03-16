@@ -72,7 +72,9 @@
 
 	&--mobile {
 		@media all and (min-width: 600px) {
-			display: none;
+			* {
+				display: none;
+			}
 		}
 
 		.icon {
@@ -86,7 +88,6 @@
 			height: 0;
 			transition: all .4s ease-in-out;
 			visibility: hidden;
-			// display: none;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
@@ -123,16 +124,15 @@
 				background-color: #704A4A;
 			}
 
-			button {
-				width: 100%;
-				min-height: 20%;
-				// padding: 15px;
+			.fifth {
+				// width: 100vw;
+				// height: 20vh;
+				// overflow-y: hidden;
+				// text-decoration: none;
 				background-color: #40848B;
-				// border: 1px solid black;
-				// border-radius: 5px;
-				font-size: 2em;
-				color: white;
-				cursor: pointer;
+				// display: flex;
+				// justify-content: center;
+				// align-items: center;
 			}
 
 			&__active {
