@@ -19,6 +19,7 @@ import isWithinRange from 'date-fns/is_within_range'
 import helpers from './helpers';
 
 import "../scss/statistics.scss";
+
 Chart.defaults.global.defaultFontColor = 'white';
 Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
 
