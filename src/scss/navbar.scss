@@ -72,9 +72,7 @@
 
 	&--mobile {
 		@media all and (min-width: 600px) {
-			* {
-				display: none;
-			}
+			display: none;
 		}
 
 		.icon {
@@ -125,14 +123,14 @@
 			}
 
 			.fifth {
-				// width: 100vw;
-				// height: 20vh;
-				// overflow-y: hidden;
-				// text-decoration: none;
+				width: 100vw;
+				height: 20vh;
+				overflow-y: hidden;
+				text-decoration: none;
 				background-color: #40848B;
-				// display: flex;
-				// justify-content: center;
-				// align-items: center;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 			}
 
 			&__active {
