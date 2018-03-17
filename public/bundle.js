@@ -71653,7 +71653,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.transaction-container {\n  margin-top: 15px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  @media all and (max-width: 600px) {\n    .transaction-container {\n      /*position: absolute;\n\t\ttop: 85vh;*/ } }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.transaction-container {\n  margin-top: 15px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  @media all and (max-width: 600px) {\n    .transaction-container {\n      position: absolute;\n      bottom: 30px; } }\n  .transaction-container button {\n    margin: 30px;\n    width: 150px;\n    height: 45px;\n    background-color: #4d9972;\n    border: 1px solid black;\n    border-radius: 5px;\n    color: black;\n    cursor: pointer; }\n", ""]);
 
 // exports
 

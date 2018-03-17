@@ -8,8 +8,9 @@
 	align-items: center;
 
 	@media all and (max-width: 600px) {
-		/*position: absolute;
-		top: 85vh;*/
+		position: absolute;
+		margin-top: 0;
+		top: calc(100vh - 100px);
 	}
 
 	button {

@@ -139,6 +139,7 @@
 						display: flex;
 						justify-content: center;
 						flex-wrap: wrap;
+						z-index: 1;
 
 						.icon {
 							margin: 15px;
@@ -222,6 +223,7 @@
 						height: 300px;
 						padding: 20px;
 						justify-content: flex-start;
+						z-index: 1;
 
 						button {
 							margin: 15px 0;

@@ -76,7 +76,7 @@
 		}
 
 		.icon {
-			margin: 30px;
+			margin: 15px;
 			font-size: 2em;
 			cursor: pointer;
 		}
@@ -134,9 +134,11 @@
 			}
 
 			&__active {
-				height: calc(100vh - 102px);
+				position: absolute;
+				height: calc(100vh - 70px);
 				visibility: visible;
 				display: flex;
+				z-index: 2;
 
 				// TODO: Try and not display the sub components when the navbar is open
 			}
