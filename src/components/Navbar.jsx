@@ -78,7 +78,7 @@ class Navbar extends Component {
 
 					<div className='navbar--mobile--links'>
 						<p className="first" onClick={this.toggleMenu} ><Link to='/'>Home</Link></p>
-						<p className="second" onClick={this.toggleMenu} ><Link to='/accounts'>Accounts</Link></p>
+						<p className="second" onClick={this.toggleMenu} ><Link to='/accounts'>Transactions</Link></p>
 						<p className="third" onClick={this.toggleMenu} ><Link to='/statistics'>Statistics</Link></p>
 						<p className="fourth" onClick={this.toggleMenu} ><Link to='/networth'>Networth</Link></p>
 						<p className="fifth" onClick={this.addAccount}>Add Account</p>
