@@ -1,6 +1,8 @@
 /* eslint no-undefined: 0 */
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
+import { Bar } from "react-chartjs-2";
+
 import TransactionContainer from "./TransactionContainer.jsx";
 import isBefore from 'date-fns/is_before';
 
@@ -292,6 +294,25 @@ class AccountsContainer extends Component {
 	}
 
 	render() {
+		const lineData = {
+			labels: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"],
+			datasets: [{
+				label: "Food",
+				data: [12, 34, 23, 76, 23, 2, 56, 43, 28, 43, 95, 84],
+				backgroundColor: "rgb(77, 153, 114)",
+			}],
+		};
+
+		const barOptions = {
+			scales: {
+				xAxes: [{
+					barThickness: 7
+				}]
+			},
+			legend: {
+				display: false
+			}
+		}
 
 		let amtColor = 'red';
 		if (this.state.categoryTotal * -1 > 0) {
@@ -363,8 +384,10 @@ class AccountsContainer extends Component {
 					</div>
 				</div>
 
-				<h2 className="accounts--totals">{this.state.categoryType}</h2>
-				<h2 className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</h2>
+				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
+				<div className="accounts--chart">
+					<Bar data={lineData} options={barOptions}/>
+				</div>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />
 			</div>

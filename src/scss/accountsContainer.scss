@@ -27,6 +27,9 @@
 }
 
 .accounts {
+	@media  all and (max-width: 600px) {
+		margin-top: -30px;
+	}
 
 	.red {
 		text-align: center;
@@ -305,6 +308,18 @@
 
 	&--totals {
 		text-align: center;
+	}
+
+	&--chart {
+		margin: 15px 10px;
+
+		@media all and (min-width: 600px) {
+			margin: 0 auto;
+			width: 50vw;
+			display: flex;
+			justify-content: center;
+			align-items: flex-end;
+		}
 	}
 
 	&--sort-options {
