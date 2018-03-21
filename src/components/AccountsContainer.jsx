@@ -58,10 +58,6 @@ class AccountsContainer extends Component {
 		this.getKeyword = this.getKeyword.bind(this);
 	}
 
-	componentDidMount() {
-		/*this.generateBarChartData(this.props.transactions);*/
-	}
-
 	componentWillReceiveProps() {
 		// On first load show all transactions by default for the user
 		this.getAccountTransactions("all");
@@ -93,30 +89,44 @@ class AccountsContainer extends Component {
 		const mostRecentFourteenTransactions = transactions.slice(startingIndex);
 
 		let amts = new Array(14).fill(0);
-		mostRecentFourteenTransactions.forEach(t => {
 
+		mostRecentFourteenTransactions.forEach(t => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 			const index = differenceInDays(endDate, transactionDate);
-			console.log("INDEX:");
-			console.log(index);
 
 			amts[index] += t.amount;
 		});
 
+		amts.reverse();
+
 		const data = {
-			labels: [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, "Today"],
 			datasets: [{
-				label: "$ Spent in the Past 2 Weeks",
+				label: "$ Spent / Day",
 				data: amts,
 				backgroundColor: "rgb(77, 153, 114)",
 			}]
 		};
 
 		const barOptions = {
+			title: {
+				display: true,
+				text: "2 Week Spending"
+			},
 			scales: {
 				xAxes: [{
-					barThickness: 7
+					barThickness: 7,
+					scaleLabel: {
+						display: true,
+						labelString: "# Days Ago"
+					}
 				}]
+			},
+			legend: {
+				display: false,
+				labels: {
+					display: false
+				}
 			}
 		}
 
