@@ -4,7 +4,11 @@ import React, { Component } from "react";
 import { Bar } from "react-chartjs-2";
 
 import TransactionContainer from "./TransactionContainer.jsx";
-import isBefore from 'date-fns/is_before';
+
+import subWeeks from 'date-fns/sub_weeks';
+import isAfter from 'date-fns/is_after';
+import isWithinRange from 'date-fns/is_within_range';
+import differenceInDays from 'date-fns/difference_in_days';
 
 import "../scss/accountsContainer.scss"
 
@@ -45,18 +49,79 @@ class AccountsContainer extends Component {
 			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
 
+		this.generateBarChartData = this.generateBarChartData.bind(this);
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
 		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
 		this.getDate = this.getDate.bind(this);
 		this.searchByDate = this.searchByDate.bind(this);
 		this.searchByKeyword = this.searchByKeyword.bind(this);
-
 		this.getKeyword = this.getKeyword.bind(this);
+	}
+
+	componentDidMount() {
+		/*this.generateBarChartData(this.props.transactions);*/
 	}
 
 	componentWillReceiveProps() {
 		// On first load show all transactions by default for the user
 		this.getAccountTransactions("all");
+	}
+
+	generateBarChartData(transactions) {
+		// this is off, need to get all the transactions in the past 14 days,
+		// sum up the total spent for each day
+		const endDate = new Date();
+		const startDate = subWeeks(endDate, 2);
+
+		let startingIndex;
+		transactions.forEach( (t, i) => {
+			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+			// Get the index of the first transaction to fall inside the range
+			if (isWithinRange(transactionDate, startDate, endDate)) {
+				startingIndex = i;
+				return;
+			}
+
+			// If we get through the whole array and haven't yet returned it means there
+			// are no transactions which fall within our range
+			if (i === transactions.length - 1) {
+				startingIndex = 0;
+			}
+		});
+
+		const mostRecentFourteenTransactions = transactions.slice(startingIndex);
+
+		let amts = new Array(14).fill(0);
+		mostRecentFourteenTransactions.forEach(t => {
+
+			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+			const index = differenceInDays(endDate, transactionDate);
+			console.log("INDEX:");
+			console.log(index);
+
+			amts[index] += t.amount;
+		});
+
+		const data = {
+			labels: [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+			datasets: [{
+				label: "$ Spent in the Past 2 Weeks",
+				data: amts,
+				backgroundColor: "rgb(77, 153, 114)",
+			}]
+		};
+
+		const barOptions = {
+			scales: {
+				xAxes: [{
+					barThickness: 7
+				}]
+			}
+		}
+
+		let stuff = <Bar data={data} options={barOptions} />
+		this.setState({chartDisplay: stuff });
 	}
 
 	getAccountTransactions(account_id) {
@@ -101,6 +166,8 @@ class AccountsContainer extends Component {
 			return dateOne - dateTwo;
 		});
 
+		//TODO: This can be cleaned up to not have two separate setState calls in the if statement
+
 		if (type === "All Categories") {
 			const now = new Date();
 
@@ -119,6 +186,9 @@ class AccountsContainer extends Component {
 				categoryTotal: total
 			});
 		}
+
+		// Redraw the bar chart based
+		this.generateBarChartData(releventTransactions);
 	}
 
 	getCategoryTransactions(categoryString) {
@@ -163,6 +233,9 @@ class AccountsContainer extends Component {
 			categoryType: categoryString,
 			categoryTotal: total
 		});
+
+		// Redraw the bar chart based
+		this.generateBarChartData(releventTransactions);
 	}
 
 	getDate(e, val) {
@@ -221,6 +294,9 @@ class AccountsContainer extends Component {
 		} catch (err) {
 			console.error(err);
 		}
+
+		// Redraw the bar chart based
+		this.generateBarChartData(releventTransactions);
 	}
 
 	async searchByKeyword(e) {
@@ -255,6 +331,8 @@ class AccountsContainer extends Component {
 			categoryTotal: total
 		});
 
+		// Redraw the bar chart based
+		this.generateBarChartData(releventTransactions);
 	}
 
 	getKeyword(e) {
@@ -294,25 +372,6 @@ class AccountsContainer extends Component {
 	}
 
 	render() {
-		const lineData = {
-			labels: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"],
-			datasets: [{
-				label: "Food",
-				data: [12, 34, 23, 76, 23, 2, 56, 43, 28, 43, 95, 84],
-				backgroundColor: "rgb(77, 153, 114)",
-			}],
-		};
-
-		const barOptions = {
-			scales: {
-				xAxes: [{
-					barThickness: 7
-				}]
-			},
-			legend: {
-				display: false
-			}
-		}
 
 		let amtColor = 'red';
 		if (this.state.categoryTotal * -1 > 0) {
@@ -386,7 +445,7 @@ class AccountsContainer extends Component {
 
 				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
 				<div className="accounts--chart">
-					<Bar data={lineData} options={barOptions}/>
+					{this.state.chartDisplay}
 				</div>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} />

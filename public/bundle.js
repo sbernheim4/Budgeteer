@@ -70684,9 +70684,21 @@ var _TransactionContainer = __webpack_require__(565);
 
 var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
 
-var _is_before = __webpack_require__(290);
+var _sub_weeks = __webpack_require__(584);
 
-var _is_before2 = _interopRequireDefault(_is_before);
+var _sub_weeks2 = _interopRequireDefault(_sub_weeks);
+
+var _is_after = __webpack_require__(557);
+
+var _is_after2 = _interopRequireDefault(_is_after);
+
+var _is_within_range = __webpack_require__(560);
+
+var _is_within_range2 = _interopRequireDefault(_is_within_range);
+
+var _difference_in_days = __webpack_require__(288);
+
+var _difference_in_days2 = _interopRequireDefault(_difference_in_days);
 
 __webpack_require__(571);
 
@@ -70703,6 +70715,7 @@ var _fontawesomeFreeSolid = __webpack_require__(102);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Font Awesome base package
+/* eslint no-undefined: 0 */
 var AccountsContainer = function (_Component) {
 	(0, _inherits3.default)(AccountsContainer, _Component);
 
@@ -70722,21 +70735,84 @@ var AccountsContainer = function (_Component) {
 			months: ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 		};
 
+		_this.generateBarChartData = _this.generateBarChartData.bind(_this);
 		_this.getAccountTransactions = _this.getAccountTransactions.bind(_this);
 		_this.getCategoryTransactions = _this.getCategoryTransactions.bind(_this);
 		_this.getDate = _this.getDate.bind(_this);
 		_this.searchByDate = _this.searchByDate.bind(_this);
 		_this.searchByKeyword = _this.searchByKeyword.bind(_this);
-
 		_this.getKeyword = _this.getKeyword.bind(_this);
 		return _this;
 	}
 
 	(0, _createClass3.default)(AccountsContainer, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			/*this.generateBarChartData(this.props.transactions);*/
+		}
+	}, {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps() {
 			// On first load show all transactions by default for the user
 			this.getAccountTransactions("all");
+		}
+	}, {
+		key: "generateBarChartData",
+		value: function generateBarChartData(transactions) {
+			// this is off, need to get all the transactions in the past 14 days,
+			// sum up the total spent for each day
+			var endDate = new Date();
+			var startDate = (0, _sub_weeks2.default)(endDate, 2);
+
+			var startingIndex = void 0;
+			transactions.forEach(function (t, i) {
+				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+				// Get the index of the first transaction to fall inside the range
+				if ((0, _is_within_range2.default)(transactionDate, startDate, endDate)) {
+					startingIndex = i;
+					return;
+				}
+
+				// If we get through the whole array and haven't yet returned it means there
+				// are no transactions which fall within our range
+				if (i === transactions.length - 1) {
+					startingIndex = 0;
+				}
+			});
+
+			var mostRecentFourteenTransactions = transactions.slice(startingIndex);
+
+			var amts = new Array(14).fill(0);
+			mostRecentFourteenTransactions.forEach(function (t) {
+
+				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+				var index = (0, _difference_in_days2.default)(endDate, transactionDate);
+				console.log("INDEX:");
+				console.log(index);
+
+				amts[index] += t.amount;
+			});
+
+			var data = {
+				labels: [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+				datasets: [{
+					label: "$ Spent in the Past 2 Weeks",
+					data: amts,
+					backgroundColor: "rgb(77, 153, 114)"
+				}]
+			};
+
+			var barOptions = {
+				scales: {
+					xAxes: [{
+						barThickness: 7
+					}]
+				}
+			};
+
+			var stuff = _react2.default.createElement(_reactChartjs.Bar, { data: data, options: barOptions });
+			this.setState({ chartDisplay: stuff });
 		}
 	}, {
 		key: "getAccountTransactions",
@@ -70782,6 +70858,8 @@ var AccountsContainer = function (_Component) {
 				return dateOne - dateTwo;
 			});
 
+			//TODO: This can be cleaned up to not have two separate setState calls in the if statement
+
 			if (type === "All Categories") {
 				var now = new Date();
 
@@ -70800,6 +70878,9 @@ var AccountsContainer = function (_Component) {
 					categoryTotal: total
 				});
 			}
+
+			// Redraw the bar chart based
+			this.generateBarChartData(releventTransactions);
 		}
 	}, {
 		key: "getCategoryTransactions",
@@ -70845,6 +70926,9 @@ var AccountsContainer = function (_Component) {
 				categoryType: categoryString,
 				categoryTotal: total
 			});
+
+			// Redraw the bar chart based
+			this.generateBarChartData(releventTransactions);
 		}
 	}, {
 		key: "getDate",
@@ -70925,6 +71009,11 @@ var AccountsContainer = function (_Component) {
 								console.error(_context.t0);
 
 							case 22:
+
+								// Redraw the bar chart based
+								this.generateBarChartData(releventTransactions);
+
+							case 23:
 							case "end":
 								return _context.stop();
 						}
@@ -70977,7 +71066,10 @@ var AccountsContainer = function (_Component) {
 									categoryTotal: total
 								});
 
-							case 9:
+								// Redraw the bar chart based
+								this.generateBarChartData(releventTransactions);
+
+							case 10:
 							case "end":
 								return _context2.stop();
 						}
@@ -71036,26 +71128,6 @@ var AccountsContainer = function (_Component) {
 		key: "render",
 		value: function render() {
 			var _this2 = this;
-
-			var lineData = {
-				labels: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"],
-				datasets: [{
-					label: "Food",
-					data: [12, 34, 23, 76, 23, 2, 56, 43, 28, 43, 95, 84],
-					backgroundColor: "rgb(77, 153, 114)"
-				}]
-			};
-
-			var barOptions = {
-				scales: {
-					xAxes: [{
-						barThickness: 7
-					}]
-				},
-				legend: {
-					display: false
-				}
-			};
 
 			var amtColor = 'red';
 			if (this.state.categoryTotal * -1 > 0) {
@@ -71185,7 +71257,7 @@ var AccountsContainer = function (_Component) {
 				_react2.default.createElement(
 					"div",
 					{ className: "accounts--chart" },
-					_react2.default.createElement(_reactChartjs.Bar, { data: lineData, options: barOptions })
+					this.state.chartDisplay
 				),
 				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions })
 			);
@@ -71195,7 +71267,6 @@ var AccountsContainer = function (_Component) {
 }(_react.Component);
 
 // Selective icons from Font Awesome
-/* eslint no-undefined: 0 */
 
 
 exports.default = AccountsContainer;
@@ -72117,6 +72188,36 @@ function startOfMonth (dirtyDate) {
 }
 
 module.exports = startOfMonth
+
+
+/***/ }),
+/* 584 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var addWeeks = __webpack_require__(289)
+
+/**
+ * @category Week Helpers
+ * @summary Subtract the specified number of weeks from the given date.
+ *
+ * @description
+ * Subtract the specified number of weeks from the given date.
+ *
+ * @param {Date|String|Number} date - the date to be changed
+ * @param {Number} amount - the amount of weeks to be subtracted
+ * @returns {Date} the new date with the weeks subtracted
+ *
+ * @example
+ * // Subtract 4 weeks from 1 September 2014:
+ * var result = subWeeks(new Date(2014, 8, 1), 4)
+ * //=> Mon Aug 04 2014 00:00:00
+ */
+function subWeeks (dirtyDate, dirtyAmount) {
+  var amount = Number(dirtyAmount)
+  return addWeeks(dirtyDate, -amount)
+}
+
+module.exports = subWeeks
 
 
 /***/ })
