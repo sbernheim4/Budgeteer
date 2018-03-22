@@ -312,13 +312,21 @@
 
 	&--chart {
 		margin: 10px;
+		max-width: 900px;
 
 		@media all and (min-width: 600px) {
 			margin: 0 auto;
-			width: 50vw;
 			display: flex;
 			justify-content: center;
 			align-items: flex-end;
+		}
+
+		@media all and (min-width: 700px) {
+			width: 65vw;
+		}
+
+		@media all and (min-width: 600px) and (max-width: 700px) {
+			width: 80vw;
 		}
 	}
 
