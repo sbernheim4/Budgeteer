@@ -42,7 +42,7 @@
 	}
 
 	&--search-options {
-		margin: 0 30px 30px 30px;
+		margin: 0 20px 20px 20px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -103,7 +103,7 @@
 			align-items: center;
 
 			@media all and (max-width: 600px) {
-				margin-top: 30px;
+				margin-top: 15px;
 				width: 70%;
 			}
 
@@ -113,7 +113,7 @@
 				align-items: center;
 
 				.icon {
-					font-size: 40px;
+					font-size: 30px;
 					cursor: pointer;
 					z-index: 1;
 
@@ -146,6 +146,7 @@
 
 						.icon {
 							margin: 15px;
+							font-size: 40px;
 						}
 					}
 				}
@@ -179,7 +180,7 @@
 
 			&--date-search {
 				.icon {
-					font-size: 45px;
+					font-size: 35px;
 					cursor: pointer;
 
 					path {
@@ -198,7 +199,7 @@
 				align-items: center;
 
 				.icon {
-					font-size: 50px;
+					font-size: 40px;
 					cursor: pointer;
 					z-index: 1;
 
@@ -307,7 +308,13 @@
 	}
 
 	&--totals {
+		margin: 5px;
 		text-align: center;
+		font-size: 1.4em;
+
+		@media all and (max-width: 450px) {
+			font-size: .9em;
+		}
 	}
 
 	&--chart {
@@ -321,12 +328,12 @@
 			align-items: flex-end;
 		}
 
-		@media all and (min-width: 700px) {
-			width: 65vw;
-		}
-
 		@media all and (min-width: 600px) and (max-width: 700px) {
 			width: 80vw;
+		}
+
+		@media all and (min-width: 700px) {
+			width: 65vw;
 		}
 	}
 

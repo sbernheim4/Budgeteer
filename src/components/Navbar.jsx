@@ -63,7 +63,7 @@ class Navbar extends Component {
 				<div className='navbar--desktop'>
 					<ul>
 						<li><Link to='/'>Home</Link></li>
-						<li><Link to='/accounts'>Accounts</Link></li>
+						<li><Link to='/accounts'>Transactions</Link></li>
 						<li><Link to='/statistics'>Statistics</Link></li>
 						<li><Link to='/networth'>Networth</Link></li>
 					</ul>
