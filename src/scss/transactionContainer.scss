@@ -13,6 +13,11 @@
 		top: calc(100vh - 100px);
 	}
 
+	@media all and (min-width: 1200px) {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
 	button {
 		margin: 30px;
 		width: 150px;

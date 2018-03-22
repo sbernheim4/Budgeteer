@@ -95,6 +95,7 @@
 				font-size: 2em;
 				overflow-y: hidden;
 				cursor: pointer;
+				z-index: 1;
 
 				a {
 					width: 100vw;
@@ -135,7 +136,6 @@
 			}
 
 			&__active {
-				position: absolute;
 				height: calc(100vh - 70px);
 				visibility: visible;
 				display: flex;
