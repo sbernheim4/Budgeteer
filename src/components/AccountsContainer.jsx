@@ -69,7 +69,7 @@ class AccountsContainer extends Component {
 		const endDate = new Date();
 		const startDate = subWeeks(endDate, 2);
 
-		let startingIndex;
+		let startingIndex = 0;
 		transactions.forEach( (t, i) => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
@@ -87,17 +87,18 @@ class AccountsContainer extends Component {
 		});
 
 		const mostRecentFourteenTransactions = transactions.slice(startingIndex);
-
 		let amts = new Array(14).fill(0);
 
-		mostRecentFourteenTransactions.forEach(t => {
-			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-			const index = differenceInDays(endDate, transactionDate);
+		if (startingIndex !== 0) {
+			mostRecentFourteenTransactions.forEach(t => {
+				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+				const index = differenceInDays(endDate, transactionDate);
 
-			amts[index] += t.amount;
-		});
+				amts[index] += t.amount;
+			});
 
-		amts.reverse();
+			amts.reverse();
+		}
 
 		const data = {
 			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, "Today"],
@@ -312,19 +313,25 @@ class AccountsContainer extends Component {
 	async searchByKeyword(e) {
 		e.preventDefault();
 		let releventTransactions = [];
-		const keyWord = this.state.keyWord || "Everything";
-
+		const keyWord = this.state.keyWord || "all";
 		const normalizedKeyWord = keyWord.toLowerCase();
 
 		let total = 0;
-		this.props.transactions.forEach(t => {
-			let normalizedTransactionName = t.name.toLowerCase();
 
-			if (normalizedTransactionName.includes(normalizedKeyWord)) {
-				total += t.amount;
-				releventTransactions.push(t);
-			}
-		});
+		// If the user doesn't enter anything, show them the default stuff
+		if (normalizedKeyWord === "all") {
+			this.getAccountTransactions("all");
+			return;
+		} else {
+			this.props.transactions.forEach(t => {
+				let normalizedTransactionName = t.name.toLowerCase();
+
+				if (normalizedTransactionName.includes(normalizedKeyWord)) {
+					total += t.amount;
+					releventTransactions.push(t);
+				}
+			});
+		}
 
 		total = helpers.formatAmount(total);
 

@@ -44,7 +44,7 @@
 	&--search-options {
 		margin: 0 20px 20px 20px;
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-around;
 		align-items: center;
 
 		@media all and (max-width: 600px) {
@@ -97,6 +97,7 @@
 		}
 
 		&--icon-search {
+			max-width: 300px;
 			width: 30%;
 			display: flex;
 			justify-content: space-around;

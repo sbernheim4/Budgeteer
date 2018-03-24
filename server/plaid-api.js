@@ -75,7 +75,7 @@ app.post('/set-stored-access-token', async (req, res, next) => {
 });
 
 // Get Access Tokens and Item IDs from Plaid
-app.post("/get-access-token", async (req, res, next) => {
+app.post("/get-access-token", async (req, res) => {
 
 	PUBLIC_TOKEN = req.body.public_token;
 	try {
@@ -136,7 +136,6 @@ app.post("/transactions", async function(req, res, next) {
 	} catch (err) {
 		if (err !== null) {
 			console.log("TRANSACTIONS ERROR");
-			console.log(JSON.stringify(err));
 			console.log(err);
 			return res.json({
 				error: err

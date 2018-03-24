@@ -261,8 +261,14 @@ class Statistics extends Component {
 
 		if (pastSixMonths[0] === undefined) {
 			// account info was not properly loaded --> send them back to the homepage
-			window.location.href = "budgeteer-prod.herokuapp.com"
-			window.location.reload();
+			const errorMessage = document.querySelector('.app-error');
+			errorMessage.classList.add('app-error__display');
+
+			setTimeout(() => {
+				errorMessage.classList.remove('app-error__display')
+			}, 4000)
+
+			console.error(err);
 		}
 		// Start date is the Monday following the first transaction
 		let firstDate = pastSixMonths[0].date;
