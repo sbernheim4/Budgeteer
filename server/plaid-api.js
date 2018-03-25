@@ -7,6 +7,7 @@ const chalk = require("chalk");
 const bodyParser = require("body-parser");
 const moment = require("moment");
 const plaid = require("plaid");
+const axios = require("axios");
 
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
@@ -50,6 +51,45 @@ app.get("/key-and-env", (req, res) => {
 	res.send(jsonResponse);
 });
 
+app.post("/rotate-access-tokens", async (req, res) => {
+
+		// First ensure that the tokens have been set, if not try and set them before continuing
+		if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
+			// first try to set the access tokens and item ids by making a request to /set-storred-access-token.
+			// if length is still 0, then return error
+			let url = process.env.NODE_ENV === "production" ? "http://budgeteer-prod.herokuapp.com/" : "localhost:5001";
+
+			axios.post(`${url}/plaid-apit/set-storred-access-token`).then(res => {
+				if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
+					return res.json({
+						error: "No accounts could be found. Please relink them"
+					});
+				}
+			});
+		}
+
+	// Rotate access tokens
+	let newAccessTokens = [];
+
+	for (let token of ACCESS_TOKENS) {
+		try {
+			let result = await client.invalidateAccessToken(token);
+			const accessToken = result.new_acccess_token;
+			newAccessTokens.push(result.new_access_token);
+		} catch(err) {
+			console.error(err);
+			res.json({
+				error: err
+			}).end();
+		}
+	}
+
+	// Update access tokens on the server
+	User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: newAccessTokens } }, () => {
+		console.log(chalk.green("Access Tokens have rotated"));
+	});
+});
+
 app.post('/set-stored-access-token', async (req, res, next) => {
 
 	let data;
@@ -90,11 +130,8 @@ app.post("/get-access-token", async (req, res) => {
 
 		// Update our arrays in the DB
 		User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: ACCESS_TOKENS, itemID: ITEM_IDS } }, () => {
-			console.log(chalk.green("Update Successful"));
+			console.log(chalk.green("New account has been saved"));
 		});
-
-		console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been UPDATEED ✓✓✓"));
-
 	} catch (err) {
 		console.log("ERROR:");
 		console.log(err);
