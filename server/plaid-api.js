@@ -142,7 +142,7 @@ app.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-app.post("/transactions", async function(req, res, next) {
+app.post("/transactions", async (req, res, next) => {
 
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days || 30;
@@ -181,7 +181,7 @@ app.post("/transactions", async function(req, res, next) {
 	}
 });
 
-app.post ("/balance", async function (req, res, next) {
+app.post ("/balance", async (req, res, next) => {
 	let netWorth = 0;
 	let map = {};
 
@@ -208,6 +208,27 @@ app.post ("/balance", async function (req, res, next) {
 		"netWorth": netWorth,
 		"myMap": map
 	});
+});
+
+
+app.post('/linked-accounts', async (req, res) => {
+
+	try {
+
+		const banks = [];
+
+		const itemInfo = ACCESS_TOKENS.map(token => client.getItem(token));
+		let itemData = await Promise.all(itemInfo);
+
+		const ids = itemData.map(thing => client.getInstitutionById(thing.item.institution_id));
+		let data = await Promise.all(ids);
+		data.forEach(place => banks.push(place.institution.name));
+		console.log(banks);
+		res.send(banks);
+
+	} catch (err) {
+		console.error(err);
+	}
 });
 
 module.exports = app;
