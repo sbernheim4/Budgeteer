@@ -9,6 +9,7 @@ import Loading from './Loading.jsx';
 import Statistics from './Statistics.jsx';
 import AccountsContainer from './AccountsContainer.jsx';
 import Networth from './Networth.jsx';
+import Settings from './Settings.jsx';
 
 // Helper Functions
 import helpers from './helpers.js';
@@ -105,7 +106,7 @@ class App extends Component {
 		};
 
 		try {
-			const response = await fetch('/plaid-api/transactions', fetchOptions); // Fetch transaction info
+			const response = await fetch('/plaid-api/transactions', fetchOptions); // Fetch all transaction info
 			const data = await response.json(); // convert data to json
 
 			// TODO: Might need to have a foreach loop if the way it gets
@@ -237,6 +238,12 @@ class App extends Component {
 					<Networth
 						netWorth={this.state.netWorth}
 						transactions={this.state.transactions}
+					/>
+				)}/>
+
+				<Route path='/settings' render={() => (
+					<Settings
+						accounts={this.state.accounts}
 					/>
 				)}/>
 

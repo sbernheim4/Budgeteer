@@ -1,0 +1,31 @@
+@import '/global';
+
+
+.settings {
+	margin: 0 30px;
+
+	h1 {
+
+	}
+
+	div {
+
+		max-width: 80vw;
+		width: 600px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+
+		h2 {
+			margin: 5px 0;
+		}
+
+		.icon {
+			font-size: 30px;
+		}
+
+	}
+
+
+}

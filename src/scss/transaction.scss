@@ -4,6 +4,12 @@
 	margin: 5px;
 	width: 80%;
 	background-color: darken($background-color, 5%);
+	cursor: pointer;
+	transition: background-color .5s ease;
+
+	&:hover {
+		background-color: darken($background-color, 8%);
+	}
 
 	@media all and (max-width: 600px) {
 		margin: 0;
