@@ -233,4 +233,43 @@ app.post('/linked-accounts', async (req, res) => {
 	}
 });
 
+app.post('/remove-account', async (req, res) => {
+	// Index in the arrays that should be removed
+	const i = req.body.data.bankIndex;
+
+	// Remove the access token and item id for the corresponding bank
+	const copyOfAccessTokens = ACCESS_TOKENS;
+	const copyOfItemIDs = ITEM_IDS;
+
+	let newAccessTokens = [...copyOfAccessTokens.slice(0,i), ...copyOfAccessTokens.slice(i + 1)];
+	let newItemIDs = [...copyOfItemIDs.slice(0,i), ...copyOfItemIDs.slice(i + 1)];
+
+	try {
+		// Update the values in the database
+		User.update({ _id: "5a63710527c6b237492fc1bb" }, {
+			$set: {
+				accessTokens: newAccessTokens,
+				itemID: newItemIDs
+			}
+		}, (err, raw) => {
+			if (err) throw Error(err);
+			console.log(raw);
+			console.log(chalk.green("Bank Removed"));
+		});
+
+		// Update the values on the server
+		ACCESS_TOKENS = newAccessTokens;
+		ITEM_IDS = newItemIDs;
+
+		res.status(200).json({
+			"status": req.body.data.bankName
+		});
+
+	} catch(err) {
+		res.status(500).json({
+			"status": "An error has occurred, please refresh the page and try again in a few minutes"
+		});
+	}
+});
+
 module.exports = app;
