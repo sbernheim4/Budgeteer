@@ -66,6 +66,7 @@ class Navbar extends Component {
 						<li><Link to='/accounts'>Transactions</Link></li>
 						<li><Link to='/statistics'>Statistics</Link></li>
 						<li><Link to='/networth'>Networth</Link></li>
+						<li><Link to='/settings'>Settings</Link></li>
 					</ul>
 
 					<div>
@@ -77,11 +78,12 @@ class Navbar extends Component {
 					<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
 
 					<div className='navbar--mobile--links'>
-						<p className="first" onClick={this.toggleMenu} ><Link to='/'>Home</Link></p>
-						<p className="second" onClick={this.toggleMenu} ><Link to='/accounts'>Transactions</Link></p>
-						<p className="third" onClick={this.toggleMenu} ><Link to='/statistics'>Statistics</Link></p>
-						<p className="fourth" onClick={this.toggleMenu} ><Link to='/networth'>Networth</Link></p>
-						<p className="fifth" onClick={this.addAccount}>Add Account</p>
+						<p className="first" onClick={this.toggleMenu}><Link to='/'>Home</Link></p>
+						<p className="second" onClick={this.toggleMenu}><Link to='/accounts'>Transactions</Link></p>
+						<p className="third" onClick={this.toggleMenu}><Link to='/statistics'>Statistics</Link></p>
+						<p className="fourth" onClick={this.toggleMenu}><Link to='/networth'>Networth</Link></p>
+						<p className="fifth" onClick={this.toggleMenu}><Link to='/settings'>Settings</Link></p>
+						<p className="sixth" onClick={this.addAccount}>Add Account</p>
 					</div>
 				</div>
 			</nav>

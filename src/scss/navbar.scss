@@ -5,14 +5,11 @@
 .navbar {
 
 	&--desktop {
-		@media all and (max-width: 600px) {
+		@media all and (max-width: 800px) {
 			display: none;
 		}
 
 		width: 100vw;
-		//height: 70px;
-		/*background-color: $background-color;*/
-
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
@@ -71,7 +68,7 @@
 	}
 
 	&--mobile {
-		@media all and (min-width: 600px) {
+		@media all and (min-width: 801px) {
 			display: none;
 		}
 
@@ -91,20 +88,20 @@
 			align-items: center;
 
 			p {
-				text-decoration: none;
+				height: calc(100vh / 6);
 				font-size: 2em;
 				overflow-y: hidden;
 				cursor: pointer;
 				z-index: 1;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 
 				a {
 					width: 100vw;
-					height: 20vh;
 					overflow-y: hidden;
 					text-decoration: none;
-					display: flex;
-					justify-content: center;
-					align-items: center;
+					text-align: center;
 				}
 			}
 
@@ -125,14 +122,13 @@
 			}
 
 			.fifth {
-				width: 100vw;
-				height: 20vh;
-				overflow-y: hidden;
-				text-decoration: none;
 				background-color: #40848B;
-				display: flex;
-				justify-content: center;
-				align-items: center;
+			}
+
+			.sixth{
+				width: 100vw;
+				text-align: center;
+				background-color: #40848B;
 			}
 
 			&__active {

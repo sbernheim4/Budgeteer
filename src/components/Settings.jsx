@@ -43,9 +43,7 @@ class Settings extends Component {
 		});
 
 		let result;
-
-		try{
-
+		try {
 			result = await axios.post('/plaid-api/remove-account', {
 				headers: {
 					'Accept': 'application/json',
