@@ -215,16 +215,18 @@ app.post('/linked-accounts', async (req, res) => {
 
 	try {
 
-		const banks = [];
+		let banks = [];
 
-		const itemInfo = ACCESS_TOKENS.map(token => client.getItem(token));
-		let itemData = await Promise.all(itemInfo);
+		const itemInfo = ACCESS_TOKENS.map(token => client.getItem(token)); // Get Item ID for each access token
+		let itemData = await Promise.all(itemInfo); // Wait for all the promises to resolve
+		const ids = itemData.map(thing => client.getInstitutionById(thing.item.institution_id)); // Get the associated instituion for the given Item ID
+		let data = await Promise.all(ids); // Wait for all the IDs to be processed
+		data.forEach(place => banks.push(place.institution.name)); // Collate all the institutions into one array
 
-		const ids = itemData.map(thing => client.getInstitutionById(thing.item.institution_id));
-		let data = await Promise.all(ids);
-		data.forEach(place => banks.push(place.institution.name));
-		console.log(banks);
-		res.send(banks);
+		// Send back the array to the client
+		res.json({
+			"accounts": banks
+		});
 
 	} catch (err) {
 		console.error(err);
