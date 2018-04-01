@@ -12,11 +12,23 @@ class Settings extends Component {
         super(props);
 
         this.state = {
+            linkedBanks: []
         }
     }
 
-    componentDidMount() {
-        console.log(this.props.accounts);
+    async componentDidMount() {
+        let linkedBanks = await fetch("/plaid-api/linked-accounts", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        linkedBanks = await linkedBanks.json();
+        this.setState({
+            linkedBanks: linkedBanks.accounts
+        })
     }
 
     removeAccount() {
@@ -29,10 +41,11 @@ class Settings extends Component {
 
             <section className='settings'>
                 <h1> Linked Accounts </h1>
-                {this.props.accounts.map( (a, index) =>
-                    <div className='settings--linked-accounts'>
-                        <h2 key={index}>{a.name}</h2>
-                        <FontAwesomeIcon className='icon' icon={faTimes} onClick={this.removeAccount}/>
+                {this.state.linkedBanks.map( (bank, index) =>
+                    <div key={index} className='settings--linked-accounts'>
+                        <h2 key={index}>{bank}</h2>
+                        <button onClick={this.removeAccount}>Remove Account</button>
+                        {/*<FontAwesomeIcon className='icon' icon={faTimes} onClick={this.removeAccount}/>*/}
                     </div>
                 )}
             </section>
