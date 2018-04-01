@@ -201,14 +201,7 @@ class App extends Component {
 	}
 
 	render() {
-
-		let text;
-
-		if (this.state.counter === 2) {
-			text = Home
-		} else {
-			text = Loading
-		}
+		let loading = this.state.counter !== 2;
 
 		return (
 			<div>
@@ -219,7 +212,11 @@ class App extends Component {
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
-				<Route exact path='/' component={text}/>
+				<Route exact path='/' render={() => (
+					<Home
+						loading={loading}
+					/>
+				)}/>
 
 				<Route path='/statistics' render={() => (
 					<Statistics

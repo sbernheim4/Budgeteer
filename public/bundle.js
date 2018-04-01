@@ -48746,13 +48746,7 @@ var App = function (_Component) {
 		value: function render() {
 			var _this3 = this;
 
-			var text = void 0;
-
-			if (this.state.counter === 2) {
-				text = _Home2.default;
-			} else {
-				text = _Loading2.default;
-			}
+			var loading = this.state.counter !== 2;
 
 			return _react2.default.createElement(
 				'div',
@@ -48767,7 +48761,11 @@ var App = function (_Component) {
 						'An error has occurred, redirecting back to home page'
 					)
 				),
-				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: text }),
+				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
+						return _react2.default.createElement(_Home2.default, {
+							loading: loading
+						});
+					} }),
 				_react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
 						return _react2.default.createElement(_Statistics2.default, {
 							transactions: _this3.state.transactions
@@ -51385,6 +51383,15 @@ var Navbar = function (_Component) {
 								{ to: '/networth' },
 								'Networth'
 							)
+						),
+						_react2.default.createElement(
+							'li',
+							null,
+							_react2.default.createElement(
+								_reactRouterDom.Link,
+								{ to: '/settings' },
+								'Settings'
+							)
 						)
 					),
 					_react2.default.createElement(
@@ -51442,7 +51449,16 @@ var Navbar = function (_Component) {
 						),
 						_react2.default.createElement(
 							'p',
-							{ className: 'fifth', onClick: this.addAccount },
+							{ className: 'fifth', onClick: this.toggleMenu },
+							_react2.default.createElement(
+								_reactRouterDom.Link,
+								{ to: '/settings' },
+								'Settings'
+							)
+						),
+						_react2.default.createElement(
+							'p',
+							{ className: 'sixth', onClick: this.addAccount },
 							'Add Account'
 						)
 					)
@@ -53321,7 +53337,7 @@ exports = module.exports = __webpack_require__(22)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n/*$background-color: rgb(50, 50, 50);*/\n.navbar--desktop {\n  width: 100vw;\n  /*background-color: $background-color;*/\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 600px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n@media all and (min-width: 600px) {\n  .navbar--mobile {\n    display: none; } }\n\n.navbar--mobile .icon {\n  margin: 15px;\n  font-size: 2em;\n  cursor: pointer; }\n\n.navbar--mobile--links {\n  width: 100vw;\n  height: 0;\n  transition: all .4s ease-in-out;\n  visibility: hidden;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .navbar--mobile--links p {\n    text-decoration: none;\n    font-size: 2em;\n    overflow-y: hidden;\n    cursor: pointer;\n    z-index: 1; }\n    .navbar--mobile--links p a {\n      width: 100vw;\n      height: 20vh;\n      overflow-y: hidden;\n      text-decoration: none;\n      display: flex;\n      justify-content: center;\n      align-items: center; }\n  .navbar--mobile--links .first {\n    background-color: #A99878; }\n  .navbar--mobile--links .second {\n    background-color: #5F7968; }\n  .navbar--mobile--links .third {\n    background-color: #494652; }\n  .navbar--mobile--links .fourth {\n    background-color: #704A4A; }\n  .navbar--mobile--links .fifth {\n    width: 100vw;\n    height: 20vh;\n    overflow-y: hidden;\n    text-decoration: none;\n    background-color: #40848B;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n  .navbar--mobile--links__active {\n    height: calc(100vh - 70px);\n    visibility: visible;\n    display: flex;\n    z-index: 2; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n/*$background-color: rgb(50, 50, 50);*/\n.navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n@media all and (min-width: 801px) {\n  .navbar--mobile {\n    display: none; } }\n\n.navbar--mobile .icon {\n  margin: 15px;\n  font-size: 2em;\n  cursor: pointer; }\n\n.navbar--mobile--links {\n  width: 100vw;\n  height: 0;\n  transition: all .4s ease-in-out;\n  visibility: hidden;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .navbar--mobile--links p {\n    height: calc(100vh / 6);\n    font-size: 2em;\n    overflow-y: hidden;\n    cursor: pointer;\n    z-index: 1;\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n    .navbar--mobile--links p a {\n      width: 100vw;\n      overflow-y: hidden;\n      text-decoration: none;\n      text-align: center; }\n  .navbar--mobile--links .first {\n    background-color: #A99878; }\n  .navbar--mobile--links .second {\n    background-color: #5F7968; }\n  .navbar--mobile--links .third {\n    background-color: #494652; }\n  .navbar--mobile--links .fourth {\n    background-color: #704A4A; }\n  .navbar--mobile--links .fifth {\n    background-color: #40848B; }\n  .navbar--mobile--links .sixth {\n    width: 100vw;\n    text-align: center;\n    background-color: #40848B; }\n  .navbar--mobile--links__active {\n    height: calc(100vh - 70px);\n    visibility: visible;\n    display: flex;\n    z-index: 2; }\n", ""]);
 
 // exports
 
@@ -53361,6 +53377,8 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
+__webpack_require__(622);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Home = function (_Component) {
@@ -53376,17 +53394,25 @@ var Home = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Home, [{
-		key: "render",
+		key: 'render',
 		value: function render() {
 
-			return _react2.default.createElement(
-				"div",
-				{ className: "home" },
-				_react2.default.createElement(
-					"h1",
+			var text = void 0;
+
+			if (this.props.loading) {
+				text = _react2.default.createElement('img', { src: './loading-gifs/loading-one.gif', alt: 'loading' });
+			} else {
+				text = _react2.default.createElement(
+					'h1',
 					null,
-					"Welcome"
-				)
+					'Welcome'
+				);
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'home' },
+				text
 			);
 		}
 	}]);
@@ -74206,6 +74232,51 @@ module.exports = function spread(callback) {
     return callback.apply(null, arr);
   };
 };
+
+
+/***/ }),
+/* 622 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(623);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(23)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./home.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./home.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 623 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(22)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".home img {\n  margin: 0 auto;\n  width: 50vw;\n  display: block;\n  border-radius: 50%; }\n\n.home h1 {\n  margin-left: 30px; }\n", ""]);
+
+// exports
 
 
 /***/ })
