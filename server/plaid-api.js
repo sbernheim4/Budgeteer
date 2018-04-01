@@ -185,15 +185,14 @@ app.post ("/balance", async (req, res, next) => {
 	let netWorth = 0;
 	let map = {};
 
-	const promiseArray = ACCESS_TOKENS.map(token => {
-		let x = client.getBalance(token);
-		return x;
-	});
+	const promiseArray = ACCESS_TOKENS.map(token => client.getBalance(token) );
 
 	let totalData = await Promise.all(promiseArray);
 
 	totalData.forEach(bank => {
 		bank.accounts.forEach(acct => {
+			// TODO --> If null it should still be counted and sent back but
+			// the value in the map should be N/A or something like that
 			if (acct.balances.available !== null) {
 				let name = acct.name;
 				let value = acct.balances.available;
