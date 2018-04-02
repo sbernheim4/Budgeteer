@@ -84,8 +84,8 @@ class Settings extends Component {
 			<section className='settings'>
 				<h1> Linked Accounts </h1>
 				{this.state.linkedBanks.map( (bank, index) =>
-					<div key={index} className='settings--linked-accounts'>
-						<h2 key={index}>{bank}</h2>
+					<div className='settings--linked-accounts'>
+						<h2>{bank}</h2>
 						<button onClick={(e) => this.removeAccount(e)}>Remove Account</button>
 					</div>
 				)}
