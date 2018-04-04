@@ -39,7 +39,6 @@ class TransactionContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log("getting new props");
 		this.setState({
 			transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
 			num: 10

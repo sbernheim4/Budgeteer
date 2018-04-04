@@ -36,10 +36,10 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 // Log All Requests
-app.all("*", (req, res, next) => {
-	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
-	next();
-});
+// app.all("*", (req, res, next) => {
+// 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
+// 	next();
+// });
 
 // Send back the public key and the environment to plaid
 app.get("/key-and-env", (req, res) => {
@@ -182,30 +182,42 @@ app.post("/transactions", async (req, res, next) => {
 });
 
 app.post ("/balance", async (req, res, next) => {
-	let netWorth = 0;
-	let map = {};
-
 	const promiseArray = ACCESS_TOKENS.map(token => client.getBalance(token) );
 
 	let totalData = await Promise.all(promiseArray);
+	let banks = [];
 
-	totalData.forEach(bank => {
+	totalData.forEach( (bank, index) => {
+		let bankTotal = 0;
+		let map = {};
 		bank.accounts.forEach(acct => {
-			// TODO --> If null it should still be counted and sent back but
-			// the value in the map should be N/A or something like that
 			if (acct.balances.available !== null) {
-				let name = acct.name;
 				let value = acct.balances.available;
 
-				netWorth += value;
-				map[name] = value;
+				bankTotal += value;
+				map[acct.name] = value;
+			} else {
+				map[acct.name] = "N/A";
 			}
 		});
+
+		banks[index] = {"bankTotal": bankTotal, "map": map};
 	});
 
+
+	let networth = 0;
+	banks.forEach(bank => {
+		networth += bank.bankTotal;
+	});
+
+	let arrayOfMaps = [];
+	banks.forEach( (bank, index) => {
+		arrayOfMaps[index] = bank.map;
+	})
+
 	res.json({
-		"netWorth": netWorth,
-		"myMap": map
+		"networth": networth,
+		"maps": arrayOfMaps
 	});
 });
 

@@ -16,7 +16,7 @@ class Home extends Component {
 		let text;
 
 		if (this.props.loading) {
-			text = <img src='./loading-gifs/loading-one.gif' alt='loading' />
+			text = <div><h1>Loading...</h1><img src='./loading-gifs/loading-one.gif' alt='loading' /></div>
 		} else {
 			text = <h1>Welcome</h1>;
 		}

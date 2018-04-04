@@ -10,12 +10,17 @@ const startDb = require('./db');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
+const util = require('util');
+const bodyParser = require('body-parser')
 
 const options = {
 	key: fs.readFileSync('encryption/server.key'),
 	cert: fs.readFileSync('encryption/server.crt'),
 	ca: fs.readFileSync('encryption/server.csr')
 };
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
 
 /****************** DB Options ******************/
 const mongodbUri = process.env.DB_URI;
@@ -34,12 +39,18 @@ app.use(compression());
 app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } ));
 
 /****************** Handle Requests ******************/
-app.use("/plaid-api", require("./plaid-api.js"));
-
 app.all("*", (req, res, next) => {
-	console.log(chalk.blue(`New ${req.method} request for ${req.path} on ${new Date().toLocaleString()}`));
+	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
+    console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
+    console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
+    console.log('--------------------------------------------------------------------------');
+
+	// console.log(chalk.blue(`New ${req.method} request for ${req.path} on ${new Date().toLocaleString()}`));
 	next();
 });
+
+app.use("/plaid-api", require("./plaid-api.js"));
+
 
 app.get("/*", (req, res) => {
 	res.redirect('/');

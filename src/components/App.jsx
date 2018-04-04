@@ -30,7 +30,6 @@ class App extends Component {
 			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
-			netWorth: 0,
 			counter: 0
 		};
 
@@ -50,7 +49,6 @@ class App extends Component {
 			});
 
 			this.getTransactions();
-			this.getNetWorth(); // store networth
 
 			// Used for if the user wants to link a new account
 			let keyAndEnv = await fetch('plaid-api/key-and-env');
@@ -182,24 +180,6 @@ class App extends Component {
 		this.setState({ accounts: currentAccounts })
 	}
 
-	async getNetWorth() {
-		const fetchOptions = {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			}
-		};
-
-		let data = await fetch('plaid-api/balance', fetchOptions);
-        data = await data.json();
-
-		this.setState({ netWorth: data.myMap });
-		let x = this.state.counter;
-		x++;
-		this.setState({counter: x})
-	}
-
 	render() {
 		let loading = this.state.counter !== 2;
 
@@ -233,7 +213,6 @@ class App extends Component {
 
 				<Route path='/networth' render={() => (
 					<Networth
-						netWorth={this.state.netWorth}
 						transactions={this.state.transactions}
 					/>
 				)}/>

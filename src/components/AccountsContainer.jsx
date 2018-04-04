@@ -58,6 +58,10 @@ class AccountsContainer extends Component {
 		this.getKeyword = this.getKeyword.bind(this);
 	}
 
+	componentDidMount() {
+		this.getAccountTransactions("all");
+	}
+
 	componentWillReceiveProps() {
 		// On first load show all transactions by default for the user
 		this.getAccountTransactions("all");
@@ -70,26 +74,28 @@ class AccountsContainer extends Component {
 		const startDate = subWeeks(endDate, 2);
 
 		let startingIndex = 0;
-		transactions.forEach( (t, i) => {
+
+		for (let [index, t] of transactions.entries()) {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 			// Get the index of the first transaction to fall inside the range
 			if (isWithinRange(transactionDate, startDate, endDate)) {
-				startingIndex = i;
-				return;
+				startingIndex = index;
+				break;
 			}
 
 			// If we get through the whole array and haven't yet returned it means there
 			// are no transactions which fall within our range
-			if (i === transactions.length - 1) {
+			if (index === transactions.length - 1) {
 				startingIndex = 0;
 			}
-		});
+		}
 
-		const mostRecentFourteenTransactions = transactions.slice(startingIndex);
 		let amts = new Array(14).fill(0);
 
 		if (startingIndex !== 0) {
+			const mostRecentFourteenTransactions = transactions.slice(startingIndex);
+
 			mostRecentFourteenTransactions.forEach(t => {
 				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 				const index = differenceInDays(endDate, transactionDate);
@@ -101,7 +107,7 @@ class AccountsContainer extends Component {
 		}
 
 		const data = {
-			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, "Today"],
+			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, "2 days ago", "Yesterday", "Today"],
 			datasets: [{
 				label: "$ Spent / Day",
 				data: amts,
@@ -112,7 +118,8 @@ class AccountsContainer extends Component {
 		const barOptions = {
 			title: {
 				display: true,
-				text: "2 Week Spending"
+				text: "2 Week Spendiy History",
+				fontSize: 20
 			},
 			scales: {
 				xAxes: [{
@@ -120,8 +127,23 @@ class AccountsContainer extends Component {
 					scaleLabel: {
 						display: true,
 						labelString: "# Days Ago"
+					},
+					ticks: {
+						fontSize: 15
 					}
-				}]
+				}],
+				yAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: "Amount Spent"
+					},
+	                ticks: {
+	                    fontSize: 15,
+	                    callback: function(value, index, values) {
+	                        return '$' + helpers.numberWithCommas(value);
+	                    }
+	                }
+	            }]
 			},
 			legend: {
 				display: false,
