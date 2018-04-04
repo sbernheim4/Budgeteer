@@ -181,7 +181,7 @@ class App extends Component {
 	}
 
 	render() {
-		let loading = this.state.counter !== 2;
+		let loading = this.state.counter !== 1;
 
 		return (
 			<div>
