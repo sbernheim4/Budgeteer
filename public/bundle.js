@@ -71684,10 +71684,7 @@ var AccountsContainer = function (_Component) {
 			var type = void 0;
 			var total = 0;
 
-			if (account_id === "none") {
-				releventTransactions = [];
-				type = "";
-			} else if (account_id === "all") {
+			if (account_id === "all") {
 				releventTransactions = this.props.transactions;
 				type = "All Categories";
 			} else {
@@ -72105,14 +72102,7 @@ var AccountsContainer = function (_Component) {
 												} },
 											a.name
 										);
-									}),
-									_react2.default.createElement(
-										"button",
-										{ onClick: function onClick() {
-												_this2.getAccountTransactions("none");_this2.closeAccountsViewer();
-											} },
-										"Hide Transactions"
-									)
+									})
 								)
 							)
 						)
@@ -72891,7 +72881,8 @@ var Networth = function (_Component) {
 		_this.state = {
 			total: 0, // Keep track of total net worth
 			accountBalances: [], // Map of account name to its balance
-			recurringPayments: [] // Keep track of recurring costs like Spotify or Netflix etc
+			recurringPayments: [], // Keep track of recurring costs like Spotify or Netflix etc
+			loading: true
 		};
 		return _this;
 	}
@@ -72959,7 +72950,8 @@ var Networth = function (_Component) {
 
 								this.setState({
 									total: data.networth,
-									accountBalances: data.maps
+									accountBalances: data.maps,
+									loading: false
 								});
 
 							case 8:
@@ -73001,10 +72993,20 @@ var Networth = function (_Component) {
 				);
 			}
 
-			return _react2.default.createElement(
-				"div",
-				{ className: "networth" },
-				_react2.default.createElement(
+			var netWorthChart = void 0;
+			if (this.state.loading) {
+				netWorthChart = _react2.default.createElement(
+					"div",
+					{ className: "networth--loading" },
+					_react2.default.createElement(
+						"h1",
+						null,
+						"Hang tight, getting your data from the cloud"
+					),
+					_react2.default.createElement("img", { src: "./loading-gifs/loading-three.gif", alt: "loading" })
+				);
+			} else {
+				netWorthChart = _react2.default.createElement(
 					"table",
 					null,
 					_react2.default.createElement(
@@ -73062,7 +73064,13 @@ var Networth = function (_Component) {
 							)
 						)
 					)
-				),
+				);
+			}
+
+			return _react2.default.createElement(
+				"div",
+				{ className: "networth" },
+				netWorthChart,
 				_react2.default.createElement(
 					"div",
 					{ className: "networth--recurring-payments" },
@@ -73151,7 +73159,7 @@ exports = module.exports = __webpack_require__(14)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n\n.networth--recurring-payments {\n  margin: 30px;\n  width: 260px; }\n  .networth--recurring-payments hr {\n    margin-bottom: 30px;\n    height: 1px;\n    background-color: gray; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.networth--loading {\n  padding: 30px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center; }\n  .networth--loading h1 {\n    text-align: center; }\n\n.networth table {\n  margin: 0 auto;\n  padding: 30px;\n  border-collapse: collapse; }\n  .networth table thead tr {\n    border-bottom: 1px solid #ff8484; }\n    .networth table thead tr th {\n      width: 200px;\n      padding-bottom: 10px;\n      font-size: 30px;\n      text-align: center; }\n  .networth table tbody tr td {\n    width: 300px;\n    height: 40px;\n    padding: 10px;\n    font-size: 30px;\n    text-align: center; }\n  .networth table tbody tr .acct-name {\n    text-align: center; }\n  .networth table tbody tr:nth-child(even) {\n    background: #252525; }\n  .networth table tbody tr:hover {\n    background: #1e1e1e;\n    cursor: pointer; }\n\n.networth--recurring-payments {\n  margin: 30px;\n  width: 260px; }\n  .networth--recurring-payments hr {\n    margin-bottom: 30px;\n    height: 1px;\n    background-color: gray; }\n", ""]);
 
 // exports
 

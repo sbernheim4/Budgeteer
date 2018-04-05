@@ -10,7 +10,8 @@ class Networth extends Component {
 		this.state = {
 			total: 0, // Keep track of total net worth
 			accountBalances: [], // Map of account name to its balance
-			recurringPayments: [] // Keep track of recurring costs like Spotify or Netflix etc
+			recurringPayments: [], // Keep track of recurring costs like Spotify or Netflix etc
+			loading: true
 		}
 	}
 
@@ -62,7 +63,8 @@ class Networth extends Component {
 
 		this.setState({
 			total: data.networth,
-			accountBalances: data.maps
+			accountBalances: data.maps,
+			loading: false
 		});
 
 	}
@@ -76,9 +78,11 @@ class Networth extends Component {
 			recurringPayments = <ul> this.state.recurringPayments.map(val => <li>val.name</li>) </ul>
 		}
 
-		return (
-			<div className='networth'>
-				<table>
+		let netWorthChart;
+		if (this.state.loading) {
+			netWorthChart = <div className="networth--loading"><h1>Hang tight, getting your data from the cloud</h1><img src='./loading-gifs/loading-three.gif' alt='loading' /></div>
+		} else {
+			netWorthChart = (<table>
 					<thead>
 						<tr>
 							<th>Account Name</th>
@@ -100,7 +104,12 @@ class Networth extends Component {
 							<td className='acct-value'>${this.state.total}</td>
 						</tr>
 					</tbody>
-				</table>
+				</table>)
+		}
+
+		return (
+			<div className='networth'>
+				{netWorthChart}
 
 				<div className='networth--recurring-payments'>
 					<h2>Recurring Payments</h2>

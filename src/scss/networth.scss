@@ -2,6 +2,22 @@
 
 .networth {
 
+	&--loading {
+		padding: 30px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		h1 {
+			text-align: center;
+		}
+
+		img {
+
+		}
+	}
+
 	table {
 		margin: 0 auto;
 		padding: 30px;
