@@ -124,8 +124,6 @@ app.post("/get-access-token", async (req, res) => {
 	try {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
-		console.log(tokenResponse.access_token);
-		console.log(tokenResponse.item_id);
 
 		// Update our arrays on the server
 		ACCESS_TOKENS.push(tokenResponse.access_token);
