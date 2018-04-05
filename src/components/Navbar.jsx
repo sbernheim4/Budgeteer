@@ -63,7 +63,7 @@ class Navbar extends Component {
 				<div className='navbar--desktop'>
 					<ul>
 						<li><Link to='/'>Home</Link></li>
-						<li><Link to='/accounts'>Transactions</Link></li>
+						<li><Link to='/transactions'>Transactions</Link></li>
 						<li><Link to='/statistics'>Statistics</Link></li>
 						<li><Link to='/networth'>Networth</Link></li>
 						<li><Link to='/settings'>Settings</Link></li>
@@ -79,7 +79,7 @@ class Navbar extends Component {
 
 					<div className='navbar--mobile--links'>
 						<p className="first" onClick={this.toggleMenu}><Link to='/'>Home</Link></p>
-						<p className="second" onClick={this.toggleMenu}><Link to='/accounts'>Transactions</Link></p>
+						<p className="second" onClick={this.toggleMenu}><Link to='/transactions'>Transactions</Link></p>
 						<p className="third" onClick={this.toggleMenu}><Link to='/statistics'>Statistics</Link></p>
 						<p className="fourth" onClick={this.toggleMenu}><Link to='/networth'>Networth</Link></p>
 						<p className="fifth" onClick={this.toggleMenu}><Link to='/settings'>Settings</Link></p>

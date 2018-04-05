@@ -204,7 +204,7 @@ class App extends Component {
 					/>
 				)}/>
 
-				<Route path='/accounts' render={() => (
+				<Route path='/transactions' render={() => (
 					<AccountsContainer
 						transactions={this.state.transactions}
 						accounts={this.state.accounts}
