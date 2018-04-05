@@ -173,10 +173,7 @@ class AccountsContainer extends Component {
 		let type;
 		let total = 0;
 
-		if (account_id === "none") {
-			releventTransactions = [];
-			type = "";
-		} else if (account_id === "all") {
+		if (account_id === "all") {
 			releventTransactions = this.props.transactions;
 			type = "All Categories";
 		} else {
@@ -484,8 +481,6 @@ class AccountsContainer extends Component {
 									{this.props.accounts.map( (a, index) =>
 										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
 									)}
-
-									<button onClick={() => { this.getAccountTransactions("none"); this.closeAccountsViewer(); }}>Hide Transactions</button>
 								</div>
 							</div>
 						</div>
