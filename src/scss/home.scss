@@ -1,7 +1,8 @@
 
 .home {
+	/*margin: 30px;*/
 
-	div	{
+	&--loading {
 
 		h1 {
 			text-align: center;
@@ -15,12 +16,36 @@
 			border: 5px solid rgb(100, 144, 183);
 			border-radius: 50%;
 		}
-
 	}
 
+	&--info {
+		margin: 30px auto;
+		max-width: 1000px;
 
-	h1 {
-		margin-left: 30px;
+		h1 {
+			margin: 0;
+			text-align: center;
+		}
+
+		h2 {
+			text-align: center;
+			margin-bottom: 90px;
+		}
+
+		&--details {
+			margin: 30px;
+			font-weight: bold;
+
+			h3 {
+
+			}
+
+			p {
+				margin: 10px 0 0 20px;
+				&:before {
+					content: '- ';
+				}
+			}
+		}
 	}
-
 }

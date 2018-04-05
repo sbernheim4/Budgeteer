@@ -45,12 +45,10 @@ app.all("*", (req, res, next) => {
     console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
     console.log('--------------------------------------------------------------------------');
 
-	// console.log(chalk.blue(`New ${req.method} request for ${req.path} on ${new Date().toLocaleString()}`));
 	next();
 });
 
 app.use("/plaid-api", require("./plaid-api.js"));
-
 
 app.get("/*", (req, res) => {
 	res.redirect('/');

@@ -54049,17 +54049,24 @@ var Home = function (_Component) {
 					_react2.default.createElement('img', { src: './loading-gifs/loading-one.gif', alt: 'loading' })
 				);
 			} else {
-				text = _react2.default.createElement(
-					'h1',
-					null,
-					'Welcome'
-				);
+				text = "";
 			}
 
 			return _react2.default.createElement(
 				'div',
 				{ className: 'home' },
-				text
+				text,
+				_react2.default.createElement(
+					'section',
+					null,
+					_react2.default.createElement(
+						'h1',
+						null,
+						'Welcome to Budgeteer',
+						_react2.default.createElement('br', null),
+						'The easiest way to track your finances and spending.'
+					)
+				)
 			);
 		}
 	}]);
@@ -54067,6 +54074,17 @@ var Home = function (_Component) {
 }(_react.Component);
 
 exports.default = Home;
+
+/*
+	<p>We know your financial information is incredibly sensative and that linking your accounts can be a little nerve racking so here's some information that we hope makes you feel more comfortable.</p>
+
+	<ol>
+		<li>We use the same API as Venmo and StripeJS to let users link accounts which means its incredibly secure.</li>
+		<li>All information that passes between our servers is encrypted.</li>
+		<li>Your bank credentials are never stored in our database. Instead we store access tokens which allow us to retrieve information without ever having to ask for your username and password after you link an account.</li>
+		<li>If you ever feel uncomfortable having a linked account, we make it very easy to unlink an account or to rotate the access tokens we store to get your account information.</li>
+	</ol>
+*/
 
 /***/ }),
 /* 406 */

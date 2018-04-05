@@ -17,7 +17,8 @@
 		"process": true,
 		"require": true,
 		"React": true,
-		"Plaid": true
+		"Plaid": true,
+		"__dirname": true
 	},
 
 	"rules": {

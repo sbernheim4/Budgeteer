@@ -59,11 +59,11 @@ app.post("/rotate-access-tokens", async (req, res) => {
 			// if length is still 0, then return error
 			let url = process.env.NODE_ENV === "production" ? "http://budgeteer-prod.herokuapp.com/" : "localhost:5001";
 
-			axios.post(`${url}/plaid-apit/set-storred-access-token`).then(res => {
+			axios.post(`${url}/plaid-api/set-storred-access-token`).then(res => {
 				if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
-					return res.json({
+					res.json({
 						error: "No accounts could be found. Please relink them"
-					});
+					}).end();
 				}
 			});
 		}
@@ -76,6 +76,9 @@ app.post("/rotate-access-tokens", async (req, res) => {
 			let result = await client.invalidateAccessToken(token);
 			const accessToken = result.new_acccess_token;
 			newAccessTokens.push(result.new_access_token);
+			res.json({
+				"Success": "New tokens were successfully generated. Please refresh the page to continue."
+			});
 		} catch(err) {
 			console.error(err);
 			res.json({

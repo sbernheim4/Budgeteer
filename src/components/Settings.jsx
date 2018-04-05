@@ -78,6 +78,12 @@ class Settings extends Component {
 		}
 	}
 
+	rotateAccessTokens() {
+		fetch("/plaid-api/rotate-access-tokens", {
+			method: "POST"
+		});
+	}
+
 	render() {
 		return (
 
@@ -89,6 +95,11 @@ class Settings extends Component {
 						<button onClick={(e) => this.removeAccount(e)}>Remove Account</button>
 					</div>
 				)}
+
+				<div className="settings--rotate-tokens">
+					<p>If you think your bank account has been hacked or compromised, click the button below to delete and generate new access tokens</p>
+					<button onClick={this.rotateAccessTokens}>Rotate Access Tokens</button>
+				</div>
 			</section>
 		);
 	}
