@@ -53,36 +53,33 @@ app.get("/key-and-env", (req, res) => {
 
 app.post("/rotate-access-tokens", async (req, res) => {
 
-		// First ensure that the tokens have been set, if not try and set them before continuing
-		if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
-			// first try to set the access tokens and item ids by making a request to /set-storred-access-token.
-			// if length is still 0, then return error
-			let url = process.env.NODE_ENV === "production" ? "http://budgeteer-prod.herokuapp.com/" : "localhost:5001";
+	// First ensure that the tokens have been set, if not try and set them before continuing
+	if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
+		// first try to set the access tokens and item ids by making a request to /set-storred-access-token.
+		// if length is still 0, then return error
+		let url = process.env.NODE_ENV === "production" ? "http://budgeteer-prod.herokuapp.com/" : "localhost:5001";
 
-			axios.post(`${url}/plaid-api/set-storred-access-token`).then(res => {
-				if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
-					res.json({
-						error: "No accounts could be found. Please relink them"
-					}).end();
-				}
-			});
-		}
+		axios.post(`${url}/plaid-api/set-storred-access-token`).then(res => {
+			if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
+				res.json({
+					"result": "No linked accounts could be found."
+				}).end();
+			}
+		});
+	}
 
 	// Rotate access tokens
 	let newAccessTokens = [];
 
 	for (let token of ACCESS_TOKENS) {
+
 		try {
-			let result = await client.invalidateAccessToken(token);
-			const accessToken = result.new_acccess_token;
+			const result = await client.invalidateAccessToken(token);
 			newAccessTokens.push(result.new_access_token);
-			res.json({
-				"Success": "New tokens were successfully generated. Please refresh the page to continue."
-			});
 		} catch(err) {
 			console.error(err);
 			res.json({
-				error: err
+				"result": err
 			}).end();
 		}
 	}
@@ -90,6 +87,9 @@ app.post("/rotate-access-tokens", async (req, res) => {
 	// Update access tokens on the server
 	User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: newAccessTokens } }, () => {
 		console.log(chalk.green("Access Tokens have rotated"));
+		res.json({
+			"result": "New tokens were successfully generated. Please refresh the page to continue."
+		});
 	});
 });
 
@@ -172,11 +172,11 @@ app.post("/transactions", async (req, res, next) => {
 		res.json(totalData);
 
 	} catch (err) {
-		if (err !== null) {
+		if (err !== null && err.error_code === "INVALID_ACCESS_TOKEN") {
 			console.log("TRANSACTIONS ERROR");
 			console.log(err);
 			return res.json({
-				error: err
+				"result": "Please force refresh the page. On Mac press shift + command + r. On Windows press ctrl + F5"
 			});
 		}
 	}

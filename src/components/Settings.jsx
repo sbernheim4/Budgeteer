@@ -78,10 +78,17 @@ class Settings extends Component {
 		}
 	}
 
-	rotateAccessTokens() {
-		fetch("/plaid-api/rotate-access-tokens", {
-			method: "POST"
-		});
+	async rotateAccessTokens() {
+		let returnVal = await axios.post('/plaid-api/rotate-access-tokens');
+		console.log(returnVal.data.result);
+
+		const alertMessage = document.querySelector('.app-error');
+		alertMessage.innerText = returnVal.data.result;
+		alertMessage.classList.add('app-error__display');
+
+		setTimeout(() => {
+			alertMessage.classList.remove('app-error__display')
+		}, 4000)
 	}
 
 	render() {
@@ -90,7 +97,7 @@ class Settings extends Component {
 			<section className='settings'>
 				<h1> Linked Accounts </h1>
 				{this.state.linkedBanks.map( (bank, index) =>
-					<div className='settings--linked-accounts'>
+					<div key={index} className='settings--linked-accounts'>
 						<h2>{bank}</h2>
 						<button onClick={(e) => this.removeAccount(e)}>Remove Account</button>
 					</div>

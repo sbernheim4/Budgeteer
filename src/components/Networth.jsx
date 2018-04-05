@@ -60,8 +60,6 @@ class Networth extends Component {
 		let data = await fetch('plaid-api/balance', fetchOptions);
         data = await data.json();
 
-		console.log(data.maps);
-
 		this.setState({
 			total: data.networth,
 			accountBalances: data.maps

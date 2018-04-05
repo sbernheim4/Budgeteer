@@ -107,7 +107,7 @@ class AccountsContainer extends Component {
 		}
 
 		const data = {
-			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, "2 days ago", "Yesterday", "Today"],
+			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, "Yesterday", "Today"],
 			datasets: [{
 				label: "$ Spent / Day",
 				data: amts,
@@ -116,34 +116,45 @@ class AccountsContainer extends Component {
 		};
 
 		const barOptions = {
+			tooltips: {
+				callbacks: {
+					title: function(item) {
+						// Less than 12 exception to ignore the Yesterday and Today values in the labels
+						if(item[0].index < 12) {
+							return item[0].xLabel + " Days Ago";
+						} else {
+							return item[0].xLabel;
+						}
+					},
+					label: function(item) {
+						const amt = helpers.numberWithCommas(helpers.formatAmount(item.yLabel));
+						return item.yLabel > 0 ? "Spent $" + amt : "Received $" + helpers.formatAmount(amt * -1);
+						// Show the user `Spent $17.20` or `Received $17.20` --> need the
+						// formatAmount again since multiplying by -1 removes the trailing 0
+						// decimal
+					}
+				}
+			},
 			title: {
 				display: true,
-				text: "2 Week Spendiy History",
+				text: "2 Week Spending History",
 				fontSize: 20
 			},
 			scales: {
 				xAxes: [{
 					barThickness: 7,
-					scaleLabel: {
-						display: true,
-						labelString: "# Days Ago"
-					},
 					ticks: {
 						fontSize: 15
 					}
 				}],
 				yAxes: [{
-					scaleLabel: {
-						display: true,
-						labelString: "Amount Spent"
-					},
-	                ticks: {
-	                    fontSize: 15,
-	                    callback: function(value, index, values) {
-	                        return '$' + helpers.numberWithCommas(value);
-	                    }
-	                }
-	            }]
+					ticks: {
+						fontSize: 15,
+						callback: function(value, index, values) {
+							return '$' + helpers.numberWithCommas(value);
+						}
+					}
+				}]
 			},
 			legend: {
 				display: false,
@@ -154,7 +165,7 @@ class AccountsContainer extends Component {
 		}
 
 		let stuff = <Bar data={data} options={barOptions} />
-		this.setState({chartDisplay: stuff });
+			this.setState({chartDisplay: stuff });
 	}
 
 	getAccountTransactions(account_id) {
@@ -389,25 +400,25 @@ class AccountsContainer extends Component {
 		otherViewer.classList.remove("accounts--search-options--icon-search--accts-search--accts__active");
 
 		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
-                          elem.classList.add("accounts--search-options--icon-search--categorical-search--categories__active");
+		elem.classList.add("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
 	closeCategoryViewer() {
 		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
-                       elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+		elem.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
 	}
 
 	openAccountsViewer() {
 		const otherViewer = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
-        otherViewer.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
+		otherViewer.classList.remove("accounts--search-options--icon-search--categorical-search--categories__active");
 
 		const elem = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
-                          elem.classList.add("accounts--search-options--icon-search--accts-search--accts__active");
+		elem.classList.add("accounts--search-options--icon-search--accts-search--accts__active");
 	}
 
 	closeAccountsViewer() {
 		const elem = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
-                       elem.classList.remove("accounts--search-options--icon-search--accts-search--accts__active");
+		elem.classList.remove("accounts--search-options--icon-search--accts-search--accts__active");
 	}
 
 	render() {
@@ -471,7 +482,7 @@ class AccountsContainer extends Component {
 
 									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map( (a, index) =>
-									<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
+										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
 									)}
 
 									<button onClick={() => { this.getAccountTransactions("none"); this.closeAccountsViewer(); }}>Hide Transactions</button>

@@ -49202,8 +49202,13 @@ var App = function (_Component) {
 						switch (_context.prev = _context.next) {
 							case 0:
 								_context.prev = 0;
-								_context.next = 3;
-								return fetch('plaid-api/set-stored-access-token', {
+
+								// First make a fetch call to get info for already linked accounts
+
+								// TODO: Need to see if there is an error returned from this call --> If
+								// `{ "Error": "No Account Infromation Found" }` is received than it means
+								// no accounts are linked
+								fetch('plaid-api/set-stored-access-token', {
 									method: 'POST',
 									headers: {
 										'Accept': 'application/json',
@@ -49211,20 +49216,18 @@ var App = function (_Component) {
 									}
 								});
 
-							case 3:
-
 								this.getTransactions();
 
 								// Used for if the user wants to link a new account
-								_context.next = 6;
+								_context.next = 5;
 								return fetch('plaid-api/key-and-env');
 
-							case 6:
+							case 5:
 								keyAndEnv = _context.sent;
-								_context.next = 9;
+								_context.next = 8;
 								return keyAndEnv.json();
 
-							case 9:
+							case 8:
 								keyAndEnv = _context.sent;
 								plaid = Plaid.create({
 									apiVersion: 'v2',
@@ -49251,22 +49254,22 @@ var App = function (_Component) {
 
 								this.setState({ handler: plaid });
 
-								_context.next = 18;
+								_context.next = 17;
 								break;
 
-							case 14:
-								_context.prev = 14;
+							case 13:
+								_context.prev = 13;
 								_context.t0 = _context['catch'](0);
 
 								console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
 								console.error(_context.t0);
 
-							case 18:
+							case 17:
 							case 'end':
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[0, 14]]);
+				}, _callee, this, [[0, 13]]);
 			}));
 
 			function componentDidMount() {
@@ -49294,7 +49297,7 @@ var App = function (_Component) {
 								numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
 
 								fetchOptions = {
-									method: 'POST',
+									method: "POST",
 									headers: {
 										'Accept': 'application/json',
 										'Content-Type': 'application/json'
@@ -49484,7 +49487,7 @@ var App = function (_Component) {
 							transactions: _this3.state.transactions
 						});
 					} }),
-				_react2.default.createElement(_reactRouterDom.Route, { path: '/accounts', render: function render() {
+				_react2.default.createElement(_reactRouterDom.Route, { path: '/transactions', render: function render() {
 						return _react2.default.createElement(_AccountsContainer2.default, {
 							transactions: _this3.state.transactions,
 							accounts: _this3.state.accounts
@@ -52000,7 +52003,7 @@ var Navbar = function (_Component) {
 							null,
 							_react2.default.createElement(
 								_reactRouterDom.Link,
-								{ to: '/accounts' },
+								{ to: '/transactions' },
 								'Transactions'
 							)
 						),
@@ -52063,7 +52066,7 @@ var Navbar = function (_Component) {
 							{ className: 'second', onClick: this.toggleMenu },
 							_react2.default.createElement(
 								_reactRouterDom.Link,
-								{ to: '/accounts' },
+								{ to: '/transactions' },
 								'Transactions'
 							)
 						),
@@ -54032,39 +54035,76 @@ var Home = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Home, [{
-		key: 'render',
+		key: "render",
 		value: function render() {
 
 			var text = void 0;
 
 			if (this.props.loading) {
 				text = _react2.default.createElement(
-					'div',
-					null,
+					"div",
+					{ className: "home--loading" },
 					_react2.default.createElement(
-						'h1',
+						"h1",
 						null,
-						'Loading...'
+						"Loading..."
 					),
-					_react2.default.createElement('img', { src: './loading-gifs/loading-one.gif', alt: 'loading' })
+					_react2.default.createElement("img", { src: "./loading-gifs/loading-one.gif", alt: "loading" })
 				);
 			} else {
 				text = "";
 			}
 
 			return _react2.default.createElement(
-				'div',
-				{ className: 'home' },
+				"div",
+				{ className: "home" },
 				text,
 				_react2.default.createElement(
-					'section',
-					null,
+					"section",
+					{ className: "home--info" },
 					_react2.default.createElement(
-						'h1',
+						"h1",
 						null,
-						'Welcome to Budgeteer',
-						_react2.default.createElement('br', null),
-						'The easiest way to track your finances and spending.'
+						"Welcome to Budgeteer"
+					),
+					_react2.default.createElement(
+						"h2",
+						null,
+						"The easiest way to track your spending"
+					),
+					_react2.default.createElement(
+						"div",
+						{ className: "home--info--details" },
+						_react2.default.createElement(
+							"h3",
+							null,
+							"To get started first try linking your account by clicking the add account button."
+						),
+						_react2.default.createElement(
+							"p",
+							null,
+							"Once linked we make it easy to keep track of your spending"
+						),
+						_react2.default.createElement(
+							"p",
+							null,
+							"View all your transactions and search by account, category or keyword in our Transactions page"
+						),
+						_react2.default.createElement(
+							"p",
+							null,
+							"The statistcs sections will break down your spending to give you insight into where your money is going"
+						),
+						_react2.default.createElement(
+							"p",
+							null,
+							"The networth page will show each of your accounts' balance to get a quick look at your overall financial health"
+						),
+						_react2.default.createElement(
+							"p",
+							null,
+							"To remove any linked accounts visit the settings page."
+						)
 					)
 				)
 			);
@@ -54126,7 +54166,7 @@ exports = module.exports = __webpack_require__(14)(false);
 
 
 // module
-exports.push([module.i, ".home div h1 {\n  text-align: center; }\n\n.home div img {\n  margin: 0 auto;\n  height: 80vh;\n  padding: 10px;\n  display: block;\n  border: 5px solid #6490b7;\n  border-radius: 50%; }\n\n.home h1 {\n  margin-left: 30px; }\n", ""]);
+exports.push([module.i, ".home {\n  /*margin: 30px;*/ }\n  .home--loading h1 {\n    text-align: center; }\n  .home--loading img {\n    margin: 0 auto;\n    height: 80vh;\n    padding: 10px;\n    display: block;\n    border: 5px solid #6490b7;\n    border-radius: 50%; }\n  .home--info {\n    margin: 30px auto;\n    max-width: 1000px; }\n    .home--info h1 {\n      margin: 0;\n      text-align: center; }\n    .home--info h2 {\n      text-align: center;\n      margin-bottom: 90px; }\n    .home--info--details {\n      margin: 30px;\n      font-weight: bold; }\n      .home--info--details p {\n        margin: 10px 0 0 20px; }\n        .home--info--details p:before {\n          content: '- '; }\n", ""]);
 
 // exports
 
@@ -71577,7 +71617,7 @@ var AccountsContainer = function (_Component) {
 			}
 
 			var data = {
-				labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, "2 days ago", "Yesterday", "Today"],
+				labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, "Yesterday", "Today"],
 				datasets: [{
 					label: "$ Spent / Day",
 					data: amts,
@@ -71586,27 +71626,38 @@ var AccountsContainer = function (_Component) {
 			};
 
 			var barOptions = {
+				tooltips: {
+					callbacks: {
+						title: function title(item) {
+							// Less than 12 exception to ignore the Yesterday and Today values in the labels
+							if (item[0].index < 12) {
+								return item[0].xLabel + " Days Ago";
+							} else {
+								return item[0].xLabel;
+							}
+						},
+						label: function label(item) {
+							var amt = _helpers2.default.numberWithCommas(_helpers2.default.formatAmount(item.yLabel));
+							return item.yLabel > 0 ? "Spent $" + amt : "Received $" + _helpers2.default.formatAmount(amt * -1);
+							// Show the user `Spent $17.20` or `Received $17.20` --> need the
+							// formatAmount again since multiplying by -1 removes the trailing 0
+							// decimal
+						}
+					}
+				},
 				title: {
 					display: true,
-					text: "2 Week Spendiy History",
+					text: "2 Week Spending History",
 					fontSize: 20
 				},
 				scales: {
 					xAxes: [{
 						barThickness: 7,
-						scaleLabel: {
-							display: true,
-							labelString: "# Days Ago"
-						},
 						ticks: {
 							fontSize: 15
 						}
 					}],
 					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: "Amount Spent"
-						},
 						ticks: {
 							fontSize: 15,
 							callback: function callback(value, index, values) {
@@ -72906,14 +72957,12 @@ var Networth = function (_Component) {
 								data = _context.sent;
 
 
-								console.log(data.maps);
-
 								this.setState({
 									total: data.networth,
 									accountBalances: data.maps
 								});
 
-							case 9:
+							case 8:
 							case "end":
 								return _context.stop();
 						}
@@ -73305,6 +73354,46 @@ var Settings = function (_Component) {
 			return removeAccount;
 		}()
 	}, {
+		key: 'rotateAccessTokens',
+		value: function () {
+			var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+				var returnVal, alertMessage;
+				return _regenerator2.default.wrap(function _callee3$(_context3) {
+					while (1) {
+						switch (_context3.prev = _context3.next) {
+							case 0:
+								_context3.next = 2;
+								return _axios2.default.post('/plaid-api/rotate-access-tokens');
+
+							case 2:
+								returnVal = _context3.sent;
+
+								console.log(returnVal.data.result);
+
+								alertMessage = document.querySelector('.app-error');
+
+								alertMessage.innerText = returnVal.data.result;
+								alertMessage.classList.add('app-error__display');
+
+								setTimeout(function () {
+									alertMessage.classList.remove('app-error__display');
+								}, 4000);
+
+							case 8:
+							case 'end':
+								return _context3.stop();
+						}
+					}
+				}, _callee3, this);
+			}));
+
+			function rotateAccessTokens() {
+				return _ref3.apply(this, arguments);
+			}
+
+			return rotateAccessTokens;
+		}()
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
@@ -73320,7 +73409,7 @@ var Settings = function (_Component) {
 				this.state.linkedBanks.map(function (bank, index) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'settings--linked-accounts' },
+						{ key: index, className: 'settings--linked-accounts' },
 						_react2.default.createElement(
 							'h2',
 							null,
@@ -73334,7 +73423,21 @@ var Settings = function (_Component) {
 							'Remove Account'
 						)
 					);
-				})
+				}),
+				_react2.default.createElement(
+					'div',
+					{ className: 'settings--rotate-tokens' },
+					_react2.default.createElement(
+						'p',
+						null,
+						'If you think your bank account has been hacked or compromised, click the button below to delete and generate new access tokens'
+					),
+					_react2.default.createElement(
+						'button',
+						{ onClick: this.rotateAccessTokens },
+						'Rotate Access Tokens'
+					)
+				)
 			);
 		}
 	}]);
@@ -74372,7 +74475,7 @@ exports = module.exports = __webpack_require__(14)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.settings {\n  margin: 0 30px; }\n  .settings--linked-accounts {\n    padding: 10px;\n    border-bottom: 2px solid white;\n    display: flex;\n    flex-direction: row;\n    justify-content: space-between;\n    align-items: center; }\n    .settings--linked-accounts h2 {\n      margin: 5px 0; }\n    .settings--linked-accounts button {\n      padding: 15px 20px;\n      background-color: #d84545;\n      border-radius: 5px;\n      cursor: pointer; }\n  .settings hr {\n    width: 100%;\n    background-color: white; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n\n.settings {\n  margin: 0 30px; }\n  .settings--linked-accounts {\n    padding: 10px;\n    border-bottom: 2px solid white;\n    display: flex;\n    flex-direction: row;\n    justify-content: space-between;\n    align-items: center; }\n    .settings--linked-accounts h2 {\n      margin: 5px 0; }\n    .settings--linked-accounts button {\n      padding: 15px 20px;\n      background-color: #d84545;\n      border-radius: 5px;\n      cursor: pointer; }\n  .settings--rotate-tokens {\n    margin: 60px 15px 0 15px; }\n    .settings--rotate-tokens button {\n      margin-top: 10px;\n      padding: 20px;\n      background-color: #4d9972;\n      border-radius: 5px;\n      cursor: pointer;\n      transition: background-color .3s ease; }\n      .settings--rotate-tokens button:hover {\n        background-color: #3c7759; }\n", ""]);
 
 // exports
 

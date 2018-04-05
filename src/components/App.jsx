@@ -40,13 +40,18 @@ class App extends Component {
 
 		try {
 			// First make a fetch call to get info for already linked accounts
-			await fetch('plaid-api/set-stored-access-token', {
+
+			// TODO: Need to see if there is an error returned from this call --> If
+			// `{ "Error": "No Account Infromation Found" }` is received than it means
+			// no accounts are linked
+			fetch('plaid-api/set-stored-access-token', {
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'
 				}
 			});
+
 
 			this.getTransactions();
 
@@ -93,7 +98,7 @@ class App extends Component {
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 		let fetchOptions = {
-			method: 'POST',
+			method: "POST",
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
@@ -106,9 +111,6 @@ class App extends Component {
 		try {
 			const response = await fetch('/plaid-api/transactions', fetchOptions); // Fetch all transaction info
 			const data = await response.json(); // convert data to json
-
-			// TODO: Might need to have a foreach loop if the way it gets
-			// aggregated is in a new index of the array
 
 			await this.storeAccounts(data); // Store account info
 			await this.storeTransactions(data); // store transaction info
