@@ -1,26 +1,8 @@
 // Shared CSS Goes here
 // Every style sheet should import this file
-
 $green: rgb(77, 153, 114);
 $red: rgb(212, 99, 99);
 $blue: rgb(52, 108, 161);
 $pink: rgb(255, 132, 132);
 $background-color: rgb(50, 50, 50);
-
-* {
-	color: white;
-	font-weight: 300;
-}
-
-*:focus {
-	outline: none;
-}
-
-body {
-	margin-bottom: 30px;
-	background-color: $background-color;
-}
-
-p, h1, h2, h3, h4, h5, h6 {
-	overflow-y: hidden;
-}
+$cream: #fffaf0;
