@@ -1,8 +1,20 @@
 // Shared CSS Goes here
 // Every style sheet should import this file
+
+// Dark Theme
 $green: rgb(77, 153, 114);
 $red: rgb(212, 99, 99);
 $blue: rgb(52, 108, 161);
 $pink: rgb(255, 132, 132);
 $background-color: rgb(50, 50, 50);
 $cream: #fffaf0;
+
+// Light Theme
+$blue-funky: #086FA6;
+$yellow-funky: #F07E30;
+$green-funky: #00B855;
+$red-funky: #953EAB;
+$red-funky-text: #ffcece;
+
+
+$background-color-light: rgb(240, 240, 240);

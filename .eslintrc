@@ -18,7 +18,8 @@
 		"require": true,
 		"React": true,
 		"Plaid": true,
-		"__dirname": true
+		"__dirname": true,
+		"Chart": true
 	},
 
 	"rules": {
