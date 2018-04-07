@@ -13,8 +13,8 @@ import startOfWeek from "date-fns/start_of_week";
 import addWeeks from "date-fns/add_weeks";
 import isBefore from 'date-fns/is_before';
 import isAfter from 'date-fns/is_after';
-import subMonths from 'date-fns/sub_months'
-import isWithinRange from 'date-fns/is_within_range'
+import subMonths from 'date-fns/sub_months';
+import isWithinRange from 'date-fns/is_within_range';
 
 import helpers from './helpers';
 
@@ -38,9 +38,11 @@ class Statistics extends Component {
 	}
 
 	componentWillMount() {
+		// TODO: these functions should be asynchronous
+
 		// Calculate all the data for the different charts
 		this.generateDoughnutChart();
-		this.generateMonthlybarChart();
+		this.generateMonthlyBarChart();
 		this.generateLineChart();
 	}
 
@@ -160,7 +162,7 @@ class Statistics extends Component {
 
 	/************************************* Bar Chart *************************************/
 
-	generateMonthlybarChart() {
+	generateMonthlyBarChart() {
 		// Ensure the order of the date is chronological not just based on jan - dec.
 
 		/* Sum up costs by week */
@@ -192,7 +194,7 @@ class Statistics extends Component {
 			return helpers.formatAmount(val);
 		});
 
-		let monthsDefault = ["Jan.", "Feb.", "Mar.", "Apirl", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
+		let monthsDefault = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
 		let currMonth = new Date().getMonth(); // 0
 
 
@@ -382,7 +384,8 @@ class Statistics extends Component {
 
 		let tempOptions = {
 			legend: {
-				display: false
+				position: "bottom",
+				display: true
 			}
 		}
 
