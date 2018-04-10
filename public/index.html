@@ -16,8 +16,35 @@
 	<body>
 
 		<div class='app-error'>
-			<p>An error has occurred, redirecting back to home page</p>
+			<p></p>
 		</div>
+
+		<style>
+			.app-error {
+				position: absolute;
+				left: calc(50vw - 175px);
+				display: none;
+				margin: 15px auto;
+				width: 350px;
+				height: 60px;
+				text-align: center;
+				padding: 15px;
+				background-color: $red;
+				border-radius: 10px;
+				transition: opacity .2s ease;
+				z-index: 2;
+			}
+
+			.app-error > p {
+
+			}
+
+			.app-error__display {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		</style>
 
         <!-- React app gets loaded in these divs -->
         <div id='root'></div>

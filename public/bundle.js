@@ -49473,15 +49473,6 @@ var App = function (_Component) {
 				'div',
 				null,
 				_react2.default.createElement(_Navbar2.default, null),
-				_react2.default.createElement(
-					'div',
-					{ className: 'app-error' },
-					_react2.default.createElement(
-						'p',
-						null,
-						'An error has occurred, redirecting back to home page'
-					)
-				),
 				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
 						return _react2.default.createElement(_Home2.default, {
 							loading: loading
@@ -54323,45 +54314,17 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactChartjs = __webpack_require__(105);
 
-var _Budget = __webpack_require__(557);
+var _Budget = __webpack_require__(630);
 
 var _Budget2 = _interopRequireDefault(_Budget);
 
-var _is_weekend = __webpack_require__(566);
+var _WeekWeekendChart = __webpack_require__(631);
 
-var _is_weekend2 = _interopRequireDefault(_is_weekend);
+var _WeekWeekendChart2 = _interopRequireDefault(_WeekWeekendChart);
 
-var _is_same_week = __webpack_require__(567);
+var _CategoryAndYearCharts = __webpack_require__(632);
 
-var _is_same_week2 = _interopRequireDefault(_is_same_week);
-
-var _difference_in_calendar_weeks = __webpack_require__(568);
-
-var _difference_in_calendar_weeks2 = _interopRequireDefault(_difference_in_calendar_weeks);
-
-var _start_of_week = __webpack_require__(78);
-
-var _start_of_week2 = _interopRequireDefault(_start_of_week);
-
-var _add_weeks = __webpack_require__(115);
-
-var _add_weeks2 = _interopRequireDefault(_add_weeks);
-
-var _is_before = __webpack_require__(570);
-
-var _is_before2 = _interopRequireDefault(_is_before);
-
-var _is_after = __webpack_require__(296);
-
-var _is_after2 = _interopRequireDefault(_is_after);
-
-var _sub_months = __webpack_require__(571);
-
-var _sub_months2 = _interopRequireDefault(_sub_months);
-
-var _is_within_range = __webpack_require__(298);
-
-var _is_within_range2 = _interopRequireDefault(_is_within_range);
+var _CategoryAndYearCharts2 = _interopRequireDefault(_CategoryAndYearCharts);
 
 var _helpers = __webpack_require__(38);
 
@@ -54370,9 +54333,6 @@ var _helpers2 = _interopRequireDefault(_helpers);
 __webpack_require__(573);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint no-undef: 0*/
-/* eslint no-undefined: 0*/
 
 Chart.defaults.global.defaultFontColor = 'white';
 Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
@@ -54397,351 +54357,16 @@ var Statistics = function (_Component) {
 	}
 
 	(0, _createClass3.default)(Statistics, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			console.log("componentDidMount");
+			this.changeChart('spendingAnalysis');
+		}
+	}, {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps(nextProps) {
-
-			if (nextProps.transactions.length > 0) {
-				// Calculate all the data for the different charts once the
-				// component has received valid props
-
-				// TODO: these functions should be asynchronous
-				this.generateDoughnutChart();
-				this.generateMonthlyBarChart();
-				this.generateLineChart();
-
-				this.changeChart('spendingAnalysis');
-			}
-		}
-
-		/************************************* Doughnut Chart *************************************/
-
-	}, {
-		key: "calculateDoughnutInfo",
-		value: function calculateDoughnutInfo() {
-			// Initialize a new array of size 8 and fill it with 0s initially
-			var amts = new Array(14);
-			amts.fill(0);
-			var now = new Date();
-			var oneMonthAgo = (0, _sub_months2.default)(now, 1);
-
-			this.props.transactions.forEach(function (t) {
-				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-				if ((0, _is_within_range2.default)(transactionDate, oneMonthAgo, now)) {
-					var category = (t.category || [""])[0];
-					var amount = t.amount;
-
-					// TODO: Try cleaning up the switch statements to something like this
-					// amts[t.category] += t.amount;
-
-					switch (category) {
-						case "Food and Drink":
-							amts[0] += amount;
-							break;
-						case "Travel":
-							amts[1] += amount;
-							break;
-						case "Shops":
-							amts[2] += amount;
-							break;
-						case "Recreation":
-							amts[3] += amount;
-							break;
-						case "Service":
-							amts[4] += amount;
-							break;
-						case "Community":
-							amts[5] += amount;
-							break;
-						case "Healthcare":
-							amts[6] += amount;
-							break;
-						case "Bank Fees":
-							amts[7] += amount;
-							break;
-						case "Cash Advance":
-							amts[8] += amount;
-							break;
-						case "Interest":
-							amts[9] += amount;
-							break;
-						case "Payment":
-							amts[10] += amount;
-							break;
-						case "Tax":
-							amts[11] += amount;
-							break;
-						case "Transfer":
-							amts[12] += amount;
-							break;
-						default:
-							amts[13] += amount;
-					}
-				}
-			});
-
-			// Normalize each value to always have two decimals
-			amts = amts.map(function (val) {
-				return _helpers2.default.formatAmount(val);
-			});
-
-			var labelsArray = [];
-			var newAmts = [];
-
-			var defaultLabelsArray = ["Food and Drink", "Travel", "Shops", "Recreation", "Service", "Community", "Healthcare", "Bank Fees", "Cash Advance", "Interest", "Payment", "Tax", "Transfer", "Other"];
-
-			// Only keep amounts and labels for values that are not 0
-			for (var i = 0; i < amts.length; i++) {
-				if (amts[i] !== "0.00") {
-					labelsArray.push(defaultLabelsArray[i]);
-					newAmts.push(amts[i]);
-				}
-			}
-
-			return {
-				labels: labelsArray,
-				amounts: newAmts
-			};
-		}
-	}, {
-		key: "generateDoughnutChart",
-		value: function generateDoughnutChart() {
-			// get the data array
-			var info = this.calculateDoughnutInfo();
-			var data = {
-				labels: info.labels,
-				datasets: [{
-					data: info.amounts,
-					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
-				}],
-				options: {
-					responsive: true,
-					maintainAspectRatio: true
-				}
-			};
-			this.setState({ categoryDoughnutData: data });
-		}
-
-		/************************************* End Doughnut Chart *************************************/
-
-		/************************************* Bar Chart *************************************/
-
-	}, {
-		key: "generateMonthlyBarChart",
-		value: function generateMonthlyBarChart() {
-			// Ensure the order of the date is chronological not just based on jan - dec.
-
-			/* Sum up costs by week */
-			var amounts = new Array(12);
-			amounts.fill(0);
-
-			var avg = 0;
-			this.props.transactions.forEach(function (t) {
-
-				// get the string value of the month from the transaction
-				var transactionMonth = t.date.slice(5, 7);
-
-				// convert it to an int and subtract one for array offset
-				transactionMonth = parseInt(transactionMonth) - 1;
-
-				// add the amount of the transaction to its corresponding index in the array
-				amounts[transactionMonth] += t.amount;
-
-				// Get the total sum to calculate avg
-				avg += t.amount;
-			});
-
-			// Divide by 12 and round to two decimal places
-			avg = avg / 12;
-			avg = _helpers2.default.formatAmount(avg);
-
-			// Round the amounts to two decimals
-			amounts = amounts.map(function (val) {
-				return _helpers2.default.formatAmount(val);
-			});
-
-			var monthsDefault = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
-			var currMonth = new Date().getMonth(); // 0
-
-
-			// Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
-			var orderedLabels = [];
-			for (var i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
-				orderedLabels.push(monthsDefault[i % 12]);
-			}
-
-			var orderedAmounts = [];
-			for (var _i = currMonth + 1; _i <= monthsDefault.length + currMonth; _i++) {
-				orderedAmounts.push(amounts[_i % 12]);
-			}
-
-			var lineData = {
-				labels: orderedLabels,
-				datasets: [{
-					type: "line",
-					data: new Array(12).fill(avg),
-					label: "Avg. Monthly Spending",
-					radius: 0,
-					borderColor: "#EC932F",
-					backgroundColor: "#EC932F",
-					pointBorderColor: "#EC932F",
-					pointBackgroundColor: "#EC932F",
-					pointHoverBackgroundColor: "#EC932F",
-					pointHoverBorderColor: "#EC932F",
-					fill: false
-				}, {
-					type: "bar",
-					data: orderedAmounts,
-					label: "Monthly Spending",
-					backgroundColor: "rgb(77, 153, 114)",
-					hoverBorderColor: "rgb(77, 153, 114)",
-					hoverBackgroundColor: "rgb(60, 119, 89)"
-				}],
-				options: {
-					responsive: true,
-					maintainAspectRatio: true
-				}
-			};
-
-			this.setState({ monthlyLineChartData: lineData });
-		}
-
-		/************************************* End Bar Chart *************************************/
-
-		/************************************* Line Chart *************************************/
-
-		//
-
-	}, {
-		key: "generateLineChart",
-		value: function generateLineChart() {
-
-			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
-			var sortedTransactions = this.props.transactions.sort(function (a, b) {
-				// a and b are transactions
-				var dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-				var dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
-				return dateA - dateB;
-			});
-
-			// Only really care about the past 6 months, not a full year
-			var pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
-
-			// if (pastSixMonths[0] === undefined) {
-			// 	// account info was not properly loaded --> send them back to the homepage
-			// 	const errorMessage = document.querySelector('.app-error');
-			// 	errorMessage.classList.add('app-error__display');
-
-			// 	setTimeout(() => {
-			// 		errorMessage.classList.remove('app-error__display')
-			// 	}, 4000)
-			// }
-
-			// Start date is the Monday following the first transaction
-			var firstDate = pastSixMonths[0].date;
-			var startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
-			// startWeek = addWeeks(startWeek, 1);
-			startWeek = (0, _start_of_week2.default)(startWeek, { weekStartsOn: 1 });
-			var currentWeek = startWeek;
-
-			// End week is always the current week - 1 --> This is because data for
-			// the current week is definitionally incomplete so I can only get
-			// complete information for last week
-			var endWeek = new Date();
-			endWeek = (0, _start_of_week2.default)(endWeek, { weekStartsOn: 1 });
-
-			// Arrays only need to be as large as how many weeks have passed in the year so far
-			// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
-			var arrSize = (0, _difference_in_calendar_weeks2.default)(endWeek, startWeek);
-			var weekday = new Array(arrSize).fill(0);
-			var weekend = new Array(arrSize).fill(0);
-
-			var counter = 0;
-			var falsePos = 0;
-
-			pastSixMonths.forEach(function (t) {
-				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-				// if the transaction date is the same week as the current week
-				if ((0, _is_same_week2.default)(currentWeek, transactionDate) && t.amount > 0) {
-
-					// determine if it goes in the weekend or weekday array
-					if ((0, _is_weekend2.default)(transactionDate)) {
-						weekend[counter] += t.amount;
-					} else {
-						weekday[counter] += t.amount;
-					}
-				} else if (t.amount > 0) {
-					// I"ve moved to a different week so update counter index to advance as many weeks as necessary
-
-					// NOTE: For example transaction 1 could have been on 1/1/2018 but transaction 2 on 1/15/2018 so
-					// counter would need to advance by 2 not just 1
-					counter += (0, _difference_in_calendar_weeks2.default)(transactionDate, currentWeek);
-
-					// Put the current transaction amount in the right array
-					if ((0, _is_weekend2.default)(transactionDate)) {
-						weekend[counter] += t.amount;
-					} else {
-						weekday[counter] += t.amount;
-					}
-
-					// update currentWeek to be the start of the week of the transaction date
-					currentWeek = (0, _start_of_week2.default)(transactionDate, { weekStartsOn: 1 });
-				}
-			});
-
-			// Format values in the array to two decimals
-			weekday.forEach(function (val, index) {
-				weekday[index] = _helpers2.default.formatAmount(val);
-			});
-
-			weekend.forEach(function (val, index) {
-				weekday[index] = _helpers2.default.formatAmount(val);
-			});
-
-			var chartData = {
-				labels: this.generateLineChartLabels(arrSize),
-				label: "Week vs Weekend Spending for the past 52 Weeks",
-				datasets: [{
-					stack: "Stack 0",
-					data: weekday,
-					fill: false,
-					label: "Week",
-					backgroundColor: "rgb(77,  153, 114)"
-				}, {
-					stack: "Stack 0",
-					data: weekend,
-					fill: false,
-					label: "Weekend",
-					backgroundColor: "rgb(52, 108, 161)"
-				}],
-				options: {
-					title: {
-						display: true,
-						text: "Week vs Weekend Spending"
-					},
-					responsive: false,
-					scales: {
-						xAxes: [{
-							stacked: true
-						}]
-					}
-				}
-			};
-
-			this.setState({
-				weekVsWeekend: chartData
-			});
-		}
-	}, {
-		key: "generateLineChartLabels",
-		value: function generateLineChartLabels(length) {
-			var arr = [];
-			for (var i = length; i > 0; i--) {
-				arr.push(i);
-			}
-
-			return arr;
+			console.log("componentWillReceiveProps");
+			this.changeChart('spendingAnalysis');
 		}
 	}, {
 		key: "changeChart",
@@ -54756,31 +54381,11 @@ var Statistics = function (_Component) {
 			};
 
 			if (chartType === "spendingAnalysis") {
-				chartDisplay = _react2.default.createElement(
-					"div",
-					{ className: "stats--spending" },
-					_react2.default.createElement(
-						"div",
-						{ className: "stats--spending--doughnut" },
-						_react2.default.createElement(_reactChartjs.Doughnut, { options: tempOptions, data: this.state.categoryDoughnutData })
-					),
-					_react2.default.createElement("hr", null),
-					_react2.default.createElement(
-						"div",
-						{ className: "stats--spending--line-chart" },
-						_react2.default.createElement(_reactChartjs.Bar, { options: tempOptions, data: this.state.monthlyLineChartData })
-					)
-				);
+				chartDisplay = _react2.default.createElement(_CategoryAndYearCharts2.default, { transactions: this.props.transactions });
 			} else if (chartType === "monthlyBudget") {
 				chartDisplay = _react2.default.createElement(_Budget2.default, { transactions: this.props.transactions });
 			} else {
-				chartDisplay = _react2.default.createElement(
-					"div",
-					{ className: "stats--week-weekend" },
-					" ",
-					_react2.default.createElement(_reactChartjs.Bar, { data: this.state.weekVsWeekend }),
-					" "
-				);
+				chartDisplay = _react2.default.createElement(_WeekWeekendChart2.default, { transactions: this.props.transactions });
 			}
 
 			document.querySelectorAll("button").forEach(function (btn) {
@@ -70666,221 +70271,7 @@ module.exports = createBaseEach;
 
 
 /***/ }),
-/* 557 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _getPrototypeOf = __webpack_require__(18);
-
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = __webpack_require__(19);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(20);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _possibleConstructorReturn2 = __webpack_require__(21);
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = __webpack_require__(22);
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-var _react = __webpack_require__(2);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactChartjs = __webpack_require__(105);
-
-var _helpers = __webpack_require__(38);
-
-var _helpers2 = _interopRequireDefault(_helpers);
-
-var _difference_in_days = __webpack_require__(114);
-
-var _difference_in_days2 = _interopRequireDefault(_difference_in_days);
-
-var _is_same_month = __webpack_require__(562);
-
-var _is_same_month2 = _interopRequireDefault(_is_same_month);
-
-var _is_same_year = __webpack_require__(563);
-
-var _is_same_year2 = _interopRequireDefault(_is_same_year);
-
-__webpack_require__(564);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Budget = function (_Component) {
-	(0, _inherits3.default)(Budget, _Component);
-
-	function Budget(props) {
-		(0, _classCallCheck3.default)(this, Budget);
-
-		var _this = (0, _possibleConstructorReturn3.default)(this, (Budget.__proto__ || (0, _getPrototypeOf2.default)(Budget)).call(this, props));
-
-		_this.state = {
-			monthlyBudget: "",
-			spentThisMonth: 0,
-
-			data: {
-				labels: ["Spent", "Remaining"],
-				datasets: [{
-					data: [0, 1],
-					backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
-					hoverBackgroundColor: ["#D46363", "#007255"]
-				}]
-			}
-		};
-
-		_this.handleChange = _this.handleChange.bind(_this);
-		return _this;
-	}
-
-	(0, _createClass3.default)(Budget, [{
-		key: "componentDidMount",
-		value: function componentDidMount() {
-			var totalSpent = this.getTotalSpent(); // Get total spent this month
-			var monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
-
-
-			// Calculate remaining amount left to spend
-			var remaining = (monthlyBudgetFromSessionStorage - totalSpent).toFixed(2);
-			if (remaining <= 0) {
-				remaining = 0;
-			}
-
-			// Update chart
-			if (monthlyBudgetFromSessionStorage !== null) {
-				var chartData = {
-					labels: ["Spent", "Remaining"],
-					datasets: [{
-						data: [totalSpent, remaining],
-						backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
-						hoverBackgroundColor: ["#D46363", "#007255"]
-					}]
-
-					// Update state data
-				};this.setState({
-					data: chartData,
-					monthlyBudget: monthlyBudgetFromSessionStorage
-				});
-			}
-		}
-	}, {
-		key: "getTotalSpent",
-		value: function getTotalSpent() {
-			var total = 0;
-
-			var today = new Date();
-
-			// Sum up the prices of each transaction
-			this.props.transactions.forEach(function (t) {
-				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-				if ((0, _is_same_month2.default)(transactionDate, today) && (0, _is_same_year2.default)(transactionDate, today)) {
-					total += t.amount;
-				}
-			});
-
-			// Round total to two decimal places and ensure trailing 0s appear
-			total = _helpers2.default.formatAmount(total);
-			this.setState({ spentThisMonth: total });
-			return total;
-		}
-	}, {
-		key: "handleChange",
-		value: function handleChange(event) {
-			// Update the state variable
-			this.setState({ monthlyBudget: event.target.value.trim() });
-
-			// Save data to the current local store
-			localStorage.setItem("monthlyBudget", event.target.value.trim());
-
-			// Update the percentage calculator
-			var spent = this.state.spentThisMonth;
-			var remaining = (event.target.value - this.state.spentThisMonth).toFixed(2);
-			if (remaining <= 0) {
-				remaining = 0;
-			}
-
-			// Update the chart
-			var data = {
-				labels: ["Spent", "Remaining"],
-				datasets: [{
-					data: [spent, remaining],
-					backgroundColor: ["rgb(212, 99, 99)", "rgb(77, 153, 114)"],
-					hoverBackgroundColor: ["rgb(201, 59, 59)", "rgb(60, 119, 89)"]
-				}]
-			};
-			this.setState({ data: data });
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			var spent = _helpers2.default.numberWithCommas(this.state.spentThisMonth);
-
-			var remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
-			remaining = _helpers2.default.numberWithCommas(remaining);
-
-			return _react2.default.createElement(
-				"div",
-				{ className: "budget" },
-				_react2.default.createElement(
-					"div",
-					{ className: "budget--doughnut-chart" },
-					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
-				),
-				_react2.default.createElement(
-					"form",
-					{ className: "budget--form" },
-					_react2.default.createElement(
-						"label",
-						null,
-						_react2.default.createElement(
-							"span",
-							null,
-							"Monthly Budget"
-						),
-						_react2.default.createElement("input", { placeholder: "Enter your budget", type: "number", name: "budget", value: this.state.monthlyBudget, onChange: this.handleChange })
-					)
-				),
-				_react2.default.createElement(
-					"div",
-					{ className: "budget--totals" },
-					_react2.default.createElement(
-						"h2",
-						null,
-						"Spent: $",
-						spent
-					),
-					_react2.default.createElement(
-						"h2",
-						null,
-						"Remaining: $",
-						remaining
-					)
-				)
-			);
-		}
-	}]);
-	return Budget;
-}(_react.Component);
-
-exports.default = Budget;
-
-/***/ }),
+/* 557 */,
 /* 558 */
 /***/ (function(module, exports) {
 
@@ -71323,37 +70714,7 @@ module.exports = addDays
 
 
 /***/ }),
-/* 570 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parse = __webpack_require__(11)
-
-/**
- * @category Common Helpers
- * @summary Is the first date before the second one?
- *
- * @description
- * Is the first date before the second one?
- *
- * @param {Date|String|Number} date - the date that should be before the other one to return true
- * @param {Date|String|Number} dateToCompare - the date to compare with
- * @returns {Boolean} the first date is before the second date
- *
- * @example
- * // Is 10 July 1989 before 11 February 1987?
- * var result = isBefore(new Date(1989, 6, 10), new Date(1987, 1, 11))
- * //=> false
- */
-function isBefore (dirtyDate, dirtyDateToCompare) {
-  var date = parse(dirtyDate)
-  var dateToCompare = parse(dirtyDateToCompare)
-  return date.getTime() < dateToCompare.getTime()
-}
-
-module.exports = isBefore
-
-
-/***/ }),
+/* 570 */,
 /* 571 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -74573,6 +73934,797 @@ function startOfMonth (dirtyDate) {
 
 module.exports = startOfMonth
 
+
+/***/ }),
+/* 626 */,
+/* 627 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(628);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(13)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 628 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 629 */,
+/* 630 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _getPrototypeOf = __webpack_require__(18);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(19);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(20);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(21);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(22);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactChartjs = __webpack_require__(105);
+
+var _helpers = __webpack_require__(38);
+
+var _helpers2 = _interopRequireDefault(_helpers);
+
+var _difference_in_days = __webpack_require__(114);
+
+var _difference_in_days2 = _interopRequireDefault(_difference_in_days);
+
+var _is_same_month = __webpack_require__(562);
+
+var _is_same_month2 = _interopRequireDefault(_is_same_month);
+
+var _is_same_year = __webpack_require__(563);
+
+var _is_same_year2 = _interopRequireDefault(_is_same_year);
+
+__webpack_require__(564);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Budget = function (_Component) {
+	(0, _inherits3.default)(Budget, _Component);
+
+	function Budget(props) {
+		(0, _classCallCheck3.default)(this, Budget);
+
+		var _this = (0, _possibleConstructorReturn3.default)(this, (Budget.__proto__ || (0, _getPrototypeOf2.default)(Budget)).call(this, props));
+
+		_this.state = {
+			monthlyBudget: "",
+			spentThisMonth: 0,
+
+			data: {
+				labels: ["Spent", "Remaining"],
+				datasets: [{
+					data: [0, 1],
+					backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
+					hoverBackgroundColor: ["#D46363", "#007255"]
+				}]
+			}
+		};
+
+		_this.handleChange = _this.handleChange.bind(_this);
+		return _this;
+	}
+
+	(0, _createClass3.default)(Budget, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var totalSpent = this.getTotalSpent(); // Get total spent this month
+			var monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
+
+
+			// Calculate remaining amount left to spend
+			var remaining = (monthlyBudgetFromSessionStorage - totalSpent).toFixed(2);
+			if (remaining <= 0) {
+				remaining = 0;
+			}
+
+			// Update chart
+			if (monthlyBudgetFromSessionStorage !== null) {
+				var chartData = {
+					labels: ["Spent", "Remaining"],
+					datasets: [{
+						data: [totalSpent, remaining],
+						backgroundColor: ["rgb(212,99,99)", "rgb(77, 153, 114)"],
+						hoverBackgroundColor: ["#D46363", "#007255"]
+					}]
+
+					// Update state data
+				};this.setState({
+					data: chartData,
+					monthlyBudget: monthlyBudgetFromSessionStorage
+				});
+			}
+		}
+	}, {
+		key: "getTotalSpent",
+		value: function getTotalSpent() {
+			var total = 0;
+
+			var today = new Date();
+
+			// Sum up the prices of each transaction
+			this.props.transactions.forEach(function (t) {
+				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+				if ((0, _is_same_month2.default)(transactionDate, today) && (0, _is_same_year2.default)(transactionDate, today)) {
+					total += t.amount;
+				}
+			});
+
+			// Round total to two decimal places and ensure trailing 0s appear
+			total = _helpers2.default.formatAmount(total);
+			this.setState({ spentThisMonth: total });
+			return total;
+		}
+	}, {
+		key: "handleChange",
+		value: function handleChange(event) {
+			// Update the state variable
+			this.setState({ monthlyBudget: event.target.value.trim() });
+
+			// Save data to the current local store
+			localStorage.setItem("monthlyBudget", event.target.value.trim());
+
+			// Update the percentage calculator
+			var spent = this.state.spentThisMonth;
+			var remaining = (event.target.value - this.state.spentThisMonth).toFixed(2);
+			if (remaining <= 0) {
+				remaining = 0;
+			}
+
+			// Update the chart
+			var data = {
+				labels: ["Spent", "Remaining"],
+				datasets: [{
+					data: [spent, remaining],
+					backgroundColor: ["rgb(212, 99, 99)", "rgb(77, 153, 114)"],
+					hoverBackgroundColor: ["rgb(201, 59, 59)", "rgb(60, 119, 89)"]
+				}]
+			};
+			this.setState({ data: data });
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			var spent = _helpers2.default.numberWithCommas(this.state.spentThisMonth);
+
+			var remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
+			remaining = _helpers2.default.numberWithCommas(remaining);
+
+			return _react2.default.createElement(
+				"div",
+				{ className: "budget" },
+				_react2.default.createElement(
+					"div",
+					{ className: "budget--doughnut-chart" },
+					_react2.default.createElement(_reactChartjs.Doughnut, { data: this.state.data })
+				),
+				_react2.default.createElement(
+					"form",
+					{ className: "budget--form" },
+					_react2.default.createElement(
+						"label",
+						null,
+						_react2.default.createElement(
+							"span",
+							null,
+							"Monthly Budget"
+						),
+						_react2.default.createElement("input", { placeholder: "Enter your budget", type: "number", name: "budget", value: this.state.monthlyBudget, onChange: this.handleChange })
+					)
+				),
+				_react2.default.createElement(
+					"div",
+					{ className: "budget--totals" },
+					_react2.default.createElement(
+						"h2",
+						null,
+						"Spent: $",
+						spent
+					),
+					_react2.default.createElement(
+						"h2",
+						null,
+						"Remaining: $",
+						remaining
+					)
+				)
+			);
+		}
+	}]);
+	return Budget;
+}(_react.Component);
+
+exports.default = Budget;
+
+/***/ }),
+/* 631 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _getPrototypeOf = __webpack_require__(18);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(19);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(20);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(21);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(22);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactChartjs = __webpack_require__(105);
+
+var _start_of_week = __webpack_require__(78);
+
+var _start_of_week2 = _interopRequireDefault(_start_of_week);
+
+var _difference_in_calendar_weeks = __webpack_require__(568);
+
+var _difference_in_calendar_weeks2 = _interopRequireDefault(_difference_in_calendar_weeks);
+
+var _is_same_week = __webpack_require__(567);
+
+var _is_same_week2 = _interopRequireDefault(_is_same_week);
+
+var _is_weekend = __webpack_require__(566);
+
+var _is_weekend2 = _interopRequireDefault(_is_weekend);
+
+var _helpers = __webpack_require__(38);
+
+var _helpers2 = _interopRequireDefault(_helpers);
+
+__webpack_require__(627);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/* eslint no-undefined: 0 */
+var WeekWeekendChart = function (_Component) {
+	(0, _inherits3.default)(WeekWeekendChart, _Component);
+
+	function WeekWeekendChart(props) {
+		(0, _classCallCheck3.default)(this, WeekWeekendChart);
+
+		var _this = (0, _possibleConstructorReturn3.default)(this, (WeekWeekendChart.__proto__ || (0, _getPrototypeOf2.default)(WeekWeekendChart)).call(this, props));
+
+		_this.generateLineChart = _this.generateLineChart.bind(_this);
+		_this.generateLineChartLabels = _this.generateLineChartLabels.bind(_this);
+
+		_this.state = {
+			weekVsWeekend: {}
+		};
+		return _this;
+	}
+
+	(0, _createClass3.default)(WeekWeekendChart, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			this.generateLineChart();
+		}
+	}, {
+		key: "generateLineChart",
+		value: function generateLineChart() {
+
+			// Sort the transactions from oldest to newest --> [oldest, ..., newest]
+			var sortedTransactions = this.props.transactions.sort(function (a, b) {
+				// a and b are transactions
+				var dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				var dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+				return dateA - dateB;
+			});
+
+			// Only really care about the past 6 months, not a full year
+			var pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
+
+			if (pastSixMonths[0] === undefined) {
+				// account info was not properly loaded --> send them back to the homepage
+				var errorMessage = document.querySelector('.app-error');
+				errorMessage.classList.add('app-error__display');
+
+				setTimeout(function () {
+					errorMessage.classList.remove('app-error__display');
+				}, 4000);
+			}
+
+			// Start date is the Monday following the first transaction
+			var firstDate = pastSixMonths[0].date;
+			var startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
+			// startWeek = addWeeks(startWeek, 1);
+			startWeek = (0, _start_of_week2.default)(startWeek, { weekStartsOn: 1 });
+			var currentWeek = startWeek;
+
+			// End week is always the current week - 1 --> This is because data for
+			// the current week is definitionally incomplete so I can only get
+			// complete information for last week
+			var endWeek = new Date();
+			endWeek = (0, _start_of_week2.default)(endWeek, { weekStartsOn: 1 });
+
+			// Arrays only need to be as large as how many weeks have passed in the year so far
+			// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
+			var arrSize = (0, _difference_in_calendar_weeks2.default)(endWeek, startWeek);
+			var weekday = new Array(arrSize).fill(0);
+			var weekend = new Array(arrSize).fill(0);
+
+			var counter = 0;
+			var falsePos = 0;
+
+			pastSixMonths.forEach(function (t) {
+				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+				// if the transaction date is the same week as the current week
+				if ((0, _is_same_week2.default)(currentWeek, transactionDate) && t.amount > 0) {
+
+					// determine if it goes in the weekend or weekday array
+					if ((0, _is_weekend2.default)(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+				} else if (t.amount > 0) {
+					// I"ve moved to a different week so update counter index to advance as many weeks as necessary
+
+					// NOTE: For example transaction 1 could have been on 1/1/2018 but transaction 2 on 1/15/2018 so
+					// counter would need to advance by 2 not just 1
+					counter += (0, _difference_in_calendar_weeks2.default)(transactionDate, currentWeek);
+
+					// Put the current transaction amount in the right array
+					if ((0, _is_weekend2.default)(transactionDate)) {
+						weekend[counter] += t.amount;
+					} else {
+						weekday[counter] += t.amount;
+					}
+
+					// update currentWeek to be the start of the week of the transaction date
+					currentWeek = (0, _start_of_week2.default)(transactionDate, { weekStartsOn: 1 });
+				}
+			});
+
+			// Format values in the array to two decimals
+			weekday.forEach(function (val, index) {
+				weekday[index] = _helpers2.default.formatAmount(val);
+			});
+
+			weekend.forEach(function (val, index) {
+				weekday[index] = _helpers2.default.formatAmount(val);
+			});
+
+			var chartData = {
+				labels: this.generateLineChartLabels(arrSize),
+				label: "Week vs Weekend Spending for the past 52 Weeks",
+				datasets: [{
+					stack: "Stack 0",
+					data: weekday,
+					fill: false,
+					label: "Week",
+					backgroundColor: "rgb(77,  153, 114)"
+				}, {
+					stack: "Stack 0",
+					data: weekend,
+					fill: false,
+					label: "Weekend",
+					backgroundColor: "rgb(52, 108, 161)"
+				}],
+				options: {
+					title: {
+						display: true,
+						text: "Week vs Weekend Spending"
+					},
+					responsive: false,
+					scales: {
+						xAxes: [{
+							stacked: true
+						}]
+					}
+				}
+			};
+
+			this.setState({
+				weekVsWeekend: chartData
+			});
+		}
+	}, {
+		key: "generateLineChartLabels",
+		value: function generateLineChartLabels(length) {
+			var arr = [];
+			for (var i = length; i > 0; i--) {
+				arr.push(i);
+			}
+
+			return arr;
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"div",
+				{ className: "stats--week-weekend" },
+				_react2.default.createElement(_reactChartjs.Bar, { data: this.state.weekVsWeekend })
+			);
+		}
+	}]);
+	return WeekWeekendChart;
+}(_react.Component);
+
+exports.default = WeekWeekendChart;
+
+/***/ }),
+/* 632 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _getPrototypeOf = __webpack_require__(18);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(19);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(20);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(21);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(22);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactChartjs = __webpack_require__(105);
+
+var _sub_months = __webpack_require__(571);
+
+var _sub_months2 = _interopRequireDefault(_sub_months);
+
+var _is_within_range = __webpack_require__(298);
+
+var _is_within_range2 = _interopRequireDefault(_is_within_range);
+
+var _helpers = __webpack_require__(38);
+
+var _helpers2 = _interopRequireDefault(_helpers);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CategoryAndYearCharts = function (_Component) {
+	(0, _inherits3.default)(CategoryAndYearCharts, _Component);
+
+	function CategoryAndYearCharts(props) {
+		(0, _classCallCheck3.default)(this, CategoryAndYearCharts);
+
+		var _this = (0, _possibleConstructorReturn3.default)(this, (CategoryAndYearCharts.__proto__ || (0, _getPrototypeOf2.default)(CategoryAndYearCharts)).call(this, props));
+
+		_this.state = {
+			categoryDoughnutData: {},
+			monthlyLineChartData: {}
+		};
+		return _this;
+	}
+
+	(0, _createClass3.default)(CategoryAndYearCharts, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			this.generateDoughnutChart();
+			this.generateMonthlyBarChart();
+		}
+	}, {
+		key: "componentWillReceiveProps",
+		value: function componentWillReceiveProps() {
+			this.generateDoughnutChart();
+			this.generateMonthlyBarChart();
+		}
+	}, {
+		key: "generateDoughnutChart",
+		value: function generateDoughnutChart() {
+			// get the data array
+			var info = this.calculateDoughnutInfo();
+			var data = {
+				labels: info.labels,
+				datasets: [{
+					data: info.amounts,
+					backgroundColor: ["#578CA9", "#F6D155", "#004B8D", "#F2552C", "#95DEE3", "#CE3175", "#5A7247", "#CFB095", "#578CA9", "#f4d942", "#afc47d", "#558244", "#347759", "#2d7582"]
+				}],
+				options: {
+					responsive: true,
+					maintainAspectRatio: true
+				}
+			};
+
+			this.setState({
+				categoryDoughnutData: data
+			});
+		}
+	}, {
+		key: "generateMonthlyBarChart",
+		value: function generateMonthlyBarChart() {
+			// Ensure the order of the date is chronological not just based on jan - dec.
+
+			/* Sum up costs by week */
+			var amounts = new Array(12);
+			amounts.fill(0);
+
+			var avg = 0;
+			this.props.transactions.forEach(function (t) {
+
+				// get the string value of the month from the transaction
+				var transactionMonth = t.date.slice(5, 7);
+
+				// convert it to an int and subtract one for array offset
+				transactionMonth = parseInt(transactionMonth) - 1;
+
+				// add the amount of the transaction to its corresponding index in the array
+				amounts[transactionMonth] += t.amount;
+
+				// Get the total sum to calculate avg
+				avg += t.amount;
+			});
+
+			// Divide by 12 and round to two decimal places
+			avg = avg / 12;
+			avg = _helpers2.default.formatAmount(avg);
+
+			// Round the amounts to two decimals
+			amounts = amounts.map(function (val) {
+				return _helpers2.default.formatAmount(val);
+			});
+
+			var monthsDefault = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
+			var currMonth = new Date().getMonth(); // 0
+
+
+			// Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
+			var orderedLabels = [];
+			for (var i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
+				orderedLabels.push(monthsDefault[i % 12]);
+			}
+
+			var orderedAmounts = [];
+			for (var _i = currMonth + 1; _i <= monthsDefault.length + currMonth; _i++) {
+				orderedAmounts.push(amounts[_i % 12]);
+			}
+
+			var lineData = {
+				labels: orderedLabels,
+				datasets: [{
+					type: "line",
+					data: new Array(12).fill(avg),
+					label: "Avg. Monthly Spending",
+					radius: 0,
+					borderColor: "#EC932F",
+					backgroundColor: "#EC932F",
+					pointBorderColor: "#EC932F",
+					pointBackgroundColor: "#EC932F",
+					pointHoverBackgroundColor: "#EC932F",
+					pointHoverBorderColor: "#EC932F",
+					fill: false
+				}, {
+					type: "bar",
+					data: orderedAmounts,
+					label: "Monthly Spending",
+					backgroundColor: "rgb(77, 153, 114)",
+					hoverBorderColor: "rgb(77, 153, 114)",
+					hoverBackgroundColor: "rgb(60, 119, 89)"
+				}],
+				options: {
+					responsive: true,
+					maintainAspectRatio: true
+				}
+			};
+
+			this.setState({ monthlyLineChartData: lineData });
+		}
+	}, {
+		key: "calculateDoughnutInfo",
+		value: function calculateDoughnutInfo() {
+			// Initialize a new array of size 8 and fill it with 0s initially
+			var amts = new Array(14);
+			amts.fill(0);
+			var now = new Date();
+			var oneMonthAgo = (0, _sub_months2.default)(now, 1);
+
+			this.props.transactions.forEach(function (t) {
+				var transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+				if ((0, _is_within_range2.default)(transactionDate, oneMonthAgo, now)) {
+					var category = (t.category || [""])[0];
+					var amount = t.amount;
+
+					// TODO: Try cleaning up the switch statements to something like this
+					// amts[t.category] += t.amount;
+
+					switch (category) {
+						case "Food and Drink":
+							amts[0] += amount;
+							break;
+						case "Travel":
+							amts[1] += amount;
+							break;
+						case "Shops":
+							amts[2] += amount;
+							break;
+						case "Recreation":
+							amts[3] += amount;
+							break;
+						case "Service":
+							amts[4] += amount;
+							break;
+						case "Community":
+							amts[5] += amount;
+							break;
+						case "Healthcare":
+							amts[6] += amount;
+							break;
+						case "Bank Fees":
+							amts[7] += amount;
+							break;
+						case "Cash Advance":
+							amts[8] += amount;
+							break;
+						case "Interest":
+							amts[9] += amount;
+							break;
+						case "Payment":
+							amts[10] += amount;
+							break;
+						case "Tax":
+							amts[11] += amount;
+							break;
+						case "Transfer":
+							amts[12] += amount;
+							break;
+						default:
+							amts[13] += amount;
+					}
+				}
+			});
+
+			// Normalize each value to always have two decimals
+			amts = amts.map(function (val) {
+				return _helpers2.default.formatAmount(val);
+			});
+
+			var labelsArray = [];
+			var newAmts = [];
+
+			var defaultLabelsArray = ["Food and Drink", "Travel", "Shops", "Recreation", "Service", "Community", "Healthcare", "Bank Fees", "Cash Advance", "Interest", "Payment", "Tax", "Transfer", "Other"];
+
+			// Only keep amounts and labels for values that are not 0
+			for (var i = 0; i < amts.length; i++) {
+				if (amts[i] !== "0.00") {
+					labelsArray.push(defaultLabelsArray[i]);
+					newAmts.push(amts[i]);
+				}
+			}
+
+			return {
+				labels: labelsArray,
+				amounts: newAmts
+			};
+		}
+	}, {
+		key: "render",
+		value: function render() {
+
+			var tempOptions = {
+				legend: {
+					position: "bottom",
+					display: true
+				}
+			};
+
+			return _react2.default.createElement(
+				"div",
+				{ className: "stats--spending" },
+				_react2.default.createElement(
+					"div",
+					{ className: "stats--spending--doughnut" },
+					_react2.default.createElement(_reactChartjs.Doughnut, { options: tempOptions, data: this.state.categoryDoughnutData })
+				),
+				_react2.default.createElement("hr", null),
+				_react2.default.createElement(
+					"div",
+					{ className: "stats--spending--line-chart" },
+					_react2.default.createElement(_reactChartjs.Bar, { options: tempOptions, data: this.state.monthlyLineChartData })
+				)
+			);
+		}
+	}]);
+	return CategoryAndYearCharts;
+}(_react.Component);
+
+exports.default = CategoryAndYearCharts;
 
 /***/ })
 /******/ ]);

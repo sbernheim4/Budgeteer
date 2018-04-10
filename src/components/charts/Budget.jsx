@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
 
-import helpers from "./helpers.js";
+import helpers from "../helpers.js";
 
 import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
 import isSameYear from "date-fns/is_same_year";
 
-import "../scss/budget.scss";
+import "../../scss/budget.scss";
 
 class Budget extends Component {
 	constructor(props){

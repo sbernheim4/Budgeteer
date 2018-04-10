@@ -193,10 +193,6 @@ class App extends Component {
 			<div>
 				<Navbar />
 
-				<div className='app-error'>
-					<p>An error has occurred, redirecting back to home page</p>
-				</div>
-
 				{/* <Link /> elements are in Navbar.jsx */}
 				<Route exact path='/' render={() => (
 					<Home
