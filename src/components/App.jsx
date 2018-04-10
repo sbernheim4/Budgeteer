@@ -115,9 +115,12 @@ class App extends Component {
 
 			await this.storeAccounts(data); // Store account info
 			await this.storeTransactions(data); // store transaction info
+
 			let x = this.state.counter;
 			x++;
-			this.setState({counter: x})
+			this.setState({
+				counter: x
+			});
 
 		} catch (err) {
 			const errorMessage = document.querySelector('.app-error');

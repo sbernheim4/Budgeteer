@@ -50,10 +50,6 @@ app.all("*", (req, res, next) => {
 
 app.use("/plaid-api", require("./plaid-api.js"));
 
-app.get("/*", (req, res) => {
-	res.redirect('/');
-});
-
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/index.html"));
 });

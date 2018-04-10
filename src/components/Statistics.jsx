@@ -37,18 +37,19 @@ class Statistics extends Component {
 		}
 	}
 
-	componentWillMount() {
-		// TODO: these functions should be asynchronous
+	componentWillReceiveProps (nextProps) {
 
-		// Calculate all the data for the different charts
-		this.generateDoughnutChart();
-		this.generateMonthlyBarChart();
-		this.generateLineChart();
-	}
+		if (nextProps.transactions.length > 0) {
+			// Calculate all the data for the different charts once the
+			// component has received valid props
 
-	componentDidMount() {
-		// Once the component has loaded, display this chart
-		this.changeChart('spendingAnalysis');
+			// TODO: these functions should be asynchronous
+			this.generateDoughnutChart();
+			this.generateMonthlyBarChart();
+			this.generateLineChart();
+
+			this.changeChart('spendingAnalysis');
+		}
 	}
 
 	/************************************* Doughnut Chart *************************************/
@@ -261,17 +262,16 @@ class Statistics extends Component {
 		// Only really care about the past 6 months, not a full year
 		let pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
-		if (pastSixMonths[0] === undefined) {
-			// account info was not properly loaded --> send them back to the homepage
-			const errorMessage = document.querySelector('.app-error');
-			errorMessage.classList.add('app-error__display');
+		// if (pastSixMonths[0] === undefined) {
+		// 	// account info was not properly loaded --> send them back to the homepage
+		// 	const errorMessage = document.querySelector('.app-error');
+		// 	errorMessage.classList.add('app-error__display');
 
-			setTimeout(() => {
-				errorMessage.classList.remove('app-error__display')
-			}, 4000)
+		// 	setTimeout(() => {
+		// 		errorMessage.classList.remove('app-error__display')
+		// 	}, 4000)
+		// }
 
-			console.error(err);
-		}
 		// Start date is the Monday following the first transaction
 		let firstDate = pastSixMonths[0].date;
 		let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
@@ -367,7 +367,9 @@ class Statistics extends Component {
 			}
 		}
 
-		this.setState({ weekVsWeekend: chartData });
+		this.setState({
+			weekVsWeekend: chartData
+		});
 	}
 
 	generateLineChartLabels(length) {
