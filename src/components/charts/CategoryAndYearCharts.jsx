@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Doughnut, Bar } from "react-chartjs-2";
 
-
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
@@ -124,7 +123,9 @@ class CategoryAndYearCharts extends Component {
 			}
 		};
 
-		this.setState({ monthlyLineChartData: lineData });
+		this.setState({
+			monthlyLineChartData: lineData
+		});
 	}
 
 	calculateDoughnutInfo() {
@@ -229,7 +230,7 @@ class CategoryAndYearCharts extends Component {
 						}
 					}
 				}]
-			},
+			}
 		}
 
 		let tempOptions = {

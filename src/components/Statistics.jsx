@@ -28,12 +28,10 @@ class Statistics extends Component {
 	}
 
 	componentDidMount() {
-		console.log("componentDidMount");
 		this.changeChart('spendingAnalysis');
 	}
 
 	componentWillReceiveProps (nextProps) {
-		console.log("componentWillReceiveProps");
 		this.changeChart('spendingAnalysis');
 	}
 
