@@ -34,6 +34,7 @@ class Transaction extends Component {
 		};
 
 		this.showMap = this.showMap.bind(this);
+		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
 	}
 
 	formatDate(date) {
@@ -46,7 +47,6 @@ class Transaction extends Component {
 
 	showMap(e) {
 		let iframe = document.createElement("iframe");
-		console.log(e.target);
 
 		// TODO: Currently hardcoding latitude and longitude but it should come from:
 		// this.props.transaction.location.lat
@@ -82,24 +82,20 @@ class Transaction extends Component {
 
 	}
 
-	render() {
-		let date = this.formatDate(JSON.stringify(this.props.transaction.date));
-		let amount = helpers.formatAmount(this.props.transaction.amount);
-
-		let googleMap = "";
-		// The below URL doesn't require an API key, might be better
-		// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
-		let category;
-
-		if (this.props.transaction.category !== null && this.props.transaction.category !== undefined) {
-			category = this.props.transaction.category[0];
-		} else {
-			category = "Null";
+	getAccountNameFromID(accountID) {
+		for (let acct of this.props.accounts) {
+			if (acct.account_id === accountID) {
+				return acct.name;
+			}
 		}
+	}
 
+	getCategoryIcon(categoryName) {
 		// Determine what icon to show on the left side
+
 		let categoryIcon;
-		switch(category) {
+
+		switch(categoryName) {
 			case "Food and Drink":
 				categoryIcon = faUtensils;
 				break;
@@ -143,21 +139,34 @@ class Transaction extends Component {
 				categoryIcon = faBullseye;
 		}
 
-		// Should the color of the amount be red or green based based on purchase or withdrawl
-		let amtColor = 'amount--amt';
-		if (this.props.transaction.amount * -1 > 0) {
-			amtColor = 'amount--amt__green';
-		}
+		return categoryIcon;
+
+	}
+
+	render() {
+
+		let date = this.formatDate(JSON.stringify(this.props.transaction.date));
+		let amount = helpers.formatAmount(this.props.transaction.amount);
+
+		let googleMap = "";
+		// The below URL doesn't require an API key, might be better
+		// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
+
+		// Get the category of the transaction or Null if unknown
+		let category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
+
+		// Should the color for the amount be red or green based based on it being positive or negative
+		let amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
 
 		return (
 			<div className='transaction' onClick={this.showMap}>
 
 				<div className='container'>
-					<FontAwesomeIcon className="icon" icon={categoryIcon} />
+					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
 
 					<div className='name-info'>
 						<p className='name-info--name'>{this.props.transaction.name}</p>
-						<p className='name-info--category'>{category}</p>
+						<p className='name-info--category'>{category} - {this.getAccountNameFromID(this.props.transaction.account_id)}</p>
 					</div>
 
 					<div className='amount'>

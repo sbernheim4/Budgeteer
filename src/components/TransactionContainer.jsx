@@ -67,7 +67,7 @@ class TransactionContainer extends Component {
 		return (
 			<div className="transaction-container">
 				{/*<div className='transaction-container--item'>*/}
-					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} transaction={t} /> )}
+					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} accounts={this.props.accounts} transaction={t} /> )}
 				{/*</div>*/}
 			</div>
 		);

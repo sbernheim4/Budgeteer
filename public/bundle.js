@@ -51825,7 +51825,7 @@ exports = module.exports = __webpack_require__(12)(false);
 
 
 // module
-exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n\np, h1, h2, h3, h4, h5, h6 {\n  overflow-y: hidden; }\n", ""]);
+exports.push([module.i, "* {\n  color: white;\n  font-weight: 300; }\n\n*:focus {\n  outline: none; }\n\nbody {\n  margin-bottom: 30px;\n  background-color: #323232; }\n", ""]);
 
 // exports
 
@@ -54314,15 +54314,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactChartjs = __webpack_require__(105);
 
-var _Budget = __webpack_require__(626);
+var _Budget = __webpack_require__(630);
 
 var _Budget2 = _interopRequireDefault(_Budget);
 
-var _WeekWeekendChart = __webpack_require__(627);
+var _WeekWeekendChart = __webpack_require__(631);
 
 var _WeekWeekendChart2 = _interopRequireDefault(_WeekWeekendChart);
 
-var _CategoryAndYearCharts = __webpack_require__(630);
+var _CategoryAndYearCharts = __webpack_require__(632);
 
 var _CategoryAndYearCharts2 = _interopRequireDefault(_CategoryAndYearCharts);
 
@@ -71540,7 +71540,7 @@ var AccountsContainer = function (_Component) {
 					{ className: "accounts--chart" },
 					this.state.chartDisplay
 				),
-				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions })
+				_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.categoryTransactions, accounts: this.props.accounts })
 			);
 		}
 	}]);
@@ -71809,11 +71809,13 @@ var TransactionContainer = function (_Component) {
 	}, {
 		key: "render",
 		value: function render() {
+			var _this3 = this;
+
 			return _react2.default.createElement(
 				"div",
 				{ className: "transaction-container" },
 				this.state.transactionsToDisplay.map(function (t, index) {
-					return _react2.default.createElement(_Transaction2.default, { key: index, transaction: t });
+					return _react2.default.createElement(_Transaction2.default, { key: index, accounts: _this3.props.accounts, transaction: t });
 				})
 			);
 		}
@@ -71837,6 +71839,10 @@ Object.defineProperty(exports, "__esModule", {
 var _stringify = __webpack_require__(44);
 
 var _stringify2 = _interopRequireDefault(_stringify);
+
+var _getIterator2 = __webpack_require__(299);
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
 
 var _getPrototypeOf = __webpack_require__(18);
 
@@ -71889,6 +71895,7 @@ var Transaction = function (_Component) {
 		};
 
 		_this.showMap = _this.showMap.bind(_this);
+		_this.getAccountNameFromID = _this.getAccountNameFromID.bind(_this);
 		return _this;
 	}
 
@@ -71905,7 +71912,6 @@ var Transaction = function (_Component) {
 		key: 'showMap',
 		value: function showMap(e) {
 			var iframe = document.createElement("iframe");
-			console.log(e.target);
 
 			// TODO: Currently hardcoding latitude and longitude but it should come from:
 			// this.props.transaction.location.lat
@@ -71944,25 +71950,43 @@ var Transaction = function (_Component) {
 			}
 		}
 	}, {
-		key: 'render',
-		value: function render() {
-			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
-			var amount = _helpers2.default.formatAmount(this.props.transaction.amount);
+		key: 'getAccountNameFromID',
+		value: function getAccountNameFromID(accountID) {
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
 
-			var googleMap = "";
-			// The below URL doesn't require an API key, might be better
-			// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
-			var category = void 0;
+			try {
+				for (var _iterator = (0, _getIterator3.default)(this.props.accounts), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var acct = _step.value;
 
-			if (this.props.transaction.category !== null && this.props.transaction.category !== undefined) {
-				category = this.props.transaction.category[0];
-			} else {
-				category = "Null";
+					if (acct.account_id === accountID) {
+						return acct.name;
+					}
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
 			}
-
+		}
+	}, {
+		key: 'getCategoryIcon',
+		value: function getCategoryIcon(categoryName) {
 			// Determine what icon to show on the left side
+
 			var categoryIcon = void 0;
-			switch (category) {
+
+			switch (categoryName) {
 				case "Food and Drink":
 					categoryIcon = _fontawesomeFreeSolid.faUtensils;
 					break;
@@ -72006,11 +72030,24 @@ var Transaction = function (_Component) {
 					categoryIcon = _fontawesomeFreeSolid.faBullseye;
 			}
 
-			// Should the color of the amount be red or green based based on purchase or withdrawl
-			var amtColor = 'amount--amt';
-			if (this.props.transaction.amount * -1 > 0) {
-				amtColor = 'amount--amt__green';
-			}
+			return categoryIcon;
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+
+			var date = this.formatDate((0, _stringify2.default)(this.props.transaction.date));
+			var amount = _helpers2.default.formatAmount(this.props.transaction.amount);
+
+			var googleMap = "";
+			// The below URL doesn't require an API key, might be better
+			// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
+
+			// Get the category of the transaction or Null if unknown
+			var category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
+
+			// Should the color for the amount be red or green based based on it being positive or negative
+			var amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
 
 			return _react2.default.createElement(
 				'div',
@@ -72018,7 +72055,7 @@ var Transaction = function (_Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'container' },
-					_react2.default.createElement(_reactFontawesome2.default, { className: 'icon', icon: categoryIcon }),
+					_react2.default.createElement(_reactFontawesome2.default, { className: 'icon', icon: this.getCategoryIcon(category) }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'name-info' },
@@ -72030,7 +72067,9 @@ var Transaction = function (_Component) {
 						_react2.default.createElement(
 							'p',
 							{ className: 'name-info--category' },
-							category
+							category,
+							' - ',
+							this.getAccountNameFromID(this.props.transaction.account_id)
 						)
 					),
 					_react2.default.createElement(
@@ -72097,7 +72136,7 @@ exports = module.exports = __webpack_require__(12)(false);
 
 
 // module
-exports.push([module.i, ".transaction {\n  margin: 5px;\n  width: 80%;\n  background-color: #252525;\n  cursor: pointer;\n  transition: background-color .5s ease; }\n  .transaction:hover {\n    background-color: #1e1e1e; }\n  @media all and (max-width: 600px) {\n    .transaction {\n      margin: 0;\n      width: 100%;\n      border-bottom: 1px solid gray; } }\n  @media all and (min-width: 1200px) {\n    .transaction {\n      margin: 5px;\n      max-width: 700px;\n      width: 45%;\n      border-bottom: none; } }\n  .transaction iframe {\n    margin: 0;\n    width: 0;\n    height: 0;\n    transition: height .3s ease-in; }\n  .transaction--map iframe {\n    margin: 0 auto;\n    width: 100%;\n    height: 300px;\n    transition: height .3s ease-in;\n    display: flex;\n    justify-content: center; }\n  .transaction .container {\n    padding: 15px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    pointer-events: none; }\n    .transaction .container .icon {\n      width: 10%;\n      font-size: 1.5em; }\n      @media all and (max-width: 400px) {\n        .transaction .container .icon {\n          font-size: 1em; } }\n    .transaction .container .name-info {\n      margin: 0 20px;\n      min-width: 50%;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-start; }\n      .transaction .container .name-info--name {\n        width: 100%; }\n      .transaction .container .name-info--category {\n        width: 100%;\n        color: gray; }\n    .transaction .container .amount {\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .transaction .container .amount--amt {\n        width: 100%;\n        color: #d46363; }\n        .transaction .container .amount--amt__green {\n          width: 100%;\n          color: #4d9972; }\n      .transaction .container .amount--date {\n        width: 100%;\n        color: gray; }\n        @media all and (max-width: 365px) {\n          .transaction .container .amount--date {\n            font-size: .8em; } }\n  .transaction * {\n    overflow-y: hidden; }\n", ""]);
+exports.push([module.i, ".transaction {\n  margin: 5px;\n  width: 80%;\n  background-color: #252525;\n  cursor: pointer;\n  transition: background-color .5s ease; }\n  .transaction:hover {\n    background-color: #1e1e1e; }\n  @media all and (max-width: 600px) {\n    .transaction {\n      margin: 0;\n      width: 100%;\n      border-bottom: 1px solid gray; } }\n  @media all and (min-width: 1200px) {\n    .transaction {\n      margin: 5px;\n      max-width: 700px;\n      width: 45%;\n      border-bottom: none; } }\n  .transaction iframe {\n    margin: 0;\n    width: 0;\n    height: 0;\n    transition: height .3s ease-in; }\n  .transaction--map iframe {\n    margin: 0 auto;\n    width: 100%;\n    height: 300px;\n    transition: height .3s ease-in;\n    display: flex;\n    justify-content: center; }\n  .transaction .container {\n    padding: 15px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    pointer-events: none; }\n    .transaction .container .icon {\n      width: 10%;\n      font-size: 1.5em; }\n      @media all and (max-width: 400px) {\n        .transaction .container .icon {\n          font-size: 1em; } }\n    .transaction .container .name-info {\n      margin: 0 20px;\n      width: 200px;\n      min-width: 50%;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-start; }\n      .transaction .container .name-info--name {\n        width: 100%; }\n      .transaction .container .name-info--category {\n        width: 100%;\n        color: gray;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        overflow: hidden; }\n    .transaction .container .amount {\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .transaction .container .amount--amt {\n        width: 100%;\n        color: #d46363; }\n        .transaction .container .amount--amt__green {\n          width: 100%;\n          color: #4d9972; }\n      .transaction .container .amount--date {\n        width: 100%;\n        color: gray; }\n        @media all and (max-width: 365px) {\n          .transaction .container .amount--date {\n            font-size: .8em; } }\n  .transaction * {\n    overflow-y: hidden; }\n", ""]);
 
 // exports
 
@@ -73936,7 +73975,54 @@ module.exports = startOfMonth
 
 
 /***/ }),
-/* 626 */
+/* 626 */,
+/* 627 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(628);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(13)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 628 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 629 */,
+/* 630 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74151,7 +74237,7 @@ var Budget = function (_Component) {
 exports.default = Budget;
 
 /***/ }),
-/* 627 */
+/* 631 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74207,7 +74293,7 @@ var _helpers = __webpack_require__(38);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-__webpack_require__(628);
+__webpack_require__(627);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -74381,52 +74467,7 @@ var WeekWeekendChart = function (_Component) {
 exports.default = WeekWeekendChart;
 
 /***/ }),
-/* 628 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(629);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(13)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 629 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(12)(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 630 */
+/* 632 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

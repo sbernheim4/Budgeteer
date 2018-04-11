@@ -493,7 +493,7 @@ class AccountsContainer extends Component {
 					{this.state.chartDisplay}
 				</div>
 
-				<TransactionContainer transactions={this.state.categoryTransactions} />
+				<TransactionContainer transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
 			</div>
 		);
 	}
