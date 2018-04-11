@@ -216,6 +216,22 @@ class CategoryAndYearCharts extends Component {
 
 	render() {
 
+		let barOptions = {
+			legend: {
+				position: "bottom",
+				display: true
+			},
+			scales: {
+				yAxes: [{
+					ticks: {
+						callback: function(value, index, values) {
+							return '$' + helpers.numberWithCommas(value);
+						}
+					}
+				}]
+			},
+		}
+
 		let tempOptions = {
 			legend: {
 				position: "bottom",
@@ -232,7 +248,7 @@ class CategoryAndYearCharts extends Component {
 				<hr />
 
 				<div className="stats--spending--line-chart">
-					<Bar options={tempOptions} data={this.state.monthlyLineChartData} />
+					<Bar options={barOptions} data={this.state.monthlyLineChartData} />
 				</div>
 			</div>
 

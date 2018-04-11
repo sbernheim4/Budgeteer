@@ -54314,15 +54314,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactChartjs = __webpack_require__(105);
 
-var _Budget = __webpack_require__(630);
+var _Budget = __webpack_require__(626);
 
 var _Budget2 = _interopRequireDefault(_Budget);
 
-var _WeekWeekendChart = __webpack_require__(631);
+var _WeekWeekendChart = __webpack_require__(627);
 
 var _WeekWeekendChart2 = _interopRequireDefault(_WeekWeekendChart);
 
-var _CategoryAndYearCharts = __webpack_require__(632);
+var _CategoryAndYearCharts = __webpack_require__(630);
 
 var _CategoryAndYearCharts2 = _interopRequireDefault(_CategoryAndYearCharts);
 
@@ -73936,54 +73936,7 @@ module.exports = startOfMonth
 
 
 /***/ }),
-/* 626 */,
-/* 627 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(628);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(13)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 628 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(12)(false);
-// imports
-
-
-// module
-exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-/* 629 */,
-/* 630 */
+/* 626 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74198,7 +74151,7 @@ var Budget = function (_Component) {
 exports.default = Budget;
 
 /***/ }),
-/* 631 */
+/* 627 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74254,7 +74207,7 @@ var _helpers = __webpack_require__(38);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
-__webpack_require__(627);
+__webpack_require__(628);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -74428,7 +74381,52 @@ var WeekWeekendChart = function (_Component) {
 exports.default = WeekWeekendChart;
 
 /***/ }),
-/* 632 */
+/* 628 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(629);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(13)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./weekweekendchart.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 629 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 630 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -74697,6 +74695,22 @@ var CategoryAndYearCharts = function (_Component) {
 		key: "render",
 		value: function render() {
 
+			var barOptions = {
+				legend: {
+					position: "bottom",
+					display: true
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							callback: function callback(value, index, values) {
+								return '$' + _helpers2.default.numberWithCommas(value);
+							}
+						}
+					}]
+				}
+			};
+
 			var tempOptions = {
 				legend: {
 					position: "bottom",
@@ -74716,7 +74730,7 @@ var CategoryAndYearCharts = function (_Component) {
 				_react2.default.createElement(
 					"div",
 					{ className: "stats--spending--line-chart" },
-					_react2.default.createElement(_reactChartjs.Bar, { options: tempOptions, data: this.state.monthlyLineChartData })
+					_react2.default.createElement(_reactChartjs.Bar, { options: barOptions, data: this.state.monthlyLineChartData })
 				)
 			);
 		}
