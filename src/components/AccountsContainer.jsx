@@ -119,12 +119,8 @@ class AccountsContainer extends Component {
 			tooltips: {
 				callbacks: {
 					title: function(item) {
-						// Less than 12 exception to ignore the Yesterday and Today values in the labels
-						if(item[0].index < 12) {
-							return item[0].xLabel + " Days Ago";
-						} else {
-							return item[0].xLabel;
-						}
+						// Less than 12 exception to ignore the Yesterday and Today values in the labels otherwise show x days ago
+						return item[0].index < 12 ? item[0].xLabel + " Days Ago" : item[0].xLabel;
 					},
 					label: function(item) {
 						const amt = helpers.numberWithCommas(helpers.formatAmount(item.yLabel));
@@ -164,8 +160,9 @@ class AccountsContainer extends Component {
 			}
 		}
 
-		let stuff = <Bar data={data} options={barOptions} />
-			this.setState({chartDisplay: stuff });
+		this.setState({
+			chartDisplay: <Bar data={data} options={barOptions} />
+		});
 	}
 
 	getAccountTransactions(account_id) {
