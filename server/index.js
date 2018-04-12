@@ -31,7 +31,7 @@ let db = mongoose.connection;
 /****************** Server Options ******************/
 const port = process.env.PORT;
 const insecurePort = process.env.INSECURE_PORT;
-const cacheTime = 31536000000;
+const cacheTime = 172800000; // 2 Days
 
 app.use(compression());
 
