@@ -30,8 +30,7 @@ class Home extends Component {
 					<h2>The easiest way to track your spending</h2>
 
 					<div className="home--info--details">
-						<h3>To get started first try linking your account by clicking the add account button.</h3>
-						<p>Once linked we make it easy to keep track of your spending</p>
+						<h3>Once linked we make it easy to keep track of your spending</h3>
 						<p>View all your transactions and search by account, category or keyword in our Transactions page</p>
 						<p>The statistcs sections will break down your spending to give you insight into where your money is going</p>
 						<p>The networth page will show each of your accounts' balance to get a quick look at your overall financial health</p>
