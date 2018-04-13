@@ -155,6 +155,9 @@ class Transaction extends Component {
 		// Get the category of the transaction or Null if unknown
 		let category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
 
+		let amt = helpers.formatAmount(this.props.transaction.amount * -1);
+		amt = "$" + helpers.numberWithCommas(amt);
+
 		// Should the color for the amount be red or green based based on it being positive or negative
 		let amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
 
@@ -170,7 +173,7 @@ class Transaction extends Component {
 					</div>
 
 					<div className='amount'>
-						<p className={amtColor}> ${this.props.transaction.amount * -1}</p>
+						<p className={amtColor}>{amt}</p>
 						<p className='amount--date'>{date}</p>
 					</div>
 

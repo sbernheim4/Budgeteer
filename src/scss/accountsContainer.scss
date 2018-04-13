@@ -77,7 +77,7 @@
 						width: 80%;
 						height: 61px;
 						padding: 0 15px;
-						background-color: rgb(50, 50, 50);
+						background-color: $background-color;
 						border: 1px solid white;
 						border-radius: 6px;
 						color: white;
@@ -105,7 +105,7 @@
 
 			@media all and (max-width: 600px) {
 				margin-top: 15px;
-				width: 70%;
+				width: 80%;
 			}
 
 			&--categorical-search {
@@ -148,6 +148,14 @@
 						.category-icon {
 							margin: 15px;
 							font-size: 40px;
+
+							path {
+								transition: color .1s ease-in;
+
+								&:hover {
+									color: $red;
+								}
+							}
 						}
 					}
 				}
@@ -328,17 +336,13 @@
 	}
 
 	&--totals {
-		margin: 5px;
+		padding: 20px 5px;
 		text-align: center;
 		font-size: 1.4em;
-
-		@media all and (max-width: 450px) {
-			font-size: .9em;
-		}
 	}
 
 	&--chart {
-		margin: 10px;
+		margin: 0 10px;
 		max-width: 900px;
 
 		@media all and (min-width: 600px) {

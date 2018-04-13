@@ -1,14 +1,16 @@
 @import './variables';
 
+$transaction-background-color: #436669;
+
 .transaction {
 	margin: 5px;
 	width: 80%;
-	background-color: darken($background-color, 5%);
+	background-color: $transaction-background-color;
 	cursor: pointer;
 	transition: background-color .5s ease;
 
 	&:hover {
-		background-color: darken($background-color, 8%);
+		background-color: darken($transaction-background-color, 8%);
 	}
 
 	@media all and (max-width: 600px) {
@@ -64,8 +66,8 @@
 
 		.name-info {
 			margin: 0 20px;
-			width: 200px;
-			min-width: 50%;
+			max-width: 200px;
+			width: 50%;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -73,6 +75,7 @@
 
 			&--name {
 				width: 100%;
+				font-size: 22px;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -80,7 +83,8 @@
 
 			&--category {
 				width: 100%;
-				color: gray;
+				font-size: 15px;
+				color: white;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -98,6 +102,7 @@
 			&--amt {
 				width: 100%;
 				color: $red;
+				font-weight: 400;
 
 				&__green {
 					width: 100%;
@@ -106,8 +111,8 @@
 			}
 
 			&--date {
-				width: 100%;
-				color: gray;
+				color: white;
+				align-self: flex-end;
 
 				@media all and (max-width: 365px) {
 					font-size: .8em;

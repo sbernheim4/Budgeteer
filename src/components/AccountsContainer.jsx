@@ -485,7 +485,7 @@ class AccountsContainer extends Component {
 					</div>
 				</div>
 
-				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
+				<h2 className="accounts--totals">{this.state.categoryType}: <br /><span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
 				<div className="accounts--chart">
 					{this.state.chartDisplay}
 				</div>
