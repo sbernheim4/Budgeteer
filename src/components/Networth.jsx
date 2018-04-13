@@ -50,23 +50,35 @@ class Networth extends Component {
 
 	async componentDidMount() {
 
-		const fetchOptions = {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			}
-		};
+		let data;
 
-		let data = await fetch('plaid-api/balance', fetchOptions);
-        data = await data.json();
+		// Keep the data stored in the client's browser for the duration of the session
+		if (window.sessionStorage.getItem("balance")){
+
+			data = window.sessionStorage.getItem("balance");
+			data = JSON.parse(data);
+
+		} else {
+
+			const fetchOptions = {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			};
+
+			data = await fetch('plaid-api/balance', fetchOptions);
+			data = await data.json();
+
+			window.sessionStorage.setItem("balance", JSON.stringify(data));
+		}
 
 		this.setState({
 			total: data.networth,
 			accountBalances: data.maps,
 			loading: false
 		});
-
 	}
 
 	render () {
