@@ -181,6 +181,14 @@
 
 						.category-icon {
 							cursor: pointer;
+
+							&:hover {
+								color: $red;
+							}
+
+							path {
+								color: inherit;
+							}
 						}
 
 						button {
@@ -339,6 +347,10 @@
 		padding: 20px 5px;
 		text-align: center;
 		font-size: 1.4em;
+
+		@media all and (min-width: 1000px) {
+			font-size: 2em;
+		}
 	}
 
 	&--chart {
