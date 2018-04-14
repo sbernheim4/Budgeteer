@@ -9,11 +9,14 @@ const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
 	devtool: "source-map", // Enables source maps for both JS(X) and (S)CSS
-	entry: "./src/components/index.jsx", // Entry point of where webpack should start from
+	entry: {
+		budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
+		home: "./src/home/index.js"
+	},
 	output: {
 		// output build file to /public folder and call the file bundle.js
 		path: __dirname + "/public",
-		filename: "bundle.js"
+		filename: "[name].js"
 	},
 
 	// Dev server configuration
