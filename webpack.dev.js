@@ -11,7 +11,7 @@ module.exports = {
 	devtool: "source-map", // Enables source maps for both JS(X) and (S)CSS
 	entry: {
 		budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
-		home: "./src/home/index.js"
+		home: "./src/home/index.jsx"
 	},
 	output: {
 		// output build file to /public folder and call the file bundle.js
