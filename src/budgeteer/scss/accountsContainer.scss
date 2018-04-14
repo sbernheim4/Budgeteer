@@ -1,0 +1,379 @@
+@import './variables';
+
+%icon-containers {
+	transform: translateY(-50px);
+	visibility: hidden;
+	opacity: 0;
+	position: absolute;
+	margin-top: 60px;
+	padding: 20px;
+	background-color: black;
+	border-radius: 10px;
+	transition: all.3s ease-out;
+}
+
+%before-div {
+	transform: translateY(-50px);
+	opacity: 0;
+	content: "";
+	position: absolute;
+	margin-top: 20px;
+	width: 0;
+	height: 0;
+	border-bottom: 50px solid rgba(0, 0, 0, 0.6);
+	border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+	transition: transform .3s ease-out, opacity .3s ease-out;
+}
+
+.accounts {
+	@media  all and (max-width: 600px) {
+		margin-top: -30px;
+	}
+
+	.red {
+		text-align: center;
+		color: $red;
+	}
+
+	.green {
+		text-align: center;
+		color: $green;
+	}
+
+	&--search-options {
+		margin: 0 20px 20px 20px;
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+
+		@media all and (max-width: 600px) {
+			flex-direction: column;
+		}
+
+
+		&--keyword-search {
+			width: 70%;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+
+			@media  all and (max-width: 600px) {
+				margin-top: 15px;
+				width: 100%;
+			}
+
+			.icon {
+				padding: 15px;
+				font-size: 30px;
+			}
+
+			form {
+				width: 100%;
+
+				label {
+
+					input {
+						width: 80%;
+						height: 61px;
+						padding: 0 15px;
+						background-color: $background-color;
+						border: 1px solid white;
+						border-radius: 6px;
+						color: white;
+						transition: all .2s ease-in;
+
+						&:focus {
+							border: 1px solid $pink;
+						}
+					}
+
+				}
+
+				input {
+
+				}
+			}
+		}
+
+		&--icon-search {
+			max-width: 300px;
+			width: 30%;
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+
+			@media all and (max-width: 600px) {
+				margin-top: 15px;
+				width: 80%;
+			}
+
+			&--categorical-search {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+
+				.icon {
+					font-size: 30px;
+					cursor: pointer;
+					z-index: 1;
+
+
+					path {
+						transition: color .1s ease-in;
+
+						&:hover {
+							color: $pink;
+						}
+					}
+				}
+
+				&--categories {
+					display: flex;
+					justify-content: center;
+
+					&:before {
+						@extend %before-div;
+					}
+
+					div {
+						@extend %icon-containers;
+						width: 230px;
+						height: 210px;
+						display: flex;
+						justify-content: center;
+						flex-wrap: wrap;
+						z-index: 1;
+
+						.category-icon {
+							margin: 15px;
+							font-size: 40px;
+
+							path {
+								transition: color .1s ease-in;
+
+								&:hover {
+									color: $red;
+								}
+							}
+						}
+					}
+				}
+
+				&--categories__active {
+					display: flex;
+					justify-content: center;
+
+					&:before {
+						transform: translateY(0px);
+						opacity: 1;
+					}
+
+					div {
+						transform: translateY(0);
+						visibility: visible;
+						opacity: 1;
+						transition: all.3s ease-out;
+
+						@media all and (max-width: 525px) {
+							margin-left: 50px;
+						}
+
+						.category-icon {
+							cursor: pointer;
+
+							&:hover {
+								color: $red;
+							}
+
+							path {
+								color: inherit;
+							}
+						}
+
+						button {
+							width: 0;
+							height: 0;
+						}
+					}
+				}
+			}
+
+			&--date-search {
+				.icon {
+					font-size: 35px;
+					cursor: pointer;
+
+					path {
+						transition: color .2s ease-in;
+
+						&:hover {
+							color: $pink;
+						}
+					}
+				}
+			}
+
+			&--accts-search {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+
+				.icon {
+					font-size: 40px;
+					cursor: pointer;
+					z-index: 1;
+
+
+					path {
+						transition: color .1s ease-in;
+
+						&:hover {
+							color: $pink;
+						}
+					}
+				}
+
+				&--accts {
+					display: flex;
+					justify-content: center;
+
+					&:before {
+						@extend %before-div;
+					}
+
+					div {
+						@extend %icon-containers;
+						width: 200px;
+						height: 300px;
+						padding: 20px;
+						justify-content: flex-start;
+						z-index: 1;
+						overflow-y: scroll;
+
+						&::-webkit-scrollbar {
+							width: 7px;
+							background-color: rgba(100,100,100,.7);
+							outline: 1px solid slategrey;
+							-webkit-appearance: none;
+						}
+
+						&::-webkit-scrollbar-thumb {
+							background-color: rgba(100,100,100,.7);
+							border-radius: 4px;
+							outline: 1px solid slategrey;
+							-webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+						}
+
+						button {
+							margin: 15px 0;
+							width: 100%;
+							background-color: black;
+							border-radius: 5px;
+							text-align: left;
+							color: white;
+							cursor: pointer;
+
+							&:before {
+								content: "▪ ";
+								white-space: pre;
+							}
+						}
+					}
+				}
+
+				&--accts__active {
+					display: flex;
+					justify-content: center;
+
+					&:before {
+						transform: translateY(0px);
+						opacity: 1;
+					}
+
+					div {
+						transform: translateY(0) translateX(-23%);
+						visibility: visible;
+						opacity: 1;
+						transition: all.3s ease-out;
+
+						@media all and (max-width: 500px) {
+							// margin-right: 50px;
+						}
+					}
+				}
+			}
+		}
+
+		&--date-picker {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+
+			// for the submit button --> override the settings here for the other inputs below
+			input {
+				width: 100px;
+				height: 30px;
+				background-color: grey;
+				color: white;
+				align-self: center;
+			}
+
+			div {
+				margin: 10px;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: flex-end;
+
+				p {
+					margin-bottom: 5px;
+				}
+
+				label {
+
+					input {
+						margin-left: 10px;
+						width: 100px;
+						border: 1px solid black;
+						color: black;
+					}
+				}
+			}
+		}
+	}
+
+	&--totals {
+		padding: 20px 5px;
+		text-align: center;
+		font-size: 1.4em;
+
+		@media all and (min-width: 1000px) {
+			font-size: 2em;
+		}
+	}
+
+	&--chart {
+		margin: 0 10px;
+		max-width: 900px;
+
+		@media all and (min-width: 600px) {
+			margin: 0 auto;
+			display: flex;
+			justify-content: center;
+			align-items: flex-end;
+		}
+
+		@media all and (min-width: 600px) and (max-width: 700px) {
+			width: 80vw;
+		}
+
+		@media all and (min-width: 700px) {
+			width: 65vw;
+		}
+	}
+
+	&--sort-options {
+		text-align: center;
+	}
+}

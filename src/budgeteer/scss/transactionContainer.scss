@@ -1,0 +1,33 @@
+@import './variables';
+
+.transaction-container {
+	margin-top: 15px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	@media all and (max-width: 600px) {
+		margin-top: -10px;
+		top: calc(100vh - 100px);
+	}
+
+	@media all and (min-width: 1200px) {
+		margin: 15px auto;
+		max-width: 1560px;
+		flex-direction: row;
+		align-items: flex-start;
+		flex-wrap: wrap;
+	}
+
+	button {
+		margin: 30px;
+		width: 150px;
+		height: 45px;
+		background-color: $green;
+		border: 1px solid black;
+		border-radius: 5px;
+		color: black;
+		cursor: pointer;
+	}
+}
