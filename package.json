@@ -61,7 +61,7 @@
   "scripts": {
     "build:dev": "webpack --config webpack.dev.js",
     "build:prod": "webpack --config webpack.prod.js",
-    "es": "nodemon ./server/index.js",
+    "es": "nodemon --watch ./server ./server/index.js",
     "heroku-postbuild": "npm install --only=dev; npx webpack --config webpack.prod.js",
     "start": "node ./server/index.js",
     "wds": "webpack-dev-server --hot --inline --config webpack.dev.js --host 0.0.0.0",

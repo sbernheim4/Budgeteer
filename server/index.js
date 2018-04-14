@@ -51,7 +51,11 @@ app.all("*", (req, res, next) => {
 app.use("/plaid-api", require("./plaid-api.js"));
 
 app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/main-page.html"));
+	res.sendFile(path.join(__dirname, "../public/home-page.html"));
+});
+
+app.get("/budgeteer", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
 
 /****************** Start the DB and Server ******************/
