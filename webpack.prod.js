@@ -9,11 +9,14 @@ const webpack = require('webpack');
 
 module.exports = {
 	//devtool: "eval-source-map",  Enables source maps for both JS(X) and (S)CSS
-	entry: "./src/components/index.jsx",
+	entry: {
+		budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
+		home: "./src/home/index.js"
+	},
 	output: {
-		// output build file to /public folder
+		// output build file to /public folder and call the file bundle.js
 		path: __dirname + "/public",
-		filename: "bundle.js"
+		filename: "[name].js"
 	},
 	module: {
 		// use the babel-loader for all .jsx files
