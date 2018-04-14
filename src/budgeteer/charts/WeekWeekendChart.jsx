@@ -116,14 +116,14 @@ class WeekWeekendChart extends Component {
 			datasets:  [
 				{
 					// Having the same stack means the two data sets will be stacked on top of each other.
-					// stack: "Stack 0",
+					stack: "Stack 0",
 					data:  weekday,
 					// fill:  false,
 					label:  "Week",
 					backgroundColor: "rgb(77,  153, 114)",
 				},
 				{
-					// stack: "Stack 0",
+					stack: "Stack 0",
 					data: weekend,
 					// fill: false,
 					label: "Weekend",
@@ -191,11 +191,7 @@ class WeekWeekendChart extends Component {
 			}
 		}
 
-		return (
-			<div className="stats--week-weekend">
-				<Bar data={this.state.weekVsWeekend} options={barOptions} />
-			</div>
-		);
+		return <Bar data={this.state.weekVsWeekend} options={barOptions} />
 	}
 }
 

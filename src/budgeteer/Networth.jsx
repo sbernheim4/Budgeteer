@@ -68,7 +68,7 @@ class Networth extends Component {
 				}
 			};
 
-			data = await fetch('plaid-api/balance', fetchOptions);
+			data = await fetch('/plaid-api/balance', fetchOptions);
 			data = await data.json();
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
@@ -92,7 +92,7 @@ class Networth extends Component {
 
 		let netWorthChart;
 		if (this.state.loading) {
-			netWorthChart = <div className="networth--loading"><h1>Hang tight, getting your data from the cloud</h1><img src='./loading-gifs/loading-three.gif' alt='loading' /></div>
+			netWorthChart = <div className="networth--loading"><h1>Hang tight, getting your data from the cloud</h1><img src='/loading-gifs/loading-three.gif' alt='loading' /></div>
 		} else {
 			netWorthChart = (<table>
 					<thead>

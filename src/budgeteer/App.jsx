@@ -45,7 +45,7 @@ class App extends Component {
 			// TODO: Need to see if there is an error returned from this call --> If
 			// `{ "Error": "No Account Infromation Found" }` is received than it means
 			// no accounts are linked
-			fetch('plaid-api/set-stored-access-token', {
+			fetch('/plaid-api/set-stored-access-token', {
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',
@@ -57,7 +57,7 @@ class App extends Component {
 			this.getTransactions();
 
 			// Used for if the user wants to link a new account
-			let keyAndEnv = await fetch('plaid-api/key-and-env');
+			let keyAndEnv = await fetch('/plaid-api/key-and-env');
 			keyAndEnv = await keyAndEnv.json();
 
             const plaid = Plaid.create({

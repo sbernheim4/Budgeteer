@@ -58,6 +58,10 @@ app.get("/budgeteer", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
 
+app.get("/budgeteer/*", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
+});
+
 /****************** Start the DB and Server ******************/
 
 if (process.env.NODE_ENV === "development") {

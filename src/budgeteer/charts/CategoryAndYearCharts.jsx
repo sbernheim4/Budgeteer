@@ -6,6 +6,8 @@ import isWithinRange from 'date-fns/is_within_range';
 
 import helpers from '../helpers';
 
+import "../scss/categoryAndYearCharts.scss";
+
 class CategoryAndYearCharts extends Component {
 
 	constructor(props) {
@@ -241,14 +243,14 @@ class CategoryAndYearCharts extends Component {
 		}
 
 		return (
-			<div className="stats--spending">
-				<div className="stats--spending--doughnut">
+			<div className="category">
+				<div className="category--category-chart">
 					<Doughnut options={tempOptions} data={this.state.categoryDoughnutData} />
 				</div>
 
 				<hr />
 
-				<div className="stats--spending--line-chart">
+				<div className="category--line-chart">
 					<Bar options={barOptions} data={this.state.monthlyLineChartData} />
 				</div>
 			</div>

@@ -78,6 +78,10 @@
 			cursor: pointer;
 		}
 
+		a {
+			float: right;
+		}
+
 		&--links {
 			width: 100vw;
 			height: 0;
@@ -88,7 +92,7 @@
 			align-items: center;
 
 			p {
-				height: calc(100vh / 6);
+				height: calc(100vh / 5);
 				font-size: 2em;
 				overflow-y: hidden;
 				cursor: pointer;
@@ -137,7 +141,9 @@
 				display: flex;
 				z-index: 2;
 
-				// TODO: Try and not display the sub components when the navbar is open
+				@media all and (max-width: 600px) {
+					height: calc(100vh - 118px);
+				}
 			}
 		}
 	}

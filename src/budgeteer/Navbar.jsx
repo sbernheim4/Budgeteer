@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 /* Font Awesome */
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/fontawesome-free-solid';
+import { faBars, faHome } from '@fortawesome/fontawesome-free-solid';
 
 import "./scss/navbar.scss";
 
@@ -21,7 +21,7 @@ class Navbar extends Component {
 
 	async componentDidMount() {
 
-		let keyAndEnv = await fetch('plaid-api/key-and-env');
+		let keyAndEnv = await fetch('/plaid-api/key-and-env');
 		keyAndEnv = await keyAndEnv.json();
 
 		const plaid = Plaid.create({
@@ -46,7 +46,9 @@ class Navbar extends Component {
 			}
 		});
 
-		this.setState({ handler: plaid });
+		this.setState({
+			handler: plaid
+		});
 	}
 
 	addAccount() {
@@ -76,9 +78,9 @@ class Navbar extends Component {
 
 				<div className="navbar--mobile">
 					<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
+					<Link to='/'> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
 
 					<div className='navbar--mobile--links'>
-						<p className="first" onClick={this.toggleMenu}><Link to='/'>Home</Link></p>
 						<p className="second" onClick={this.toggleMenu}><Link to='/transactions'>Transactions</Link></p>
 						<p className="third" onClick={this.toggleMenu}><Link to='/statistics'>Statistics</Link></p>
 						<p className="fourth" onClick={this.toggleMenu}><Link to='/networth'>Networth</Link></p>

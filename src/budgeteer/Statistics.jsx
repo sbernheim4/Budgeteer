@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactSwipe from 'react-swipe';
 
 import { Doughnut, Line, Bar } from "react-chartjs-2";
 
@@ -17,7 +18,9 @@ class Statistics extends Component {
 	constructor(props) {
 		super(props);
 
-		this.changeChart = this.changeChart.bind(this);
+		// this.changeChart = this.changeChart.bind(this);
+		this.next = this.next.bind(this);
+		this.prev = this.prev.bind(this);
 
 		this.state = {
 			categoryDoughnutData: {},
@@ -27,59 +30,87 @@ class Statistics extends Component {
 		}
 	}
 
+	componentDidUpdate(prevProps, prevState) {
+    	// due to buggy iframe behavior
+		window.dispatchEvent(new Event('resize'));
+	}
+
 	componentDidMount() {
-		this.changeChart('spendingAnalysis');
+		// this.changeChart('spendingAnalysis');
 	}
 
 	componentWillReceiveProps (nextProps) {
-		this.changeChart('spendingAnalysis');
+		// this.changeChart('spendingAnalysis');
 	}
 
-	changeChart(chartType) {
-		let chartDisplay;
+	// changeChart(chartType) {
+	// 	let chartDisplay;
 
-		let tempOptions = {
-			legend: {
-				position: "bottom",
-				display: true
-			}
-		}
+	// 	let tempOptions = {
+	// 		legend: {
+	// 			position: "bottom",
+	// 			display: true
+	// 		}
+	// 	}
 
-		if (chartType === "spendingAnalysis") {
-			chartDisplay = <CategoryAndYearCharts transactions={this.props.transactions} />
-		} else if (chartType === "monthlyBudget") {
-			chartDisplay = <Budget transactions={this.props.transactions}/>
-		} else {
-			chartDisplay = <WeekWeekendChart transactions={this.props.transactions}/>
-		}
+	// 	if (chartType === "spendingAnalysis") {
+	// 		chartDisplay = <CategoryAndYearCharts transactions={this.props.transactions} />
+	// 	} else if (chartType === "monthlyBudget") {
+	// 		chartDisplay = <Budget transactions={this.props.transactions}/>
+	// 	} else {
+	// 		chartDisplay = <WeekWeekendChart transactions={this.props.transactions}/>
+	// 	}
 
-		document.querySelectorAll(`button`).forEach(btn => {
-			btn.classList.remove("active");
-		});
-		document.querySelector("." + chartType).classList.add("active");
+	// 	document.querySelectorAll(`button`).forEach(btn => {
+	// 		btn.classList.remove("active");
+	// 	});
+	// 	document.querySelector("." + chartType).classList.add("active");
 
-		this.setState({chart: chartDisplay});
+	// 	this.setState({chart: chartDisplay});
+	// }
+
+	next() {
+		this.reactSwipe.next();
 	}
+
+	prev() {
+		this.reactSwipe.prev();
+	}
+
 
 	/************************************* End Line Chart *************************************/
 
 	render() {
 
+		const swipeOptions = {
+			startSlide: 0,
+			auto:  0,
+			speed: 300,
+			disableScroll: true,
+			continuous: true,
+			callback() {
+				console.log('slide changed');
+			},
+			transitionEnd() {
+				console.log('ended transition');
+			}
+		};
+
 		return (
 
-			<div className="stats">
+			<div>
+	          <button type="button" onClick={this.prev}>Prev</button>
+	          <button type="button" onClick={this.next}>Next</button>
 
-				<div className="stats--tab-container">
-					<button className="spendingAnalysis" onClick={() => {this.changeChart("spendingAnalysis")}}>Spending Analysis</button>
-					<button className="monthlyBudget" onClick={() => {this.changeChart("monthlyBudget")}}>Monthly Budget</button>
-					<button className="weekVsWeekend" onClick={() => {this.changeChart("weekVsWeekend")}}>Week vs Weekend</button>
-				</div>
+				<ReactSwipe className='statistics' ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
+					<div className="item"><CategoryAndYearCharts transactions={this.props.transactions} /></div>
+					<div className="item"><Budget transactions={this.props.transactions} /></div>
+					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
+				</ReactSwipe>
 
-				{this.state.chart}
 
 			</div>
 		);
-
 	}
 }
 
