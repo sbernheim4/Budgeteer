@@ -80,7 +80,6 @@ class Settings extends Component {
 
 	async rotateAccessTokens() {
 		let returnVal = await axios.post('/plaid-api/rotate-access-tokens');
-		console.log(returnVal.data.result);
 
 		const alertMessage = document.querySelector('.app-error');
 		alertMessage.innerText = returnVal.data.result;

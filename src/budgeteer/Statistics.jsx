@@ -89,10 +89,10 @@ class Statistics extends Component {
 			disableScroll: true,
 			continuous: true,
 			callback() {
-				console.log('slide changed');
+
 			},
 			transitionEnd() {
-				console.log('ended transition');
+
 			}
 		};
 
