@@ -1,8 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-// import { BrowserRouter } from 'react-router-dom';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 
 import "./scss/reset.scss";
 
@@ -10,8 +9,8 @@ import "./scss/reset.scss";
 import App from './App.jsx';
 
 ReactDOM.render(
-	<HashRouter>
+	<BrowserRouter>
 		<App />
-	</HashRouter>
-	,document.getElementById("home")
+	</BrowserRouter>,
+	document.getElementById("home")
 );

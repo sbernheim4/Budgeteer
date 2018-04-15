@@ -17,7 +17,6 @@ class LandingPage extends Component {
 		return (
 			<div className="landing-page">
 				<a href="/budgeteer">Take me to Budgeteer</a>
-				<p>blah</p>
 			</div>
 		);
 	}
