@@ -3,7 +3,7 @@
   "name": "Budgeteer - Organize all your finances",
   "start_url": "/budgeteer?utm_source=homescreen",
   "display": "fullscreen",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#323232",
   "theme_color": "#346CA1",
   "icons": [
