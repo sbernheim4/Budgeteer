@@ -1,12 +1,14 @@
 {
   "short_name": "Budgeteer",
   "name": "Budgeteer - Organize all your finances",
-  "start_url": "/?utm_source=homescreen",
+  "start_url": "/budgeteer?utm_source=homescreen",
+  "display": "fullscreen",
+  "orientation": "portrait",
   "background_color": "#323232",
   "theme_color": "#346CA1",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "/favicon.ico",
       "type": "image/ico",
       "sizes": "192x192"
     }
