@@ -28,6 +28,10 @@ module.exports = {
 			'/plaid-api': {
 				target: 'http://localhost:5001', // URL of the express server
 				secure: false // using https or no
+			},
+			'/budgeteer': {
+				target: 'http://localhost:5001', // URL of the express server
+				secure: false // using https or no
 			}
 		}
 	},

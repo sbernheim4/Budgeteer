@@ -27,9 +27,6 @@
 }
 
 .accounts {
-	@media  all and (max-width: 600px) {
-		margin-top: -30px;
-	}
 
 	.red {
 		text-align: center;
@@ -53,10 +50,10 @@
 
 
 		&--keyword-search {
-			width: 70%;
-			display: flex;
-			justify-content: flex-start;
-			align-items: center;
+			// width: 70%;
+			// display: flex;
+			// justify-content: flex-start;
+			// align-items: center;
 
 			@media  all and (max-width: 600px) {
 				margin-top: 15px;
@@ -69,12 +66,12 @@
 			}
 
 			form {
-				width: 100%;
+				display: flex;
+				justify-content: center;
 
 				label {
 
 					input {
-						width: 80%;
 						height: 61px;
 						padding: 0 15px;
 						background-color: $background-color;

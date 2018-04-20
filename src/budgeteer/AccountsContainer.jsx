@@ -428,7 +428,7 @@ class AccountsContainer extends Component {
 				<div className="accounts--search-options">
 
 					<div className="accounts--search-options--keyword-search">
-						<FontAwesomeIcon className="icon" icon={faSearch}/>
+						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
 
 						<form onSubmit={this.searchByKeyword}>
 							<label>

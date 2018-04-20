@@ -3,6 +3,7 @@
 /*$background-color: rgb(50, 50, 50);*/
 
 .navbar {
+	padding-bottom: 20px;
 
 	&--desktop {
 		@media all and (max-width: 800px) {
@@ -85,11 +86,29 @@
 		&--links {
 			width: 100vw;
 			height: 0;
-			transition: all .4s ease-in-out;
+			transition: all .3s ease-out;
 			visibility: hidden;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
+
+			a {
+				width: 100vw;
+				overflow-y: hidden;
+				text-decoration: none;
+				text-align: center;
+
+				p {
+					height: calc(100vh / 5);
+					font-size: 2em;
+					overflow-y: hidden;
+					cursor: pointer;
+					z-index: 1;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+			}
 
 			p {
 				height: calc(100vh / 5);
@@ -100,13 +119,6 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-
-				a {
-					width: 100vw;
-					overflow-y: hidden;
-					text-decoration: none;
-					text-align: center;
-				}
 			}
 
 			.first {
@@ -142,7 +154,7 @@
 				z-index: 2;
 
 				@media all and (max-width: 600px) {
-					height: calc(100vh - 118px);
+					height: calc(100vh - 70px);
 				}
 			}
 		}

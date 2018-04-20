@@ -1,9 +1,30 @@
 @import './variables';
 
+$bottom: 60px;
 
-.statistics {
+div {
 
-	.item {
+	.statistics {
 
+		.item {
+
+		}
 	}
+
+	.btn {
+		width: 50vw;
+		height: $bottom;
+		background: black;
+		position: absolute;
+		bottom: -$bottom;
+	}
+
+	.btn__left {
+		left: 0;
+	}
+
+	.btn__right {
+		right: 0;
+	}
+
 }

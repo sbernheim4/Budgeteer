@@ -81,10 +81,10 @@ class Navbar extends Component {
 					<Link to='/'> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
 
 					<div className='navbar--mobile--links'>
-						<p className="second" onClick={this.toggleMenu}><Link to='/transactions'>Transactions</Link></p>
-						<p className="third" onClick={this.toggleMenu}><Link to='/statistics'>Statistics</Link></p>
-						<p className="fourth" onClick={this.toggleMenu}><Link to='/networth'>Networth</Link></p>
-						<p className="fifth" onClick={this.toggleMenu}><Link to='/settings'>Settings</Link></p>
+						<Link to='/transactions'><p className="second" onClick={this.toggleMenu}>Transactions</p></Link>
+						<Link to='/statistics'><p className="third" onClick={this.toggleMenu}>Statistics</p></Link>
+						<Link to='/networth'><p className="fourth" onClick={this.toggleMenu}>Networth</p></Link>
+						<Link to='/settings'><p className="fifth" onClick={this.toggleMenu}>Settings</p></Link>
 						<p className="sixth" onClick={this.addAccount}>Add Account</p>
 					</div>
 				</div>
