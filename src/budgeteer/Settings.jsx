@@ -18,17 +18,10 @@ class Settings extends Component {
 	}
 
 	async componentDidMount() {
-		let linkedBanks = await fetch("/plaid-api/linked-accounts", {
-			method: "POST",
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			}
-		});
 
-		linkedBanks = await linkedBanks.json();
+		let linkedBanks = await axios.post('/plaid-api/linked-accounts');
 		this.setState({
-			linkedBanks: linkedBanks.accounts
+			linkedBanks: linkedBanks.data.accounts
 		})
 	}
 

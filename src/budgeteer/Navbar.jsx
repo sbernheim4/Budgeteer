@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 /* Font Awesome */
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
@@ -21,15 +22,14 @@ class Navbar extends Component {
 
 	async componentDidMount() {
 
-		let keyAndEnv = await fetch('/plaid-api/key-and-env');
-		keyAndEnv = await keyAndEnv.json();
+		let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
 		const plaid = Plaid.create({
 			apiVersion: 'v2',
 			clientName: 'Plaid Walkthrough Demo',
-			env: keyAndEnv.env,
+			env: keyAndEnv.data.env,
 			product: ['transactions'],
-			key: keyAndEnv.publicKey,
+			key: keyAndEnv.data.publicKey,
 			onSuccess: function (public_token) {
 				fetch('/plaid-api/get-access-token', {
 					method: 'post',
