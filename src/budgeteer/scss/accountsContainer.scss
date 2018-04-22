@@ -50,7 +50,7 @@
 
 
 		&--keyword-search {
-			// width: 70%;
+			width: 90%;
 			// display: flex;
 			// justify-content: flex-start;
 			// align-items: center;
@@ -66,12 +66,18 @@
 			}
 
 			form {
+				width: 100%;
 				display: flex;
 				justify-content: center;
 
 				label {
+					width: 100%;
 
 					input {
+
+						display: block;
+						margin: 0 auto;
+						width: 85%;
 						height: 61px;
 						padding: 0 15px;
 						background-color: $background-color;
