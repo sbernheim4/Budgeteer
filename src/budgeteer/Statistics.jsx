@@ -5,7 +5,8 @@ import { Doughnut, Line, Bar } from "react-chartjs-2";
 
 import Budget from "./charts/Budget.jsx";
 import WeekWeekendChart from "./charts/WeekWeekendChart.jsx";
-import CategoryAndYearCharts from "./charts/CategoryAndYearCharts.jsx";
+import CategoryChart from "./charts/CategoryChart.jsx";
+import Year from "./charts/Year.jsx";
 
 import helpers from './helpers';
 
@@ -55,7 +56,7 @@ class Statistics extends Component {
 
 		const swipeOptions = {
 			startSlide: 0,
-			auto:  0,
+			auto: 0,
 			speed: 300,
 			disableScroll: true,
 			continuous: true,
@@ -67,12 +68,15 @@ class Statistics extends Component {
 			}
 		};
 
+
 		return (
 			<div>
+
 				<ReactSwipe className='statistics' ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
-					<div className="item"><CategoryAndYearCharts transactions={this.props.transactions} /></div>
+					<div className="item category-chart-container"><CategoryChart transactions={this.props.transactions} /></div>
+					<div className="item"><Year transactions={this.props.transactions} /></div>
 					<div className="item"><Budget transactions={this.props.transactions} /></div>
-					<div className="item weekWeekendChart"><WeekWeekendChart transactions={this.props.transactions} /></div>
+					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
 				</ReactSwipe>
 
 				<button className="btn btn__left" type="button" onClick={this.prev}>Prev</button>

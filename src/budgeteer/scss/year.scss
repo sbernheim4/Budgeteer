@@ -1,0 +1,11 @@
+.yearly-budget {
+	position: relative;
+	margin: 0 auto;
+	width: 55%;
+	min-width: 320px;
+
+	@media all and (max-width: 1100px) {
+		margin: 0 auto;
+		width: 80%;
+	}
+}

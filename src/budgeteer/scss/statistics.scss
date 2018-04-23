@@ -10,12 +10,8 @@ div {
 
 		}
 
-		.weekWeekendChart {
-			max-width: 83vw;
-			display: flex;
-			justify-content: center;
-			float: inherit !important;
-			margin: 0 auto;
+		.category-chart-container {
+			width: 100%;
 		}
 	}
 
@@ -25,11 +21,6 @@ div {
 		height: $bottom;
 		background: black;
 		cursor: pointer;
-
-		@media all and (max-width: 420px) {
-			position: absolute;
-			bottom: 0;
-		}
 	}
 
 	.btn__left {
