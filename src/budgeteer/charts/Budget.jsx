@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
+import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 
 import helpers from "../helpers.js";
 
@@ -9,6 +10,11 @@ import isSameYear from "date-fns/is_same_year";
 
 import "../scss/budget.scss";
 
+const COLORS = [
+	"#D46363",
+	"#007255",
+];
+
 class Budget extends Component {
 	constructor(props){
 		super(props);
@@ -16,24 +22,10 @@ class Budget extends Component {
 		this.state = {
 			monthlyBudget: "",
 			spentThisMonth: 0,
-
-			data: {
-				labels: [
-					"Spent",
-					"Remaining"
-				],
-				datasets: [{
-					data: [0, 1],
-					backgroundColor: [
-						"rgb(212,99,99)",
-						"rgb(77, 153, 114)"
-					],
-					hoverBackgroundColor: [
-						"#D46363",
-						"#007255"
-					]
-				}]
-			}
+			rechartsData: [
+				{name: 'Spent', value: 0},
+				{name: 'Remaining', value: 1}
+			]
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -45,35 +37,18 @@ class Budget extends Component {
 
 
 		// Calculate remaining amount left to spend
-		let remaining = (monthlyBudgetFromSessionStorage - totalSpent).toFixed(2);
-		if (remaining <= 0) {
-			remaining = 0;
-		}
-
+		let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);
 
 		// Update chart
 		if (monthlyBudgetFromSessionStorage !== null) {
-			const chartData = {
-				labels: [
-					"Spent",
-					"Remaining"
-				],
-				datasets: [{
-					data: [totalSpent, remaining],
-					backgroundColor: [
-						"rgb(212,99,99)",
-						"rgb(77, 153, 114)"
-					],
-					hoverBackgroundColor: [
-						"#D46363",
-						"#007255"
-					]
-				}]
-			}
+			const chartData = [
+				{name: 'Spent', value: totalSpent},
+				{name: 'Remaining', value: remaining},
+			];
 
-			// Update state data
+
 			this.setState({
-				data: chartData,
+				rechartsData: chartData,
 				monthlyBudget: monthlyBudgetFromSessionStorage
 			});
 		}
@@ -93,8 +68,6 @@ class Budget extends Component {
 			}
 		})
 
-		// Round total to two decimal places and ensure trailing 0s appear
-		total = helpers.formatAmount(total);
 		this.setState({ spentThisMonth: total });
 		return total;
 	}
@@ -108,30 +81,17 @@ class Budget extends Component {
 
 		// Update the percentage calculator
 		const spent = this.state.spentThisMonth;
-		let remaining = (event.target.value - this.state.spentThisMonth).toFixed(2);
-		if (remaining <= 0) {
-			remaining = 0;
-		}
+		const remaining = (event.target.value - this.state.spentThisMonth) <= 0 ? 0 : (event.target.value - this.state.spentThisMonth);
 
 		// Update the chart
-		const data = {
-			labels: [
-				"Spent",
-				"Remaining"
-			],
-			datasets: [{
-				data: [spent, remaining],
-				backgroundColor: [
-					"rgb(212, 99, 99)",
-					"rgb(77, 153, 114)"
-				],
-				hoverBackgroundColor: [
-					"rgb(201, 59, 59)",
-					"rgb(60, 119, 89)"
-				]
-			}]
-		};
-		this.setState({data: data})
+		let amts = [
+			{name: 'Spent', value: spent},
+			{name: 'Remaining', value: remaining},
+		];
+
+		this.setState({
+			rechartsData: amts
+		})
 	}
 
 	render() {
@@ -140,12 +100,31 @@ class Budget extends Component {
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
 		remaining = helpers.numberWithCommas(remaining);
 
+		console.log(this.state.rechartsData);
+
 		return (
 			<div className="budget">
 
-				<div className="budget--doughnut-chart">
-					<Doughnut data={this.state.data} />
-				</div>
+				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
+				<ResponsiveContainer className="budget--doughnut-chart" width="100%" height={370} >
+					<PieChart>
+						<Pie
+							data={this.state.rechartsData}
+							innerRadius="50%"
+							outerRadius="90%"
+							fill="#8884d8"
+							paddingAngle={0}>
+
+							{
+								this.state.rechartsData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)
+							}
+							{/*<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />*/}
+						</Pie>
+
+						<Legend align="center" verticalAlign="bottom"/>
+					</PieChart>
+				</ResponsiveContainer>
+
 
 				<form className="budget--form">
 					<label>

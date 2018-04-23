@@ -16,11 +16,13 @@ div {
 	}
 
 	.btn {
+		position: absolute;
 		margin-top: 15px;
 		width: 50vw;
 		height: $bottom;
 		background: black;
 		cursor: pointer;
+		bottom: 0;
 	}
 
 	.btn__left {

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Doughnut, Bar } from "react-chartjs-2";
-import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label } from "recharts"
+import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
@@ -25,6 +25,32 @@ const COLORS = [
 	"#2d7582"
 ]
 
+class CustomTooltip extends Component {
+
+	render() {
+		const { active } = this.props;
+
+		if (active) {
+			const { payload, label } = this.props;
+
+			const style = {
+				background: `${payload[0].payload.fill}`
+			}
+
+			let value = helpers.formatAmount(payload[0].value);
+			value = helpers.numberWithCommas(value);
+
+			return (
+				<div style={style} className="custom-tooltip">
+					<p className="label">{`${payload[0].name}:\n $${value}`}</p>
+				</div>
+			);
+		}
+
+		return null;
+	}
+};
+
 class CategoryChart extends Component {
 
 	constructor(props) {
@@ -32,15 +58,32 @@ class CategoryChart extends Component {
 
 		this.state = {
 			categoryDoughnutData: [],
+			labelText: ""
 		}
 	}
 
 	componentDidMount() {
 		this.generateDoughnutChart();
+		this.getTotalSpent();
 	}
 
 	componentWillReceiveProps() {
 		this.generateDoughnutChart();
+		this.getTotalSpent();
+	}
+
+	getTotalSpent() {
+		let total = 0;
+		this.props.transactions.forEach(t => {
+			total += t.amount;
+		});
+
+		total = helpers.formatAmount(total);
+		total = helpers.numberWithCommas(total);
+
+		this.setState({
+			totalSpent: "Total Spent: " + total
+		})
 	}
 
 	generateDoughnutChart() {
@@ -136,6 +179,13 @@ class CategoryChart extends Component {
 		});
 	}
 
+	changeCenterText(a) {
+		const amount = helpers.numberWithCommas(helpers.formatAmount(a.value));
+		this.setState({
+			labelText: a.name + ": $" + amount
+		})
+	}
+
 	render() {
 
 		return (
@@ -148,15 +198,19 @@ class CategoryChart extends Component {
 						innerRadius="70%"
 						outerRadius="90%"
 						fill="#8884d8"
-						paddingAngle={2}
-						label={(name) =>`$${helpers.formatAmount(name.value)}`}>
+						paddingAngle={2}>
+						{/*onMouseOver={(a) => this.changeCenterText(a)}>*/}
+					{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
 
 						{
 							this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)
 						}
+
+						<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />
 					</Pie>
-					<Label value="any text" position="center" />
-					<Legend align="center" verticalAlign="bottom"/>
+
+					<Tooltip content={<CustomTooltip/>}/>
+					{/*<Legend align="center" verticalAlign="bottom"/>*/}
 				</PieChart>
 			</ResponsiveContainer>
 
