@@ -9,14 +9,27 @@ div {
 		.item {
 
 		}
+
+		.weekWeekendChart {
+			max-width: 83vw;
+			display: flex;
+			justify-content: center;
+			float: inherit !important;
+			margin: 0 auto;
+		}
 	}
 
 	.btn {
+		margin-top: 15px;
 		width: 50vw;
 		height: $bottom;
 		background: black;
-		position: absolute;
-		bottom: -$bottom;
+		cursor: pointer;
+
+		@media all and (max-width: 420px) {
+			position: absolute;
+			bottom: 0;
+		}
 	}
 
 	.btn__left {

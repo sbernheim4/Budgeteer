@@ -36,38 +36,12 @@ class Statistics extends Component {
 	}
 
 	componentDidMount() {
-		// this.changeChart('spendingAnalysis');
+
 	}
 
 	componentWillReceiveProps (nextProps) {
-		// this.changeChart('spendingAnalysis');
+
 	}
-
-	// changeChart(chartType) {
-	// 	let chartDisplay;
-
-	// 	let tempOptions = {
-	// 		legend: {
-	// 			position: "bottom",
-	// 			display: true
-	// 		}
-	// 	}
-
-	// 	if (chartType === "spendingAnalysis") {
-	// 		chartDisplay = <CategoryAndYearCharts transactions={this.props.transactions} />
-	// 	} else if (chartType === "monthlyBudget") {
-	// 		chartDisplay = <Budget transactions={this.props.transactions}/>
-	// 	} else {
-	// 		chartDisplay = <WeekWeekendChart transactions={this.props.transactions}/>
-	// 	}
-
-	// 	document.querySelectorAll(`button`).forEach(btn => {
-	// 		btn.classList.remove("active");
-	// 	});
-	// 	document.querySelector("." + chartType).classList.add("active");
-
-	// 	this.setState({chart: chartDisplay});
-	// }
 
 	next() {
 		this.reactSwipe.next();
@@ -76,9 +50,6 @@ class Statistics extends Component {
 	prev() {
 		this.reactSwipe.prev();
 	}
-
-
-	/************************************* End Line Chart *************************************/
 
 	render() {
 
@@ -101,7 +72,7 @@ class Statistics extends Component {
 				<ReactSwipe className='statistics' ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
 					<div className="item"><CategoryAndYearCharts transactions={this.props.transactions} /></div>
 					<div className="item"><Budget transactions={this.props.transactions} /></div>
-					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
+					<div className="item weekWeekendChart"><WeekWeekendChart transactions={this.props.transactions} /></div>
 				</ReactSwipe>
 
 				<button className="btn btn__left" type="button" onClick={this.prev}>Prev</button>
