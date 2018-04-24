@@ -73,14 +73,23 @@
 			display: none;
 		}
 
-		.icon {
-			margin: 15px;
-			font-size: 2em;
-			cursor: pointer;
-		}
+		background-color: #B55F45;
+		border-bottom: 1px solid black;
 
-		a {
-			float: right;
+		&--header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			.icon {
+				margin: 15px;
+				font-size: 2em;
+				cursor: pointer;
+			}
+
+			a {
+				float: right;
+			}
 		}
 
 		&--links {

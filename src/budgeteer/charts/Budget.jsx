@@ -100,8 +100,6 @@ class Budget extends Component {
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth).toFixed(2);
 		remaining = helpers.numberWithCommas(remaining);
 
-		console.log(this.state.rechartsData);
-
 		return (
 			<div className="budget">
 

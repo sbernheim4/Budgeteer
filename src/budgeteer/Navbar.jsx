@@ -77,8 +77,11 @@ class Navbar extends Component {
 				</div>
 
 				<div className="navbar--mobile">
-					<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
-					<Link to='/'> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
+					<div className="navbar--mobile--header">
+						<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
+						<h2>Budgeteer</h2>
+						<Link to='/'> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
+					</div>
 
 					<div className='navbar--mobile--links'>
 						<Link to='/transactions'><p className="second" onClick={this.toggleMenu}>Transactions</p></Link>

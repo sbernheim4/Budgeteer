@@ -34,7 +34,8 @@ class CustomTooltip extends Component {
 			const { payload, label } = this.props;
 
 			const style = {
-				background: `${payload[0].payload.fill}`
+				background: `${payload[0].payload.fill}`,
+				color: "#fff"
 			}
 
 			let value = helpers.formatAmount(payload[0].value);
@@ -58,32 +59,17 @@ class CategoryChart extends Component {
 
 		this.state = {
 			categoryDoughnutData: [],
-			labelText: ""
+			labelText: "",
+			totalSpent: 0
 		}
 	}
 
 	componentDidMount() {
 		this.generateDoughnutChart();
-		this.getTotalSpent();
 	}
 
 	componentWillReceiveProps() {
 		this.generateDoughnutChart();
-		this.getTotalSpent();
-	}
-
-	getTotalSpent() {
-		let total = 0;
-		this.props.transactions.forEach(t => {
-			total += t.amount;
-		});
-
-		total = helpers.formatAmount(total);
-		total = helpers.numberWithCommas(total);
-
-		this.setState({
-			totalSpent: "Total Spent: " + total
-		})
 	}
 
 	generateDoughnutChart() {
@@ -163,19 +149,22 @@ class CategoryChart extends Component {
 		});
 
 		let newAmts = [];
+		let total = 0;
 
 		amts.forEach( (entry, index) => {
 			if (entry.value !== 0) {
 				newAmts.push({
 					name: entry.name,
 					value: entry.value
-				})
+				});
+
+				total += entry.value;
 			}
 		});
 
-
 		this.setState({
-			categoryDoughnutData: newAmts
+			categoryDoughnutData: newAmts,
+			totalSpent: helpers.formatAmount(total)
 		});
 	}
 
@@ -206,7 +195,7 @@ class CategoryChart extends Component {
 							this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)
 						}
 
-						<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />
+						<Label className="center-label" fill={"white"} value={"Total Spent: $" + this.state.totalSpent} position="center" />
 					</Pie>
 
 					<Tooltip content={<CustomTooltip/>}/>

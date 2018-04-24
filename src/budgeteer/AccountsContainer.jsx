@@ -427,16 +427,6 @@ class AccountsContainer extends Component {
 
 				<div className="accounts--search-options">
 
-					<div className="accounts--search-options--keyword-search">
-						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
-
-						<form onSubmit={this.searchByKeyword}>
-							<label>
-								<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
-							</label>
-						</form>
-					</div>
-
 					<div className="accounts--search-options--icon-search">
 
 						<div className="accounts--search-options--icon-search--categorical-search">
@@ -481,8 +471,18 @@ class AccountsContainer extends Component {
 								</div>
 							</div>
 						</div>
-
 					</div>
+
+					<div className="accounts--search-options--keyword-search">
+						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
+
+						<form onSubmit={this.searchByKeyword}>
+							<label>
+								<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
+							</label>
+						</form>
+					</div>
+
 				</div>
 
 				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>

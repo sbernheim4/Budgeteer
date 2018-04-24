@@ -7,6 +7,7 @@ import Budget from "./charts/Budget.jsx";
 import WeekWeekendChart from "./charts/WeekWeekendChart.jsx";
 import CategoryChart from "./charts/CategoryChart.jsx";
 import Year from "./charts/Year.jsx";
+import isSameMonth from 'date-fns/is_same_month';
 
 import helpers from './helpers';
 
@@ -24,24 +25,7 @@ class Statistics extends Component {
 		this.prev = this.prev.bind(this);
 
 		this.state = {
-			categoryDoughnutData: {},
-			monthlyLineChartData: {},
-			bubbleChartData: {},
-			weekVsWeekend: {}
 		}
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-    	// due to buggy iframe behavior
-		window.dispatchEvent(new Event('resize'));
-	}
-
-	componentDidMount() {
-
-	}
-
-	componentWillReceiveProps (nextProps) {
-
 	}
 
 	next() {
@@ -53,7 +37,6 @@ class Statistics extends Component {
 	}
 
 	render() {
-
 		const swipeOptions = {
 			startSlide: 0,
 			auto: 0,
@@ -67,7 +50,6 @@ class Statistics extends Component {
 
 			}
 		};
-
 
 		return (
 			<div>
