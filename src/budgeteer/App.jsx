@@ -39,6 +39,8 @@ class App extends Component {
 
 	async componentDidMount() {
 
+		this.registerServiceWorker();
+
 		try {
 			// First make a fetch call to get info for already linked accounts
 
@@ -87,6 +89,26 @@ class App extends Component {
 		} catch (err) {
 			console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
 			console.error(err);
+		}
+	}
+
+	registerServiceWorker() {
+
+		console.log("registering service worker now");
+		console.log(('serviceWorker' in navigator));
+
+		// Registering ServiceWorker
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('sw.js').then(function(registration) {
+				console.log("_________________HERE_________________");
+				console.log(registration);
+
+				// Registration was successful
+				console.log('ServiceWorker registration successful with scope: ', registration.scope);
+			}).catch(function(err) {
+				// registration failed :(
+				console.log('ServiceWorker registration failed: ', err);
+			});
 		}
 	}
 

@@ -1,7 +1,7 @@
 {
   "short_name": "Budgeteer",
   "name": "Budgeteer - Organize all your finances",
-  "start_url": "/budgeteer?utm_source=homescreen",
+  "start_url": "/budgeteer",
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#323232",
