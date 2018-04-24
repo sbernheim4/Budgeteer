@@ -54,6 +54,7 @@
 			display: flex;
 			justify-content: space-around;
 			align-items: center;
+			order: 1;
 
 			@media all and (max-width: 600px) {
 				margin-top: 15px;
@@ -260,6 +261,7 @@
 		&--keyword-search {
 			width: 90%;
 			font-size: 15px;
+			order: 0;
 
 			@media  all and (max-width: 600px) {
 			margin-top: 15px;
