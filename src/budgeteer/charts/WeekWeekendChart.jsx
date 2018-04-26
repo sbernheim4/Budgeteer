@@ -151,6 +151,9 @@ class WeekWeekendChart extends Component {
 			})
 		}
 
+		// Reverse the data so the order is [oldest, ..., newest]
+		data = data.reverse();
+
 		this.setState({
 			weekVsWeekend: data
 		});
