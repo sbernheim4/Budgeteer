@@ -23,7 +23,7 @@ class CustomTooltip extends Component {
 			const weekendValue = helpers.numberWithCommas(helpers.formatAmount(payload[1].value));
 
 			return (
-				<div style={style} className="week-weekend-tooltip">
+				<div className="week-weekend-tooltip">
 					<p className="time">{`${label} Week(s) Ago`}</p>
 					<p className="weekday-value">{`Weekday: $${weekdayValue}`}</p>
 					<p className="weekend-value">{`Weekend: $${weekendValue}`}</p>
