@@ -91,7 +91,7 @@ class Year extends Component {
 				<ComposedChart data={this.state.monthlyLineChartData}>
 					<CartesianGrid vertical={false} horizontal={true}/>
 
-					<XAxis tick={{stroke: 'white'}}/>
+					<XAxis dataKey="name" tick={{stroke: 'white'}}/>
 					<YAxis tick={{stroke: 'white'}}/>
 
 					<Legend />
