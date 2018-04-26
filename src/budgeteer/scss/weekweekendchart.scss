@@ -1,4 +1,52 @@
-.stats--week-weekend {
-	margin: 0 auto;
-	max-width: 60%;
+@import './variables';
+
+$color-block-dimension: 12px;
+$color-block-border-radius: 1px;
+
+.week-weekend {
+	margin: 20px;
+	color: white;
+}
+
+.week-weekend-tooltip {
+	background: black;
+	padding: 15px;
+	border-radius: 3px;
+
+	.time {
+
+	}
+
+	.weekday-value {
+
+		&:before {
+			content: "";
+			margin-right: 5px;
+			width: $color-block-dimension;
+			height: $color-block-dimension;
+			background-color: $green;
+			border: 1px solid white;
+			border-radius: $color-block-border-radius;
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+	}
+
+	.weekend-value {
+
+		&:before {
+			content: "";
+			margin-right: 5px;
+			width: $color-block-dimension;
+			height: $color-block-dimension;
+			background-color: $blue;
+			border: 1px solid white;
+			border-radius: $color-block-border-radius;
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+	}
+
 }

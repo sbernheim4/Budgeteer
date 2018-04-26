@@ -7,6 +7,7 @@ import Budget from "./charts/Budget.jsx";
 import WeekWeekendChart from "./charts/WeekWeekendChart.jsx";
 import CategoryChart from "./charts/CategoryChart.jsx";
 import Year from "./charts/Year.jsx";
+
 import isSameMonth from 'date-fns/is_same_month';
 
 import helpers from './helpers';
@@ -56,6 +57,7 @@ class Statistics extends Component {
 
 				<ReactSwipe className='statistics' ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
 					<div className="item category-chart-container"><CategoryChart transactions={this.props.transactions} /></div>
+					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
 					<div className="item"><Year transactions={this.props.transactions} /></div>
 					<div className="item"><Budget transactions={this.props.transactions} /></div>
 					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>

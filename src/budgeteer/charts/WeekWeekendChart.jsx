@@ -1,6 +1,6 @@
 /* eslint no-undefined: 0 */
 import React, { Component } from "react";
-import { Line, Bar } from "react-chartjs-2";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 import startOfWeek from "date-fns/start_of_week";
 import endOfWeek from "date-fns/end_of_week";
@@ -11,16 +11,40 @@ import isWeekend from "date-fns/is_weekend";
 import helpers from '../helpers';
 import "../scss/weekweekendchart.scss";
 
+class CustomTooltip extends Component {
+
+	render() {
+		const { active } = this.props;
+
+		if (active) {
+			const { payload, label } = this.props;
+
+			const weekdayValue = helpers.numberWithCommas(helpers.formatAmount(payload[0].value));
+			const weekendValue = helpers.numberWithCommas(helpers.formatAmount(payload[1].value));
+
+			return (
+				<div style={style} className="week-weekend-tooltip">
+					<p className="time">{`${label} Week(s) Ago`}</p>
+					<p className="weekday-value">{`Weekday: $${weekdayValue}`}</p>
+					<p className="weekend-value">{`Weekend: $${weekendValue}`}</p>
+				</div>
+			);
+		}
+
+		return null;
+	}
+};
+
+
 class WeekWeekendChart extends Component {
 
 	constructor(props) {
 		super(props);
 
 		this.generateLineChart = this.generateLineChart.bind(this);
-		this.generateLineChartLabels = this.generateLineChartLabels.bind(this);
 
 		this.state = {
-			weekVsWeekend: {}
+			weekVsWeekend: []
 		}
 	}
 
@@ -30,7 +54,7 @@ class WeekWeekendChart extends Component {
 
 	generateLineChart() {
 
-		// Sort the transactions from oldest to newest --> [oldest, ..., newest]
+		// Sort the transactions --> [oldest, ..., newest]
 		let sortedTransactions = this.props.transactions.sort((a, b) => {
 			// a and b are transactions
 			let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
@@ -38,7 +62,6 @@ class WeekWeekendChart extends Component {
 			return dateA - dateB;
 		});
 
-		// Only really care about the past 6 months, not a full year
 		let pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
 		if (pastSixMonths[0] === undefined) {
@@ -66,11 +89,11 @@ class WeekWeekendChart extends Component {
 		// Arrays only need to be as large as how many weeks have passed in the year so far
 		// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
 		let arrSize = differenceInCalendarWeeks(endWeek, startWeek);
+
 		let weekday = new Array(arrSize).fill(0);
 		let weekend = new Array(arrSize).fill(0);
 
 		let counter = 0;
-
 		pastSixMonths.forEach(t => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
@@ -104,94 +127,53 @@ class WeekWeekendChart extends Component {
 
 		// Format values in the array to two decimals
 		weekday.forEach( (val, index) => {
-			weekday[index] = helpers.formatAmount(val)
+			if (isNaN(val)) {
+				weekday[index] = 0;
+			} else {
+				weekday[index] = parseInt(val);
+			}
 		});
 
 		weekend.forEach((val, index) => {
-			weekday[index] = helpers.formatAmount(val)
+			if (isNaN(val)) {
+				weekend[index] = 0;
+			} else {
+				weekend[index] = parseInt(val);
+			}
 		});
 
-		const chartData = {
-			labels: this.generateLineChartLabels(arrSize),
-			datasets:  [
-				{
-					// Having the same stack means the two data sets will be stacked on top of each other.
-					stack: "Stack 0",
-					data:  weekday,
-					// fill:  false,
-					label:  "Week",
-					backgroundColor: "rgb(77,  153, 114)",
-				},
-				{
-					stack: "Stack 0",
-					data: weekend,
-					// fill: false,
-					label: "Weekend",
-					backgroundColor: "rgb(52, 108, 161)",
-				}
-			]
+		let data = [];
+		for (let i = 0; i < arrSize; i++) {
+			data.push({
+				name: i,
+				Weekday: weekday[i],
+				Weekend: weekend[i]
+			})
 		}
 
 		this.setState({
-			weekVsWeekend: chartData
+			weekVsWeekend: data
 		});
-	}
-
-	generateLineChartLabels(length) {
-		let arr = [];
-		for (let i = length; i > 1; i--) {
-			arr.push(i);
-		}
-
-		arr.push("Last Week");
-		arr.push("This Week");
-
-		return arr;
 	}
 
 	render() {
 
-		const barOptions = {
-			tooltips: {
-				callbacks: {
-					title: function(item) {
-						// Less than 12 exception to ignore the Yesterday and Today values in the labels
-						return item[0].xLabel + " Week(s) Ago";
-					},
-					label: function(item) {
-						const amt = helpers.numberWithCommas(helpers.formatAmount(item.yLabel));
-						return "Spent $" + amt;
-						// Show the user `Spent $17.20` or `Received $17.20` --> need the
-						// formatAmount again since multiplying by -1 removes the trailing 0
-						// decimal
-					}
-				}
-			},
-			title: {
-				display: true,
-				text: "Week Vs Weekwend Spending",
-				fontSize: 20
-			},
-			scales: {
-				xAxes: [{
-					barThickness: 15,
-					// ticks: {
-					// 	fontSize: 15
-					// }
-				}],
-				yAxes: [{
-					barThickness: 15,
-					ticks: {
-						// fontSize: 15,
-						callback: function(value, index, values) {
-							return '$' + helpers.numberWithCommas(value);
-						}
-					}
-				}]
-			}
-		}
+		return (
+			<ResponsiveContainer className="week-weekend" width="90%" height={500} >
+				<BarChart data={this.state.weekVsWeekend}>
+					<CartesianGrid vertical={false} horizontal={true}/>
 
-		return <Bar data={this.state.weekVsWeekend} options={barOptions} />
+					<XAxis tick={{stroke: 'white'}}/>
+					<YAxis tick={{stroke: 'white'}}/>
+
+					<Tooltip content={<CustomTooltip/>}/>
+					<Legend />
+
+					<Bar dataKey="Weekday" stackId="a" fill="rgb(52, 108, 161)" />
+					<Bar dataKey="Weekend" stackId="a" fill="rgb(77,  153, 114)" />
+				</BarChart>
+			</ResponsiveContainer>
+		);
 	}
 }
 
