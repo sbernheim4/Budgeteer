@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Doughnut, Bar } from "react-chartjs-2";
+import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+/*import { Doughnut, Bar } from "react-chartjs-2";*/
 
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
@@ -14,7 +15,7 @@ class Year extends Component {
 		super(props);
 
 		this.state = {
-			monthlyLineChartData: {},
+			monthlyLineChartData: []
 		}
 	}
 
@@ -51,12 +52,6 @@ class Year extends Component {
 
 		// Divide by 12 and round to two decimal places
 		avg = avg / 12;
-		avg = helpers.formatAmount(avg);
-
-		// Round the amounts to two decimals
-		amounts = amounts.map(val => {
-			return helpers.formatAmount(val);
-		});
 
 		let monthsDefault = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
 		let currMonth = new Date().getMonth(); // 0
@@ -73,59 +68,40 @@ class Year extends Component {
 			orderedAmounts.push(amounts[i % 12]);
 		}
 
-		const lineData = {
-			labels: orderedLabels,
-			datasets: [{
-				type: "line",
-				data: new Array(12).fill(avg),
-				label: "Avg. Monthly Spending",
-				radius: 0,
-				borderColor: "#EC932F",
-				backgroundColor: "#EC932F",
-				pointBorderColor: "#EC932F",
-				pointBackgroundColor: "#EC932F",
-				pointHoverBackgroundColor: "#EC932F",
-				pointHoverBorderColor: "#EC932F",
-				fill: false
-			},
-			{
-				type: "bar",
-				data: orderedAmounts,
-				label: "Monthly Spending",
-				backgroundColor: "rgb(77, 153, 114)",
-				hoverBorderColor: "rgb(77, 153, 114)",
-				hoverBackgroundColor: "rgb(60, 119, 89)"
-			}],
-			options: {
-				responsive: true,
-				maintainAspectRatio: true,
-			}
-		};
+		let data = [];
+		for (let i = 0; i < 12; i++) {
+			data.push({
+				name: orderedLabels[i],
+				Average: parseInt(avg),
+				Month: parseInt(orderedAmounts[i])
+			})
+		}
+		console.log(data);
 
 		this.setState({
-			monthlyLineChartData: lineData
+			monthlyLineChartData: data
 		});
 	}
 
 	render() {
 
-		let barOptions = {
-			legend: {
-				position: "bottom",
-				display: true
-			},
-			scales: {
-				yAxes: [{
-					ticks: {
-						callback: function(value, index, values) {
-							return '$' + helpers.numberWithCommas(value);
-						}
-					}
-				}]
-			}
-		}
+		/*<Tooltip content={<CustomTooltip/>}/>*/
+		return (
+			<ResponsiveContainer className="year" width="90%" height={500} >
+				<ComposedChart data={this.state.monthlyLineChartData}>
+					<CartesianGrid vertical={false} horizontal={true}/>
 
-		return <Bar className="yearly-budget" options={barOptions} data={this.state.monthlyLineChartData} />
+					<XAxis tick={{stroke: 'white'}}/>
+					<YAxis tick={{stroke: 'white'}}/>
+
+					<Legend />
+
+					<Bar dataKey="Month" stackId="a" fill="rgb(78,  153, 114)" />
+					<Line dataKey="Average" stackId="a" fill="blue" />
+				</ComposedChart>
+			</ResponsiveContainer>
+
+		);
 	}
 }
 
