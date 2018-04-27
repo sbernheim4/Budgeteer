@@ -6,7 +6,6 @@ const CACHE_FILES = [
 	'budgeteer.js',
 	'favicon.ico',
     'manifest.json',
-    'https://cdn.plaid.com/link/v2/stable/link-initialize.js',
     'https://fonts.googleapis.com/css?family=Lato:300,400'
 ];
 

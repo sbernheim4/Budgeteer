@@ -94,15 +94,9 @@ class App extends Component {
 
 	registerServiceWorker() {
 
-		console.log("registering service worker now");
-		console.log(('serviceWorker' in navigator));
-
 		// Registering ServiceWorker
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('sw.js').then(function(registration) {
-				console.log("_________________HERE_________________");
-				console.log(registration);
-
 				// Registration was successful
 				console.log('ServiceWorker registration successful with scope: ', registration.scope);
 			}).catch(function(err) {
