@@ -9,6 +9,30 @@ import helpers from '../helpers';
 
 import "../scss/year.scss";
 
+class CustomTooltip extends Component {
+
+	render() {
+		const { active } = this.props;
+
+		if (active) {
+			const { payload, label } = this.props;
+
+			const avg = helpers.numberWithCommas(helpers.formatAmount(payload[1].value));
+			const month = payload[0].payload.name.endsWith(".") ? payload[0].payload.name.slice(0, -1) : payload[0].payload.name
+			const monthAmount = helpers.numberWithCommas(helpers.formatAmount(payload[0].value));
+
+			return (
+				<div className="year--custom-tooltip">
+					<p>{month}: ${monthAmount}</p>
+					<p>Average: ${avg}</p>
+				</div>
+			);
+		}
+
+		return null;
+	}
+};
+
 class Year extends Component {
 
 	constructor(props) {
@@ -94,12 +118,12 @@ class Year extends Component {
 					<YAxis tick={{stroke: 'white'}}/>
 
 					<Legend />
+					<Tooltip content={<CustomTooltip />}/>
 
 					<Bar dataKey="Month" stackId="a" fill="rgb(78,  153, 114)" />
-					<Line dataKey="Average" stackId="a" fill="blue" />
+					<Line strokeWidth={6} dot={false} dataKey="Average" stackId="a" fill="blue" />
 				</ComposedChart>
 			</ResponsiveContainer>
-
 		);
 	}
 }
