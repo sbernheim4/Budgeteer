@@ -26,14 +26,9 @@ class CustomTooltip extends Component {
 			let value = helpers.formatAmount(payload[0].value);
 			value = helpers.numberWithCommas(value);
 
-			let valueTwo = helpers.formatAmount(payload[1].value);
-			valueTwo = helpers.numberWithCommas(valueTwo);
-
-
 			return (
 				<div className="custom-tooltip">
 					<p className="label">{`${payload[0].name}:\n $${value}`}</p>
-					<p className="label">{`${payload[1].name}:\n $${valueTwo}`}</p>
 				</div>
 			);
 		}
