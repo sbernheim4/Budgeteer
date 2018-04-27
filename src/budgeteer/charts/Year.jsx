@@ -76,7 +76,6 @@ class Year extends Component {
 				Month: parseInt(orderedAmounts[i])
 			})
 		}
-		console.log(data);
 
 		this.setState({
 			monthlyLineChartData: data
