@@ -15,6 +15,33 @@ const COLORS = [
 	"#007255",
 ];
 
+class CustomTooltip extends Component {
+
+	render() {
+		const { active } = this.props;
+
+		if (active) {
+			const { payload, label } = this.props;
+
+			let value = helpers.formatAmount(payload[0].value);
+			value = helpers.numberWithCommas(value);
+
+			let valueTwo = helpers.formatAmount(payload[1].value);
+			valueTwo = helpers.numberWithCommas(valueTwo);
+
+
+			return (
+				<div className="custom-tooltip">
+					<p className="label">{`${payload[0].name}:\n $${value}`}</p>
+					<p className="label">{`${payload[1].name}:\n $${valueTwo}`}</p>
+				</div>
+			);
+		}
+
+		return null;
+	}
+};
+
 class Budget extends Component {
 	constructor(props){
 		super(props);
@@ -120,8 +147,8 @@ class Budget extends Component {
 							}
 							{/*<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />*/}
 						</Pie>
+						<Tooltip content={<CustomTooltip/>}/>
 
-						<Legend align="center" verticalAlign="bottom"/>
 					</PieChart>
 				</ResponsiveContainer>
 
@@ -132,12 +159,6 @@ class Budget extends Component {
 						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
 					</label>
 				</form>
-
-				<div className="budget--totals">
-					<h2>Spent: ${spent}</h2>
-					<h2>Remaining: ${remaining}</h2>
-				</div>
-
 			</div>
 		);
 	}
