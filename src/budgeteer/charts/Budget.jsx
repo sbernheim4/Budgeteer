@@ -106,7 +106,7 @@ class Budget extends Component {
 			<div className="budget">
 
 				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
-				<ResponsiveContainer className="budget--doughnut-chart" width="100%" height={370} >
+				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
 					<PieChart>
 						<Pie
 							data={this.state.rechartsData}

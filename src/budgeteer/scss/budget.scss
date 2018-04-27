@@ -7,16 +7,20 @@
 	align-items: center;
 
 	@media all and (max-width: 930px) {
-		height: calc(100vh - 90px - 60px);
+		/*height: calc(100vh - 90px - 60px);*/
 		flex-direction: column;
 	}
 
-	div, form {
+	/*div, form {
 		width: calc(100% - 80px);
-	}
+	}*/
 
 	&--doughnut-chart {
-		width: 100vw;
+		/*width: 100vw;*/
+
+		@media all and (min-width: 930px) {
+			width: 33% !important; // Needed to override width set in the component
+		}
 	}
 
 	&--form {
@@ -66,4 +70,8 @@
 		}
 	}
 
+}
+
+.recharts-wrapper {
+	overflow-y: hidden;
 }
