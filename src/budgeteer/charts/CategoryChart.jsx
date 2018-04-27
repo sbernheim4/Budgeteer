@@ -183,7 +183,7 @@ class CategoryChart extends Component {
 				<PieChart>
 					<Pie
 						data={this.state.categoryDoughnutData}
-						cy={200}
+						cy={250}
 						innerRadius="70%"
 						outerRadius="90%"
 						fill="#8884d8"
