@@ -21,14 +21,11 @@ class CustomTooltip extends Component {
 		const { active } = this.props;
 
 		if (active) {
-			const { payload, label } = this.props;
-
-			let value = helpers.formatAmount(payload[0].value);
-			value = helpers.numberWithCommas(value);
-
 			return (
-				<div className="custom-tooltip">
-					<p className="label">{`${payload[0].name}:\n $${value}`}</p>
+
+				<div className="budget--tooltip">
+					<p>Spent: {this.props.spent}</p>
+					<p>Remaining: {this.props.remaining}</p>
 				</div>
 			);
 		}
@@ -142,7 +139,7 @@ class Budget extends Component {
 							}
 							{/*<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />*/}
 						</Pie>
-						<Tooltip content={<CustomTooltip/>}/>
+						<Tooltip content={<CustomTooltip remaining={remaining} spent={spent}/>}/>
 
 					</PieChart>
 				</ResponsiveContainer>

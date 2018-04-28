@@ -70,6 +70,12 @@
 		}
 	}
 
+
+	&--tooltip {
+		padding: 15px;
+		background-color: black;
+		border-radius: 5px;
+	}
 }
 
 .recharts-wrapper {
