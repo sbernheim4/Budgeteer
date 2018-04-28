@@ -224,6 +224,7 @@
 							background-color: black;
 							border-radius: 5px;
 							text-align: left;
+							font-size: 1em;
 							color: white;
 							cursor: pointer;
 
@@ -264,22 +265,22 @@
 			order: 0;
 
 			@media  all and (max-width: 600px) {
-			margin-top: 15px;
-			width: 100%;
-		}
-
-		.icon {
-			padding: 15px;
-			font-size: 30px;
-		}
-
-		form {
-			width: 100%;
-			display: flex;
-			justify-content: center;
-
-			label {
+				margin-top: 15px;
 				width: 100%;
+			}
+
+			.icon {
+				padding: 15px;
+				font-size: 30px;
+			}
+
+			form {
+				width: 100%;
+				display: flex;
+				justify-content: center;
+
+				label {
+					width: 100%;
 
 					input {
 
