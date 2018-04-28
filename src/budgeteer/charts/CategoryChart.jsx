@@ -179,7 +179,7 @@ class CategoryChart extends Component {
 
 		return (
 
-			<ResponsiveContainer className="category-chart" width="100%" height={500} >
+			<ResponsiveContainer className="category-chart" width="100%" height={400} >
 				<PieChart>
 					<Pie
 						data={this.state.categoryDoughnutData}
