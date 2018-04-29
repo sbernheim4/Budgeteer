@@ -2,18 +2,17 @@
 
 $bottom: 60px;
 
-div {
+.statistics {
+    margin-top: 50px;
 
-	.statistics {
+	.item {
 
-		.item {
-
-		}
-
-		.category-chart-container {
-			width: 100%;
-		}
 	}
+
+	.category-chart-container {
+		width: 100%;
+	}
+
 
 	.btn {
 		position: absolute;
@@ -31,6 +30,11 @@ div {
 
 	.btn__right {
 		right: 0;
+	}
+
+	.react-swipe-container > div {
+		display: flex;
+		align-items: center;
 	}
 
 }

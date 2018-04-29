@@ -53,9 +53,10 @@ class Statistics extends Component {
 		};
 
 		return (
-			<div>
 
-				<ReactSwipe className='statistics' ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
+			<div className='statistics'>
+
+				<ReactSwipe ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
 					<div className="item category-chart-container"><CategoryChart transactions={this.props.transactions} /></div>
 					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
 					<div className="item"><Year transactions={this.props.transactions} /></div>
