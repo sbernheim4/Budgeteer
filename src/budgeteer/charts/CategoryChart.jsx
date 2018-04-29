@@ -34,8 +34,7 @@ class CustomTooltip extends Component {
 			const { payload, label } = this.props;
 
 			const style = {
-				background: `${payload[0].payload.fill}`,
-				color: "#fff"
+				background: `${payload[0].payload.fill}`
 			}
 
 			let value = helpers.formatAmount(payload[0].value);
@@ -188,17 +187,14 @@ class CategoryChart extends Component {
 						fill="#8884d8"
 						paddingAngle={2}>
 						{/*onMouseOver={(a) => this.changeCenterText(a)}>*/}
-					{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
+						{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
 
-						{
-							this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)
-						}
-
+						{this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)}
 						<Label className="center-label" fill={"white"} value={"Total Spent: $" + this.state.totalSpent} position="center" />
 					</Pie>
 
 					<Tooltip content={<CustomTooltip/>}/>
-					{/*<Legend align="center" verticalAlign="bottom"/>*/}
+					<Legend align="center" verticalAlign="bottom"/>
 				</PieChart>
 			</ResponsiveContainer>
 

@@ -48,13 +48,15 @@ class Settings extends Component {
 				}
 			});
 
-			const alertMessage = document.querySelector('.app-error');
-			alertMessage.innerText = result.data.status + " has been unlinked"
-			alertMessage.classList.add('app-error__display');
+			console.log("DISPLAY ERROR MESSAGE");
 
-			setTimeout(() => {
-				alertMessage.classList.remove('app-error__display')
-			}, 4000)
+			// const alertMessage = document.querySelector('.app-error');
+			// alertMessage.innerText = result.data.status + " has been unlinked"
+			// alertMessage.classList.add('app-error__display');
+
+			// setTimeout(() => {
+			// 	alertMessage.classList.remove('app-error__display')
+			// }, 4000)
 
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]

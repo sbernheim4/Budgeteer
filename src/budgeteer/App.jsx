@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 
 import "./scss/globals.scss";
-import "./scss/app.scss";
 
 import Navbar from './Navbar.jsx';
 import Home from './Home.jsx';
@@ -11,6 +10,7 @@ import Statistics from './Statistics.jsx';
 import AccountsContainer from './AccountsContainer.jsx';
 import Networth from './Networth.jsx';
 import Settings from './Settings.jsx';
+import ErrorMessage from './ErrorMessage.jsx';
 
 // Helper Functions
 import helpers from './helpers.js';
@@ -208,6 +208,7 @@ class App extends Component {
 		return (
 			<div>
 				<Navbar />
+				<ErrorMessage />
 
 				{/* <Link /> elements are in Navbar.jsx */}
 				<Route exact path='/' render={() => (

@@ -1,0 +1,24 @@
+@import './variables';
+
+.error {
+	display: none;
+	margin: 15px auto;
+	width: 350px;
+	height: 60px;
+	text-align: center;
+	padding: 15px;
+	background-color: $red;
+	border-radius: 10px;
+	transition: opacity .2s ease;
+	z-index: 2;
+
+	p {
+
+	}
+
+	&__display {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}

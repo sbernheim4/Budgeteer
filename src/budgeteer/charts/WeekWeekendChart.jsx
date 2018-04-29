@@ -65,14 +65,15 @@ class WeekWeekendChart extends Component {
 		let pastSixMonths = sortedTransactions.slice(this.props.transactions.length / 2);
 
 		if (pastSixMonths[0] === undefined) {
+			console.log("DISPLAY ERROR MESSAGE");
 			// account info was not properly loaded --> send them back to the homepage
-			const errorMessage = document.querySelector('.app-error');
-			errorMessage.innerHTML = `<p>Hmmm. We had trouble properly loading your data. Please try refreshing the page.</p>`;
-			errorMessage.classList.add('app-error__display');
+			// const errorMessage = document.querySelector('.app-error');
+			// errorMessage.innerHTML = `<p>Hmmm. We had trouble properly loading your data. Please try refreshing the page.</p>`;
+			// errorMessage.classList.add('app-error__display');
 
-			setTimeout(() => {
-				errorMessage.classList.remove('app-error__display')
-			}, 4000);
+			// setTimeout(() => {
+			// 	errorMessage.classList.remove('app-error__display')
+			// }, 4000);
 		}
 
 		// Start date is the Monday following the first transaction
