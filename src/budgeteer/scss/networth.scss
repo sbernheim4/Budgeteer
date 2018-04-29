@@ -1,7 +1,8 @@
 @import './variables';
 
 .networth {
-    margin-top: 50px;
+	position: relative;
+    margin-top: 70px;
 
 	&--loading {
 		padding: 30px;
