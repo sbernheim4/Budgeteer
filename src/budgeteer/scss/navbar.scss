@@ -4,7 +4,7 @@
 	padding-bottom: 20px;
 
 	&--desktop {
-		@media all and (max-width: $navbar-media-query-width) {
+		@media all and (max-width: 800px) {
 			display: none;
 		}
 
@@ -69,7 +69,7 @@
 	&--mobile {
 		position: absolute;
 
-		@media all and (min-width: calc(#{$navbar-media-query-width} + 1px)) {
+		@media all and (min-width: 801px) {
 			display: none;
 		}
 
