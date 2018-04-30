@@ -84,11 +84,11 @@ class Navbar extends Component {
 					</div>
 
 					<div className='navbar--mobile--links'>
-						<Link to='/transactions'><p className="second" onClick={this.toggleMenu}>Transactions</p></Link>
-						<Link to='/statistics'><p className="third" onClick={this.toggleMenu}>Statistics</p></Link>
-						<Link to='/networth'><p className="fourth" onClick={this.toggleMenu}>Networth</p></Link>
-						<Link to='/settings'><p className="fifth" onClick={this.toggleMenu}>Settings</p></Link>
-						<p className="sixth" onClick={this.addAccount}>Add Account</p>
+						<Link to='/transactions'><p className="first" onClick={this.toggleMenu}>Transactions</p></Link>
+						<Link to='/statistics'><p className="second" onClick={this.toggleMenu}>Statistics</p></Link>
+						<Link to='/networth'><p className="third" onClick={this.toggleMenu}>Networth</p></Link>
+						<Link to='/settings'><p className="fourth" onClick={this.toggleMenu}>Settings</p></Link>
+						<p className="fifth" onClick={this.addAccount}>Add Account</p>
 					</div>
 				</div>
 			</nav>

@@ -2,7 +2,11 @@
 
 .networth {
 	position: relative;
-    margin-top: 70px;
+	margin-top: 70px;
+
+	@media all and (min-width: calc(#{$navbar-media-query-width} + 1px)) {
+		margin-top: 0;
+	}
 
 	&--loading {
 		padding: 30px;

@@ -1,12 +1,10 @@
 @import './variables';
 
-/*$background-color: rgb(50, 50, 50);*/
-
 .navbar {
 	padding-bottom: 20px;
 
 	&--desktop {
-		@media all and (max-width: 800px) {
+		@media all and (max-width: $navbar-media-query-width) {
 			display: none;
 		}
 
@@ -71,7 +69,7 @@
 	&--mobile {
 		position: absolute;
 
-		@media all and (min-width: 801px) {
+		@media all and (min-width: calc(#{$navbar-media-query-width} + 1px)) {
 			display: none;
 		}
 
@@ -134,29 +132,25 @@
 			}
 
 			.first {
-				background-color: #A99878;
+				background-color: #4a5043;
 			}
 
 			.second {
-				background-color: #5F7968;
+				background-color: #006992;
 			}
 
 			.third {
-				background-color: #494652;
+				background-color: #d7b55f;
 			}
 
 			.fourth {
-				background-color: #704A4A;
+				background-color: #41a25a;
 			}
 
 			.fifth {
-				background-color: #40848B;
-			}
-
-			.sixth{
 				width: 100vw;
 				text-align: center;
-				background-color: #40848B;
+				background-color: #c5474b;
 			}
 
 			&__active {

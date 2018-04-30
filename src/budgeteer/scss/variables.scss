@@ -9,12 +9,19 @@ $pink: rgb(255, 132, 132);
 $background-color: #253847;
 $cream: #fffaf0;
 
-// Light Theme
+// Light Theme EXPEFIMENTAL
 $blue-funky: #086FA6;
 $yellow-funky: #F07E30;
 $green-funky: #00B855;
 $red-funky: #953EAB;
 $red-funky-text: #ffcece;
 
-
+// Light background color theme
 $background-color-light: rgb(240, 240, 240);
+
+// When navbar switches from desktop to mobile
+$navbar-media-query-width: 800px;
+
+// For Charts tooltips
+$color-block-dimension: 12px;
+$color-block-border-radius: 1px;

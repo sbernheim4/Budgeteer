@@ -30,6 +30,10 @@
 	position: relative;
     margin-top: 50px;
 
+    @media all and (min-width: #{$navbar-media-query-width + 1px}) {
+		margin-top: 0;
+	}
+
 	.red {
 		text-align: center;
 		color: $red;
@@ -41,7 +45,7 @@
 	}
 
 	&--search-options {
-		margin: 0 20px 20px 20px;
+		margin: 20px;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
@@ -56,7 +60,6 @@
 			display: flex;
 			justify-content: space-around;
 			align-items: center;
-			order: 1;
 
 			@media all and (max-width: 600px) {
 				margin-top: 15px;
@@ -226,7 +229,7 @@
 							background-color: black;
 							border-radius: 5px;
 							text-align: left;
-							font-size: 1em;
+							font-size: 1.3em;
 							color: white;
 							cursor: pointer;
 
@@ -264,7 +267,6 @@
 		&--keyword-search {
 			width: 90%;
 			font-size: 15px;
-			order: 0;
 
 			@media  all and (max-width: 600px) {
 				margin-top: 15px;
