@@ -24,8 +24,8 @@ class CustomTooltip extends Component {
 			return (
 
 				<div className="budget--tooltip">
-					<p>Spent: ${this.props.spent}</p>
-					<p>Remaining: ${this.props.remaining}</p>
+					<p className="budget--tooltip--spent" >Spent: ${this.props.spent}</p>
+					<p className="budget--tooltip--remaining">Remaining: ${this.props.remaining}</p>
 				</div>
 			);
 		}

@@ -1,5 +1,20 @@
 @import './variables';
 
+$color-block-dimension: 12px;
+$color-block-border-radius: 1px;
+
+%color-block {
+	content: "";
+	margin-right: 5px;
+	width: $color-block-dimension;
+	height: $color-block-dimension;
+	background-color: $green;
+	border: 1px solid white;
+	border-radius: $color-block-border-radius;
+	display: inline-block;
+	vertical-align: middle;
+}
+
 .budget {
 	margin: 0 auto;
 	display: flex;
@@ -70,6 +85,17 @@
 		padding: 15px;
 		background-color: black;
 		border-radius: 5px;
+
+		&--spent:before {
+			@extend %color-block;
+			background-color: $red;
+		}
+
+		&--remaining:before {
+			@extend %color-block;
+			background-color: $green;
+		}
+
 	}
 }
 

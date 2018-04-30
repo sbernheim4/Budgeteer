@@ -3,6 +3,17 @@
 $color-block-dimension: 12px;
 $color-block-border-radius: 1px;
 
+%color-block {
+	content: "";
+	margin-right: 5px;
+	width: $color-block-dimension;
+	height: $color-block-dimension;
+	border: 1px solid white;
+	border-radius: $color-block-border-radius;
+	display: inline-block;
+	vertical-align: middle;
+}
+
 .week-weekend {
 	color: white;
 	display: flex;
@@ -23,36 +34,14 @@ $color-block-border-radius: 1px;
 
 	}
 
-	.weekday-value {
-
-		&:before {
-			content: "";
-			margin-right: 5px;
-			width: $color-block-dimension;
-			height: $color-block-dimension;
-			background-color: $green;
-			border: 1px solid white;
-			border-radius: $color-block-border-radius;
-			display: inline-block;
-			vertical-align: middle;
-		}
-
+	.weekday-value:before {
+		@extend %color-block;
+		background-color: $green;
 	}
 
-	.weekend-value {
-
-		&:before {
-			content: "";
-			margin-right: 5px;
-			width: $color-block-dimension;
-			height: $color-block-dimension;
-			background-color: $blue;
-			border: 1px solid white;
-			border-radius: $color-block-border-radius;
-			display: inline-block;
-			vertical-align: middle;
-		}
-
+	.weekend-value:before {
+		@extend %color-block;
+		background-color: $blue;
 	}
 
 }
