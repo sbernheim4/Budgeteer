@@ -57,11 +57,25 @@ class Statistics extends Component {
 			<div className='statistics'>
 
 				<ReactSwipe ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
-					<div className="item category-chart-container"><CategoryChart transactions={this.props.transactions} /></div>
-					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
-					<div className="item"><Year transactions={this.props.transactions} /></div>
-					<div className="item"><Budget transactions={this.props.transactions} /></div>
-					<div className="item"><WeekWeekendChart transactions={this.props.transactions} /></div>
+					<div className="item category-chart-container">
+						<h1>Categorical Spending</h1>
+						<CategoryChart transactions={this.props.transactions} />
+					</div>
+
+					<div className="item">
+						<h1>Annual Spending History</h1>
+						<Year transactions={this.props.transactions} />
+					</div>
+
+					<div className="item">
+						<h1>Monthly Budget</h1>
+						<Budget transactions={this.props.transactions} />
+					</div>
+
+					<div className="item">
+						<h1>Week VS Weekend Spending</h1>
+						<WeekWeekendChart transactions={this.props.transactions} />
+					</div>
 				</ReactSwipe>
 
 				<button className="btn btn__left" type="button" onClick={this.prev}>Prev</button>

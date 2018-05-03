@@ -63,26 +63,26 @@ class Settings extends Component {
 			})
 		} catch(err) {
 			console.log(err.response.status);
-			const alertMessage = document.querySelector('.app-error');
-			alertMessage.innerText = "Error: " + err.response.status + "\n" + err.response.data.status;
-			alertMessage.classList.add('app-error__display');
+			//const alertMessage = document.querySelector('.app-error');
+			//alertMessage.innerText = "Error: " + err.response.status + "\n" + err.response.data.status;
+			//alertMessage.classList.add('app-error__display');
 
-			setTimeout(() => {
-				alertMessage.classList.remove('app-error__display')
-			}, 4000)
+			//setTimeout(() => {
+				//alertMessage.classList.remove('app-error__display')
+			//}, 4000)
 		}
 	}
 
 	async rotateAccessTokens() {
 		let returnVal = await axios.post('/plaid-api/rotate-access-tokens');
 
-		const alertMessage = document.querySelector('.app-error');
-		alertMessage.innerText = returnVal.data.result;
-		alertMessage.classList.add('app-error__display');
+		//const alertMessage = document.querySelector('.app-error');
+		//alertMessage.innerText = returnVal.data.result;
+		//alertMessage.classList.add('app-error__display');
 
-		setTimeout(() => {
-			alertMessage.classList.remove('app-error__display')
-		}, 4000)
+		//setTimeout(() => {
+			//alertMessage.classList.remove('app-error__display')
+		//}, 4000)
 	}
 
 	render() {
