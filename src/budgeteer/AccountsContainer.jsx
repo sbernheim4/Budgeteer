@@ -443,7 +443,7 @@ class AccountsContainer extends Component {
 							<FontAwesomeIcon className="icon" icon={faTags} onMouseEnter={this.openCategoryViewer} />
 
 							{/* display this div when icon above is clicked */}
-							<div className="accounts--search-options--icon-search--categorical-search--categories" onTouchEnd={this.closeCategoryViewer} onMouseLeave={this.closeCategoryViewer}>
+							<div className="accounts--search-options--icon-search--categorical-search--categories" onMouseLeave={this.closeCategoryViewer}>
 								<div>
 									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Food and Drink"); this.closeCategoryViewer(); }} icon={faUtensils} />
 									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Travel"); this.closeCategoryViewer(); }} icon={faPlane} />
@@ -470,7 +470,7 @@ class AccountsContainer extends Component {
 							<FontAwesomeIcon className="icon" icon={faUniversity} onMouseEnter={this.openAccountsViewer} />
 
 							{/* display this div when icon above is clicked */}
-							<div className="accounts--search-options--icon-search--accts-search--accts" onTouchEnd={this.closeAccountsViewer} onMouseLeave={this.closeAccountsViewer}>
+							<div className="accounts--search-options--icon-search--accts-search--accts" onMouseLeave={this.closeAccountsViewer}>
 								<div>
 									<button onClick={() => { this.getAccountTransactions("all"); this.closeAccountsViewer(); }}>All Transactions</button>
 

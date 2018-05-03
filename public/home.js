@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1006);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1007);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -81,7 +81,7 @@ if (process.env.NODE_ENV === 'production') {
 
 /***/ }),
 
-/***/ 1006:
+/***/ 1007:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -97,9 +97,9 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = __webpack_require__(78);
 
-__webpack_require__(1007);
+__webpack_require__(1008);
 
-var _App = __webpack_require__(1009);
+var _App = __webpack_require__(1010);
 
 var _App2 = _interopRequireDefault(_App);
 
@@ -115,13 +115,13 @@ _reactDom2.default.render(_react2.default.createElement(
 
 /***/ }),
 
-/***/ 1007:
+/***/ 1008:
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(1008);
+var content = __webpack_require__(1009);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -147,7 +147,7 @@ if(false) {
 
 /***/ }),
 
-/***/ 1008:
+/***/ 1009:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(20)(false);
@@ -159,78 +159,6 @@ exports.push([module.i, "/******************************************************
 
 // exports
 
-
-/***/ }),
-
-/***/ 1009:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _getPrototypeOf = __webpack_require__(24);
-
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-var _classCallCheck2 = __webpack_require__(25);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(26);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _possibleConstructorReturn2 = __webpack_require__(27);
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-var _inherits2 = __webpack_require__(28);
-
-var _inherits3 = _interopRequireDefault(_inherits2);
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRouterDom = __webpack_require__(78);
-
-var _LandingPage = __webpack_require__(1010);
-
-var _LandingPage2 = _interopRequireDefault(_LandingPage);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var App = function (_Component) {
-	(0, _inherits3.default)(App, _Component);
-
-	function App(props) {
-		(0, _classCallCheck3.default)(this, App);
-
-		var _this = (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).call(this, props));
-
-		_this.state = {};
-		return _this;
-	}
-
-	(0, _createClass3.default)(App, [{
-		key: 'render',
-		value: function render() {
-
-			return _react2.default.createElement(
-				'div',
-				null,
-				_react2.default.createElement(_LandingPage2.default, null)
-			);
-		}
-	}]);
-	return App;
-}(_react.Component);
-
-exports.default = App;
 
 /***/ }),
 
@@ -347,7 +275,79 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(78);
 
-__webpack_require__(1011);
+var _LandingPage = __webpack_require__(1011);
+
+var _LandingPage2 = _interopRequireDefault(_LandingPage);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var App = function (_Component) {
+	(0, _inherits3.default)(App, _Component);
+
+	function App(props) {
+		(0, _classCallCheck3.default)(this, App);
+
+		var _this = (0, _possibleConstructorReturn3.default)(this, (App.__proto__ || (0, _getPrototypeOf2.default)(App)).call(this, props));
+
+		_this.state = {};
+		return _this;
+	}
+
+	(0, _createClass3.default)(App, [{
+		key: 'render',
+		value: function render() {
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(_LandingPage2.default, null)
+			);
+		}
+	}]);
+	return App;
+}(_react.Component);
+
+exports.default = App;
+
+/***/ }),
+
+/***/ 1011:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _getPrototypeOf = __webpack_require__(24);
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = __webpack_require__(25);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(26);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__(27);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(28);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = __webpack_require__(78);
+
+__webpack_require__(1012);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -385,13 +385,13 @@ exports.default = LandingPage;
 
 /***/ }),
 
-/***/ 1011:
+/***/ 1012:
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(1012);
+var content = __webpack_require__(1013);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -417,7 +417,7 @@ if(false) {
 
 /***/ }),
 
-/***/ 1012:
+/***/ 1013:
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(20)(false);
