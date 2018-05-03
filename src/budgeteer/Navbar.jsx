@@ -88,7 +88,7 @@ class Navbar extends Component {
 						<Link to='/statistics'><p className="second" onClick={this.toggleMenu}>Statistics</p></Link>
 						<Link to='/networth'><p className="third" onClick={this.toggleMenu}>Networth</p></Link>
 						<Link to='/settings'><p className="fourth" onClick={this.toggleMenu}>Settings</p></Link>
-						<p className="fifth" onClick={this.addAccount}>Add Account</p>
+						<a><p className="fifth" onClick={this.addAccount}>Add Account</p></a>
 					</div>
 				</div>
 			</nav>

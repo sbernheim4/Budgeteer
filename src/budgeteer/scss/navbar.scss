@@ -110,7 +110,10 @@
 				text-align: center;
 
 				p {
-					// height: calc((100vh - 70px) / 5);
+					width: 100%;
+					height: calc((100vh - 70px) / 5);
+					background-color: #4d334b;
+					border-top: 1px solid white;
 					font-size: 2em;
 					overflow-y: hidden;
 					cursor: pointer;
@@ -120,17 +123,20 @@
 				}
 			}
 
-			p {
+			/*p {
+				width: 100%;
 				height: calc((100vh - 70px) / 5);;
+				background-color: #5c7959;
+				border-bottom: 1px solid white;
 				font-size: 2em;
 				overflow-y: hidden;
 				cursor: pointer;
 				display: flex;
 				justify-content: center;
 				align-items: center;
-			}
+			}*/
 
-			.first {
+			/*.first {
 				background-color: #4a5043;
 			}
 
@@ -150,7 +156,7 @@
 				width: 100vw;
 				text-align: center;
 				background-color: #c5474b;
-			}
+			}*/
 
 			&__active {
 				transform: translateY(0);
