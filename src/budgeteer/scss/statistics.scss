@@ -3,7 +3,9 @@
 $bottom: 60px;
 
 .statistics {
-	margin-top: 50px;
+	@media all and (max-width: 800px) {
+		margin-top: 50px;
+	}
 
 	.item {
 
