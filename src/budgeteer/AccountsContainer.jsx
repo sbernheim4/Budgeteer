@@ -71,7 +71,7 @@ class AccountsContainer extends Component {
 		// this is off, need to get all the transactions in the past 14 days,
 		// sum up the total spent for each day
 		const endDate = new Date();
-		const startDate = subWeeks(endDate, 2);
+		const startDate = subWeeks(endDate, 1);
 
 		let startingIndex = 0;
 
@@ -91,12 +91,12 @@ class AccountsContainer extends Component {
 			}
 		}
 
-		let amts = new Array(14).fill(0);
+		let amts = new Array(7).fill(0);
 
 		if (startingIndex !== 0) {
-			const mostRecentFourteenTransactions = transactions.slice(startingIndex);
+			const pastWeekTransactions = transactions.slice(startingIndex);
 
-			mostRecentFourteenTransactions.forEach(t => {
+			pastWeekTransactions.forEach(t => {
 				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 				const index = differenceInDays(endDate, transactionDate);
 
@@ -107,7 +107,7 @@ class AccountsContainer extends Component {
 		}
 
 		const data = {
-			labels: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, "Yesterday", "Today"],
+			labels: [6, 5, 4, 3, 2, "Yesterday", "Today"],
 			datasets: [{
 				label: "$ Spent / Day",
 				data: amts,
@@ -133,7 +133,7 @@ class AccountsContainer extends Component {
 			},
 			title: {
 				display: true,
-				text: "2 Week Spending History",
+				text: "This Weeks Spending",
 				fontSize: 20
 			},
 			scales: {
