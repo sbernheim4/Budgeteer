@@ -2,16 +2,26 @@
 <html lang="en">
 	<head>
 		<title>Budgeteer</title>
+
 		<!-- Plaid -->
 		<script async src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+
+		<!-- Google Fonts -->
 		<link href="https://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
 
-		<script src="sw.js"></script>
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+		<!-- Mobile Friendly Tag -->
 		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-		<link rel="manifest" href='manifest.json'>
+
+		<!-- TODO: Uncomment below line to load manifest.json -->
+		<!-- <link rel="manifest" href='manifest.json'> -->
+
+		<!-- Theme Color -->
 		<meta name="theme-color" content="#346CA1">
+
+		<!-- Title -->
 		<meta name="Budgeteer" content="Organize all your finances in one place">
 
 	</head>
@@ -25,5 +35,7 @@
         <script src='/budgeteer.js'></script>
 		<!-- THE BUNDLED JS FROM WEBPACK -->
 
+		<!-- TODO: Uncomment below line to load service worker -->
+		<!-- <script src="sw.js"></script> -->
 	</body>
 </html>
