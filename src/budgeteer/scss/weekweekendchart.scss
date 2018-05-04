@@ -15,6 +15,7 @@ $color-block-border-radius: 1px;
 }
 
 .week-weekend {
+	margin-right: 30px;
 	color: white;
 	display: flex;
 	justify-content: center;
@@ -26,8 +27,8 @@ $color-block-border-radius: 1px;
 }
 
 .week-weekend-tooltip {
-	background: black;
 	padding: 15px;
+	background: black;
 	border-radius: 3px;
 
 	.time {

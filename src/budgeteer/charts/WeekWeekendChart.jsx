@@ -163,7 +163,7 @@ class WeekWeekendChart extends Component {
 	render() {
 
 		return (
-			<ResponsiveContainer className="week-weekend" width="90%" height={400} >
+			<ResponsiveContainer className="week-weekend" width="100%" height={400} >
 				<BarChart data={this.state.weekVsWeekend}>
 					<CartesianGrid vertical={false} horizontal={true}/>
 
