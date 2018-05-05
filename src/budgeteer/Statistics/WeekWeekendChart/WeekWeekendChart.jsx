@@ -8,8 +8,8 @@ import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
 import isSameWeek from "date-fns/is_same_week";
 import isWeekend from "date-fns/is_weekend";
 
-import helpers from '../helpers';
-import "../scss/weekweekendchart.scss";
+import helpers from '../../helpers';
+import "./weekweekendchart.scss";
 
 class CustomTooltip extends Component {
 

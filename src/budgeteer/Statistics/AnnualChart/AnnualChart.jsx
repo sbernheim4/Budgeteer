@@ -5,9 +5,9 @@ import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianG
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
-import helpers from '../helpers';
+import helpers from '../../helpers';
 
-import "../scss/year.scss";
+import "./annualChart.scss";
 
 class CustomTooltip extends Component {
 
@@ -33,7 +33,7 @@ class CustomTooltip extends Component {
 	}
 };
 
-class Year extends Component {
+class AnnualChart extends Component {
 
 	constructor(props) {
 		super(props);
@@ -128,4 +128,4 @@ class Year extends Component {
 	}
 }
 
-export default Year;
+export default AnnualChart;

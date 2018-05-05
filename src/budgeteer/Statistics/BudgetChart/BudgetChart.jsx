@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 
-import helpers from "../helpers.js";
+import helpers from "../../helpers.js";
 
 import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
 import isSameYear from "date-fns/is_same_year";
 
-import "../scss/budget.scss";
+import "./budgetChart.scss";
 
 const COLORS = [
 	"#D46363",
@@ -34,7 +34,7 @@ class CustomTooltip extends Component {
 	}
 };
 
-class Budget extends Component {
+class BudgetChart extends Component {
 	constructor(props){
 		super(props);
 
@@ -156,4 +156,4 @@ class Budget extends Component {
 	}
 }
 
-export default Budget;
+export default BudgetChart;

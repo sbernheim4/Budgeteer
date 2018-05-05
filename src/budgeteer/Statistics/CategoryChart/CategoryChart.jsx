@@ -4,9 +4,9 @@ import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Toolti
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
-import helpers from '../helpers';
+import helpers from '../../helpers';
 
-import "../scss/categoryCharts.scss";
+import "./categoryCharts.scss";
 
 const COLORS = [
 	"#578CA9",
