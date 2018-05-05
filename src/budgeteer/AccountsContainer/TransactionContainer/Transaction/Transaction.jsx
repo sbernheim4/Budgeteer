@@ -21,9 +21,9 @@ import {
 } from '@fortawesome/fontawesome-free-solid';
 
 
-import helpers from './helpers';
+import helpers from '../../../helpers';
 
-import "./scss/transaction.scss";
+import "./transaction.scss";
 
 class Transaction extends Component {
 	constructor(props) {

@@ -7,7 +7,7 @@ import { HashRouter } from 'react-router-dom';
 import "./scss/reset.scss";
 
 /* App is the entry point to the React code.*/
-import App from './App.jsx';
+import App from './App/App.jsx';
 
 ReactDOM.render(
 	<BrowserRouter basename="/budgeteer">

@@ -3,16 +3,16 @@ import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import { Bar } from "react-chartjs-2";
 
-import TransactionContainer from "./TransactionContainer.jsx";
+import TransactionContainer from "./TransactionContainer/TransactionContainer.jsx";
 
 import subWeeks from 'date-fns/sub_weeks';
 import isAfter from 'date-fns/is_after';
 import isWithinRange from 'date-fns/is_within_range';
 import differenceInDays from 'date-fns/difference_in_days';
 
-import "./scss/accountsContainer.scss"
+import "./accountsContainer.scss"
 
-import helpers from './helpers';
+import helpers from '../helpers';
 
 // Font Awesome base package
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
@@ -481,11 +481,13 @@ class AccountsContainer extends Component {
 								</div>
 							</div>
 						</div>
+
 					</div>
 
 				</div>
 
 				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
+
 				<div className="accounts--chart">
 					{this.state.chartDisplay}
 				</div>

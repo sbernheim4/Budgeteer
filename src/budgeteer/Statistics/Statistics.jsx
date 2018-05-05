@@ -3,16 +3,16 @@ import ReactSwipe from 'react-swipe';
 
 import { Doughnut, Line, Bar } from "react-chartjs-2";
 
-import Budget from "./charts/Budget.jsx";
-import WeekWeekendChart from "./charts/WeekWeekendChart.jsx";
-import CategoryChart from "./charts/CategoryChart.jsx";
-import Year from "./charts/Year.jsx";
+import Budget from "../charts/Budget.jsx";
+import WeekWeekendChart from "../charts/WeekWeekendChart.jsx";
+import CategoryChart from "../charts/CategoryChart.jsx";
+import Year from "../charts/Year.jsx";
 
 import isSameMonth from 'date-fns/is_same_month';
 
-import helpers from './helpers';
+import helpers from '../helpers';
 
-import "./scss/statistics.scss";
+import "./statistics.scss";
 
 Chart.defaults.global.defaultFontColor = 'white';
 Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";

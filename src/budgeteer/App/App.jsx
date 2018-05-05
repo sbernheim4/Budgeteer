@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 
-import "./scss/globals.scss";
+import "../scss/globals.scss";
 
-import Navbar from './Navbar.jsx';
-import Home from './Home.jsx';
-import Loading from './Loading.jsx';
-import Statistics from './Statistics.jsx';
-import AccountsContainer from './AccountsContainer.jsx';
-import Networth from './Networth.jsx';
-import Settings from './Settings.jsx';
-import ErrorMessage from './ErrorMessage.jsx';
+import Navbar from '../Navbar/Navbar.jsx';
+import Home from '../Home/Home.jsx';
+import Loading from '../Loading.jsx';
+import Statistics from '../Statistics/Statistics.jsx';
+import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
+import Networth from '../Networth/Networth.jsx';
+import Settings from '../Settings/Settings.jsx';
+import ErrorMessage from '../ErrorMessage.jsx';
 
 // Helper Functions
-import helpers from './helpers.js';
+import helpers from '../helpers.js';
 import differenceInDays from 'date-fns/difference_in_days';
 import startOfWeek from 'date-fns/start_of_week';
 import addWeeks from 'date-fns/add_weeks';

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import helpers from "./helpers.js";
+import helpers from "../helpers.js";
 
-import './scss/networth.scss';
+import './networth.scss';
 
 class Networth extends Component {
 	constructor(props) {

@@ -6,7 +6,7 @@ import axios from 'axios';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faBars, faHome } from '@fortawesome/fontawesome-free-solid';
 
-import "./scss/navbar.scss";
+import "./navbar.scss";
 
 class Navbar extends Component {
 
