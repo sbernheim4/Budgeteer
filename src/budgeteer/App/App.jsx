@@ -5,7 +5,6 @@ import "../scss/globals.scss";
 
 import Navbar from '../Navbar/Navbar.jsx';
 import Home from '../Home/Home.jsx';
-import Loading from '../Loading.jsx';
 import Statistics from '../Statistics/Statistics.jsx';
 import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
 import Networth from '../Networth/Networth.jsx';
