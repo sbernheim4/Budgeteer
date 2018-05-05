@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import './scss/error.scss';
+import './errorMessage.scss';
 
 class ErrorMessage extends Component {
 	constructor(props) {

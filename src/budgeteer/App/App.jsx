@@ -10,7 +10,7 @@ import Statistics from '../Statistics/Statistics.jsx';
 import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
 import Networth from '../Networth/Networth.jsx';
 import Settings from '../Settings/Settings.jsx';
-import ErrorMessage from '../ErrorMessage.jsx';
+import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
 
 // Helper Functions
 import helpers from '../helpers.js';
