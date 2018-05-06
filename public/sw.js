@@ -1,12 +1,13 @@
 const CACHE_VERSION = 'app-v1';
 const CACHE_FILES = [
     '/',
-    'budgeteer.html',
-    'home-page.html',
-	'budgeteer.js',
-	'favicon.ico',
+    'budgeteer.js',
+    'favicon.ico',
     'manifest.json',
-    'https://fonts.googleapis.com/css?family=Lato:300,400'
+    'loading-gifs/loading-one.gif',
+    'loading-gifs/loading-three.gif',
+    'https://fonts.googleapis.com/css?family=Lato:300,400',
+    'https://cdn.plaid.com/link/v2/stable/link-initialize.js'
 ];
 
 self.addEventListener('install', function (event) {
@@ -14,6 +15,7 @@ self.addEventListener('install', function (event) {
 		caches.open(CACHE_VERSION)
 		.then(function (cache) {
 			console.log('Opened cache');
+			console.log(cache);
 			return cache.addAll(CACHE_FILES);
 		})
 	);
@@ -41,7 +43,13 @@ function requestBackend(event){
 		const response = res.clone();
 
 		caches.open(CACHE_VERSION).then(function(cache){
-			cache.put(event.request, response);
+			if (event.request.method.toUpperCase() === "GET") {
+				console.log("MAKING REQUEST");
+				cache.put(event.request, response);
+			} else {
+				console.log("NOT MAKING REQUEST");
+				console.log(event.request);
+			}
 		});
 
 		return res;

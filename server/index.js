@@ -35,10 +35,6 @@ const cacheTime = 172800000; // 2 Days
 
 app.use(compression());
 
-/****************** SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
-app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } ));
-
-/****************** Handle Requests ******************/
 app.all("*", (req, res, next) => {
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
     console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
@@ -47,6 +43,10 @@ app.all("*", (req, res, next) => {
 
 	next();
 });
+/****************** SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
+app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } ));
+
+/****************** Handle Requests ******************/
 
 app.use("/plaid-api", require("./plaid-api.js"));
 
@@ -56,6 +56,18 @@ app.get("/", (req, res) => {
 
 app.get("/budgeteer", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
+});
+
+app.get("/budgeteer/sw.js", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/sw.js"));
+});
+
+app.get("/budgeteer/loading-gifs/loading-one.gif", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/loading-gifs/loading-one.gif"));
+});
+
+app.get("/budgeteer/loading-gifs/loading-three.gif", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/loading-gifs/loading-three.gif"));
 });
 
 app.get("/budgeteer/*", (req, res) => {

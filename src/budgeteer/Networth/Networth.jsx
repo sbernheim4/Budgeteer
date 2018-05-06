@@ -61,7 +61,7 @@ class Networth extends Component {
 		} else {
 
 			const fetchOptions = {
-				method: 'POST',
+				method: 'GET',
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'

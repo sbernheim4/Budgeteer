@@ -143,7 +143,7 @@ app.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-app.post("/transactions", async (req, res, next) => {
+app.get("/transactions", async (req, res, next) => {
 
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days || 30;
@@ -182,7 +182,7 @@ app.post("/transactions", async (req, res, next) => {
 	}
 });
 
-app.post ("/balance", async (req, res, next) => {
+app.get("/balance", async (req, res, next) => {
 	const promiseArray = ACCESS_TOKENS.map(token => client.getBalance(token) );
 
 	let totalData = await Promise.all(promiseArray);
@@ -223,7 +223,7 @@ app.post ("/balance", async (req, res, next) => {
 });
 
 
-app.post('/linked-accounts', async (req, res) => {
+app.get('/linked-accounts', async (req, res) => {
 
 	try {
 

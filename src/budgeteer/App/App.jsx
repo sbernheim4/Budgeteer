@@ -94,15 +94,15 @@ class App extends Component {
 	registerServiceWorker() {
 		console.log("this is where the service worker should be registered");
 		// Registering ServiceWorker
-		// if ('serviceWorker' in navigator) {
-		// 	navigator.serviceWorker.register('sw.js').then(function(registration) {
-		// 		// Registration was successful
-		// 		console.log('ServiceWorker registration successful with scope: ', registration.scope);
-		// 	}).catch(function(err) {
-		// 		// registration failed :(
-		// 		console.log('ServiceWorker registration failed: ', err);
-		// 	});
-		// }
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/budgeteer/sw.js').then(function(registration) {
+				// Registration was successful
+				console.log('ServiceWorker registration successful with scope: ', registration.scope);
+			}).catch(function(err) {
+				// registration failed :(
+				console.log('ServiceWorker registration failed: ', err);
+			});
+		}
 	}
 
 	async getTransactions() {
@@ -114,7 +114,6 @@ class App extends Component {
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 		let fetchOptions = {
-			method: "POST",
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'

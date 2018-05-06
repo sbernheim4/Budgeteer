@@ -19,7 +19,7 @@ class Settings extends Component {
 
 	async componentDidMount() {
 
-		let linkedBanks = await axios.post('/plaid-api/linked-accounts');
+		let linkedBanks = await axios.get('/plaid-api/linked-accounts');
 		this.setState({
 			linkedBanks: linkedBanks.data.accounts
 		})
