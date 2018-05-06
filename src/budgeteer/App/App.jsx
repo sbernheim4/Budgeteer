@@ -138,12 +138,12 @@ class App extends Component {
 			});
 
 		} catch (err) {
-			const errorMessage = document.querySelector('.app-error');
-			errorMessage.classList.add('app-error__display');
+			// const errorMessage = document.querySelector('.app-error');
+			// errorMessage.classList.add('app-error__display');
 
-			setTimeout(() => {
-				errorMessage.classList.remove('app-error__display')
-			}, 4000)
+			// setTimeout(() => {
+			// 	errorMessage.classList.remove('app-error__display')
+			// }, 4000)
 
 			console.error(err);
 		}

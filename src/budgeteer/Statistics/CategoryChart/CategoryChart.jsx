@@ -163,7 +163,7 @@ class CategoryChart extends Component {
 
 		this.setState({
 			categoryDoughnutData: newAmts,
-			totalSpent: helpers.formatAmount(total)
+			totalSpent: helpers.numberWithCommas(helpers.formatAmount(total))
 		});
 	}
 
