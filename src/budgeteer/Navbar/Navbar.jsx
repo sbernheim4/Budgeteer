@@ -59,6 +59,13 @@ class Navbar extends Component {
 		document.querySelector(".navbar--mobile--links").classList.toggle("navbar--mobile--links__active");
 	}
 
+	closeMenu() {
+		const navbarMenu = document.querySelector(".navbar--mobile--links");
+		if (navbarMenu.classList.contains("navbar--mobile--links__active")) {
+			navbarMenu.classList.remove("navbar--mobile--links__active");
+		}
+	}
+
 	render() {
 		return (
 			<nav className='navbar'>
@@ -80,7 +87,7 @@ class Navbar extends Component {
 					<div className="navbar--mobile--header">
 						<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
 						<h2>Budgeteer</h2>
-						<Link to='/'> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
+						<Link to='/' onClick={this.closeMenu}> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
 					</div>
 
 					<div className='navbar--mobile--links'>

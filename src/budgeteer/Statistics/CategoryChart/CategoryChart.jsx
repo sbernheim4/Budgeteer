@@ -181,6 +181,7 @@ class CategoryChart extends Component {
 			<ResponsiveContainer className="category-chart" width="100%" height={400} >
 				<PieChart>
 					<Pie
+						dataKey='value'
 						data={this.state.categoryDoughnutData}
 						innerRadius="70%"
 						outerRadius="90%"
