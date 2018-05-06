@@ -63,7 +63,7 @@ module.exports = {
 			files: "./src/scss/*.scss"
 		}),
 
-		new HardSourceWebpackPlugin()
+		/*new HardSourceWebpackPlugin()*/
 	]
 };
 

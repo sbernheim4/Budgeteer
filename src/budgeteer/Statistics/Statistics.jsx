@@ -64,7 +64,7 @@ class Statistics extends Component {
 
 					<div className="item">
 						<h1>Annual Spending History</h1>
-						<Year transactions={this.props.transactions} />
+						<AnnualChart transactions={this.props.transactions} />
 					</div>
 
 					<div className="item">

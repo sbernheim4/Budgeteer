@@ -96,7 +96,7 @@
 			position: relative;
 			width: 100vw;
 			height: calc(100vh - 70px);
-			transition: all .3s ease-out;
+			transition: all 0.6s cubic-bezier(0.6, 0, 0.3, 1.2);
 			transform: translateY(-100vh);
 			display: flex;
 			flex-direction: column;
@@ -134,9 +134,9 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-			}*/
+			}
 
-			/*.first {
+			.first {
 				background-color: #4a5043;
 			}
 

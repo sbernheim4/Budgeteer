@@ -1,6 +1,5 @@
 .category-chart {
 	margin: 0 auto;
-	width: 100%;
 
 	* {
 		overflow-y: hidden;
@@ -23,6 +22,16 @@
 	}
 }
 
+// Settings to modify recharts generated parts
+
 .recharts-wrapper {
 	overflow-y: hidden;
+}
+
+.recharts-default-legend {
+
+	@media all and (max-width: 800px) {
+		margin: 0 auto !important;
+		width: 85vw !important;
+	}
 }

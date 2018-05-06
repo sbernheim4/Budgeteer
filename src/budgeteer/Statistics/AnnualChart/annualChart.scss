@@ -1,5 +1,9 @@
 .year {
 
+	@media all and (max-width: 800px) {
+		width: 90% !important;
+	}
+
 	&--custom-tooltip {
 		margin-right: 30px;
 		padding: 15px;
