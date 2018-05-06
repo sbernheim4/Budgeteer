@@ -26,18 +26,9 @@ $transaction-background-color: hsla(183, 35%, 84%, 1);
 		border-bottom: none;
 	}
 
-	iframe {
-		//hidden settings (default)
-		margin: 0;
-		width: 0;
-		height: 0;
-		transition: height .3s ease-in;
-	}
-
 	&--map {
 
 		iframe {
-			// display settings
 			margin: 0 auto;
 			width: 100%;
 			height: 300px;

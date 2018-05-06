@@ -46,6 +46,7 @@ class Transaction extends Component {
 	}
 
 	showMap(e) {
+		e.persist()
 		let iframe = document.createElement("iframe");
 
 		// TODO: Currently hardcoding latitude and longitude but it should come from:
@@ -63,23 +64,33 @@ class Transaction extends Component {
 			iframe.src = "https://maps.google.com/maps?q=40.7828647,-73.9653551&z=15&output=embed"
 		}
 
+		// this.closeAllIFrames();
+		let containsIFrame = !!e.target.querySelector("iframe");
 
-		if (!!e.target.querySelector("iframe")) {
-			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
+		if (!containsIFrame) {
 
-			// Being opened
-			setTimeout(() => {
-				document.querySelectorAll("iframe").forEach(val => { val.remove() });
-			}, 301);
-		} else {
-			// closing
-			document.querySelectorAll(".transaction--map").forEach(val => { val.classList.remove("transaction--map") });
+			// close any other open iframes
+			document.querySelectorAll(".transaction--map").forEach(val => {
+				val.classList.remove("transaction--map");
 
+				// Actually remove the iframe after the transition is done
+				setTimeout(() => {
+					val.removeChild(val.children[1]);
+				}, 300);
+			});
 
-			e.target.classList.toggle("transaction--map");
+			// open selected iframe
 			e.target.appendChild(iframe);
-		}
+			e.target.classList.toggle("transaction--map");
+		} else {
+			// remove the iframe from the element
+			e.target.classList.remove("transaction--map");
 
+			// Actually remove the iframe after the transition is done
+			setTimeout(() => {
+				e.target.removeChild(e.target.children[1]);
+			}, 300)
+		}
 	}
 
 	getAccountNameFromID(accountID) {
