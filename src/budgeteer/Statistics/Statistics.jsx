@@ -58,7 +58,7 @@ class Statistics extends Component {
 
 				<ReactSwipe ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
 					<div className="item category-chart-container">
-						<h1>Categorical Spending</h1>
+						<h1>30 Day Categorical Breakdown</h1>
 						<CategoryChart transactions={this.props.transactions} />
 					</div>
 

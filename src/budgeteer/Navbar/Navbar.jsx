@@ -56,7 +56,16 @@ class Navbar extends Component {
 	}
 
 	toggleMenu() {
-		document.querySelector(".navbar--mobile--links").classList.toggle("navbar--mobile--links__active");
+		const navbarLinks = document.querySelector(".navbar--mobile--links");
+
+		navbarLinks.classList.toggle("navbar--mobile--links__active");
+
+		// Control the height of the body if the navbar is opened or closed
+		if (navbarLinks.classList.contains("navbar--mobile--links__active")) {
+			document.querySelector("body").style.maxHeight = "100vh";
+		} else {
+			document.querySelector("body").style.maxHeight = null;
+		}
 	}
 
 	closeMenu() {

@@ -9,10 +9,13 @@
 	}
 
 	h1 {
-
+		font-size: 2em;
 	}
 
 	&--linked-accounts {
+		margin: 20px auto;
+		max-width: 1000px;
+		width: 80%;
 		padding: 10px;
 		border-bottom: 2px solid white;
 		display: flex;

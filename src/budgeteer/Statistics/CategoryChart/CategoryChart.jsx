@@ -72,7 +72,8 @@ class CategoryChart extends Component {
 	}
 
 	generateDoughnutChart() {
-		// Initialize a new array of size 8 and fill it with 0s initially
+
+		// Default names and values for each category
 		let amts = [
 			{name: 'Food and Drink', value: 0},
 			{name: 'Travel', value: 0},
@@ -167,12 +168,12 @@ class CategoryChart extends Component {
 		});
 	}
 
-	changeCenterText(a) {
-		const amount = helpers.numberWithCommas(helpers.formatAmount(a.value));
-		this.setState({
-			labelText: a.name + ": $" + amount
-		})
-	}
+	// changeCenterText(a) {
+	// 	const amount = helpers.numberWithCommas(helpers.formatAmount(a.value));
+	// 	this.setState({
+	// 		labelText: a.name + ": $" + amount
+	// 	})
+	// }
 
 	render() {
 

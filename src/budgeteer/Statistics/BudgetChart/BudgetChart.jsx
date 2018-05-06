@@ -50,45 +50,44 @@ class BudgetChart extends Component {
 		this.handleChange = this.handleChange.bind(this);
 	}
 
-	componentDidMount() {
-		const totalSpent = this.getTotalSpent(); // Get total spent this month
-		const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
+	static getDerivedStateFromProps(nextProps, prevState) {
+
+		if (nextProps.transactions.length > 0) {
+			let totalSpent = 0;
+			let today = new Date();
+
+			// Calculate total spent this month
+			for (let t of nextProps.transactions) {
+				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+
+				if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
+					totalSpent += t.amount;
+				}
+			}
 
 
-		// Calculate remaining amount left to spend
-		let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);
+			// Retrieve monthly budget from session storage
+			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
 
-		// Update chart
-		if (monthlyBudgetFromSessionStorage !== null) {
+			// Calculate remaining amount left to spend
+			let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);
+
+			// Create chart data set
 			const chartData = [
 				{name: 'Spent', value: totalSpent},
 				{name: 'Remaining', value: remaining},
 			];
 
-
-			this.setState({
+			// Set the state
+			return {
+				spentThisMonth: totalSpent,
 				rechartsData: chartData,
 				monthlyBudget: monthlyBudgetFromSessionStorage
-			});
+			};
+
+		} else {
+			return null;
 		}
-	}
-
-	getTotalSpent() {
-		let total = 0;
-
-		let today = new Date();
-
-		// Sum up the prices of each transaction
-		this.props.transactions.forEach(t => {
-			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-			if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
-				total += t.amount;
-			}
-		})
-
-		this.setState({ spentThisMonth: total });
-		return total;
 	}
 
 	handleChange(event) {

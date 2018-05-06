@@ -89,7 +89,7 @@ class Settings extends Component {
 		return (
 
 			<section className='settings'>
-				<h1> Linked Accounts </h1>
+				<h1>Linked Accounts</h1>
 				{this.state.linkedBanks.map( (bank, index) =>
 					<div key={index} className='settings--linked-accounts'>
 						<h2>{bank}</h2>

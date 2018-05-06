@@ -1,6 +1,6 @@
 @import '../../../scss/variables';
 
-$transaction-background-color: hsla(183, 35%, 84%, 1);
+$transaction-background-color: hsl(202, 20%, 59%);
 
 .transaction {
 	margin: 5px;
@@ -61,6 +61,7 @@ $transaction-background-color: hsla(183, 35%, 84%, 1);
 		.name-info {
 			margin: 0 20px;
 			width: 50%;
+			color: white;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -69,7 +70,6 @@ $transaction-background-color: hsla(183, 35%, 84%, 1);
 			&--name {
 				width: 100%;
 				font-size: 22px;
-				color: black;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -78,7 +78,6 @@ $transaction-background-color: hsla(183, 35%, 84%, 1);
 			&--category {
 				width: 100%;
 				font-size: 15px;
-				color: black;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -86,8 +85,6 @@ $transaction-background-color: hsla(183, 35%, 84%, 1);
 		}
 
 		.amount {
-			//max-width: 100px;
-			//width: 40%;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -95,16 +92,15 @@ $transaction-background-color: hsla(183, 35%, 84%, 1);
 
 			&--amt {
 				width: 100%;
-				color: $red;
+				color: hsl(359, 81%, 52%);
 
 				&__green {
 					width: 100%;
-					color: #179655; // Standard green is unreadable with transaction background color
+					color: hsla(128, 60%, 61%, 1); // Standard green is unreadable with transaction background color
 				}
 			}
 
 			&--date {
-				color: black;
 				align-self: flex-end;
 
 				@media all and (max-width: 365px) {
