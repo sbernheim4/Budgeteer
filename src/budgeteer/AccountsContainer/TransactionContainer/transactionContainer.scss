@@ -2,15 +2,11 @@
 
 .transaction-container {
 	margin-top: 15px;
+	border-radius: 5px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-
-	@media all and (max-width: 600px) {
-		margin-top: -10px;
-		top: calc(100vh - 100px);
-	}
 
 	@media all and (min-width: 1200px) {
 		margin: 15px auto;

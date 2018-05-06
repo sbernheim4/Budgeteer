@@ -1,6 +1,6 @@
 @import '../../../scss/variables';
 
-$transaction-background-color: #436669;
+$transaction-background-color: hsla(183, 35%, 84%, 1);
 
 .transaction {
 	margin: 5px;
@@ -61,6 +61,10 @@ $transaction-background-color: #436669;
 			@media all and (max-width: 400px) {
 				font-size: 1em;
 			}
+
+			path {
+				color: $background-color;
+			}
 		}
 
 		.name-info {
@@ -74,6 +78,7 @@ $transaction-background-color: #436669;
 			&--name {
 				width: 100%;
 				font-size: 22px;
+				color: black;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -82,7 +87,7 @@ $transaction-background-color: #436669;
 			&--category {
 				width: 100%;
 				font-size: 15px;
-				color: white;
+				color: black;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -103,12 +108,12 @@ $transaction-background-color: #436669;
 
 				&__green {
 					width: 100%;
-					color: $green;
+					color: #179655; // Standard green is unreadable with transaction background color
 				}
 			}
 
 			&--date {
-				color: white;
+				color: black;
 				align-self: flex-end;
 
 				@media all and (max-width: 365px) {
