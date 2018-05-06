@@ -28,9 +28,9 @@
 
 .accounts {
 	position: relative;
-    margin-top: 50px;
+	margin-top: 50px;
 
-    @media all and (min-width: #{$navbar-media-query-width + 1px}) {
+	@media all and (min-width: #{$navbar-media-query-width + 1px}) {
 		margin-top: 0;
 	}
 
@@ -202,8 +202,8 @@
 
 					div {
 						@extend %icon-containers;
-						width: 200px;
-						height: 300px;
+						width: 150px;
+						max-height: 300px;
 						padding: 20px;
 						justify-content: flex-start;
 						z-index: 1;
