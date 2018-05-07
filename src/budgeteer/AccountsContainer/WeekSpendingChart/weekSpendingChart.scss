@@ -1,0 +1,11 @@
+.week-spending-chart {
+	margin: 0 auto;
+	max-width: 900px !important;
+
+	&--custom-tooltip {
+		margin-right: 30px;
+		padding: 15px;
+		background: black;
+		border-radius: 5px;
+	}
+}
