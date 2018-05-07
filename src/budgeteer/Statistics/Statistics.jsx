@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import ReactSwipe from 'react-swipe';
 
-import { Doughnut, Line, Bar } from "react-chartjs-2";
-
 import Budget from "./BudgetChart/BudgetChart.jsx";
 import WeekWeekendChart from "./WeekWeekendChart/WeekWeekendChart.jsx";
 import CategoryChart from "./CategoryChart/CategoryChart.jsx";
@@ -13,9 +11,6 @@ import isSameMonth from 'date-fns/is_same_month';
 import helpers from '../helpers';
 
 import "./statistics.scss";
-
-Chart.defaults.global.defaultFontColor = 'white';
-Chart.defaults.global.elements.arc.borderColor = "rgba(0, 0, 0, 0)";
 
 class Statistics extends Component {
 	constructor(props) {
@@ -47,6 +42,7 @@ class Statistics extends Component {
 			callback() {
 
 			},
+
 			transitionEnd() {
 
 			}

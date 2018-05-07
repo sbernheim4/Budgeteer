@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Doughnut, Bar } from "react-chartjs-2";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
