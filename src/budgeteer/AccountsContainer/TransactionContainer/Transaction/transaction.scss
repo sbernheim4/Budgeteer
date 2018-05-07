@@ -1,5 +1,6 @@
 @import '../../../scss/variables';
 
+$default-font-color: black;
 $transaction-background-color: hsl(202, 20%, 59%);
 
 .transaction {
@@ -39,7 +40,7 @@ $transaction-background-color: hsl(202, 20%, 59%);
 	}
 
 	.container {
-		padding: 15px;
+		padding: 17px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -59,9 +60,8 @@ $transaction-background-color: hsl(202, 20%, 59%);
 		}
 
 		.name-info {
-			margin: 0 20px;
+			margin: 0 10px;
 			width: 50%;
-			color: white;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -70,6 +70,7 @@ $transaction-background-color: hsl(202, 20%, 59%);
 			&--name {
 				width: 100%;
 				font-size: 22px;
+				color: $default-font-color;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -77,7 +78,8 @@ $transaction-background-color: hsl(202, 20%, 59%);
 
 			&--category {
 				width: 100%;
-				font-size: 15px;
+				font-size: 17px;
+				color: $default-font-color;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
@@ -92,7 +94,7 @@ $transaction-background-color: hsl(202, 20%, 59%);
 
 			&--amt {
 				width: 100%;
-				color: hsl(359, 81%, 52%);
+				color: hsl(0, 100%, 19%);
 
 				&__green {
 					width: 100%;
@@ -101,6 +103,7 @@ $transaction-background-color: hsl(202, 20%, 59%);
 			}
 
 			&--date {
+				color: $default-font-color;
 				align-self: flex-end;
 
 				@media all and (max-width: 365px) {

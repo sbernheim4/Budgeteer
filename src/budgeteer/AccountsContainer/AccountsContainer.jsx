@@ -1,14 +1,10 @@
 /* eslint no-undefined: 0 */
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
-import { Bar } from "react-chartjs-2";
+import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
+import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
 import TransactionContainer from "./TransactionContainer/TransactionContainer.jsx";
-
-import subWeeks from 'date-fns/sub_weeks';
-import isAfter from 'date-fns/is_after';
-import isWithinRange from 'date-fns/is_within_range';
-import differenceInDays from 'date-fns/difference_in_days';
 
 import "./accountsContainer.scss"
 
@@ -49,7 +45,6 @@ class AccountsContainer extends Component {
 			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
 
-		this.generateBarChartData = this.generateBarChartData.bind(this);
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
 		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
 		this.getDate = this.getDate.bind(this);
@@ -65,104 +60,6 @@ class AccountsContainer extends Component {
 	componentWillReceiveProps() {
 		// On first load show all transactions by default for the user
 		this.getAccountTransactions("all");
-	}
-
-	generateBarChartData(transactions) {
-		// this is off, need to get all the transactions in the past 14 days,
-		// sum up the total spent for each day
-		const endDate = new Date();
-		const startDate = subWeeks(endDate, 1);
-
-		let startingIndex = 0;
-
-		for (let [index, t] of transactions.entries()) {
-			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-			// Get the index of the first transaction to fall inside the range
-			if (isWithinRange(transactionDate, startDate, endDate)) {
-				startingIndex = index;
-				break;
-			}
-
-			// If we get through the whole array and haven't yet returned it means there
-			// are no transactions which fall within our range
-			if (index === transactions.length - 1) {
-				startingIndex = 0;
-			}
-		}
-
-		let amts = new Array(7).fill(0);
-
-		if (startingIndex !== 0) {
-			const pastWeekTransactions = transactions.slice(startingIndex);
-
-			pastWeekTransactions.forEach(t => {
-				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-				const index = differenceInDays(endDate, transactionDate);
-
-				amts[index] += t.amount;
-			});
-
-			amts.reverse();
-		}
-
-		const data = {
-			labels: [6, 5, 4, 3, 2, "Yesterday", "Today"],
-			datasets: [{
-				label: "$ Spent / Day",
-				data: amts,
-				backgroundColor: "rgb(77, 153, 114)",
-			}]
-		};
-
-		const barOptions = {
-			tooltips: {
-				callbacks: {
-					title: function(item) {
-						// Less than 12 exception to ignore the Yesterday and Today values in the labels otherwise show x days ago
-						return item[0].index < 12 ? item[0].xLabel + " Days Ago" : item[0].xLabel;
-					},
-					label: function(item) {
-						const amt = helpers.numberWithCommas(helpers.formatAmount(item.yLabel));
-						return item.yLabel > 0 ? "Spent $" + amt : "Received $" + helpers.formatAmount(amt * -1);
-						// Show the user `Spent $17.20` or `Received $17.20` --> need the
-						// formatAmount again since multiplying by -1 removes the trailing 0
-						// decimal
-					}
-				}
-			},
-			title: {
-				display: true,
-				text: "This Weeks Spending",
-				fontSize: 20
-			},
-			scales: {
-				xAxes: [{
-					barThickness: 7,
-					ticks: {
-						fontSize: 15
-					}
-				}],
-				yAxes: [{
-					ticks: {
-						fontSize: 15,
-						callback: function(value, index, values) {
-							return '$' + helpers.numberWithCommas(value);
-						}
-					}
-				}]
-			},
-			legend: {
-				display: false,
-				labels: {
-					display: false
-				}
-			}
-		}
-
-		this.setState({
-			chartDisplay: <Bar data={data} options={barOptions} />
-		});
 	}
 
 	getAccountTransactions(account_id) {
@@ -224,9 +121,6 @@ class AccountsContainer extends Component {
 				categoryTotal: total
 			});
 		}
-
-		// Redraw the bar chart based
-		this.generateBarChartData(releventTransactions);
 	}
 
 	getCategoryTransactions(categoryString) {
@@ -271,9 +165,6 @@ class AccountsContainer extends Component {
 			categoryType: categoryString,
 			categoryTotal: total
 		});
-
-		// Redraw the bar chart based
-		this.generateBarChartData(releventTransactions);
 	}
 
 	getDate(e, val) {
@@ -333,8 +224,6 @@ class AccountsContainer extends Component {
 			console.error(err);
 		}
 
-		// Redraw the bar chart based
-		this.generateBarChartData(releventTransactions);
 	}
 
 	async searchByKeyword(e) {
@@ -374,9 +263,6 @@ class AccountsContainer extends Component {
 			categoryTransactions: releventTransactions,
 			categoryTotal: total
 		});
-
-		// Redraw the bar chart based
-		this.generateBarChartData(releventTransactions);
 	}
 
 	getKeyword(e) {
@@ -431,9 +317,7 @@ class AccountsContainer extends Component {
 						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
 
 						<form onSubmit={this.searchByKeyword}>
-							<label>
-								<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
-							</label>
+							<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
 						</form>
 					</div>
 
@@ -488,9 +372,7 @@ class AccountsContainer extends Component {
 
 				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
 
-				<div className="accounts--chart">
-					{this.state.chartDisplay}
-				</div>
+				<WeekSpendingChart transactions={this.state.categoryTransactions}/>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
 			</div>

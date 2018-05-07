@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-/*import { Doughnut, Bar } from "react-chartjs-2";*/
 
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Doughnut } from "react-chartjs-2";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 
 import helpers from "../../helpers.js";

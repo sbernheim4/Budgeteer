@@ -8,7 +8,6 @@
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "chalk": "^2.3.2",
-    "chart.js": "^2.7.1",
     "compression": "^1.7.1",
     "date-fns": "^1.29.0",
     "dotenv": "^4.0.0",
@@ -18,7 +17,6 @@
     "path": "^0.12.7",
     "plaid": "^2.2.0",
     "react": "^16.2.0",
-    "react-chartjs-2": "^2.6.4",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
     "react-swipe": "^5.1.1",
@@ -67,6 +65,7 @@
     "heroku-postbuild": "npm install --only=dev; npx webpack --config webpack.prod.js",
     "start": "node ./server/index.js",
     "wds": "webpack-dev-server --hot --inline --config webpack.dev.js --host 0.0.0.0",
-    "watch": "webpack --config webpack.dev.js -w"
+    "watch": "webpack --config webpack.dev.js -w",
+    "watch:prod": "webpack --config webpack.prod.js -w"
   }
 }

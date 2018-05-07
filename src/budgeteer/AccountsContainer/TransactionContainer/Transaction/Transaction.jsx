@@ -180,7 +180,7 @@ class Transaction extends Component {
 
 					<div className='name-info'>
 						<p className='name-info--name'>{this.props.transaction.name}</p>
-						<p className='name-info--category'>{category} - {this.getAccountNameFromID(this.props.transaction.account_id)}</p>
+						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)}</p>
 					</div>
 
 					<div className='amount'>
