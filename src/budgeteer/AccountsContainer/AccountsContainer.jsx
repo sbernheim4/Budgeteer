@@ -120,7 +120,7 @@ class AccountsContainer extends Component {
 				callbacks: {
 					title: function(item) {
 						// Less than 12 exception to ignore the Yesterday and Today values in the labels otherwise show x days ago
-						return item[0].index < 12 ? item[0].xLabel + " Days Ago" : item[0].xLabel;
+						return item[0].index < 5 ? item[0].xLabel + " Days Ago" : item[0].xLabel;
 					},
 					label: function(item) {
 						const amt = helpers.numberWithCommas(helpers.formatAmount(item.yLabel));
@@ -133,7 +133,7 @@ class AccountsContainer extends Component {
 			},
 			title: {
 				display: true,
-				text: "This Weeks Spending",
+				text: "Past 7 Days",
 				fontSize: 20
 			},
 			scales: {
@@ -431,9 +431,7 @@ class AccountsContainer extends Component {
 						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
 
 						<form onSubmit={this.searchByKeyword}>
-							<label>
-								<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
-							</label>
+							<input type="text" placeholder="Search by transaction name" value={this.state.keyWord} onChange={(e) => { this.getKeyword(e) }} />
 						</form>
 					</div>
 
