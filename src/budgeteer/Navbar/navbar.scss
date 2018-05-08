@@ -99,6 +99,7 @@
 			width: 95vw;
 			height: calc(98vh - 70px);
 			background-color: hsl(291, 9%, 89%);
+			border: 1px solid black;
 			border-radius: 10px;
 			transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);
 			transform: translateX(-100vw);
@@ -108,9 +109,12 @@
 			justify-content: center;
 			align-items: center;
 
+			a:not(:last-child) {
+				border-bottom: 1px solid black;
+			}
+
 			a {
 				width: 100%;
-				border-bottom: 1px solid black;
 				overflow-y: hidden;
 				text-decoration: none;
 				text-align: center;
