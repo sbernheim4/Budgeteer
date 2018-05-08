@@ -52246,7 +52246,7 @@ var App = function (_Component) {
 									key: keyAndEnv.publicKey,
 									onSuccess: function onSuccess(public_token) {
 										fetch('/plaid-api/get-access-token', {
-											method: 'post',
+											method: 'POST',
 											headers: {
 												'Accept': 'application/json',
 												'Content-Type': 'application/json'
@@ -52290,17 +52290,17 @@ var App = function (_Component) {
 	}, {
 		key: 'registerServiceWorker',
 		value: function registerServiceWorker() {
-			console.log("this is where the service worker should be registered");
+			console.log("Begin registration of serviceWorker");
 			// Registering ServiceWorker
-			// if ('serviceWorker' in navigator) {
-			// 	navigator.serviceWorker.register('sw.js').then(function(registration) {
-			// 		// Registration was successful
-			// 		console.log('ServiceWorker registration successful with scope: ', registration.scope);
-			// 	}).catch(function(err) {
-			// 		// registration failed :(
-			// 		console.log('ServiceWorker registration failed: ', err);
-			// 	});
-			// }
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('/budgeteer/sw.js').then(function (registration) {
+					// Registration was successful
+					console.log('ServiceWorker registration successful with scope: ', registration.scope);
+				}).catch(function (err) {
+					// registration failed :(
+					console.log('ServiceWorker registration failed: ', err);
+				});
+			}
 		}
 	}, {
 		key: 'getTransactions',
@@ -76615,7 +76615,7 @@ var Networth = function (_Component) {
 
 							case 6:
 								fetchOptions = {
-									method: 'POST',
+									method: 'GET',
 									headers: {
 										'Accept': 'application/json',
 										'Content-Type': 'application/json'
@@ -76938,7 +76938,7 @@ var Settings = function (_Component) {
 						switch (_context.prev = _context.next) {
 							case 0:
 								_context.next = 2;
-								return _axios2.default.post('/plaid-api/linked-accounts');
+								return _axios2.default.get('/plaid-api/linked-accounts');
 
 							case 2:
 								linkedBanks = _context.sent;

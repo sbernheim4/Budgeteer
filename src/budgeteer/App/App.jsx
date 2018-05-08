@@ -69,7 +69,7 @@ class App extends Component {
 				key: keyAndEnv.publicKey,
 				onSuccess: function (public_token) {
 					fetch('/plaid-api/get-access-token', {
-						method: 'post',
+						method: 'POST',
 						headers: {
 							'Accept': 'application/json',
 							'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ class App extends Component {
 	}
 
 	registerServiceWorker() {
-		console.log("this is where the service worker should be registered");
+		console.log("Begin registration of serviceWorker");
 		// Registering ServiceWorker
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/budgeteer/sw.js').then(function(registration) {
@@ -114,6 +114,7 @@ class App extends Component {
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 		let fetchOptions = {
+			method: "POST",
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'

@@ -1,25 +1,46 @@
-const CACHE_VERSION = 'app-v1';
+const CACHE_VERSION = 'app-v8';
 const CACHE_FILES = [
-    '/',
-    'budgeteer.js',
-    'favicon.ico',
-    'manifest.json',
-    'loading-gifs/loading-one.gif',
-    'loading-gifs/loading-three.gif',
-    'https://fonts.googleapis.com/css?family=Lato:300,400',
-    'https://cdn.plaid.com/link/v2/stable/link-initialize.js'
+'/',
+'/budgeteer.js',
+'/manifest.json',
+'/loading-gifs/loading-one.gif',
+'/loading-gifs/loading-three.gif',
 ];
 
-self.addEventListener('install', function (event) {
+self.addEventListener('install', (event) => {
+	console.log('in install')
 	event.waitUntil(
-		caches.open(CACHE_VERSION)
-		.then(function (cache) {
-			console.log('Opened cache');
-			console.log(cache);
+		caches.open(CACHE_VERSION).then((cache) => {
+			cache.add("https://fonts.googleapis.com/css?family=Lato:300,400")
+			cache.add("https://cdn.plaid.com/link/v2/stable/link-initialize.js")
 			return cache.addAll(CACHE_FILES);
+		}).then(() => {
+			console.log('WORKER:: install completed');
 		})
-	);
+		)
 });
+
+
+self.addEventListener('install', (event) => {
+	console.log('in install')
+	event.waitUntil(
+		caches.open(CACHE_VERSION).then((cache) => {
+			cache.add("https://fonts.googleapis.com/css?family=Lato:300,400")
+			cache.add("https://cdn.plaid.com/link/v2/stable/link-initialize.js")
+			return fetch("https://cdn.plaid.com/link/v2/stable/link-initialize.js", { mode: 'no-cors' })
+		.then((response) => {
+			cache.put("https://cdn.plaid.com/link/v2/stable/link-initialize.js", response.clone());
+			return cache;
+		}).then(cache => {
+			return cache.addAll(CACHE_FILES);
+		}).then(() => {
+			console.log('WORKER:: install completed');
+		})
+		})
+	)
+});
+
+
 
 self.addEventListener('fetch', function (event) {
 	event.respondWith(
@@ -29,7 +50,7 @@ self.addEventListener('fetch', function (event) {
 			}
 			requestBackend(event);
 		})
-	)
+		)
 });
 
 function requestBackend(event){
@@ -46,11 +67,11 @@ function requestBackend(event){
 			if (event.request.method.toUpperCase() === "GET") {
 				console.log("MAKING REQUEST");
 				cache.put(event.request, response);
-			} else {
-				console.log("NOT MAKING REQUEST");
-				console.log(event.request);
-			}
-		});
+			// } else {
+			// 	console.log("NOT MAKING REQUEST");
+			// 	console.log(event.request);
+		}
+	});
 
 		return res;
 	})
@@ -65,5 +86,5 @@ self.addEventListener('activate', function (event) {
 				}
 			}))
 		})
-	)
+		)
 });

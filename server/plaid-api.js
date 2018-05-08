@@ -143,7 +143,7 @@ app.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-app.get("/transactions", async (req, res, next) => {
+app.post("/transactions", async (req, res, next) => {
 
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days || 30;

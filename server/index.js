@@ -39,7 +39,7 @@ app.all("*", (req, res, next) => {
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
     console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
     console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
-    console.log('--------------------------------------------------------------------------');
+    console.log('--------------------------------------------------------------------------\n');
 
 	next();
 });
@@ -54,9 +54,8 @@ app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/home-page.html"));
 });
 
-app.get("/budgeteer", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
-});
+
+
 
 app.get("/budgeteer/sw.js", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/sw.js"));
@@ -70,9 +69,24 @@ app.get("/budgeteer/loading-gifs/loading-three.gif", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/loading-gifs/loading-three.gif"));
 });
 
+app.get("/budgeteer/manifest.json", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/manifest.json"));
+});
+
+app.get("/budgeteer/budgeteer.js", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/budgeteer.js"));
+});
+
+
+app.get("/budgeteer", (req, res) => {
+	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
+});
+
 app.get("/budgeteer/*", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
+
+
 
 /****************** Start the DB and Server ******************/
 
