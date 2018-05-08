@@ -1,7 +1,7 @@
 @import '../../../scss/variables';
 
 $default-font-color: black;
-$transaction-background-color: hsl(202, 20%, 59%);
+$transaction-background-color: hsla(40, 30%, 85%, 1);
 
 .transaction {
 	margin: 5px;
@@ -94,11 +94,11 @@ $transaction-background-color: hsl(202, 20%, 59%);
 
 			&--amt {
 				width: 100%;
-				color: hsl(0, 100%, 19%);
+				color: hsla(0, 95%, 32%, 1); // Standard red is unreadable with transaction background color
 
 				&__green {
 					width: 100%;
-					color: hsla(128, 60%, 61%, 1); // Standard green is unreadable with transaction background color
+					color: hsla(110, 100%, 20%, 1) // Standard green is unreadable with transaction background color
 				}
 			}
 
