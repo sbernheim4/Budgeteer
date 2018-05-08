@@ -7,6 +7,8 @@ const StyleLintPlugin = require("stylelint-webpack-plugin");
  */
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
+const WebpackBar = require('webpackbar');
+
 module.exports = {
 	devtool: "source-map", // Enables source maps for both JS(X) and (S)CSS
 	entry: {
@@ -63,6 +65,7 @@ module.exports = {
 			files: "./src/scss/*.scss"
 		}),
 
+		new WebpackBar()
 		/*new HardSourceWebpackPlugin()*/
 	]
 };
