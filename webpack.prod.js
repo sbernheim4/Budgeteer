@@ -7,6 +7,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const webpack = require('webpack');
 
+const WebpackBar = require('webpackbar');
+
 module.exports = {
 	//devtool: "eval-source-map",  Enables source maps for both JS(X) and (S)CSS
 	entry: {
@@ -53,7 +55,9 @@ module.exports = {
 
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify('production')
-		})
+		}),
+
+		new WebpackBar()
 	]
 };
 
