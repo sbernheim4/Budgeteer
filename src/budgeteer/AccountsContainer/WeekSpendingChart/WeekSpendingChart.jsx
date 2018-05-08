@@ -9,6 +9,8 @@ import differenceInDays from 'date-fns/difference_in_days';
 
 import helpers from '../../helpers';
 
+import "./weekSpendingChart.scss";
+
 class CustomTooltip extends Component {
 
 	render() {
