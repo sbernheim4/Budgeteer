@@ -1,24 +1,33 @@
 @import '../scss/variables';
 
 .error {
-	display: none;
+	position: absolute;
+	left: 0;
+	right: 0;
 	margin: 15px auto;
 	width: 350px;
-	height: 60px;
 	text-align: center;
 	padding: 15px;
+
+	transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);
+	transform: translateY(30px);
+	animation: slideFromTop .7s 1;
+
 	background-color: $red;
 	border-radius: 10px;
 	transition: opacity .2s ease;
-	z-index: 2;
+	z-index: 3;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 
-	p {
+.hide {
+	transition: transform .7s cubic-bezier(0.6, 0, 0.3, 1.2);
+	transform: translateY(-100vw);
+}
 
-	}
-
-	&__display {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+@keyframes slideFromTop {
+    0%   { transform: translateY(-100vw); }
+    100% { transform: translateY(30px); }
 }

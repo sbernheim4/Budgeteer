@@ -11,9 +11,24 @@ class ErrorMessage extends Component {
 		};
 	}
 
-	render() {
+	componentDidUpdate(prevProps, prevState, snapshot) {
 
-		return <div className="error"></div>
+		// Hide compoent after 5.5 seconds of displaying the error message
+		if (this.props.display) {
+			setTimeout(() => {
+				document.querySelector(".error").classList.add("hide");
+			}, 5500);
+		}
+	}
+
+
+	render() {
+		if (this.props.display) {
+			return <div className="error">{this.props.text}</div>;
+		} else {
+			return '';
+		}
+
 	}
 }
 

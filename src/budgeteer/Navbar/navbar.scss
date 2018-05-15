@@ -134,14 +134,14 @@
 
 			&__active {
 				transform: translateX(0vw);
-				animation: mymove .7s 1;
+				animation: slideIn .7s 1;
 				z-index: 2;
 			}
 		}
 	}
 }
 
-@keyframes mymove {
+@keyframes slideIn {
     0%   { transform: translateX(-100vw); }
     55%  { transform: translateX(4vw); }
     70%  { transform: translateX(0vw); }

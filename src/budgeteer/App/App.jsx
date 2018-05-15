@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 
+import axios from 'axios';
+
 import "../scss/globals.scss";
 
 import Navbar from '../Navbar/Navbar.jsx';
@@ -30,7 +32,8 @@ class App extends Component {
 			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
-			counter: 0
+			counter: 0,
+			showErrorMessage: false
 		};
 
 		this.getTransactions = this.getTransactions.bind(this);
@@ -44,22 +47,15 @@ class App extends Component {
 			// First make a fetch call to get info for already linked accounts
 
 			// TODO: Need to see if there is an error returned from this call --> If
-			// `{ "Error": "No Account Infromation Found" }` is received than it means
+			// `{ "ERROR": "No Account Infromation Found" }` is received than it means
 			// no accounts are linked
-			fetch('/plaid-api/set-stored-access-token', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			});
-
+			await axios.post('/plaid-api/set-stored-access-token')
 
 			this.getTransactions();
 
 			// Used for if the user wants to link a new account
-			let keyAndEnv = await fetch('/plaid-api/key-and-env');
-			keyAndEnv = await keyAndEnv.json();
+			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+			keyAndEnv = keyAndEnv.data;
 
 			const plaid = Plaid.create({
 				apiVersion: 'v2',
@@ -68,6 +64,7 @@ class App extends Component {
 				product: ['transactions'],
 				key: keyAndEnv.publicKey,
 				onSuccess: function (public_token) {
+					//
 					fetch('/plaid-api/get-access-token', {
 						method: 'post',
 						headers: {
@@ -86,8 +83,12 @@ class App extends Component {
 			this.setState({ handler: plaid });
 
 		} catch (err) {
-			console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
 			console.error(err);
+			// console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
+			this.setState({
+				showErrorMessage: true,
+				errorMessage: "It seems like you haven't linked any accounts. Click Add Account in the menu to get started"
+			})
 		}
 	}
 
@@ -105,31 +106,24 @@ class App extends Component {
 		// }
 	}
 
+	// Get transactions for the past year and store them in the state
 	async getTransactions() {
-		// Setup info for fetch call
+
 		let now = new Date(); // Jan. 12th 2018
 		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
 		prev = addMonths(prev, 1); // Feb. 12th 2017
 		prev = startOfMonth(prev); // Returns Feb 1st 2017
 		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
-		let fetchOptions = {
-			method: "POST",
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				days: numDays
-			})
-		};
-
 		try {
-			const response = await fetch('/plaid-api/transactions', fetchOptions); // Fetch all transaction info
-			const data = await response.json(); // convert data to json
 
-			await this.storeAccounts(data); // Store account info
-			await this.storeTransactions(data); // store transaction info
+			let blob = await axios.post('/plaid-api/transactions', {
+				days: numDays
+			});
+			blob = blob.data;
+
+			await this.storeAccounts(blob); // Store account info
+			await this.storeTransactions(blob); // store transaction info
 
 			let x = this.state.counter;
 			x++;
@@ -150,7 +144,6 @@ class App extends Component {
 	}
 
 	async storeTransactions(data) {
-
 		let currentTransactions = this.state.transactions;
 		let currentTransactionIds = this.state.transaction_ids;
 
@@ -207,7 +200,7 @@ class App extends Component {
 		return (
 			<div>
 				<Navbar />
-				<ErrorMessage />
+				<ErrorMessage display={this.state.showErrorMessage} text={this.state.errorMessage}/>
 
 				{/* <Link /> elements are in Navbar.jsx */}
 				<Route exact path='/' render={() => (

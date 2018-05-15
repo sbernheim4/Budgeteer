@@ -101,9 +101,7 @@ app.post('/set-stored-access-token', async (req, res, next) => {
 		let person = await User.find({ _id: "5a63710527c6b237492fc1bb"});
 		person = person[0];
 		if (!person || person.accessTokens.length === 0 || person.itemID.length === 0) {
-
-			let JSONError = JSON.stringify({ "Error": "No Account Infromation Found" });
-			throw new Error(JSONError);
+			throw Error("No Account Infromation Found");
 		}
 
 		ACCESS_TOKENS = person.accessTokens;
@@ -112,7 +110,10 @@ app.post('/set-stored-access-token', async (req, res, next) => {
 		res.sendStatus(200).end();
 	} catch (err) {
 		console.log(err);
-		res.status(500).send(err);
+
+		return res.status(500).json({
+			"ERROR": err
+		});
 	}
 
 });
@@ -175,8 +176,8 @@ app.post("/transactions", async (req, res, next) => {
 		if (err !== null && err.error_code === "INVALID_ACCESS_TOKEN") {
 			console.log("TRANSACTIONS ERROR");
 			console.log(err);
-			return res.json({
-				"result": "Please force refresh the page. On Mac press shift + command + r. On Windows press ctrl + F5"
+			return res.status(500).json({
+				"ERROR": "Please force refresh the page. On Mac press Shift + Command + R. On Windows press Ctrl + F5"
 			});
 		}
 	}
@@ -279,7 +280,7 @@ app.post('/remove-account', async (req, res) => {
 
 	} catch(err) {
 		res.status(500).json({
-			"status": "An error has occurred, please refresh the page and try again in a few minutes"
+			"ERROR": "An error has occurred, please refresh the page and try again in a few minutes"
 		});
 	}
 });

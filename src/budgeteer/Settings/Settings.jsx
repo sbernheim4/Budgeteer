@@ -48,21 +48,12 @@ class Settings extends Component {
 				}
 			});
 
-			console.log("DISPLAY ERROR MESSAGE");
-
-			// const alertMessage = document.querySelector('.app-error');
-			// alertMessage.innerText = result.data.status + " has been unlinked"
-			// alertMessage.classList.add('app-error__display');
-
-			// setTimeout(() => {
-			// 	alertMessage.classList.remove('app-error__display')
-			// }, 4000)
-
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
 			})
 		} catch(err) {
-			console.log(err.response.status);
+			console.log("DISPLAY ERROR MESSAGE");
+			console.log(err.ERROR);
 			//const alertMessage = document.querySelector('.app-error');
 			//alertMessage.innerText = "Error: " + err.response.status + "\n" + err.response.data.status;
 			//alertMessage.classList.add('app-error__display');
@@ -93,12 +84,12 @@ class Settings extends Component {
 				{this.state.linkedBanks.map( (bank, index) =>
 					<div key={index} className='settings--linked-accounts'>
 						<h2>{bank}</h2>
-						<button onClick={(e) => this.removeAccount(e)}>Remove Account</button>
+						<button onClick={(e) => this.removeAccount(e)}>Remove</button>
 					</div>
 				)}
 
 				<div className="settings--rotate-tokens">
-					<p>If you think your bank account has been hacked or compromised, click the button below to delete and generate new access tokens</p>
+					<p>If you think your account has been compromised, click the button below to delete and generate new access tokens</p>
 					<button onClick={this.rotateAccessTokens}>Rotate Access Tokens</button>
 				</div>
 			</section>

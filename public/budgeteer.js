@@ -52118,6 +52118,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = __webpack_require__(72);
 
+var _axios = __webpack_require__(307);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 __webpack_require__(439);
 
 var _Navbar = __webpack_require__(441);
@@ -52191,7 +52195,8 @@ var App = function (_Component) {
 			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
-			counter: 0
+			counter: 0,
+			showErrorMessage: false
 		};
 
 		_this.getTransactions = _this.getTransactions.bind(_this);
@@ -52211,33 +52216,22 @@ var App = function (_Component) {
 								this.registerServiceWorker();
 
 								_context.prev = 1;
+								_context.next = 4;
+								return _axios2.default.post('/plaid-api/set-stored-access-token');
 
-								// First make a fetch call to get info for already linked accounts
-
-								// TODO: Need to see if there is an error returned from this call --> If
-								// `{ "Error": "No Account Infromation Found" }` is received than it means
-								// no accounts are linked
-								fetch('/plaid-api/set-stored-access-token', {
-									method: 'POST',
-									headers: {
-										'Accept': 'application/json',
-										'Content-Type': 'application/json'
-									}
-								});
+							case 4:
 
 								this.getTransactions();
 
 								// Used for if the user wants to link a new account
-								_context.next = 6;
-								return fetch('/plaid-api/key-and-env');
+								_context.next = 7;
+								return _axios2.default.get('/plaid-api/key-and-env');
 
-							case 6:
+							case 7:
 								keyAndEnv = _context.sent;
-								_context.next = 9;
-								return keyAndEnv.json();
 
-							case 9:
-								keyAndEnv = _context.sent;
+								keyAndEnv = keyAndEnv.data;
+
 								plaid = Plaid.create({
 									apiVersion: 'v2',
 									clientName: 'Plaid Walkthrough Demo',
@@ -52245,6 +52239,7 @@ var App = function (_Component) {
 									product: ['transactions'],
 									key: keyAndEnv.publicKey,
 									onSuccess: function onSuccess(public_token) {
+										//
 										fetch('/plaid-api/get-access-token', {
 											method: 'post',
 											headers: {
@@ -52263,22 +52258,26 @@ var App = function (_Component) {
 
 								this.setState({ handler: plaid });
 
-								_context.next = 18;
+								_context.next = 17;
 								break;
 
-							case 14:
-								_context.prev = 14;
+							case 13:
+								_context.prev = 13;
 								_context.t0 = _context['catch'](1);
 
-								console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
 								console.error(_context.t0);
+								// console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
+								this.setState({
+									showErrorMessage: true,
+									errorMessage: "It seems like you haven't linked any accounts. Click Add Account in the menu to get started"
+								});
 
-							case 18:
+							case 17:
 							case 'end':
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[1, 14]]);
+				}, _callee, this, [[1, 13]]);
 			}));
 
 			function componentDidMount() {
@@ -52302,16 +52301,18 @@ var App = function (_Component) {
 			// 	});
 			// }
 		}
+
+		// Get transactions for the past year and store them in the state
+
 	}, {
 		key: 'getTransactions',
 		value: function () {
 			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-				var now, prev, numDays, fetchOptions, response, data, x;
+				var now, prev, numDays, blob, x;
 				return _regenerator2.default.wrap(function _callee2$(_context2) {
 					while (1) {
 						switch (_context2.prev = _context2.next) {
 							case 0:
-								// Setup info for fetch call
 								now = new Date(); // Jan. 12th 2018
 
 								prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
@@ -52320,35 +52321,25 @@ var App = function (_Component) {
 								prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
 								numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
 
-								fetchOptions = {
-									method: "POST",
-									headers: {
-										'Accept': 'application/json',
-										'Content-Type': 'application/json'
-									},
-									body: (0, _stringify2.default)({
-										days: numDays
-									})
-								};
-								_context2.prev = 6;
-								_context2.next = 9;
-								return fetch('/plaid-api/transactions', fetchOptions);
+								_context2.prev = 5;
+								_context2.next = 8;
+								return _axios2.default.post('/plaid-api/transactions', {
+									days: numDays
+								});
 
-							case 9:
-								response = _context2.sent;
+							case 8:
+								blob = _context2.sent;
+
+								blob = blob.data;
+
 								_context2.next = 12;
-								return response.json();
+								return this.storeAccounts(blob);
 
 							case 12:
-								data = _context2.sent;
-								_context2.next = 15;
-								return this.storeAccounts(data);
+								_context2.next = 14;
+								return this.storeTransactions(blob);
 
-							case 15:
-								_context2.next = 17;
-								return this.storeTransactions(data);
-
-							case 17:
+							case 14:
 								// store transaction info
 
 								x = this.state.counter;
@@ -52358,12 +52349,12 @@ var App = function (_Component) {
 									counter: x
 								});
 
-								_context2.next = 25;
+								_context2.next = 22;
 								break;
 
-							case 22:
-								_context2.prev = 22;
-								_context2.t0 = _context2['catch'](6);
+							case 19:
+								_context2.prev = 19;
+								_context2.t0 = _context2['catch'](5);
 
 								// const errorMessage = document.querySelector('.app-error');
 								// errorMessage.classList.add('app-error__display');
@@ -52374,12 +52365,12 @@ var App = function (_Component) {
 
 								console.error(_context2.t0);
 
-							case 25:
+							case 22:
 							case 'end':
 								return _context2.stop();
 						}
 					}
-				}, _callee2, this, [[6, 22]]);
+				}, _callee2, this, [[5, 19]]);
 			}));
 
 			function getTransactions() {
@@ -52495,7 +52486,7 @@ var App = function (_Component) {
 				'div',
 				null,
 				_react2.default.createElement(_Navbar2.default, null),
-				_react2.default.createElement(_ErrorMessage2.default, null),
+				_react2.default.createElement(_ErrorMessage2.default, { display: this.state.showErrorMessage, text: this.state.errorMessage }),
 				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
 						return _react2.default.createElement(_Home2.default, {
 							loading: loading
@@ -57304,7 +57295,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n.navbar--mobile {\n  position: absolute; }\n  @media all and (min-width: 801px) {\n    .navbar--mobile {\n      display: none; } }\n  .navbar--mobile--header {\n    position: relative;\n    width: 100vw;\n    height: 70px;\n    background-color: #253847;\n    z-index: 3;\n    display: flex;\n    justify-content: space-between;\n    align-items: center; }\n    .navbar--mobile--header .icon {\n      margin: 15px;\n      font-size: 2em;\n      cursor: pointer; }\n    .navbar--mobile--header a {\n      float: right; }\n  .navbar--mobile--links {\n    position: relative;\n    margin: 0 auto;\n    width: 95vw;\n    height: calc(98vh - 70px);\n    background-color: #e5e0e5;\n    border: 1px solid black;\n    border-radius: 10px;\n    transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);\n    transform: translateX(-100vw);\n    z-index: 2;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center; }\n    .navbar--mobile--links a:not(:last-child) {\n      border-bottom: 1px solid black; }\n    .navbar--mobile--links a {\n      width: 100%;\n      overflow-y: hidden;\n      text-decoration: none;\n      text-align: center; }\n      .navbar--mobile--links a p {\n        width: 100%;\n        height: calc((100vh - 70px) / 5);\n        font-size: 2em;\n        color: #25323c;\n        overflow-y: hidden;\n        cursor: pointer;\n        display: flex;\n        justify-content: center;\n        align-items: center; }\n    .navbar--mobile--links__active {\n      transform: translateX(0vw);\n      animation: mymove .7s 1;\n      z-index: 2; }\n\n@keyframes mymove {\n  0% {\n    transform: translateX(-100vw); }\n  55% {\n    transform: translateX(4vw); }\n  70% {\n    transform: translateX(0vw); }\n  80% {\n    transform: translateX(1vw); }\n  100% {\n    transform: translateX(0vw); } }\n", ""]);
+exports.push([module.i, ".navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n.navbar--mobile {\n  position: absolute; }\n  @media all and (min-width: 801px) {\n    .navbar--mobile {\n      display: none; } }\n  .navbar--mobile--header {\n    position: relative;\n    width: 100vw;\n    height: 70px;\n    background-color: #253847;\n    z-index: 3;\n    display: flex;\n    justify-content: space-between;\n    align-items: center; }\n    .navbar--mobile--header .icon {\n      margin: 15px;\n      font-size: 2em;\n      cursor: pointer; }\n    .navbar--mobile--header a {\n      float: right; }\n  .navbar--mobile--links {\n    position: relative;\n    margin: 0 auto;\n    width: 95vw;\n    height: calc(98vh - 70px);\n    background-color: #e5e0e5;\n    border: 1px solid black;\n    border-radius: 10px;\n    transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);\n    transform: translateX(-100vw);\n    z-index: 2;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center; }\n    .navbar--mobile--links a:not(:last-child) {\n      border-bottom: 1px solid black; }\n    .navbar--mobile--links a {\n      width: 100%;\n      overflow-y: hidden;\n      text-decoration: none;\n      text-align: center; }\n      .navbar--mobile--links a p {\n        width: 100%;\n        height: calc((100vh - 70px) / 5);\n        font-size: 2em;\n        color: #25323c;\n        overflow-y: hidden;\n        cursor: pointer;\n        display: flex;\n        justify-content: center;\n        align-items: center; }\n    .navbar--mobile--links__active {\n      transform: translateX(0vw);\n      animation: slideIn .7s 1;\n      z-index: 2; }\n\n@keyframes slideIn {\n  0% {\n    transform: translateX(-100vw); }\n  55% {\n    transform: translateX(4vw); }\n  70% {\n    transform: translateX(0vw); }\n  80% {\n    transform: translateX(1vw); }\n  100% {\n    transform: translateX(0vw); } }\n", ""]);
 
 // exports
 
@@ -76381,7 +76372,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".transaction {\n  margin: 5px;\n  width: 80%;\n  background-color: #eae3d7;\n  cursor: pointer;\n  transition: background-color .5s ease; }\n  .transaction:hover {\n    background-color: #dbd1bd; }\n  @media all and (max-width: 600px) {\n    .transaction {\n      margin: 0;\n      width: 100%;\n      border-bottom: 1px solid gray; } }\n  @media all and (min-width: 1200px) {\n    .transaction {\n      margin: 5px;\n      max-width: 700px;\n      width: 45%;\n      border-bottom: none; } }\n  .transaction--map iframe {\n    margin: 0 auto;\n    width: 100%;\n    height: 300px;\n    transition: height .3s ease-in;\n    display: flex;\n    justify-content: center; }\n  .transaction .container {\n    padding: 17px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    pointer-events: none; }\n    .transaction .container .icon {\n      margin: 10px 10px 10px 10px;\n      font-size: 1.5em; }\n      @media all and (max-width: 400px) {\n        .transaction .container .icon {\n          font-size: 1em; } }\n      .transaction .container .icon path {\n        color: #253847; }\n    .transaction .container .name-info {\n      margin: 0 10px;\n      width: 50%;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-start; }\n      .transaction .container .name-info--name {\n        width: 100%;\n        font-size: 22px;\n        color: black;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        overflow: hidden; }\n      .transaction .container .name-info--category {\n        width: 100%;\n        font-size: 17px;\n        color: black;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        overflow: hidden; }\n    .transaction .container .amount {\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .transaction .container .amount--amt {\n        width: 100%;\n        color: #9f0404; }\n        .transaction .container .amount--amt__green {\n          width: 100%;\n          color: #116600; }\n      .transaction .container .amount--date {\n        color: black;\n        align-self: flex-end; }\n        @media all and (max-width: 365px) {\n          .transaction .container .amount--date {\n            font-size: .8em; } }\n  .transaction * {\n    overflow-y: hidden; }\n", ""]);
+exports.push([module.i, ".transaction {\n  margin: 5px;\n  width: 80%;\n  background-color: #eae3d7;\n  cursor: pointer;\n  transition: background-color .5s ease; }\n  .transaction:hover {\n    background-color: #dbd1bd; }\n  @media all and (max-width: 600px) {\n    .transaction {\n      margin: 0;\n      width: 100%;\n      border-bottom: 1px solid gray; } }\n  @media all and (min-width: 1200px) {\n    .transaction {\n      margin: 5px;\n      max-width: 700px;\n      width: 45%;\n      border-bottom: none; } }\n  .transaction--map iframe {\n    margin: 0 auto;\n    width: 100%;\n    height: 300px;\n    transition: height .3s ease-in;\n    display: flex;\n    justify-content: center; }\n  .transaction .container {\n    padding: 15px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    pointer-events: none; }\n    .transaction .container .icon {\n      margin: 10px 10px 10px 10px;\n      font-size: 1.5em; }\n      @media all and (max-width: 400px) {\n        .transaction .container .icon {\n          font-size: 1em; } }\n      .transaction .container .icon path {\n        color: #253847; }\n    .transaction .container .name-info {\n      margin-left: 10px;\n      width: 50%;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-start; }\n      .transaction .container .name-info--name {\n        width: 100%;\n        font-size: 22px;\n        color: black;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        overflow: hidden; }\n      .transaction .container .name-info--category {\n        width: 100%;\n        font-size: 17px;\n        color: black;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        overflow: hidden; }\n    .transaction .container .amount {\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: flex-end; }\n      .transaction .container .amount--amt {\n        width: 100%;\n        color: #9f0404; }\n        .transaction .container .amount--amt__green {\n          width: 100%;\n          color: #116600; }\n      .transaction .container .amount--date {\n        color: black;\n        align-self: flex-end; }\n        @media all and (max-width: 365px) {\n          .transaction .container .amount--date {\n            font-size: .8em; } }\n  .transaction * {\n    overflow-y: hidden; }\n", ""]);
 
 // exports
 
@@ -76997,27 +76988,18 @@ var Settings = function (_Component) {
 								result = _context2.sent;
 
 
-								console.log("DISPLAY ERROR MESSAGE");
-
-								// const alertMessage = document.querySelector('.app-error');
-								// alertMessage.innerText = result.data.status + " has been unlinked"
-								// alertMessage.classList.add('app-error__display');
-
-								// setTimeout(() => {
-								// 	alertMessage.classList.remove('app-error__display')
-								// }, 4000)
-
 								this.setState({
 									linkedBanks: [].concat((0, _toConsumableArray3.default)(this.state.linkedBanks.slice(0, index)), (0, _toConsumableArray3.default)(this.state.linkedBanks.slice(index + 1)))
 								});
 								_context2.next = 15;
 								break;
 
-							case 12:
-								_context2.prev = 12;
+							case 11:
+								_context2.prev = 11;
 								_context2.t0 = _context2['catch'](4);
 
-								console.log(_context2.t0.response.status);
+								console.log("DISPLAY ERROR MESSAGE");
+								console.log(_context2.t0.ERROR);
 								//const alertMessage = document.querySelector('.app-error');
 								//alertMessage.innerText = "Error: " + err.response.status + "\n" + err.response.data.status;
 								//alertMessage.classList.add('app-error__display');
@@ -77031,7 +77013,7 @@ var Settings = function (_Component) {
 								return _context2.stop();
 						}
 					}
-				}, _callee2, this, [[4, 12]]);
+				}, _callee2, this, [[4, 11]]);
 			}));
 
 			function removeAccount(_x) {
@@ -77096,7 +77078,7 @@ var Settings = function (_Component) {
 							{ onClick: function onClick(e) {
 									return _this2.removeAccount(e);
 								} },
-							'Remove Account'
+							'Remove'
 						)
 					);
 				}),
@@ -77106,7 +77088,7 @@ var Settings = function (_Component) {
 					_react2.default.createElement(
 						'p',
 						null,
-						'If you think your bank account has been hacked or compromised, click the button below to delete and generate new access tokens'
+						'If you think your account has been compromised, click the button below to delete and generate new access tokens'
 					),
 					_react2.default.createElement(
 						'button',
@@ -77320,10 +77302,28 @@ var ErrorMessage = function (_Component) {
 	}
 
 	(0, _createClass3.default)(ErrorMessage, [{
+		key: "componentDidUpdate",
+		value: function componentDidUpdate(prevProps, prevState, snapshot) {
+
+			// Hide compoent after 5.5 seconds of displaying the error message
+			if (this.props.display) {
+				setTimeout(function () {
+					document.querySelector(".error").classList.add("hide");
+				}, 5500);
+			}
+		}
+	}, {
 		key: "render",
 		value: function render() {
-
-			return _react2.default.createElement("div", { className: "error" });
+			if (this.props.display) {
+				return _react2.default.createElement(
+					"div",
+					{ className: "error" },
+					this.props.text
+				);
+			} else {
+				return '';
+			}
 		}
 	}]);
 	return ErrorMessage;
@@ -77371,7 +77371,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".error {\n  display: none;\n  margin: 15px auto;\n  width: 350px;\n  height: 60px;\n  text-align: center;\n  padding: 15px;\n  background-color: #f98183;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 2; }\n  .error__display {\n    display: flex;\n    justify-content: center;\n    align-items: center; }\n", ""]);
+exports.push([module.i, ".error {\n  position: absolute;\n  left: 0;\n  right: 0;\n  margin: 15px auto;\n  width: 350px;\n  text-align: center;\n  padding: 15px;\n  transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);\n  transform: translateY(30px);\n  animation: slideFromTop .7s 1;\n  background-color: #f98183;\n  border-radius: 10px;\n  transition: opacity .2s ease;\n  z-index: 3;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n\n.hide {\n  transition: transform 0.7s cubic-bezier(0.6, 0, 0.3, 1.2);\n  transform: translateY(-100vw); }\n\n@keyframes slideFromTop {\n  0% {\n    transform: translateY(-100vw); }\n  100% {\n    transform: translateY(30px); } }\n", ""]);
 
 // exports
 
