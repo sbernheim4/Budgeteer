@@ -63,8 +63,10 @@ class Navbar extends Component {
 		// Control the height of the body if the navbar is opened or closed
 		if (navbarLinks.classList.contains("navbar--mobile--links__active")) {
 			document.querySelector("body").style.maxHeight = "100vh";
+			document.querySelector("body").style.overflowY = "hidden";
 		} else {
 			document.querySelector("body").style.maxHeight = null;
+			document.querySelector("body").style.overflowY = null;
 		}
 	}
 
