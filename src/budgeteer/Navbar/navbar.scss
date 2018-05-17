@@ -108,7 +108,8 @@ $navbar-background-color: hsl(200, 20%, 95%);
 			flex-direction: column;
 
 			&--profile {
-					height: 15vh;
+					min-height: 120px;
+					height: 30vw;
 				    background-image: url(/profile-background.png);
 					background-size: cover;
 					display: flex;
