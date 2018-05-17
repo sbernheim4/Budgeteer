@@ -15,6 +15,11 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const Strategy = require('passport-facebook').Strategy;
 
+const User = mongoose.model("User");
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(require('express-session')({
 	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', resave: true, saveUninitialized: true }
 ));
@@ -47,9 +52,9 @@ app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } 
 /****************** Handle Requests ******************/
 app.all("*", (req, res, next) => {
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
-    console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
-    console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
-    console.log('--------------------------------------------------------------------------');
+	console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
+	console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
+	console.log('--------------------------------------------------------------------------');
 
 	next();
 });
@@ -61,6 +66,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/budgeteer", (req, res) => {
+	console.log("BUDGETEER GET");
+	console.log(req.session.user);
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
 
@@ -81,13 +88,10 @@ app.get("/budgeteer/*", (req, res) => {
 passport.use(new Strategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: 'https://budgeteer-prod.herokuapp.com/login/facebook/return'
-	},
+	callbackURL: 'https://budgeteer-prod.com:5000/login/facebook/return'
+},
 
 	function(accessToken, refreshToken, profile, cb) {
-		console.log("access token:\t", accessToken);
-		console.log("refresh token:\t", refreshToken);
-		console.log("profile:\t", profile);
 		// In this example, the user's Facebook profile is supplied as the user
 		// record.  In a production-quality application, the Facebook profile should
 		// be associated with a user record in the application's database, which
@@ -97,16 +101,60 @@ passport.use(new Strategy({
 	}
 ));
 
+// Configure Passport authenticated session persistence.
+//
+// In order to restore authentication state across HTTP requests, Passport needs
+// to serialize users into and deserialize users out of the session.  In a
+// production-quality application, this would typically be as simple as
+// supplying the user ID when serializing, and querying the user record by ID
+// from the database when deserializing.  However, due to the fact that this
+// example does not have a database, the complete Facebook profile is serialized
+// and deserialized.
+passport.serializeUser(function(user, cb) {
+	cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+	cb(null, obj);
+});
 
 app.get('/login/facebook',
 	passport.authenticate('facebook')
 );
 
 app.get('/login/facebook/return',
-	passport.authenticate('facebook', { failureRedirect: '/login' }),
+	passport.authenticate('facebook', { failureRedirect: '/' }),
 	function(req, res) {
-		res.redirect('/');
-	});
+		// req.user contains the fbProfile information
+
+		User.findOne({ facebookID:req.user.id }, (err, existingUser) => {
+            if (err) {console.log("EROORRRRR______________"); return }
+
+            if (existingUser) {
+				console.log("USER FOUND:");
+				console.log(existingUser)
+                req.session.user = existingUser;;
+				return res.redirect('/budgeteer');
+			} else {
+				const fName = req.user.displayName.split(" ")[0];
+				const lName = req.user.displayName.split(" ")[1];
+
+				const newUser = new User ({
+					facebookID: req.user.id,
+					firstName: fName,
+					lastName: lName
+				});
+
+				newUser.save( err => {
+					if (err) {console.log(err); return}
+					req.session.profile = existingUser;
+				});
+
+				return res.redirect("/");
+			}
+		});
+	}
+);
 
 app.get('/profile',
 	require('connect-ensure-login').ensureLoggedIn(),
@@ -132,9 +180,7 @@ if (process.env.NODE_ENV === "development") {
 		app.listen(port, () => {
 			console.log(chalk.green(`Listening on port ${port}`));
 		});
-
 	}).catch(err => {
 		console.log(err);
 	});
 }
-

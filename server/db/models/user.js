@@ -2,9 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-	id: {
+	facebookID: {
 		type: String,
-		required: true
+		required: false
+	},
+	googleID: {
+		type: String,
+		required: false
 	},
 	firstName: {
 		type: String,
@@ -15,10 +19,6 @@ const userSchema = new Schema({
 		required: false
 	},
 	email: {
-		type: String,
-		required: true
-	},
-	password: {
 		type: String,
 		required: true
 	},
@@ -33,11 +33,7 @@ const userSchema = new Schema({
 	itemID: {
 		type: Array,
 		required: false
-	},
-	connectedAccounts: {
-		type: Array,
-		required: false
-	},
+	}
 });
 
 mongoose.model('User', userSchema);
