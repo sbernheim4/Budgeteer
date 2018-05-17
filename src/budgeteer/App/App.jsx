@@ -49,7 +49,7 @@ class App extends Component {
 			// TODO: Need to see if there is an error returned from this call --> If
 			// `{ "ERROR": "No Account Infromation Found" }` is received than it means
 			// no accounts are linked
-			await axios.post('/plaid-api/set-stored-access-token')
+			/*await axios.post('/plaid-api/set-stored-access-token')*/
 
 			this.getTransactions();
 

@@ -53435,18 +53435,21 @@ var App = function (_Component) {
 								this.registerServiceWorker();
 
 								_context.prev = 1;
-								_context.next = 4;
-								return _axios2.default.post('/plaid-api/set-stored-access-token');
 
-							case 4:
+								// First make a fetch call to get info for already linked accounts
+
+								// TODO: Need to see if there is an error returned from this call --> If
+								// `{ "ERROR": "No Account Infromation Found" }` is received than it means
+								// no accounts are linked
+								/*await axios.post('/plaid-api/set-stored-access-token')*/
 
 								this.getTransactions();
 
 								// Used for if the user wants to link a new account
-								_context.next = 7;
+								_context.next = 5;
 								return _axios2.default.get('/plaid-api/key-and-env');
 
-							case 7:
+							case 5:
 								keyAndEnv = _context.sent;
 
 								keyAndEnv = keyAndEnv.data;
@@ -53477,11 +53480,11 @@ var App = function (_Component) {
 
 								this.setState({ handler: plaid });
 
-								_context.next = 17;
+								_context.next = 15;
 								break;
 
-							case 13:
-								_context.prev = 13;
+							case 11:
+								_context.prev = 11;
 								_context.t0 = _context['catch'](1);
 
 								console.error(_context.t0);
@@ -53491,12 +53494,12 @@ var App = function (_Component) {
 									errorMessage: "It seems like you haven't linked any accounts. Click Add Account in the menu to get started"
 								});
 
-							case 17:
+							case 15:
 							case 'end':
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[1, 13]]);
+				}, _callee, this, [[1, 11]]);
 			}));
 
 			function componentDidMount() {
