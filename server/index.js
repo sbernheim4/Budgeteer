@@ -11,7 +11,13 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 const util = require('util');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const Strategy = require('passport-facebook').Strategy;
+
+app.use(require('express-session')({
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', resave: true, saveUninitialized: true }
+));
 
 const options = {
 	key: fs.readFileSync('encryption/server.key'),
@@ -61,6 +67,53 @@ app.get("/budgeteer", (req, res) => {
 app.get("/budgeteer/*", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
+
+
+/****************** Passport Authentication ******************/
+
+// Configure the Facebook strategy for use by Passport.
+//
+// OAuth 2.0-based strategies require a `verify` function which receives the
+// credential (`accessToken`) for accessing the Facebook API on the user's
+// behalf, along with the user's profile.  The function must invoke `cb`
+// with a user object, which will be set at `req.user` in route handlers after
+// authentication.
+passport.use(new Strategy({
+	clientID: process.env.CLIENT_ID,
+	clientSecret: process.env.CLIENT_SECRET,
+	callbackURL: 'https://budgeteer-prod.herokuapp.com/login/facebook/return'
+	},
+
+	function(accessToken, refreshToken, profile, cb) {
+		console.log("access token:\t", accessToken);
+		console.log("refresh token:\t", refreshToken);
+		console.log("profile:\t", profile);
+		// In this example, the user's Facebook profile is supplied as the user
+		// record.  In a production-quality application, the Facebook profile should
+		// be associated with a user record in the application's database, which
+		// allows for account linking and authentication with other identity
+		// providers.
+		return cb(null, profile);
+	}
+));
+
+
+app.get('/login/facebook',
+	passport.authenticate('facebook')
+);
+
+app.get('/login/facebook/return',
+	passport.authenticate('facebook', { failureRedirect: '/login' }),
+	function(req, res) {
+		res.redirect('/');
+	});
+
+app.get('/profile',
+	require('connect-ensure-login').ensureLoggedIn(),
+	function(req, res){
+		res.render('profile', { user: req.user });
+	}
+);
 
 /****************** Start the DB and Server ******************/
 
