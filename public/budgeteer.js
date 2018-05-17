@@ -57413,40 +57413,7 @@ var Home = function (_Component) {
 						null,
 						"Welcome to Budgeteer"
 					),
-					_react2.default.createElement(
-						"h2",
-						null,
-						"The easiest way to track your spending"
-					),
-					_react2.default.createElement(
-						"div",
-						{ className: "home--info--details" },
-						_react2.default.createElement(
-							"h3",
-							null,
-							"Once linked we make it easy to keep track of your spending"
-						),
-						_react2.default.createElement(
-							"p",
-							null,
-							"View all your transactions and search by account, category or keyword in our Transactions page"
-						),
-						_react2.default.createElement(
-							"p",
-							null,
-							"The statistcs sections will break down your spending to give you insight into where your money is going"
-						),
-						_react2.default.createElement(
-							"p",
-							null,
-							"The networth page will show each of your accounts' balance to get a quick look at your overall financial health"
-						),
-						_react2.default.createElement(
-							"p",
-							null,
-							"To remove any linked accounts visit the settings page."
-						)
-					)
+					_react2.default.createElement("div", { className: "home--info--details" })
 				)
 			);
 		}

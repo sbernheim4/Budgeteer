@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
+import Navbar from "./Navbar/Navbar.jsx";
 
-import LandingPage from "./LandingPage.jsx";
+import LandingPage from "./LandingPage/LandingPage.jsx";
 
 class App extends Component {
 	constructor(props) {
@@ -16,6 +17,7 @@ class App extends Component {
 
 		return (
 			<div>
+				<Navbar />
 				<LandingPage />
 			</div>
 		);

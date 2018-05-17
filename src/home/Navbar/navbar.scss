@@ -1,0 +1,28 @@
+.navbar {
+
+	&--desktop {
+		margin: 0 15px 0 15px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		&--links {
+			display: flex;
+			align-items: center;
+
+			a {
+				margin: 10px;
+				color: black;
+				text-decoration: none;
+			}
+
+			#sign-in {
+				display: inline-block;
+				padding: 10px;
+				border: 1px solid black;
+				border-radius: 10px;
+			}
+		}
+	}
+
+}
