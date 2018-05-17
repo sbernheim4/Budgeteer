@@ -1,5 +1,9 @@
 @import '../scss/variables';
 
+$mobile-navbar-width: 80vw;
+$mobile-navbar-width-plus-one: 86vw;
+$navbar-background-color: hsl(200, 20%, 95%);
+
 .navbar {
 
 	&--desktop {
@@ -66,14 +70,11 @@
 	}
 
 	&--mobile {
-		position: absolute;
-
 		@media all and (min-width: 801px) {
 			display: none;
 		}
 
 		&--header {
-			position: relative;
 			width: 100vw;
 			height: 70px;
 			background-color: $background-color;
@@ -94,47 +95,55 @@
 		}
 
 		&--links {
-			position: relative;
-			margin: 0 auto;
-			width: 95vw;
-			height: calc(98vh - 70px);
-			background-color: hsl(291, 9%, 89%);
-			border: 1px solid black;
-			border-radius: 10px;
-			transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);
-			transform: translateX(-100vw);
+			position: absolute;
+			top: 0;
+			width: $mobile-navbar-width;
+			height: 0;
+			background-color: $navbar-background-color;
+			box-shadow: 2px 8px 20px black;
+			transform: translateX(calc(#{$mobile-navbar-width-plus-one} * -1));
+			animation: slideOut .4s 1;
 			z-index: 2;
 			display: flex;
 			flex-direction: column;
-			justify-content: center;
-			align-items: center;
 
-			a:not(:last-child) {
-				border-bottom: 1px solid black;
+			&--profile {
+					height: 15vh;
+				    background-image: url(/profile-background.png);
+					background-size: cover;
+					display: flex;
+					align-items: flex-end;
+
+				h3 {
+					color: white;
+					text-shadow: 0px 0px 6px black;
+					font-weight: bolder;
+				}
+
 			}
 
 			a {
-				width: 100%;
+				height: 60px;
+				padding-left: 20px;
+				overflow-y: hidden;
+				color: hsl(206, 23%, 19%);
 				overflow-y: hidden;
 				text-decoration: none;
-				text-align: center;
+				font-size: 1em;
+				font-weight: 400;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
 
-				p {
-					width: 100%;
-					height: calc((100vh - 70px) / 5);
-					font-size: 2em;
-					color: hsl(206, 23%, 19%);
-					overflow-y: hidden;
-					cursor: pointer;
-					display: flex;
-					justify-content: center;
-					align-items: center;
+				&:hover {
+					background-color: darken($navbar-background-color, 10%);
 				}
 			}
 
 			&__active {
+				height: 100vh;
 				transform: translateX(0vw);
-				animation: slideIn .7s 1;
+				animation: slideIn .3s 1;
 				z-index: 2;
 			}
 		}
@@ -142,9 +151,15 @@
 }
 
 @keyframes slideIn {
-    0%   { transform: translateX(-100vw); }
-    55%  { transform: translateX(4vw); }
-    70%  { transform: translateX(0vw); }
-    80%  { transform: translateX(1vw); }
+    0%   { transform: translateX(calc(#{$mobile-navbar-width-plus-one} * -1)); }
+    // 55%  { transform: translateX(4vw); }
+    // 70%  { transform: translateX(0vw); }
+    // 80%  { transform: translateX(1vw); }
     100% { transform: translateX(0vw); }
+}
+
+@keyframes slideOut {
+	0% { transform: translateX(0vw); height: 100vh; }
+	99% { height: 100vh; }
+	100% { transform: translateX(calc(#{$mobile-navbar-width-plus-one} * -1)); height: 0; }
 }

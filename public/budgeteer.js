@@ -52487,32 +52487,36 @@ var App = function (_Component) {
 				null,
 				_react2.default.createElement(_Navbar2.default, null),
 				_react2.default.createElement(_ErrorMessage2.default, { display: this.state.showErrorMessage, text: this.state.errorMessage }),
-				_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
-						return _react2.default.createElement(_Home2.default, {
-							loading: loading
-						});
-					} }),
-				_react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
-						return _react2.default.createElement(_Statistics2.default, {
-							transactions: _this3.state.transactions
-						});
-					} }),
-				_react2.default.createElement(_reactRouterDom.Route, { path: '/transactions', render: function render() {
-						return _react2.default.createElement(_AccountsContainer2.default, {
-							transactions: _this3.state.transactions,
-							accounts: _this3.state.accounts
-						});
-					} }),
-				_react2.default.createElement(_reactRouterDom.Route, { path: '/networth', render: function render() {
-						return _react2.default.createElement(_Networth2.default, {
-							transactions: _this3.state.transactions
-						});
-					} }),
-				_react2.default.createElement(_reactRouterDom.Route, { path: '/settings', render: function render() {
-						return _react2.default.createElement(_Settings2.default, {
-							accounts: _this3.state.accounts
-						});
-					} })
+				_react2.default.createElement(
+					'div',
+					{ className: 'main' },
+					_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
+							return _react2.default.createElement(_Home2.default, {
+								loading: loading
+							});
+						} }),
+					_react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
+							return _react2.default.createElement(_Statistics2.default, {
+								transactions: _this3.state.transactions
+							});
+						} }),
+					_react2.default.createElement(_reactRouterDom.Route, { path: '/transactions', render: function render() {
+							return _react2.default.createElement(_AccountsContainer2.default, {
+								transactions: _this3.state.transactions,
+								accounts: _this3.state.accounts
+							});
+						} }),
+					_react2.default.createElement(_reactRouterDom.Route, { path: '/networth', render: function render() {
+							return _react2.default.createElement(_Networth2.default, {
+								transactions: _this3.state.transactions
+							});
+						} }),
+					_react2.default.createElement(_reactRouterDom.Route, { path: '/settings', render: function render() {
+							return _react2.default.createElement(_Settings2.default, {
+								accounts: _this3.state.accounts
+							});
+						} })
+				)
 			);
 		}
 	}]);
@@ -55272,9 +55276,15 @@ var Navbar = function (_Component) {
 			if (navbarLinks.classList.contains("navbar--mobile--links__active")) {
 				document.querySelector("body").style.maxHeight = "100vh";
 				document.querySelector("body").style.overflowY = "hidden";
+
+				document.querySelector(".navbar--mobile--header").style.filter = "brightness(.8)";
+				document.querySelector(".main").style.filter = "brightness(.6)";
 			} else {
 				document.querySelector("body").style.maxHeight = null;
 				document.querySelector("body").style.overflowY = null;
+
+				document.querySelector(".navbar--mobile--header").style.filter = null;
+				document.querySelector(".main").style.filter = null;
 			}
 		}
 	}, {
@@ -55359,67 +55369,56 @@ var Navbar = function (_Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'navbar--mobile--header' },
-						_react2.default.createElement(_reactFontawesome2.default, { className: 'icon', icon: _fontawesomeFreeSolid.faBars, onClick: this.toggleMenu }),
-						_react2.default.createElement(
-							'h2',
-							null,
-							'Budgeteer'
-						),
 						_react2.default.createElement(
 							_reactRouterDom.Link,
 							{ to: '/', onClick: this.closeMenu },
 							' ',
 							_react2.default.createElement(_reactFontawesome2.default, { className: 'icon', icon: _fontawesomeFreeSolid.faHome }),
 							' '
-						)
+						),
+						_react2.default.createElement(
+							'h2',
+							null,
+							'Budgeteer'
+						),
+						_react2.default.createElement(_reactFontawesome2.default, { className: 'icon', icon: _fontawesomeFreeSolid.faBars, onClick: this.toggleMenu })
 					),
 					_react2.default.createElement(
 						'div',
 						{ className: 'navbar--mobile--links' },
 						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: '/transactions' },
+							'div',
+							{ className: 'navbar--mobile--links--profile' },
 							_react2.default.createElement(
-								'p',
-								{ className: 'first', onClick: this.toggleMenu },
-								'Transactions'
+								'h3',
+								null,
+								'Samuel Bernheim'
 							)
 						),
 						_react2.default.createElement(
 							_reactRouterDom.Link,
-							{ to: '/statistics' },
-							_react2.default.createElement(
-								'p',
-								{ className: 'second', onClick: this.toggleMenu },
-								'Statistics'
-							)
+							{ to: '/transactions', className: 'first', onClick: this.toggleMenu },
+							'Your Transactions'
 						),
 						_react2.default.createElement(
 							_reactRouterDom.Link,
-							{ to: '/networth' },
-							_react2.default.createElement(
-								'p',
-								{ className: 'third', onClick: this.toggleMenu },
-								'Networth'
-							)
+							{ to: '/statistics', className: 'second', onClick: this.toggleMenu },
+							'Your Statistics'
 						),
 						_react2.default.createElement(
 							_reactRouterDom.Link,
-							{ to: '/settings' },
-							_react2.default.createElement(
-								'p',
-								{ className: 'fourth', onClick: this.toggleMenu },
-								'Settings'
-							)
+							{ to: '/networth', className: 'third', onClick: this.toggleMenu },
+							'Your Networth'
+						),
+						_react2.default.createElement(
+							_reactRouterDom.Link,
+							{ to: '/settings', className: 'fourth', onClick: this.toggleMenu },
+							'Your Settings'
 						),
 						_react2.default.createElement(
 							'a',
-							null,
-							_react2.default.createElement(
-								'p',
-								{ className: 'fifth', onClick: this.addAccount },
-								'Add Account'
-							)
+							{ className: 'fifth', onClick: this.addAccount },
+							'Add Account'
 						)
 					)
 				)
@@ -57297,7 +57296,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n.navbar--mobile {\n  position: absolute; }\n  @media all and (min-width: 801px) {\n    .navbar--mobile {\n      display: none; } }\n  .navbar--mobile--header {\n    position: relative;\n    width: 100vw;\n    height: 70px;\n    background-color: #253847;\n    z-index: 3;\n    display: flex;\n    justify-content: space-between;\n    align-items: center; }\n    .navbar--mobile--header .icon {\n      margin: 15px;\n      font-size: 2em;\n      cursor: pointer; }\n    .navbar--mobile--header a {\n      float: right; }\n  .navbar--mobile--links {\n    position: relative;\n    margin: 0 auto;\n    width: 95vw;\n    height: calc(98vh - 70px);\n    background-color: #e5e0e5;\n    border: 1px solid black;\n    border-radius: 10px;\n    transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);\n    transform: translateX(-100vw);\n    z-index: 2;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center; }\n    .navbar--mobile--links a:not(:last-child) {\n      border-bottom: 1px solid black; }\n    .navbar--mobile--links a {\n      width: 100%;\n      overflow-y: hidden;\n      text-decoration: none;\n      text-align: center; }\n      .navbar--mobile--links a p {\n        width: 100%;\n        height: calc((100vh - 70px) / 5);\n        font-size: 2em;\n        color: #25323c;\n        overflow-y: hidden;\n        cursor: pointer;\n        display: flex;\n        justify-content: center;\n        align-items: center; }\n    .navbar--mobile--links__active {\n      transform: translateX(0vw);\n      animation: slideIn .7s 1;\n      z-index: 2; }\n\n@keyframes slideIn {\n  0% {\n    transform: translateX(-100vw); }\n  55% {\n    transform: translateX(4vw); }\n  70% {\n    transform: translateX(0vw); }\n  80% {\n    transform: translateX(1vw); }\n  100% {\n    transform: translateX(0vw); } }\n", ""]);
+exports.push([module.i, ".navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n@media all and (min-width: 801px) {\n  .navbar--mobile {\n    display: none; } }\n\n.navbar--mobile--header {\n  width: 100vw;\n  height: 70px;\n  background-color: #253847;\n  z-index: 3;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar--mobile--header .icon {\n    margin: 15px;\n    font-size: 2em;\n    cursor: pointer; }\n  .navbar--mobile--header a {\n    float: right; }\n\n.navbar--mobile--links {\n  position: absolute;\n  top: 0;\n  width: 80vw;\n  height: 0;\n  background-color: #f0f3f5;\n  box-shadow: 2px 8px 20px black;\n  transform: translateX(calc(86vw * -1));\n  animation: slideOut .4s 1;\n  z-index: 2;\n  display: flex;\n  flex-direction: column; }\n  .navbar--mobile--links--profile {\n    height: 15vh;\n    background-image: url(/profile-background.png);\n    background-size: cover;\n    display: flex;\n    align-items: flex-end; }\n    .navbar--mobile--links--profile h3 {\n      color: white;\n      text-shadow: 0px 0px 6px black;\n      font-weight: bolder; }\n  .navbar--mobile--links a {\n    height: 60px;\n    padding-left: 20px;\n    overflow-y: hidden;\n    color: #25323c;\n    overflow-y: hidden;\n    text-decoration: none;\n    font-size: 1em;\n    font-weight: 400;\n    cursor: pointer;\n    display: flex;\n    align-items: center; }\n    .navbar--mobile--links a:hover {\n      background-color: #d1dbe0; }\n  .navbar--mobile--links__active {\n    height: 100vh;\n    transform: translateX(0vw);\n    animation: slideIn .3s 1;\n    z-index: 2; }\n\n@keyframes slideIn {\n  0% {\n    transform: translateX(calc(86vw * -1)); }\n  100% {\n    transform: translateX(0vw); } }\n\n@keyframes slideOut {\n  0% {\n    transform: translateX(0vw);\n    height: 100vh; }\n  99% {\n    height: 100vh; }\n  100% {\n    transform: translateX(calc(86vw * -1));\n    height: 0; } }\n", ""]);
 
 // exports
 
@@ -57480,7 +57479,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".home {\n  margin-top: 50px; }\n  .home--loading h1 {\n    text-align: center; }\n  .home--loading img {\n    margin: 0 auto;\n    width: 80vw;\n    padding: 10px;\n    display: block;\n    border: 5px solid #6490b7;\n    border-radius: 50%; }\n  .home--info {\n    margin: 30px auto;\n    max-width: 1000px; }\n    .home--info h1 {\n      margin: 0;\n      text-align: center; }\n    .home--info h2 {\n      text-align: center;\n      margin-bottom: 90px; }\n    .home--info--details {\n      margin: 30px;\n      font-weight: bold; }\n      .home--info--details p {\n        margin: 10px 0 0 20px; }\n        .home--info--details p:before {\n          content: '- '; }\n", ""]);
+exports.push([module.i, ".home--loading h1 {\n  text-align: center; }\n\n.home--loading img {\n  margin: 0 auto;\n  width: 80vw;\n  padding: 10px;\n  display: block;\n  border: 5px solid #6490b7;\n  border-radius: 50%; }\n\n.home--info {\n  margin: 30px auto;\n  max-width: 1000px; }\n  .home--info h1 {\n    margin: 0;\n    text-align: center; }\n  .home--info h2 {\n    text-align: center;\n    margin-bottom: 90px; }\n  .home--info--details {\n    margin: 30px;\n    font-weight: bold; }\n    .home--info--details p {\n      margin: 10px 0 0 20px; }\n      .home--info--details p:before {\n        content: '- '; }\n", ""]);
 
 // exports
 
@@ -58543,7 +58542,6 @@ var BudgetChart = function (_Component2) {
 		key: "handleChange",
 		value: function handleChange(event) {
 			// Update the state variable
-			this.setState({ monthlyBudget: event.target.value.trim() });
 
 			// Save data to the current local store
 			localStorage.setItem("monthlyBudget", event.target.value.trim());
@@ -58556,7 +58554,8 @@ var BudgetChart = function (_Component2) {
 			var amts = [{ name: 'Spent', value: spent }, { name: 'Remaining', value: remaining }];
 
 			this.setState({
-				rechartsData: amts
+				rechartsData: amts,
+				monthlyBudget: event.target.value.trim()
 			});
 		}
 	}, {
@@ -58572,6 +58571,15 @@ var BudgetChart = function (_Component2) {
 			return _react2.default.createElement(
 				"div",
 				{ className: "budget" },
+				_react2.default.createElement(
+					"form",
+					{ className: "budget--form" },
+					_react2.default.createElement(
+						"label",
+						null,
+						_react2.default.createElement("input", { placeholder: "Enter your budget", type: "number", name: "budget", value: this.state.monthlyBudget, onChange: this.handleChange })
+					)
+				),
 				_react2.default.createElement(
 					_recharts.ResponsiveContainer,
 					{ className: "budget--doughnut-chart", width: "100%", "min-height": 400, height: 400 },
@@ -58591,20 +58599,6 @@ var BudgetChart = function (_Component2) {
 							})
 						),
 						_react2.default.createElement(_recharts.Tooltip, { content: _react2.default.createElement(CustomTooltip, { remaining: remaining, spent: spent }) })
-					)
-				),
-				_react2.default.createElement(
-					"form",
-					{ className: "budget--form" },
-					_react2.default.createElement(
-						"label",
-						null,
-						_react2.default.createElement(
-							"span",
-							null,
-							"Monthly Budget"
-						),
-						_react2.default.createElement("input", { placeholder: "Enter your budget", type: "number", name: "budget", value: this.state.monthlyBudget, onChange: this.handleChange })
 					)
 				)
 			);
@@ -73738,7 +73732,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".budget--tooltip--spent:before, .budget--tooltip--remaining:before {\n  content: \"\";\n  margin-right: 5px;\n  width: 12px;\n  height: 12px;\n  background-color: #67da9f;\n  border: 1px solid white;\n  border-radius: 1px;\n  display: inline-block;\n  vertical-align: middle; }\n\n.budget {\n  margin: 0 auto;\n  display: flex;\n  justify-content: space-around;\n  align-items: center; }\n  @media all and (max-width: 930px) {\n    .budget {\n      flex-direction: column; } }\n  .budget--doughnut-chart {\n    /*width: 100vw;*/ }\n    @media all and (min-width: 930px) {\n      .budget--doughnut-chart {\n        width: 33% !important; } }\n  .budget--form {\n    /*@media all and (max-width: 930px) {\n\t\t\tmargin: 10px 0;\n\t\t}*/ }\n    .budget--form label {\n      font-size: 20px;\n      font-weight: bold;\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .budget--form label input {\n        max-width: 90%;\n        width: 250px;\n        padding: 10px;\n        border: 1px solid black;\n        border-radius: 5px;\n        font-size: 15px;\n        color: black;\n        box-sizing: border-box; }\n        @media all and (max-width: 930px) {\n          .budget--form label input {\n            margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n  .budget--tooltip {\n    padding: 15px;\n    background-color: black;\n    border-radius: 5px; }\n    .budget--tooltip--spent:before {\n      background-color: #f98183; }\n    .budget--tooltip--remaining:before {\n      background-color: #67da9f; }\n\n.recharts-wrapper {\n  overflow-y: hidden; }\n", ""]);
+exports.push([module.i, ".budget--tooltip--spent:before, .budget--tooltip--remaining:before {\n  content: \"\";\n  margin-right: 5px;\n  width: 12px;\n  height: 12px;\n  background-color: #67da9f;\n  border: 1px solid white;\n  border-radius: 1px;\n  display: inline-block;\n  vertical-align: middle; }\n\n.budget {\n  margin: 0 auto;\n  display: flex;\n  justify-content: space-around;\n  align-items: center;\n  flex-direction: column; }\n  .budget--doughnut-chart {\n    /*width: 100vw;*/ }\n    @media all and (min-width: 930px) {\n      .budget--doughnut-chart {\n        width: 33% !important; } }\n  .budget--form {\n    /*@media all and (max-width: 930px) {\n\t\t\tmargin: 10px 0;\n\t\t}*/ }\n    .budget--form label {\n      font-size: 20px;\n      font-weight: bold;\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .budget--form label input {\n        max-width: 90%;\n        width: 250px;\n        padding: 10px;\n        border: 1px solid black;\n        border-radius: 5px;\n        font-size: 15px;\n        color: black;\n        box-sizing: border-box; }\n        @media all and (max-width: 930px) {\n          .budget--form label input {\n            margin-left: 0; } }\n  .budget--totals {\n    margin: 20px 0;\n    text-align: center; }\n    @media all and (max-width: 930px) {\n      .budget--totals {\n        width: auto; } }\n  .budget--tooltip {\n    padding: 15px;\n    background-color: black;\n    border-radius: 5px; }\n    .budget--tooltip--spent:before {\n      background-color: #f98183; }\n    .budget--tooltip--remaining:before {\n      background-color: #67da9f; }\n\n.recharts-wrapper {\n  overflow-y: hidden; }\n", ""]);
 
 // exports
 
@@ -74857,7 +74851,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, "@media all and (max-width: 800px) {\n  .statistics {\n    margin-top: 50px; } }\n\n.statistics .item h1 {\n  text-align: center;\n  margin: 20px; }\n\n.statistics .category-chart-container {\n  width: 100%; }\n\n.statistics .btn {\n  position: absolute;\n  margin-top: 15px;\n  width: 50vw;\n  height: 60px;\n  background: black;\n  cursor: pointer;\n  bottom: 0; }\n\n.statistics .btn__left {\n  left: 0; }\n\n.statistics .btn__right {\n  right: 0; }\n\n.statistics .react-swipe-container > div {\n  display: flex;\n  align-items: center; }\n", ""]);
+exports.push([module.i, ".statistics .item h1 {\n  text-align: center;\n  margin: 20px; }\n\n.statistics .category-chart-container {\n  width: 100%; }\n\n.statistics .btn {\n  position: absolute;\n  margin-top: 15px;\n  width: 50vw;\n  height: 60px;\n  background: black;\n  cursor: pointer;\n  bottom: 0; }\n\n.statistics .btn__left {\n  left: 0; }\n\n.statistics .btn__right {\n  right: 0; }\n\n.statistics .react-swipe-container > div {\n  display: flex;\n  align-items: center; }\n", ""]);
 
 // exports
 
@@ -76464,7 +76458,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.accounts--search-options--icon-search--categorical-search--categories div, .accounts--search-options--icon-search--accts-search--accts div {\n  transform: translateY(-50px);\n  visibility: hidden;\n  opacity: 0;\n  position: absolute;\n  margin-top: 60px;\n  padding: 20px;\n  background-color: black;\n  border-radius: 10px;\n  transition: all 0.3s ease-out; }\n\n.accounts--search-options--icon-search--categorical-search--categories:before, .accounts--search-options--icon-search--accts-search--accts:before {\n  transform: translateY(-50px);\n  opacity: 0;\n  content: \"\";\n  position: absolute;\n  margin-top: 20px;\n  width: 0;\n  height: 0;\n  border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n  border-left: 25px solid transparent;\n  border-right: 25px solid transparent;\n  transition: transform .3s ease-out, opacity .3s ease-out; }\n\n.accounts {\n  position: relative;\n  margin-top: 50px; }\n  @media all and (min-width: 801px) {\n    .accounts {\n      margin-top: 0; } }\n  .accounts .red {\n    text-align: center;\n    color: #f98183; }\n  .accounts .green {\n    text-align: center;\n    color: #67da9f; }\n  .accounts--search-options {\n    margin: 20px;\n    display: flex;\n    justify-content: space-around;\n    align-items: center; }\n    @media all and (max-width: 600px) {\n      .accounts--search-options {\n        flex-direction: column; } }\n    .accounts--search-options--icon-search {\n      max-width: 300px;\n      width: 30%;\n      display: flex;\n      justify-content: space-around;\n      align-items: center; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--icon-search {\n          margin-top: 15px;\n          width: 80%; } }\n      .accounts--search-options--icon-search--categorical-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--categorical-search .icon {\n          font-size: 30px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--categorical-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--categorical-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--categorical-search--categories {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories div {\n            width: 230px;\n            height: 210px;\n            display: flex;\n            justify-content: center;\n            flex-wrap: wrap;\n            z-index: 1; }\n            .accounts--search-options--icon-search--categorical-search--categories div .category-icon {\n              margin: 15px;\n              font-size: 40px; }\n              .accounts--search-options--icon-search--categorical-search--categories div .category-icon path {\n                transition: color .1s ease-in; }\n                .accounts--search-options--icon-search--categorical-search--categories div .category-icon path:hover {\n                  color: #f98183; }\n        .accounts--search-options--icon-search--categorical-search--categories__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--categorical-search--categories__active div {\n            transform: translateY(0);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n            @media all and (max-width: 525px) {\n              .accounts--search-options--icon-search--categorical-search--categories__active div {\n                margin-left: 50px; } }\n            .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon {\n              cursor: pointer; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon:hover {\n                color: #f98183; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon path {\n                color: inherit; }\n            .accounts--search-options--icon-search--categorical-search--categories__active div button {\n              width: 0;\n              height: 0; }\n      .accounts--search-options--icon-search--date-search .icon {\n        font-size: 35px;\n        cursor: pointer; }\n        .accounts--search-options--icon-search--date-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--date-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--accts-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--accts-search .icon {\n          font-size: 40px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--accts-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--accts-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--accts-search--accts {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts div {\n            width: 180px;\n            max-height: 300px;\n            padding: 20px;\n            justify-content: flex-start;\n            z-index: 1;\n            overflow-y: scroll; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar {\n              width: 7px;\n              background-color: rgba(100, 100, 100, 0.7);\n              outline: 1px solid slategrey;\n              -webkit-appearance: none; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar-thumb {\n              background-color: rgba(100, 100, 100, 0.7);\n              border-radius: 4px;\n              outline: 1px solid slategrey;\n              -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }\n            .accounts--search-options--icon-search--accts-search--accts div button {\n              margin: 15px 0;\n              width: 100%;\n              background-color: black;\n              border-radius: 5px;\n              text-align: left;\n              font-size: 1em;\n              color: white;\n              cursor: pointer; }\n              .accounts--search-options--icon-search--accts-search--accts div button:before {\n                content: \"\\25AA   \";\n                white-space: pre; }\n        .accounts--search-options--icon-search--accts-search--accts__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--accts-search--accts__active div {\n            transform: translateY(0) translateX(-23%);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n    .accounts--search-options--keyword-search {\n      width: 90%;\n      font-size: 15px; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--keyword-search {\n          margin-top: 15px;\n          width: 100%; } }\n      .accounts--search-options--keyword-search .icon {\n        padding: 15px;\n        font-size: 30px; }\n      .accounts--search-options--keyword-search form {\n        width: 100%;\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--keyword-search form input {\n          display: block;\n          margin: 0 auto;\n          width: 85%;\n          height: 61px;\n          padding: 0 15px;\n          background-color: #253847;\n          border: 1px solid white;\n          border-radius: 6px;\n          font-size: 20px;\n          color: white;\n          transition: all .2s ease-in; }\n          .accounts--search-options--keyword-search form input:focus {\n            border: 1px solid #ff8484; }\n    .accounts--search-options--date-picker {\n      display: flex;\n      flex-direction: row;\n      justify-content: center; }\n      .accounts--search-options--date-picker input {\n        width: 100px;\n        height: 30px;\n        background-color: grey;\n        color: white;\n        align-self: center; }\n      .accounts--search-options--date-picker div {\n        margin: 10px;\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: flex-end; }\n        .accounts--search-options--date-picker div p {\n          margin-bottom: 5px; }\n        .accounts--search-options--date-picker div label input {\n          margin-left: 10px;\n          width: 100px;\n          border: 1px solid black;\n          color: black; }\n  .accounts--totals {\n    padding: 20px 5px;\n    text-align: center;\n    font-size: 1.4em; }\n    @media all and (min-width: 1000px) {\n      .accounts--totals {\n        font-size: 2em; } }\n  .accounts--chart {\n    margin: 0 10px;\n    max-width: 900px; }\n    @media all and (min-width: 600px) {\n      .accounts--chart {\n        margin: 0 auto;\n        display: flex;\n        justify-content: center;\n        align-items: flex-end; } }\n    @media all and (min-width: 600px) and (max-width: 700px) {\n      .accounts--chart {\n        width: 80vw; } }\n    @media all and (min-width: 700px) {\n      .accounts--chart {\n        width: 65vw; } }\n  .accounts--sort-options {\n    text-align: center; }\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.accounts--search-options--icon-search--categorical-search--categories div, .accounts--search-options--icon-search--accts-search--accts div {\n  transform: translateY(-50px);\n  visibility: hidden;\n  opacity: 0;\n  position: absolute;\n  padding: 20px;\n  background-color: black;\n  border-radius: 10px;\n  transition: all 0.3s ease-out; }\n\n.accounts--search-options--icon-search--categorical-search--categories:before, .accounts--search-options--icon-search--accts-search--accts:before {\n  transform: translateY(-50px);\n  opacity: 0;\n  content: \"\";\n  position: absolute;\n  margin-top: 20px;\n  width: 0;\n  height: 0;\n  border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n  border-left: 25px solid transparent;\n  border-right: 25px solid transparent;\n  transition: transform .3s ease-out, opacity .3s ease-out; }\n\n.accounts {\n  position: relative; }\n  @media all and (min-width: 801px) {\n    .accounts {\n      margin-top: 0; } }\n  .accounts .red {\n    text-align: center;\n    color: #f98183; }\n  .accounts .green {\n    text-align: center;\n    color: #67da9f; }\n  .accounts--search-options {\n    margin: 20px;\n    display: flex;\n    justify-content: space-around;\n    align-items: center; }\n    @media all and (max-width: 600px) {\n      .accounts--search-options {\n        flex-direction: column; } }\n    .accounts--search-options--icon-search {\n      max-width: 300px;\n      width: 30%;\n      display: flex;\n      justify-content: space-around;\n      align-items: center; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--icon-search {\n          margin-top: 15px;\n          width: 80%; } }\n      .accounts--search-options--icon-search--categorical-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--categorical-search .icon {\n          font-size: 30px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--categorical-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--categorical-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--categorical-search--categories {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories div {\n            width: 230px;\n            height: 210px;\n            display: flex;\n            justify-content: center;\n            flex-wrap: wrap;\n            z-index: 1; }\n            .accounts--search-options--icon-search--categorical-search--categories div .category-icon {\n              margin: 15px;\n              font-size: 40px; }\n              .accounts--search-options--icon-search--categorical-search--categories div .category-icon path {\n                transition: color .1s ease-in; }\n                .accounts--search-options--icon-search--categorical-search--categories div .category-icon path:hover {\n                  color: #f98183; }\n        .accounts--search-options--icon-search--categorical-search--categories__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--categorical-search--categories__active div {\n            transform: translateY(0);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n            @media all and (max-width: 525px) {\n              .accounts--search-options--icon-search--categorical-search--categories__active div {\n                margin-left: 50px; } }\n            .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon {\n              cursor: pointer; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon:hover {\n                color: #f98183; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon path {\n                color: inherit; }\n            .accounts--search-options--icon-search--categorical-search--categories__active div button {\n              width: 0;\n              height: 0; }\n      .accounts--search-options--icon-search--date-search .icon {\n        font-size: 35px;\n        cursor: pointer; }\n        .accounts--search-options--icon-search--date-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--date-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--accts-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--accts-search .icon {\n          font-size: 40px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--accts-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--accts-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--accts-search--accts {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts div {\n            width: 180px;\n            max-height: 300px;\n            padding: 20px;\n            justify-content: flex-start;\n            z-index: 1;\n            overflow-y: scroll; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar {\n              width: 7px;\n              background-color: rgba(100, 100, 100, 0.7);\n              outline: 1px solid slategrey;\n              -webkit-appearance: none; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar-thumb {\n              background-color: rgba(100, 100, 100, 0.7);\n              border-radius: 4px;\n              outline: 1px solid slategrey;\n              -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }\n            .accounts--search-options--icon-search--accts-search--accts div button {\n              margin: 15px 0;\n              width: 100%;\n              background-color: black;\n              border-radius: 5px;\n              text-align: left;\n              font-size: 1em;\n              color: white;\n              cursor: pointer; }\n              .accounts--search-options--icon-search--accts-search--accts div button:before {\n                content: \"\\25AA   \";\n                white-space: pre; }\n        .accounts--search-options--icon-search--accts-search--accts__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--accts-search--accts__active div {\n            transform: translateY(0) translateX(-23%);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n    .accounts--search-options--keyword-search {\n      width: 90%;\n      font-size: 15px; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--keyword-search {\n          margin-top: 15px;\n          width: 100%; } }\n      .accounts--search-options--keyword-search .icon {\n        padding: 15px;\n        font-size: 30px; }\n      .accounts--search-options--keyword-search form {\n        width: 100%;\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--keyword-search form input {\n          display: block;\n          margin: 0 auto;\n          width: 85%;\n          height: 61px;\n          padding: 0 15px;\n          background-color: #253847;\n          border: 1px solid white;\n          border-radius: 6px;\n          font-size: 20px;\n          color: white;\n          transition: all .2s ease-in; }\n          .accounts--search-options--keyword-search form input:focus {\n            border: 1px solid #ff8484; }\n    .accounts--search-options--date-picker {\n      display: flex;\n      flex-direction: row;\n      justify-content: center; }\n      .accounts--search-options--date-picker input {\n        width: 100px;\n        height: 30px;\n        background-color: grey;\n        color: white;\n        align-self: center; }\n      .accounts--search-options--date-picker div {\n        margin: 10px;\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: flex-end; }\n        .accounts--search-options--date-picker div p {\n          margin-bottom: 5px; }\n        .accounts--search-options--date-picker div label input {\n          margin-left: 10px;\n          width: 100px;\n          border: 1px solid black;\n          color: black; }\n  .accounts--totals {\n    padding: 20px 5px;\n    text-align: center;\n    font-size: 1.4em; }\n    @media all and (min-width: 1000px) {\n      .accounts--totals {\n        font-size: 2em; } }\n  .accounts--chart {\n    margin: 0 10px;\n    max-width: 900px; }\n    @media all and (min-width: 600px) {\n      .accounts--chart {\n        margin: 0 auto;\n        display: flex;\n        justify-content: center;\n        align-items: flex-end; } }\n    @media all and (min-width: 600px) and (max-width: 700px) {\n      .accounts--chart {\n        width: 80vw; } }\n    @media all and (min-width: 700px) {\n      .accounts--chart {\n        width: 65vw; } }\n  .accounts--sort-options {\n    text-align: center; }\n", ""]);
 
 // exports
 
@@ -76841,7 +76835,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".networth {\n  position: relative;\n  margin-top: 70px; }\n  @media all and (min-width: 801px) {\n    .networth {\n      margin-top: 0; } }\n  .networth--loading {\n    padding: 30px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center; }\n    .networth--loading h1 {\n      text-align: center; }\n  .networth table {\n    margin: 0 auto;\n    padding: 30px;\n    border-collapse: collapse; }\n    .networth table thead tr {\n      border-bottom: 1px solid #ff8484; }\n      .networth table thead tr th {\n        width: 200px;\n        padding-bottom: 10px;\n        font-size: 30px;\n        text-align: center; }\n    .networth table tbody tr td {\n      width: 300px;\n      height: 40px;\n      padding: 10px;\n      font-size: 30px;\n      text-align: center; }\n    .networth table tbody tr .acct-name {\n      text-align: center; }\n    .networth table tbody tr:nth-child(even) {\n      background: #1c2b36; }\n    .networth table tbody tr:hover {\n      background: #17232c; }\n  .networth--recurring-payments {\n    margin: 30px;\n    width: 260px; }\n    .networth--recurring-payments hr {\n      margin-bottom: 30px;\n      height: 1px;\n      background-color: gray; }\n", ""]);
+exports.push([module.i, ".networth {\n  position: relative; }\n  @media all and (min-width: 801px) {\n    .networth {\n      margin-top: 0; } }\n  .networth--loading {\n    padding: 30px;\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center; }\n    .networth--loading h1 {\n      text-align: center; }\n  .networth table {\n    margin: 0 auto;\n    padding: 30px;\n    border-collapse: collapse; }\n    .networth table thead tr {\n      border-bottom: 1px solid #ff8484; }\n      .networth table thead tr th {\n        width: 200px;\n        padding-bottom: 10px;\n        font-size: 30px;\n        text-align: center; }\n    .networth table tbody tr td {\n      width: 300px;\n      height: 40px;\n      padding: 10px;\n      font-size: 30px;\n      text-align: center; }\n    .networth table tbody tr .acct-name {\n      text-align: center; }\n    .networth table tbody tr:nth-child(even) {\n      background: #1c2b36; }\n    .networth table tbody tr:hover {\n      background: #17232c; }\n  .networth--recurring-payments {\n    margin: 30px;\n    width: 260px; }\n    .networth--recurring-payments hr {\n      margin-bottom: 30px;\n      height: 1px;\n      background-color: gray; }\n", ""]);
 
 // exports
 
@@ -77247,7 +77241,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".settings {\n  position: relative;\n  margin: 70px 30px 0 30px; }\n  @media all and (min-width: 801px) {\n    .settings {\n      margin: 0 30px; } }\n  .settings h1 {\n    font-size: 2em; }\n  .settings--linked-accounts {\n    margin: 20px auto;\n    max-width: 1000px;\n    width: 80%;\n    padding: 10px;\n    border-bottom: 2px solid white;\n    display: flex;\n    flex-direction: row;\n    justify-content: space-between;\n    align-items: center; }\n    .settings--linked-accounts h2 {\n      margin: 5px 0; }\n    .settings--linked-accounts button {\n      padding: 15px 20px;\n      background-color: #d84545;\n      border-radius: 5px;\n      font-size: 1em;\n      cursor: pointer; }\n  .settings--rotate-tokens {\n    margin: 60px 15px 0 15px; }\n    .settings--rotate-tokens button {\n      margin-top: 10px;\n      padding: 20px;\n      background-color: #46926b;\n      border-radius: 5px;\n      font-size: 1em;\n      cursor: pointer;\n      transition: background-color .3s ease; }\n      .settings--rotate-tokens button:hover {\n        background-color: #357052; }\n", ""]);
+exports.push([module.i, ".settings {\n  position: relative; }\n  @media all and (min-width: 801px) {\n    .settings {\n      margin: 0 30px; } }\n  .settings h1 {\n    font-size: 2em; }\n  .settings--linked-accounts {\n    margin: 20px auto;\n    max-width: 1000px;\n    width: 80%;\n    padding: 10px;\n    border-bottom: 2px solid white;\n    display: flex;\n    flex-direction: row;\n    justify-content: space-between;\n    align-items: center; }\n    .settings--linked-accounts h2 {\n      margin: 5px 0; }\n    .settings--linked-accounts button {\n      padding: 15px 20px;\n      background-color: #d84545;\n      border-radius: 5px;\n      font-size: 1em;\n      cursor: pointer; }\n  .settings--rotate-tokens {\n    margin: 60px 15px 0 15px; }\n    .settings--rotate-tokens button {\n      margin-top: 10px;\n      padding: 20px;\n      background-color: #46926b;\n      border-radius: 5px;\n      font-size: 1em;\n      cursor: pointer;\n      transition: background-color .3s ease; }\n      .settings--rotate-tokens button:hover {\n        background-color: #357052; }\n", ""]);
 
 // exports
 

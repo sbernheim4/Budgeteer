@@ -7,6 +7,8 @@ const StyleLintPlugin = require("stylelint-webpack-plugin");
  */
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+
 const WebpackBar = require('webpackbar');
 
 module.exports = {
@@ -65,8 +67,17 @@ module.exports = {
 			files: "./src/scss/*.scss"
 		}),
 
-		new WebpackBar()
-		/*new HardSourceWebpackPlugin()*/
+		new WebpackBar(),
+
+		new BrowserSyncPlugin({
+			// browse to http://localhost:3000/ during development,
+			// ./public directory is being served
+			host: 'localhost',
+			port: 3000,
+			proxy: 'http://localhost:5001/'
+    	}),
+
+		new HardSourceWebpackPlugin()
 	]
 };
 

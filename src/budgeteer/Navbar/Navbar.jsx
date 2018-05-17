@@ -64,9 +64,15 @@ class Navbar extends Component {
 		if (navbarLinks.classList.contains("navbar--mobile--links__active")) {
 			document.querySelector("body").style.maxHeight = "100vh";
 			document.querySelector("body").style.overflowY = "hidden";
+
+			document.querySelector(".navbar--mobile--header").style.filter = "brightness(.8)";
+			document.querySelector(".main").style.filter = "brightness(.6)";
 		} else {
 			document.querySelector("body").style.maxHeight = null;
 			document.querySelector("body").style.overflowY = null;
+
+			document.querySelector(".navbar--mobile--header").style.filter = null
+			document.querySelector(".main").style.filter = null;
 		}
 	}
 
@@ -96,17 +102,22 @@ class Navbar extends Component {
 
 				<div className="navbar--mobile">
 					<div className="navbar--mobile--header">
-						<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
-						<h2>Budgeteer</h2>
 						<Link to='/' onClick={this.closeMenu}> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
+						<h2>Budgeteer</h2>
+						<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
 					</div>
 
 					<div className='navbar--mobile--links'>
-						<Link to='/transactions'><p className="first" onClick={this.toggleMenu}>Transactions</p></Link>
-						<Link to='/statistics'><p className="second" onClick={this.toggleMenu}>Statistics</p></Link>
-						<Link to='/networth'><p className="third" onClick={this.toggleMenu}>Networth</p></Link>
-						<Link to='/settings'><p className="fourth" onClick={this.toggleMenu}>Settings</p></Link>
-						<a><p className="fifth" onClick={this.addAccount}>Add Account</p></a>
+
+						<div className="navbar--mobile--links--profile">
+							<h3>Samuel Bernheim</h3>
+						</div>
+
+						<Link to='/transactions' className="first" onClick={this.toggleMenu}>Your Transactions</Link>
+						<Link to='/statistics' className="second" onClick={this.toggleMenu}>Your Statistics</Link>
+						<Link to='/networth' className="third" onClick={this.toggleMenu}>Your Networth</Link>
+						<Link to='/settings' className="fourth" onClick={this.toggleMenu}>Your Settings</Link>
+						<a className="fifth" onClick={this.addAccount}>Add Account</a>
 					</div>
 				</div>
 			</nav>

@@ -91,7 +91,6 @@ class BudgetChart extends Component {
 
 	handleChange(event) {
 		// Update the state variable
-		this.setState({ monthlyBudget: event.target.value.trim() });
 
 		// Save data to the current local store
 		localStorage.setItem("monthlyBudget", event.target.value.trim());
@@ -107,7 +106,8 @@ class BudgetChart extends Component {
 		];
 
 		this.setState({
-			rechartsData: amts
+			rechartsData: amts,
+			monthlyBudget: event.target.value.trim()
 		})
 	}
 
@@ -121,6 +121,12 @@ class BudgetChart extends Component {
 
 		return (
 			<div className="budget">
+
+				<form className="budget--form">
+					<label>
+						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
+					</label>
+				</form>
 
 				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
 				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
@@ -143,12 +149,6 @@ class BudgetChart extends Component {
 				</ResponsiveContainer>
 
 
-				<form className="budget--form">
-					<label>
-						<span>Monthly Budget</span>
-						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
-					</label>
-				</form>
 			</div>
 		);
 	}

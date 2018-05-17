@@ -202,37 +202,40 @@ class App extends Component {
 				<Navbar />
 				<ErrorMessage display={this.state.showErrorMessage} text={this.state.errorMessage}/>
 
+				<div className="main">
+					<Route exact path='/' render={() => (
+						<Home
+							loading={loading}
+						/>
+					)}/>
+
+					<Route path='/statistics' render={() => (
+						<Statistics
+							transactions={this.state.transactions}
+						/>
+					)}/>
+
+					<Route path='/transactions' render={() => (
+						<AccountsContainer
+							transactions={this.state.transactions}
+							accounts={this.state.accounts}
+						/>
+					)}/>
+
+					<Route path='/networth' render={() => (
+						<Networth
+							transactions={this.state.transactions}
+						/>
+					)}/>
+
+					<Route path='/settings' render={() => (
+						<Settings
+							accounts={this.state.accounts}
+						/>
+					)}/>
+				</div>
+
 				{/* <Link /> elements are in Navbar.jsx */}
-				<Route exact path='/' render={() => (
-					<Home
-						loading={loading}
-					/>
-				)}/>
-
-				<Route path='/statistics' render={() => (
-					<Statistics
-						transactions={this.state.transactions}
-					/>
-				)}/>
-
-				<Route path='/transactions' render={() => (
-					<AccountsContainer
-						transactions={this.state.transactions}
-						accounts={this.state.accounts}
-					/>
-				)}/>
-
-				<Route path='/networth' render={() => (
-					<Networth
-						transactions={this.state.transactions}
-					/>
-				)}/>
-
-				<Route path='/settings' render={() => (
-					<Settings
-						accounts={this.state.accounts}
-					/>
-				)}/>
 
 			</div>
 		);
