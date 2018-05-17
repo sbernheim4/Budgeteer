@@ -55189,6 +55189,7 @@ __webpack_require__(461);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// Selective icons from Font Awesome
 var Navbar = function (_Component) {
 	(0, _inherits3.default)(Navbar, _Component);
 
@@ -55278,7 +55279,7 @@ var Navbar = function (_Component) {
 				document.querySelector("body").style.overflowY = "hidden";
 
 				document.querySelector(".navbar--mobile--header").style.filter = "brightness(.8)";
-				document.querySelector(".main").style.filter = "brightness(.6)";
+				document.querySelector(".main").style.filter = "brightness(.8)";
 			} else {
 				document.querySelector("body").style.maxHeight = null;
 				document.querySelector("body").style.overflowY = null;
@@ -55389,6 +55390,7 @@ var Navbar = function (_Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'navbar--mobile--links--profile' },
+							_react2.default.createElement('img', { src: 'http://via.placeholder.com/50x50' }),
 							_react2.default.createElement(
 								'h3',
 								null,
@@ -55396,29 +55398,55 @@ var Navbar = function (_Component) {
 							)
 						),
 						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: '/transactions', className: 'first', onClick: this.toggleMenu },
-							'Your Transactions'
+							'div',
+							{ className: 'link-container' },
+							_react2.default.createElement(_reactFontawesome2.default, { icon: _fontawesomeFreeSolid.faExchangeAlt }),
+							_react2.default.createElement(
+								_reactRouterDom.Link,
+								{ to: '/transactions', className: 'first', onClick: this.toggleMenu },
+								'Your Transactions'
+							)
 						),
 						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: '/statistics', className: 'second', onClick: this.toggleMenu },
-							'Your Statistics'
+							'div',
+							{ className: 'link-container' },
+							_react2.default.createElement(_reactFontawesome2.default, { icon: _fontawesomeFreeSolid.faChartPie }),
+							_react2.default.createElement(
+								_reactRouterDom.Link,
+								{ to: '/statistics', className: 'second', onClick: this.toggleMenu },
+								'Your Statistics'
+							)
 						),
 						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: '/networth', className: 'third', onClick: this.toggleMenu },
-							'Your Networth'
+							'div',
+							{ className: 'link-container' },
+							_react2.default.createElement(_reactFontawesome2.default, { icon: _fontawesomeFreeSolid.faMoneyBillAlt }),
+							_react2.default.createElement(
+								_reactRouterDom.Link,
+								{ to: '/networth', className: 'third', onClick: this.toggleMenu },
+								'Your Networth'
+							)
+						),
+						_react2.default.createElement('hr', null),
+						_react2.default.createElement(
+							'div',
+							{ className: 'link-container' },
+							_react2.default.createElement(_reactFontawesome2.default, { icon: _fontawesomeFreeSolid.faCogs }),
+							_react2.default.createElement(
+								_reactRouterDom.Link,
+								{ to: '/settings', className: 'fourth', onClick: this.toggleMenu },
+								'Your Settings'
+							)
 						),
 						_react2.default.createElement(
-							_reactRouterDom.Link,
-							{ to: '/settings', className: 'fourth', onClick: this.toggleMenu },
-							'Your Settings'
-						),
-						_react2.default.createElement(
-							'a',
-							{ className: 'fifth', onClick: this.addAccount },
-							'Add Account'
+							'div',
+							{ className: 'link-container' },
+							_react2.default.createElement(_reactFontawesome2.default, { icon: _fontawesomeFreeSolid.faPlus }),
+							_react2.default.createElement(
+								'a',
+								{ className: 'fifth', onClick: this.addAccount },
+								'Add Account'
+							)
 						)
 					)
 				)
@@ -55428,7 +55456,7 @@ var Navbar = function (_Component) {
 	return Navbar;
 }(_react.Component);
 
-/* Font Awesome */
+// Font Awesome base package
 
 
 exports.default = Navbar;
@@ -57296,7 +57324,7 @@ exports = module.exports = __webpack_require__(16)(false);
 
 
 // module
-exports.push([module.i, ".navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n@media all and (min-width: 801px) {\n  .navbar--mobile {\n    display: none; } }\n\n.navbar--mobile--header {\n  width: 100vw;\n  height: 70px;\n  background-color: #253847;\n  z-index: 3;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar--mobile--header .icon {\n    margin: 15px;\n    font-size: 2em;\n    cursor: pointer; }\n  .navbar--mobile--header a {\n    float: right; }\n\n.navbar--mobile--links {\n  position: absolute;\n  top: 0;\n  width: 80vw;\n  height: 0;\n  background-color: #f0f3f5;\n  box-shadow: 2px 8px 20px black;\n  transform: translateX(calc(86vw * -1));\n  animation: slideOut .4s 1;\n  z-index: 2;\n  display: flex;\n  flex-direction: column; }\n  .navbar--mobile--links--profile {\n    min-height: 120px;\n    height: 30vw;\n    background-image: url(/profile-background.png);\n    background-size: cover;\n    display: flex;\n    align-items: flex-end; }\n    .navbar--mobile--links--profile h3 {\n      color: white;\n      text-shadow: 0px 0px 6px black;\n      font-weight: bolder; }\n  .navbar--mobile--links a {\n    height: 60px;\n    padding-left: 20px;\n    overflow-y: hidden;\n    color: #25323c;\n    overflow-y: hidden;\n    text-decoration: none;\n    font-size: 1em;\n    font-weight: 400;\n    cursor: pointer;\n    display: flex;\n    align-items: center; }\n    .navbar--mobile--links a:hover {\n      background-color: #d1dbe0; }\n  .navbar--mobile--links__active {\n    height: 100vh;\n    transform: translateX(0vw);\n    animation: slideIn .3s 1;\n    z-index: 2; }\n\n@keyframes slideIn {\n  0% {\n    transform: translateX(calc(86vw * -1)); }\n  100% {\n    transform: translateX(0vw); } }\n\n@keyframes slideOut {\n  0% {\n    transform: translateX(0vw);\n    height: 100vh; }\n  99% {\n    height: 100vh; }\n  100% {\n    transform: translateX(calc(86vw * -1));\n    height: 0; } }\n", ""]);
+exports.push([module.i, ".navbar--desktop {\n  width: 100vw;\n  display: flex;\n  flex-direction: row;\n  justify-content: space-between;\n  align-items: center; }\n  @media all and (max-width: 800px) {\n    .navbar--desktop {\n      display: none; } }\n  .navbar--desktop ul {\n    display: flex;\n    flex-direction: row; }\n    .navbar--desktop ul li {\n      margin-right: 15px;\n      text-transform: uppercase; }\n      .navbar--desktop ul li:after {\n        content: '';\n        margin: auto;\n        display: block;\n        width: 0;\n        height: 3px;\n        background: #ff8484;\n        transition: all .3s ease; }\n      .navbar--desktop ul li:hover:after {\n        width: 100%; }\n      .navbar--desktop ul li a {\n        color: white;\n        text-decoration: none; }\n    .navbar--desktop ul li:first-child {\n      margin-left: 15px; }\n  .navbar--desktop div {\n    display: flex;\n    align-items: center; }\n    .navbar--desktop div button {\n      margin-top: 15px;\n      margin-right: 15px;\n      padding: 15px;\n      background-color: #346ca1;\n      border: 1px solid black;\n      border-radius: 5px;\n      font-size: 20px;\n      color: white;\n      cursor: pointer; }\n\n@media all and (min-width: 801px) {\n  .navbar--mobile {\n    display: none; } }\n\n.navbar--mobile--header {\n  width: 100vw;\n  height: 70px;\n  background-color: #253847;\n  z-index: 3;\n  display: flex;\n  justify-content: space-between;\n  align-items: center; }\n  .navbar--mobile--header .icon {\n    margin: 15px;\n    font-size: 2em;\n    cursor: pointer; }\n  .navbar--mobile--header a {\n    float: right; }\n\n.navbar--mobile--links {\n  position: absolute;\n  top: 0;\n  width: 80vw;\n  height: 0;\n  background-color: #f0f3f5;\n  box-shadow: 2px 8px 20px black;\n  transform: translateX(calc(86vw * -1));\n  animation: slideOut .4s 1;\n  z-index: 2;\n  display: flex;\n  flex-direction: column; }\n  .navbar--mobile--links--profile {\n    min-height: 120px;\n    height: 30vw;\n    background-image: url(/profile-background.png);\n    background-size: cover;\n    display: flex;\n    justify-content: flex-end;\n    flex-direction: column; }\n    .navbar--mobile--links--profile img {\n      width: 50px;\n      height: 50px;\n      margin: 0 0 15px 15px;\n      border-radius: 50%; }\n    .navbar--mobile--links--profile h3 {\n      padding: 0 0 10px 10px;\n      color: white;\n      text-shadow: 0px 0px 6px black;\n      font-weight: bolder; }\n  .navbar--mobile--links .link-container {\n    display: flex;\n    align-items: center;\n    flex-direction: row;\n    transition: background-color .1s ease-in; }\n    .navbar--mobile--links .link-container:hover {\n      background-color: #d1dbe0;\n      cursor: pointer;\n      transition: background-color .1s ease-in; }\n    .navbar--mobile--links .link-container a {\n      height: 60px;\n      padding-left: 20px;\n      overflow-y: hidden;\n      color: #25323c;\n      overflow-y: hidden;\n      text-decoration: none;\n      font-size: 1em;\n      font-weight: 400;\n      display: flex;\n      align-items: center; }\n    .navbar--mobile--links .link-container svg {\n      padding-left: 15px; }\n      .navbar--mobile--links .link-container svg path {\n        color: black; }\n  .navbar--mobile--links hr {\n    width: 100%;\n    height: 1px;\n    margin: 5px 0;\n    background: #d4c3c3; }\n  .navbar--mobile--links__active {\n    height: 100vh;\n    transform: translateX(0vw);\n    animation: slideIn .3s 1;\n    z-index: 2; }\n\n@keyframes slideIn {\n  0% {\n    transform: translateX(calc(86vw * -1)); }\n  1% {\n    height: 100vh; }\n  100% {\n    transform: translateX(0vw); } }\n\n@keyframes slideOut {\n  0% {\n    transform: translateX(0vw);\n    height: 100vh; }\n  99% {\n    height: 100vh; }\n  100% {\n    transform: translateX(calc(86vw * -1));\n    height: 0; } }\n", ""]);
 
 // exports
 

@@ -2,9 +2,19 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-/* Font Awesome */
+// Font Awesome base package
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faBars, faHome } from '@fortawesome/fontawesome-free-solid';
+
+// Selective icons from Font Awesome
+import {
+	faBars,
+	faHome,
+	faExchangeAlt,
+	faChartPie,
+	faMoneyBillAlt,
+	faCogs,
+	faPlus
+} from '@fortawesome/fontawesome-free-solid';
 
 import "./navbar.scss";
 
@@ -66,7 +76,7 @@ class Navbar extends Component {
 			document.querySelector("body").style.overflowY = "hidden";
 
 			document.querySelector(".navbar--mobile--header").style.filter = "brightness(.8)";
-			document.querySelector(".main").style.filter = "brightness(.6)";
+			document.querySelector(".main").style.filter = "brightness(.8)";
 		} else {
 			document.querySelector("body").style.maxHeight = null;
 			document.querySelector("body").style.overflowY = null;
@@ -110,14 +120,16 @@ class Navbar extends Component {
 					<div className='navbar--mobile--links'>
 
 						<div className="navbar--mobile--links--profile">
+							<img src="http://via.placeholder.com/50x50" />
 							<h3>Samuel Bernheim</h3>
 						</div>
 
-						<Link to='/transactions' className="first" onClick={this.toggleMenu}>Your Transactions</Link>
-						<Link to='/statistics' className="second" onClick={this.toggleMenu}>Your Statistics</Link>
-						<Link to='/networth' className="third" onClick={this.toggleMenu}>Your Networth</Link>
-						<Link to='/settings' className="fourth" onClick={this.toggleMenu}>Your Settings</Link>
-						<a className="fifth" onClick={this.addAccount}>Add Account</a>
+						<div className="link-container" ><FontAwesomeIcon icon={faExchangeAlt}/><Link to='/transactions' className="first" onClick={this.toggleMenu}>Your Transactions</Link></div>
+						<div className="link-container" ><FontAwesomeIcon icon={faChartPie}/><Link to='/statistics' className="second" onClick={this.toggleMenu}>Your Statistics</Link></div>
+						<div className="link-container" ><FontAwesomeIcon icon={faMoneyBillAlt}/><Link to='/networth' className="third" onClick={this.toggleMenu}>Your Networth</Link></div>
+						<hr />
+						<div className="link-container" ><FontAwesomeIcon icon={faCogs}/><Link to='/settings' className="fourth" onClick={this.toggleMenu}>Your Settings</Link></div>
+						<div className="link-container"><FontAwesomeIcon icon={faPlus}/><a className="fifth" onClick={this.addAccount}>Add Account</a></div>
 					</div>
 				</div>
 			</nav>
