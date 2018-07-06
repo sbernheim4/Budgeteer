@@ -14,15 +14,29 @@ const util = require('util');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const Strategy = require('passport-facebook').Strategy;
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const User = mongoose.model("User");
 
+
+/****************** DB Options ******************/
+const mongodbUri = process.env.DB_URI;
+
+mongoose.connect(mongodbUri);
+let db = mongoose.connection;
+
+
+app.use(session({
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', 
+	resave: true, 
+	saveUninitialized: true,
+	cookie: { maxAge: 600000 },
+	store: new MongoStore({ mongooseConnection: mongoose.connection })
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(require('express-session')({
-	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', resave: true, saveUninitialized: true }
-));
 
 const options = {
 	key: fs.readFileSync('encryption/server.key'),
@@ -32,12 +46,6 @@ const options = {
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-
-/****************** DB Options ******************/
-const mongodbUri = process.env.DB_URI;
-
-mongoose.connect(mongodbUri);
-let db = mongoose.connection;
 
 /****************** Server Options ******************/
 const port = process.env.PORT;
@@ -51,21 +59,28 @@ app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } 
 
 /****************** Handle Requests ******************/
 app.all("*", (req, res, next) => {
+	console.log('--------------------------------------------------------------------------');
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
 	console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
 	console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
-	console.log('--------------------------------------------------------------------------');
 
 	next();
 });
 
-app.use("/plaid-api", require("./plaid-api.js"));
+app.all('*', (req, res, next) => {
+	// console.log("-----------------------------------------")
+	// console.log(req.session.user);
+	// console.log("-----------------------------------------")
+	next();
+})
+
+app.use("/plaid-api", logInfo, require("./plaid-api.js"));
 
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/home-page.html"));
 });
 
-app.get("/budgeteer", (req, res) => {
+app.get("/budgeteer", checkAuthentication, (req, res) => {
 	console.log("BUDGETEER GET");
 	console.log(req.session.user);
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
@@ -123,8 +138,7 @@ app.get('/login/facebook',
 );
 
 app.get('/login/facebook/return',
-	passport.authenticate('facebook', { failureRedirect: '/' }),
-	function(req, res) {
+	passport.authenticate('facebook', { failureRedirect: '/' }), (req, res) => {
 		// req.user contains the fbProfile information
 
 		User.findOne({ facebookID:req.user.id }, (err, existingUser) => {
@@ -156,12 +170,30 @@ app.get('/login/facebook/return',
 	}
 );
 
-app.get('/profile',
-	require('connect-ensure-login').ensureLoggedIn(),
-	function(req, res){
-		res.render('profile', { user: req.user });
+app.get('/profile', checkAuthentication, (req, res) => {
+		res.send(req.session.user);
 	}
 );
+
+app.get("/nope", (req, res) => {
+	res.send("NOPE");
+});
+
+function checkAuthentication(req,res,next){
+    if(req.session.user !== undefined){
+        next();
+    } else{
+        res.redirect("/nope");
+    }
+}
+
+function logInfo(req, res, next) {
+	console.log();console.log();console.log();console.log();
+	console.log(req.session);
+	console.log();console.log();console.log();console.log();
+	next();
+
+}
 
 /****************** Start the DB and Server ******************/
 

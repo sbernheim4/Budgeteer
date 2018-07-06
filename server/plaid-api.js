@@ -8,13 +8,24 @@ const bodyParser = require("body-parser");
 const moment = require("moment");
 const plaid = require("plaid");
 const axios = require("axios");
+const passport = require('passport');
+const Strategy = require('passport-facebook').Strategy;
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
-app.use(require('express-session')({
-	secret: 'jfadhsnfijhu]0i32iekn245u280ur32u0jfl2342fdsaansl', resave: true, saveuninitialized: true }
-));
+app.use(session({
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', 
+	resave: true, 
+	saveUninitialized: true,
+	cookie: { maxAge: 600000 },
+	store: new MongoStore({ mongooseConnection: mongoose.connection })
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
@@ -126,16 +137,15 @@ app.post("/rotate-access-tokens", async (req, res) => {
 // Get Access Tokens and Item IDs from Plaid
 app.post("/get-access-token", async (req, res) => {
 
-	PUBLIC_TOKEN = req.body.public_token;
+	const PUBLIC_TOKEN = req.body.public_token;
 	try {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
-
-		// Update our arrays on the server
-		let currAccessTokens = req.session.user.accessTokens;
+		
+		let currAccessTokens = req.session.user.accessTokens || [];
 		currAccessTokens.push(tokenResponse.access_token);
 
-		let currItemID = req.session.user.itemID;
+		let currItemID = req.session.user.itemID || [];
 		currItemID.push(tokenResponse.item_id);
 
 		// Update our arrays in the DB

@@ -20,7 +20,7 @@ const userSchema = new Schema({
 	},
 	email: {
 		type: String,
-		required: true
+		required: false
 	},
 	monthlyBudget: {
 		type: Number,
