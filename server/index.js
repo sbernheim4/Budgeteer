@@ -19,13 +19,11 @@ const MongoStore = require('connect-mongo')(session);
 
 const User = mongoose.model("User");
 
-
 /****************** DB Options ******************/
 const mongodbUri = process.env.DB_URI;
 
 mongoose.connect(mongodbUri);
 let db = mongoose.connection;
-
 
 app.use(session({
 	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
@@ -163,9 +161,9 @@ app.get('/login/facebook/return',
 	}
 );
 
-app.get('/profile', checkAuthentication, (req, res) => {
+app.get('/profile', (req, res) => {
 	if (req.session.user !== undefined) {
-		res.send(req.session.user);
+		res.send(req.session);
 	} else {
 		res.redirect("/nope");
 	}
