@@ -29,7 +29,7 @@ class Navbar extends Component {
 						<a href="#about">About Us</a>
 						<a href="#pricing">Pricing</a>
 						<a id="sign-up" href="#sign-up">Sign Up</a>
-						<a id="sign-in" href="/budgeteer">Sign In</a>
+						<a id="sign-in" href="/login/facebook">Sign In</a>
 					</div>
 				</div>
 

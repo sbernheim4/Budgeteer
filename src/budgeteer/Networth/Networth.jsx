@@ -54,12 +54,12 @@ class Networth extends Component {
 		let data;
 
 		// Keep the data stored in the client's browser for the duration of the session
-		// if (window.sessionStorage.getItem("balance")){
+		if (window.sessionStorage.getItem("balance")){
 
-		// 	data = window.sessionStorage.getItem("balance");
-		// 	data = JSON.parse(data);
+			data = window.sessionStorage.getItem("balance");
+			data = JSON.parse(data);
 
-		// } else {
+		} else {
 
 			data = await axios({
 				method: "POST", 
@@ -68,7 +68,7 @@ class Networth extends Component {
 			data = data.data
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
-		// }
+		}
 
 		this.setState({
 			total: data.networth,
