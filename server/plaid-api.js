@@ -142,11 +142,17 @@ app.post("/get-access-token", async (req, res) => {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
 		
-		let currAccessTokens = req.session.user.accessTokens || [];
+		let currAccessTokens = req.session.user.accessTokens;
 		currAccessTokens.push(tokenResponse.access_token);
 
-		let currItemID = req.session.user.itemID || [];
+		let currItemID = req.session.user.itemID;
 		currItemID.push(tokenResponse.item_id);
+		
+		req.session.user.accessTokens = currAccessTokens;
+		req.session.user.itemID = currItemID;
+		req.session.save();
+
+		console.log(req.session.user);
 
 		// Update our arrays in the DB
 		User.update({ facebookID: req.session.user.facebookID }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {

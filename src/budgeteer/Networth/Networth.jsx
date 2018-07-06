@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from "react";
 import helpers from "../helpers.js";
 
@@ -53,26 +54,21 @@ class Networth extends Component {
 		let data;
 
 		// Keep the data stored in the client's browser for the duration of the session
-		if (window.sessionStorage.getItem("balance")){
+		// if (window.sessionStorage.getItem("balance")){
 
-			data = window.sessionStorage.getItem("balance");
-			data = JSON.parse(data);
+		// 	data = window.sessionStorage.getItem("balance");
+		// 	data = JSON.parse(data);
 
-		} else {
+		// } else {
 
-			const fetchOptions = {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			};
-
-			data = await fetch('/plaid-api/balance', fetchOptions);
-			data = await data.json();
+			data = await axios({
+				method: "POST", 
+				url: '/plaid-api/balance'
+			});
+			data = data.data
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
-		}
+		// }
 
 		this.setState({
 			total: data.networth,

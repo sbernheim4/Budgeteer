@@ -64,18 +64,15 @@ class App extends Component {
 				product: ['transactions'],
 				key: keyAndEnv.publicKey,
 				onSuccess: function (public_token) {
-					//
-					fetch('/plaid-api/get-access-token', {
-						method: 'post',
-						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
+					console.log("APP VERSION");
+					axios({
+						method: 'POST',
+						url: '/plaid-api/get-access-token',
+						data: {
 							public_token: public_token,
 							client_id: '5a24ca6a4e95b836d37e37fe',
 							secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-						})
+						}
 					});
 				}
 			});

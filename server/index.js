@@ -67,14 +67,7 @@ app.all("*", (req, res, next) => {
 	next();
 });
 
-app.all('*', (req, res, next) => {
-	// console.log("-----------------------------------------")
-	// console.log(req.session.user);
-	// console.log("-----------------------------------------")
-	next();
-})
-
-app.use("/plaid-api", logInfo, require("./plaid-api.js"));
+app.use("/plaid-api", require("./plaid-api.js"));
 
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/home-page.html"));
@@ -86,7 +79,7 @@ app.get("/budgeteer", checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
 
-app.get("/budgeteer/*", (req, res) => {
+app.get("/budgeteer/*", checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
 });
 
@@ -171,9 +164,12 @@ app.get('/login/facebook/return',
 );
 
 app.get('/profile', checkAuthentication, (req, res) => {
-		res.send(req.session.user);
+	if (req.session.user !== undefined) {
+		next();
+	} else {
+		res.redirect("/nope");
 	}
-);
+});
 
 app.get("/nope", (req, res) => {
 	res.send("NOPE");
@@ -187,13 +183,13 @@ function checkAuthentication(req,res,next){
     }
 }
 
-function logInfo(req, res, next) {
-	console.log();console.log();console.log();console.log();
-	console.log(req.session);
-	console.log();console.log();console.log();console.log();
-	next();
+// function logInfo(req, res, next) {
+// 	console.log();console.log();console.log();console.log();
+// 	console.log(req.session);
+// 	console.log();console.log();console.log();console.log();
+// 	next();
 
-}
+// }
 
 /****************** Start the DB and Server ******************/
 
