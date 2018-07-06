@@ -17,8 +17,8 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 app.use(session({
-	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', 
-	resave: true, 
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
+	resave: true,
 	saveUninitialized: true,
 	cookie: { maxAge: 600000 },
 	store: new MongoStore({ mongooseConnection: mongoose.connection })
@@ -72,7 +72,7 @@ app.post("/rotate-access-tokens", async (req, res) => {
 	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) {
 		// first try to set the access tokens and item ids by making a request to /set-storred-access-token.
 		// if length is still 0, then return error
-		let url = process.env.NODE_ENV === "production" ? "http://budgeteer-prod.herokuapp.com/" : "localhost:5001";
+		let url = process.env.NODE_ENV === "production" ? "https://budgeteer-prod.herokuapp.com/" : "localhost:5001";
 
 		axios.post(`${url}/plaid-api/set-storred-access-token`).then(res => {
 			if (req.session.user.accessTokens.length.length === 0 || req.session.user.itemID.length.length === 0) {
@@ -141,13 +141,13 @@ app.post("/get-access-token", async (req, res) => {
 	try {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
-		
+
 		let currAccessTokens = req.session.user.accessTokens;
 		currAccessTokens.push(tokenResponse.access_token);
 
 		let currItemID = req.session.user.itemID;
 		currItemID.push(tokenResponse.item_id);
-		
+
 		req.session.user.accessTokens = currAccessTokens;
 		req.session.user.itemID = currItemID;
 		req.session.save();
