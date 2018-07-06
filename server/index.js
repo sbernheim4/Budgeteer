@@ -28,8 +28,8 @@ let db = mongoose.connection;
 
 
 app.use(session({
-	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL', 
-	resave: true, 
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
+	resave: true,
 	saveUninitialized: true,
 	cookie: { maxAge: 600000 },
 	store: new MongoStore({ mongooseConnection: mongoose.connection })
@@ -48,7 +48,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /****************** Server Options ******************/
-const port = process.env.PORT;
+const port = process.env.SECURE_PORT;
 const insecurePort = process.env.INSECURE_PORT;
 const cacheTime = 172800000; // 2 Days
 
