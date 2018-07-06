@@ -48,7 +48,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /****************** Server Options ******************/
-const port = process.env.SECURE_PORT;
+const port = process.env.PORT;
 const insecurePort = process.env.INSECURE_PORT;
 const cacheTime = 172800000; // 2 Days
 
@@ -165,7 +165,7 @@ app.get('/login/facebook/return',
 
 app.get('/profile', checkAuthentication, (req, res) => {
 	if (req.session.user !== undefined) {
-		next();
+		res.send(req.session.user);
 	} else {
 		res.redirect("/nope");
 	}
