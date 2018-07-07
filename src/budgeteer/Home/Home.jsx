@@ -1,4 +1,6 @@
+import axios from 'axios';
 import React, { Component } from "react";
+import helpers from '../helpers';
 
 import './home.scss';
 
@@ -7,8 +9,21 @@ class Home extends Component {
 		super(props);
 
 		this.state = {
-
+			total: "..."
 		};
+	}
+
+	async componentDidMount() {
+
+		let data = await axios({
+				method: "POST", 
+				url: '/plaid-api/balance'
+			});
+		data = data.data;
+
+		this.setState({
+			total: helpers.formatAmount(data.networth)
+		});
 	}
 
 	render() {
@@ -29,7 +44,10 @@ class Home extends Component {
 					<h1>Welcome to Budgeteer</h1>
 
 					<div className="home--info--details">
-
+						<h2 className="home--info--details--acct-balance">Total account balance: ${this.state.total}</h2>
+						<h2 className="home--info--details--savings-ratio">Amount Saved this Month / Monthly Income</h2> 
+						{/* Amt saved this month is monthly budget - total spent this month*/}
+						{/* Monthly income is defined for the statistics page --> This should be stored in the DB and on the session */}
 					</div>
 
 				</section>
@@ -39,14 +57,3 @@ class Home extends Component {
 }
 
 export default Home;
-
-/*
-	<p>We know your financial information is incredibly sensative and that linking your accounts can be a little nerve racking so here's some information that we hope makes you feel more comfortable.</p>
-
-	<ol>
-		<li>We use the same API as Venmo and StripeJS to let users link accounts which means its incredibly secure.</li>
-		<li>All information that passes between our servers is encrypted.</li>
-		<li>Your bank credentials are never stored in our database. Instead we store access tokens which allow us to retrieve information without ever having to ask for your username and password after you link an account.</li>
-		<li>If you ever feel uncomfortable having a linked account, we make it very easy to unlink an account or to rotate the access tokens we store to get your account information.</li>
-	</ol>
-*/

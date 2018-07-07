@@ -65,9 +65,7 @@ typings/
 .ignore
 
 .idea/
-public/bundle.js.map
-public/bundle.js
-public/home.js
-public/home.js.map
 public/budgeteer.js
 public/budgeteer.js.map
+public/home.js
+public/home.js.map

@@ -1,4 +1,6 @@
 /* eslint no-undefined: 0 */
+import axios from 'axios';
+
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
@@ -182,22 +184,17 @@ class AccountsContainer extends Component {
 		let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
 		let releventTransactions = [];
 		let total = 0;
-		let fetchOptions = {
-			method: 'post',
-			headers: {
-				"Accept": "application/json",
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				startDate: dateOne,
-				endDate: dateTwo
-			})
-		};
 
 		try {
 
-			let data = await fetch('/plaid-api/transactions', fetchOptions);
-			data = await data.json();
+			const data = await axios({
+				method: "POST",
+				url: "/plaid-api/transactions",
+				data: {
+					startDate: dateOne,
+					endDate: dateTwo
+				}
+			});
 
 			data.forEach(acct => {
 				acct.transactions.forEach(transaction => {
