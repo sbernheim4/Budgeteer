@@ -74,6 +74,7 @@
     "start": "node ./server/index.js",
     "wds": "webpack-dev-server --hot --inline --config webpack.dev.js --host 0.0.0.0",
     "watch": "webpack --config webpack.dev.js -w",
-    "watch:prod": "webpack --config webpack.prod.js -w"
+    "watch:prod": "webpack --config webpack.prod.js -w",
+    "docker": "docker-compose up"
   }
 }
