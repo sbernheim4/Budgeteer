@@ -1,9 +1,9 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const express = require("express");
+const express = require('express');
 const app = express();
-const path = require("path");
-const chalk = require("chalk");
+const path = require('path');
+const chalk = require('chalk');
 const compression = require('compression');
 const mongoose = require('mongoose');
 const startDb = require('./db');
@@ -17,7 +17,7 @@ const Strategy = require('passport-facebook').Strategy;
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
-const User = mongoose.model("User");
+const User = mongoose.model('User');
 
 /****************** DB Options ******************/
 const mongodbUri = process.env.DB_URI;
@@ -53,10 +53,10 @@ const cacheTime = 172800000; // 2 Days
 app.use(compression());
 
 /****************** SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
-app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } ));
+app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime } ));
 
 /****************** Handle Requests ******************/
-app.all("*", (req, res, next) => {
+app.all('*', (req, res, next) => {
 	console.log('--------------------------------------------------------------------------');
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
 	console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
@@ -65,20 +65,22 @@ app.all("*", (req, res, next) => {
 	next();
 });
 
-app.use("/plaid-api", require("./plaid-api.js"));
+app.use('/legal', require('./legal.js'));
 
-app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/home-page.html"));
+app.use('/plaid-api', require('./plaid-api.js'));
+
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/home-page.html'));
 });
 
-app.get("/budgeteer", checkAuthentication, (req, res) => {
-	console.log("BUDGETEER GET");
+app.get('/budgeteer', checkAuthentication, (req, res) => {
+	console.log('BUDGETEER GET');
 	console.log(req.session.user);
-	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
+	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get("/budgeteer/*", checkAuthentication, (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
+app.get('/budgeteer/*', checkAuthentication, (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
 
@@ -94,8 +96,10 @@ app.get("/budgeteer/*", checkAuthentication, (req, res) => {
 passport.use(new Strategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: 'https://budgeteer-prod.com:5000/login/facebook/return'
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/' : 'https://budgeteer-prod.com:5000/login/facebook/return';
 },
+
+
 
 	function(accessToken, refreshToken, profile, cb) {
 		// In this example, the user's Facebook profile is supplied as the user
@@ -133,16 +137,16 @@ app.get('/login/facebook/return',
 		// req.user contains the fbProfile information
 
 		User.findOne({ facebookID:req.user.id }, (err, existingUser) => {
-            if (err) {console.log("EROORRRRR______________"); return }
+            if (err) {console.log('EROORRRRR______________'); return }
 
             if (existingUser) {
-				console.log("USER FOUND:");
+				console.log('USER FOUND:');
 				console.log(existingUser)
                 req.session.user = existingUser;;
 				return res.redirect('/budgeteer');
 			} else {
-				const fName = req.user.displayName.split(" ")[0];
-				const lName = req.user.displayName.split(" ")[1];
+				const fName = req.user.displayName.split(' ')[0];
+				const lName = req.user.displayName.split(' ')[1];
 
 				const newUser = new User ({
 					facebookID: req.user.id,
@@ -155,7 +159,7 @@ app.get('/login/facebook/return',
 					req.session.profile = existingUser;
 				});
 
-				return res.redirect("/");
+				return res.redirect('/');
 			}
 		});
 	}
@@ -165,19 +169,19 @@ app.get('/profile', (req, res) => {
 	if (req.session.user !== undefined) {
 		res.send(req.session);
 	} else {
-		res.redirect("/nope");
+		res.redirect('/nope');
 	}
 });
 
-app.get("/nope", (req, res) => {
-	res.send("NOPE");
+app.get('/nope', (req, res) => {
+	res.send('NOPE');
 });
 
 function checkAuthentication(req,res,next){
     if(req.session.user !== undefined){
         next();
     } else{
-        res.redirect("/nope");
+        res.redirect('/nope');
     }
 }
 
@@ -191,7 +195,7 @@ function checkAuthentication(req,res,next){
 
 /****************** Start the DB and Server ******************/
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === 'development') {
 	startDb.then(() => {
 		https.createServer(options, app).listen(port);
 		http.createServer(app).listen(insecurePort);
@@ -200,7 +204,7 @@ if (process.env.NODE_ENV === "development") {
 	}).catch(err => {
 		console.log(err);
 	});
-} else if (process.env.NODE_ENV === "production") {
+} else if (process.env.NODE_ENV === 'production') {
 
 	startDb.then(() => {
 		app.listen(port, () => {
