@@ -96,7 +96,7 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 passport.use(new Strategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/' : 'https://budgeteer-prod.com:5000/login/facebook/return'
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
 },
 
 
