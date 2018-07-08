@@ -32,8 +32,6 @@ const PLAID_SECRET = process.env.PLAID_SECRET;
 const PLAID_PUBLIC_KEY = process.env.PLAID_PUBLIC_KEY;
 const PLAID_ENV = process.env.PLAID_ENV
 
-/*let ACCESS_TOKENS = [];*/
-/*let ITEM_IDS = [];*/
 let PUBLIC_TOKEN = null;
 
 // Initialize the Plaid client
@@ -68,24 +66,10 @@ app.get("/key-and-env", (req, res) => {
 
 app.post("/rotate-access-tokens", async (req, res) => {
 
-	// First ensure that the tokens have been set, if not try and set them before continuing
-	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) {
-		// first try to set the access tokens and item ids by making a request to /set-storred-access-token.
-		// if length is still 0, then return error
-		let url = process.env.NODE_ENV === "production" ? "https://budgeteer-prod.herokuapp.com/" : "localhost:5001";
-
-		axios.post(`${url}/plaid-api/set-storred-access-token`).then(res => {
-			if (req.session.user.accessTokens.length.length === 0 || req.session.user.itemID.length.length === 0) {
-				res.json({
-					"result": "No linked accounts could be found."
-				}).end();
-			}
-		});
-	}
+	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) return;
 
 	// Rotate access tokens
 	let newAccessTokens = [];
-
 	for (let token of req.session.user.accessTokens) {
 
 		try {
@@ -93,14 +77,15 @@ app.post("/rotate-access-tokens", async (req, res) => {
 			newAccessTokens.push(result.new_access_token);
 		} catch(err) {
 			console.error(err);
+
 			res.json({
 				"result": err
-			}).end();
+			});
 		}
 	}
 
 	// Update access tokens on the server
-	User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: newAccessTokens } }, () => {
+	User.update({ _id: req.session.user._id }, { $set: { accessTokens: newAccessTokens } }, () => {
 		console.log(chalk.green("Access Tokens have rotated"));
 		res.json({
 			"result": "New tokens were successfully generated. Please refresh the page to continue."
@@ -148,18 +133,16 @@ app.post("/get-access-token", async (req, res) => {
 		let currItemID = req.session.user.itemID;
 		currItemID.push(tokenResponse.item_id);
 
+		// Update the session with the new account info
 		req.session.user.accessTokens = currAccessTokens;
 		req.session.user.itemID = currItemID;
 		req.session.save();
 
-		console.log(req.session.user);
-
-		// Update our arrays in the DB
+		// Update the db with the new account info
 		User.update({ facebookID: req.session.user.facebookID }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {
 			console.log(chalk.green("New account has been saved"));
 		});
 	} catch (err) {
-		console.log("ERROR:");
 		console.log(err);
 		return res.json({
 			error: err
@@ -168,7 +151,6 @@ app.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-
 app.post("/transactions", async (req, res, next) => {
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days || 30;
@@ -192,7 +174,7 @@ app.post("/transactions", async (req, res, next) => {
 				offset: 0,
 			})
 		});
-
+		
 		let totalData = await Promise.all(promiseArray);
 		res.json(totalData);
 
@@ -210,10 +192,10 @@ app.post("/transactions", async (req, res, next) => {
 app.post ("/balance", async (req, res, next) => {
 	const promiseArray = req.session.user.accessTokens.map(token => client.getBalance(token) );
 
-	let totalData = await Promise.all(promiseArray);
+	let allData = await Promise.all(promiseArray);
 	let banks = [];
 
-	totalData.forEach( (bank, index) => {
+	allData.forEach( (bank, index) => {
 		let bankTotal = 0;
 		let map = {};
 		bank.accounts.forEach(acct => {
@@ -278,23 +260,22 @@ app.post('/remove-account', async (req, res) => {
 	const copyOfAccessTokens = req.session.user.accessTokens;
 	const copyOfItemIDs = req.session.user.itemID;
 
-	let newAccessTokens = [...copyOfAccessTokens.slice(0,i), ...copyOfAccessTokens.slice(i + 1)];
+	let newAccessTokens = [...copyOfAccessTokens.slice(0, i), ...copyOfAccessTokens.slice(i + 1)];
 	let newItemIDs = [...copyOfItemIDs.slice(0,i), ...copyOfItemIDs.slice(i + 1)];
 
 	try {
 		// Update the values in the database
-		User.update({ facebookID: req.session.user.facebookID }, {
+		const results = await User.update({ facebookID: req.session.user.facebookID }, {
 			$set: {
 				accessTokens: newAccessTokens,
 				itemID: newItemIDs
 			}
-		}, (err, raw) => {
-			if (err) throw Error(err);
-			console.log(raw);
-			console.log(chalk.green("Bank Removed"));
 		});
 
-		res.status(200).json({
+		console.log(result);
+		console.log(chalk.green("Bank Removed"));
+
+		res.json({
 			"status": req.body.data.bankName
 		});
 

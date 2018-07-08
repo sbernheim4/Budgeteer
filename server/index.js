@@ -74,15 +74,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/budgeteer', checkAuthentication, (req, res) => {
-	console.log('BUDGETEER GET');
-	console.log(req.session.user);
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
 app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
-
 
 /****************** Passport Authentication ******************/
 
@@ -98,9 +95,6 @@ passport.use(new Strategy({
 	clientSecret: process.env.CLIENT_SECRET,
 	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
 },
-
-
-
 	function(accessToken, refreshToken, profile, cb) {
 		// In this example, the user's Facebook profile is supplied as the user
 		// record.  In a production-quality application, the Facebook profile should
@@ -132,66 +126,48 @@ app.get('/login/facebook',
 	passport.authenticate('facebook')
 );
 
-app.get('/login/facebook/return',
-	passport.authenticate('facebook', { failureRedirect: '/' }), (req, res) => {
-		// req.user contains the fbProfile information
+app.get('/login/facebook/return', async (req, res) => {
+	try {
+		const existingUser = await User.findOne({ facebookID:req.user.id }); 
 
-		User.findOne({ facebookID:req.user.id }, (err, existingUser) => {
-            if (err) {console.log('EROORRRRR______________'); return }
+		// If no user is found 
+		if (!existingUser) {
+			const fName = req.user.displayName.split(' ')[0];
+			const lName = req.user.displayName.split(' ')[1];
 
-            if (existingUser) {
-				console.log('USER FOUND:');
-				console.log(existingUser)
-                req.session.user = existingUser;;
-				return res.redirect('/budgeteer');
-			} else {
-				const fName = req.user.displayName.split(' ')[0];
-				const lName = req.user.displayName.split(' ')[1];
+			const newUser = new User ({
+				facebookID: req.user.id,
+				firstName: fName,
+				lastName: lName
+			});
 
-				const newUser = new User ({
-					facebookID: req.user.id,
-					firstName: fName,
-					lastName: lName
-				});
+			newUser.save(); // Does not need to be awaited on, I think
+			req.session.user = newUser;
+		}
 
-				newUser.save( err => {
-					if (err) {console.log(err); return}
-					req.session.profile = existingUser;
-				});
-
-				return res.redirect('/');
-			}
-		});
+		req.session.user = existingUser;
+		return res.redirect('/budgeteer');
+	} catch (err) {
+		console.log(err);
+		return;
 	}
-);
+});
 
-app.get('/profile', (req, res) => {
-	if (req.session.user !== undefined) {
-		res.send(req.session);
-	} else {
-		res.redirect('/nope');
-	}
+app.get('/profile', checkAuthentication, (req, res) => {
+	res.send(req.session);
 });
 
 app.get('/nope', (req, res) => {
 	res.send('NOPE');
 });
 
-function checkAuthentication(req,res,next){
-    if(req.session.user !== undefined){
+function checkAuthentication(req, res, next){
+    if (req.session.user !== undefined) {
         next();
-    } else{
+    } else {
         res.redirect('/nope');
     }
 }
-
-// function logInfo(req, res, next) {
-// 	console.log();console.log();console.log();console.log();
-// 	console.log(req.session);
-// 	console.log();console.log();console.log();console.log();
-// 	next();
-
-// }
 
 /****************** Start the DB and Server ******************/
 

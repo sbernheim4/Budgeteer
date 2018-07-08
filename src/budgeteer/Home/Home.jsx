@@ -9,7 +9,7 @@ class Home extends Component {
 		super(props);
 
 		this.state = {
-			total: "..."
+			total: window.sessionStorage.getItem("total") || "..."
 		};
 	}
 
@@ -20,10 +20,13 @@ class Home extends Component {
 				url: '/plaid-api/balance'
 			});
 		data = data.data;
+		data = helpers.formatAmount(data.networth)
 
 		this.setState({
-			total: helpers.formatAmount(data.networth)
+			total: data
 		});
+
+		window.sessionStorage.setItem("total", data);
 	}
 
 	render() {
