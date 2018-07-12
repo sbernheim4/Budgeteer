@@ -16,11 +16,11 @@ class Home extends Component {
 	async componentDidMount() {
 
 		let data = await axios({
-				method: "POST", 
+				method: "POST",
 				url: '/plaid-api/balance'
 			});
 		data = data.data;
-		data = helpers.formatAmount(data.networth)
+		data = helpers.numberWithCommas(helpers.formatAmount(data.networth));
 
 		this.setState({
 			total: data
@@ -48,7 +48,7 @@ class Home extends Component {
 
 					<div className="home--info--details">
 						<h2 className="home--info--details--acct-balance">Total account balance: ${this.state.total}</h2>
-						<h2 className="home--info--details--savings-ratio">Amount Saved this Month / Monthly Income</h2> 
+						<h2 className="home--info--details--savings-ratio">Amount Saved this Month / Monthly Income</h2>
 						{/* Amt saved this month is monthly budget - total spent this month*/}
 						{/* Monthly income is defined for the statistics page --> This should be stored in the DB and on the session */}
 					</div>

@@ -55,14 +55,11 @@ class Networth extends Component {
 
 		// Keep the data stored in the client's browser for the duration of the session
 		if (window.sessionStorage.getItem("balance")){
-
 			data = window.sessionStorage.getItem("balance");
 			data = JSON.parse(data);
-
 		} else {
-
 			data = await axios({
-				method: "POST", 
+				method: "POST",
 				url: '/plaid-api/balance'
 			});
 			data = data.data
@@ -103,13 +100,13 @@ class Networth extends Component {
 							Object.keys(keyName).map( (acctName, index) => (
 							<tr key={index} className='networth--entry'>
 								<td className='acct-name'>{acctName}</td>
-								<td className='acct-value'>{keyName[acctName]}</td>
+								<td className='acct-value'>${helpers.numberWithCommas(helpers.formatAmount(keyName[acctName]))}</td>
 							</tr>
 							))
 						))}
 						<tr>
 							<td className='acct-name'>Total</td>
-							<td className='acct-value'>${this.state.total}</td>
+							<td className='acct-value'>${helpers.numberWithCommas(helpers.formatAmount(this.state.total))}</td>
 						</tr>
 					</tbody>
 				</table>)
