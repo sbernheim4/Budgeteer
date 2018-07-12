@@ -41,7 +41,7 @@ class LandingPage extends Component {
 
 				<section id="pricing" className="pricing">
 					<h2>What's the damage?</h2>
-					<p>A cup of coffe and a muffin</p>
+					<p>A cup of coffee and a muffin</p>
 
 					<div className="pricing--amount">
 						<h1>$4</h1><p>/month</p>
