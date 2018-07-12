@@ -41,10 +41,11 @@ class Navbar extends Component {
 
 	render() {
 		return (
-			<div>
-				<p>Log in with Google or Facebook</p>
-				<a href="/login/facebook"><FacebookLoginButton /></a>
-				<a href="/login/google"><GoogleLoginButton /></a>
+			<div className="login">
+				<div className="login__buttons">
+					<a href="/login/facebook"><FacebookLoginButton /></a>
+					<a href="/login/google"><GoogleLoginButton /></a>
+				</div>
 			</div>
 		);
 	}
