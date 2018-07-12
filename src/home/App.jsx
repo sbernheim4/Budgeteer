@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import Navbar from "./Navbar/Navbar.jsx";
 
 import LandingPage from "./LandingPage/LandingPage.jsx";
+import Login from "./Login/Login.jsx";
 
 class App extends Component {
 	constructor(props) {
@@ -18,7 +19,8 @@ class App extends Component {
 		return (
 			<div>
 				<Navbar />
-				<LandingPage />
+				<Route exact path='/' component={LandingPage} />
+				<Route exact path='/login' component={Login} />
 			</div>
 		);
 	}

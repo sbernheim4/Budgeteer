@@ -13,7 +13,8 @@ const http = require('http');
 const util = require('util');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const Strategy = require('passport-facebook').Strategy;
+const FBStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
@@ -73,6 +74,10 @@ app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));
 });
 
+app.get('/login', (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/home-page.html'));
+});
+
 app.get('/budgeteer', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
@@ -90,7 +95,7 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 // behalf, along with the user's profile.  The function must invoke `cb`
 // with a user object, which will be set at `req.user` in route handlers after
 // authentication.
-passport.use(new Strategy({
+passport.use(new FBStrategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
 	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
@@ -101,8 +106,6 @@ passport.use(new Strategy({
 		// be associated with a user record in the application's database, which
 		// allows for account linking and authentication with other identity
 		// providers.
-
-		console.log(profile);
 
 		User.findOne({
 			facebookID: profile.id
@@ -127,6 +130,36 @@ passport.use(new Strategy({
 	}
 ));
 
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/login/google/return' : 'https://budgeteer-prod.com:5000/login/google/return'
+},
+  	function(accessToken, refreshToken, profile, done) {
+	  	User.findOne({
+			googleID: profile.id
+		}).then((dbUserRecord, err) => {
+			if (dbUserRecord) {
+				console.log(dbUserRecord);
+				done(null, dbUserRecord);
+			} else {
+				new User({
+					facebookID: profile.id,
+					name: profile.displayName
+				}).save().then((newUser) => {
+					console.log("USER HAS BEEN SAVED TO DB");
+					console.log(newUser);
+					console.log("DONE");
+					done(null, newUser);
+				});
+			}
+		}).catch(err => {
+			console.log(err);
+		});
+	}
+));
+
+
 // Configure Passport authenticated session persistence.
 //
 // In order to restore authentication state across HTTP requests, Passport needs
@@ -146,13 +179,29 @@ passport.deserializeUser(function(id, done) {
 	});
 });
 
+app.get('/login/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
+	console.log("Logging in via Google");
+});
+
+app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
+	req.session.user = req.user; 
+	res.redirect("/budgeteer")
+	// Passportjs sends back the user attached to the request object, I set it as part of the session
+	// req.session.user = req.user; 
+	// Redirect to budgeteer after the session has been set
+	// res.redirect("/budgeteer");
+});
+
+
+
 app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
 	console.log("Logging in via FB");
 });
 
 app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) => {
-	console.log(req.user);
-	req.session.user = req.user;
+	// Passportjs sends back the user attached to the request object, I set it as part of the session
+	req.session.user = req.user; 
+	// Redirect to budgeteer after the session has been set
 	res.redirect("/budgeteer");
 });
 
@@ -164,7 +213,9 @@ app.get('/nope', (req, res) => {
 	res.send('NOPE');
 });
 
-function checkAuthentication(req, res, next){
+function checkAuthentication(req, res, next) {
+	// Check if the user variable on the session is set. If not redirect to /nope
+	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
     if (req.session.user !== undefined) {
         next();
     } else {
