@@ -5,21 +5,8 @@ import axios from 'axios';
 
 import "./login.scss";
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faFacebook } from '@fortawesome/fontawesome-free-brands'
-
 import FacebookLoginButton from "react-social-login-buttons/lib/buttons/FacebookLoginButton";
 import GoogleLoginButton from "react-social-login-buttons/lib/buttons/GoogleLoginButton";
-
-// import {
-// 	faFacebook,
-// 	fab
-// } from '@fortawesome/fontawesome-free-solid';
-
-// import { 
-// 	faFacebook,
-// 	fab
-// } from '@fortawesome/free-brands-svg-icons'
 
 class Navbar extends Component {
 
