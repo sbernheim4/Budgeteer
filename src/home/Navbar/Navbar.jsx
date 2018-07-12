@@ -24,9 +24,9 @@ class Navbar extends Component {
 				<div className='navbar--desktop'>
 					<h2>Budgeteer</h2>
 					<div className="navbar--desktop--links">
-						<a href="#product">Product</a>
-						<a href="#about">About Us</a>
-						<a href="#pricing">Pricing</a>
+						<a href="/#product">Product</a>
+						<a href="/#about">About Us</a>
+						<a href="/#pricing">Pricing</a>
 						<Link to='/login'>Sign In</Link>
 					</div>
 				</div>
