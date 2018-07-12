@@ -144,7 +144,7 @@ passport.use(new GoogleStrategy({
 				done(null, dbUserRecord);
 			} else {
 				new User({
-					facebookID: profile.id,
+					googleID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
 					console.log("USER HAS BEEN SAVED TO DB");
@@ -179,19 +179,21 @@ passport.deserializeUser(function(id, done) {
 	});
 });
 
+
+
+
+
+
 app.get('/login/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
 	console.log("Logging in via Google");
 });
 
 app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
-	req.session.user = req.user; 
-	res.redirect("/budgeteer")
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
-	// req.session.user = req.user; 
+	req.session.user = req.user; 
 	// Redirect to budgeteer after the session has been set
-	// res.redirect("/budgeteer");
+	res.redirect("/budgeteer");
 });
-
 
 
 app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
@@ -204,6 +206,12 @@ app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) 
 	// Redirect to budgeteer after the session has been set
 	res.redirect("/budgeteer");
 });
+
+
+
+
+
+
 
 app.get('/profile', checkAuthentication, (req, res) => {
 	res.send(req.session);
