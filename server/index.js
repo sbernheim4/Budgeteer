@@ -95,13 +95,35 @@ passport.use(new Strategy({
 	clientSecret: process.env.CLIENT_SECRET,
 	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
 },
-	function(accessToken, refreshToken, profile, cb) {
+	function(accessToken, refreshToken, profile, done) {
 		// In this example, the user's Facebook profile is supplied as the user
 		// record.  In a production-quality application, the Facebook profile should
 		// be associated with a user record in the application's database, which
 		// allows for account linking and authentication with other identity
 		// providers.
-		return cb(null, profile);
+
+		console.log(profile);
+
+		User.findOne({
+			facebookID: profile.id
+		}).then((dbUserRecord, err) => {
+			if (dbUserRecord) {
+				console.log(dbUserRecord);
+				done(null, dbUserRecord);
+			} else {
+				new User({
+					facebookID: profile.id,
+					name: profile.displayName
+				}).save().then((newUser) => {
+					console.log("USER HAS BEEN SAVED TO DB");
+					console.log(newUser);
+					console.log("DONE");
+					done(null, newUser);
+				});
+			}
+		}).catch(err => {
+			console.log(err);
+		});
 	}
 ));
 
@@ -114,43 +136,24 @@ passport.use(new Strategy({
 // from the database when deserializing.  However, due to the fact that this
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
-passport.serializeUser(function(user, cb) {
-	cb(null, user);
+passport.serializeUser(function(user, done) {
+	done(null, user.id);
 });
 
-passport.deserializeUser(function(obj, cb) {
-	cb(null, obj);
+passport.deserializeUser(function(id, done) {
+	User.findById(id).then(user => {
+		done(null, user.id);
+	});
 });
 
-app.get('/login/facebook',
-	passport.authenticate('facebook')
-);
+app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
+	console.log("Logging in via FB");
+});
 
-app.get('/login/facebook/return', async (req, res) => {
-	try {
-		const existingUser = await User.findOne({ facebookID:req.user.id }); 
-
-		// If no user is found 
-		if (!existingUser) {
-			const fName = req.user.displayName.split(' ')[0];
-			const lName = req.user.displayName.split(' ')[1];
-
-			const newUser = new User ({
-				facebookID: req.user.id,
-				firstName: fName,
-				lastName: lName
-			});
-
-			newUser.save(); // Does not need to be awaited on, I think
-			req.session.user = newUser;
-		}
-
-		req.session.user = existingUser;
-		return res.redirect('/budgeteer');
-	} catch (err) {
-		console.log(err);
-		return;
-	}
+app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) => {
+	console.log(req.user);
+	req.session.user = req.user;
+	res.redirect("/budgeteer");
 });
 
 app.get('/profile', checkAuthentication, (req, res) => {
