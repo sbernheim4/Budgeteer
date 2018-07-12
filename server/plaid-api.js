@@ -174,7 +174,7 @@ app.post("/transactions", async (req, res, next) => {
 				offset: 0,
 			})
 		});
-		
+
 		let totalData = await Promise.all(promiseArray);
 		res.json(totalData);
 
@@ -272,7 +272,6 @@ app.post('/remove-account', async (req, res) => {
 			}
 		});
 
-		console.log(result);
 		console.log(chalk.green("Bank Removed"));
 
 		res.json({
