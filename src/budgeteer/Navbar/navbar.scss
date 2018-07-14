@@ -132,12 +132,21 @@ $navbar-background-color: white;
 
 			}
 
-			.link-container {
+			a {
+				height: 60px;
+				padding-left: 20px;
+				overflow-y: hidden;
+				font-size: 1em;
+				overflow-y: hidden;
+				text-decoration: none;
+				font-weight: 400;
+				display: flex;
+				align-items: center;
+
 				transition: background-color .1s ease-in;
 				display: flex;
 				flex-direction: row;
 				align-items: center;
-
 
 				&:hover {
 					background-color: darken($navbar-background-color, 10%);
@@ -145,27 +154,16 @@ $navbar-background-color: white;
 					transition: background-color .1s ease-in;
 				}
 
-				a {
-					height: 60px;
-					padding-left: 20px;
-					overflow-y: hidden;
-					font-size: 1em;
+				.link-container {
 					color: hsl(206, 23%, 19%);
-					overflow-y: hidden;
-					text-decoration: none;
-					font-weight: 400;
-					display: flex;
-					align-items: center;
 
-				}
+					svg {
+						padding: 0 15px;
 
-				svg {
-					padding-left: 15px;
-
-					path {
-						color: hsl(0, 5%, 29%);
+						path {
+							color: hsl(0, 5%, 29%);
+						}
 					}
-
 				}
 			}
 
@@ -179,7 +177,7 @@ $navbar-background-color: white;
 			&__active {
 				height: 100vh;
 				transform: translateX(0vw);
-				animation: slideIn .3s 1;
+				animation: slideIn .4s 1;
 				z-index: 2;
 			}
 		}
