@@ -1,31 +1,14 @@
 require("dotenv").config()
 
 const express = require("express");
-const app = express();
+const Router = express.Router();
 const path = require("path");
 const chalk = require("chalk");
 const bodyParser = require("body-parser");
 const moment = require("moment");
 const plaid = require("plaid");
-const axios = require("axios");
-const passport = require('passport');
-const Strategy = require('passport-facebook').Strategy;
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-
-app.use(session({
-	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
-	resave: true,
-	saveUninitialized: true,
-	cookie: { maxAge: 600000 },
-	store: new MongoStore({ mongooseConnection: mongoose.connection })
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
@@ -42,20 +25,20 @@ let client = new plaid.Client(
 	plaid.environments[PLAID_ENV]
 );
 
-app.use(bodyParser.urlencoded({
+Router.use(bodyParser.urlencoded({
 	extended: false
 }));
 
-app.use(bodyParser.json());
+Router.use(bodyParser.json());
 
 // Log All Requests
-// app.all("*", (req, res, next) => {
+// Router.all("*", (req, res, next) => {
 // 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
 // 	next();
 // });
 
 // Send back the public key and the environment to plaid
-app.get("/key-and-env", (req, res) => {
+Router.get("/key-and-env", (req, res) => {
 	const jsonResponse = {
 		"publicKey": PLAID_PUBLIC_KEY.toString(),
 		"env": PLAID_ENV.toString()
@@ -64,7 +47,7 @@ app.get("/key-and-env", (req, res) => {
 	res.send(jsonResponse);
 });
 
-app.post("/rotate-access-tokens", async (req, res) => {
+Router.post("/rotate-access-tokens", async (req, res) => {
 
 	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) return;
 
@@ -93,7 +76,7 @@ app.post("/rotate-access-tokens", async (req, res) => {
 	});
 });
 
-/*app.post('/set-stored-access-token', async (req, res, next) => {
+/*Router.post('/set-stored-access-token', async (req, res, next) => {
 
 	let data;
 
@@ -120,7 +103,7 @@ app.post("/rotate-access-tokens", async (req, res) => {
 });*/
 
 // Get Access Tokens and Item IDs from Plaid
-app.post("/get-access-token", async (req, res) => {
+Router.post("/get-access-token", async (req, res) => {
 
 	const PUBLIC_TOKEN = req.body.public_token;
 	try {
@@ -139,7 +122,7 @@ app.post("/get-access-token", async (req, res) => {
 		req.session.save();
 
 		// Update the db with the new account info
-		User.update({ facebookID: req.session.user.facebookID }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {
+		User.update({ _id: req.session.user._id }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {
 			console.log(chalk.green("New account has been saved"));
 		});
 	} catch (err) {
@@ -151,7 +134,7 @@ app.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-app.post("/transactions", async (req, res, next) => {
+Router.post("/transactions", async (req, res, next) => {
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days || 30;
 
@@ -189,7 +172,7 @@ app.post("/transactions", async (req, res, next) => {
 	}
 });
 
-app.post ("/balance", async (req, res, next) => {
+Router.post ("/balance", async (req, res, next) => {
 	const promiseArray = req.session.user.accessTokens.map(token => client.getBalance(token) );
 
 	let allData = await Promise.all(promiseArray);
@@ -230,7 +213,7 @@ app.post ("/balance", async (req, res, next) => {
 });
 
 
-app.post('/linked-accounts', async (req, res) => {
+Router.post('/linked-accounts', async (req, res) => {
 
 	try {
 
@@ -252,7 +235,7 @@ app.post('/linked-accounts', async (req, res) => {
 	}
 });
 
-app.post('/remove-account', async (req, res) => {
+Router.post('/remove-account', async (req, res) => {
 	// Index in the arrays that should be removed
 	const i = req.body.data.bankIndex;
 
@@ -265,7 +248,7 @@ app.post('/remove-account', async (req, res) => {
 
 	try {
 		// Update the values in the database
-		const results = await User.update({ facebookID: req.session.user.facebookID }, {
+		const results = await User.update({ _id: req.session.user._id }, {
 			$set: {
 				accessTokens: newAccessTokens,
 				itemID: newItemIDs
@@ -285,4 +268,4 @@ app.post('/remove-account', async (req, res) => {
 	}
 });
 
-module.exports = app;
+module.exports = Router;
