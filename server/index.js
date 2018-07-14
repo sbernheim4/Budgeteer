@@ -86,6 +86,12 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
+// Used by navbar.jsx to display the users name
+// TODO: Should also include photo URL from the profile either fb or google+
+app.get('/name', checkAuthentication, (req, res) => {
+	res.send(req.session.user.name);
+});
+
 /****************** Passport Authentication ******************/
 
 // Configure the Facebook strategy for use by Passport.
@@ -111,16 +117,13 @@ passport.use(new FBStrategy({
 			facebookID: profile.id
 		}).then((dbUserRecord, err) => {
 			if (dbUserRecord) {
-				console.log(dbUserRecord);
 				done(null, dbUserRecord);
 			} else {
 				new User({
 					facebookID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
-					console.log("USER HAS BEEN SAVED TO DB");
-					console.log(newUser);
-					console.log("DONE");
+					console.log("NEW USER HAS BEEN SAVED TO DB");
 					done(null, newUser);
 				});
 			}
@@ -140,16 +143,13 @@ passport.use(new GoogleStrategy({
 			googleID: profile.id
 		}).then((dbUserRecord, err) => {
 			if (dbUserRecord) {
-				console.log(dbUserRecord);
 				done(null, dbUserRecord);
 			} else {
 				new User({
 					googleID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
-					console.log("USER HAS BEEN SAVED TO DB");
-					console.log(newUser);
-					console.log("DONE");
+					console.log("NEW USER HAS BEEN SAVED TO DB");
 					done(null, newUser);
 				});
 			}
