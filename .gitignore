@@ -65,7 +65,3 @@ typings/
 .ignore
 
 .idea/
-public/budgeteer.js
-public/budgeteer.js.map
-public/home.js
-public/home.js.map
