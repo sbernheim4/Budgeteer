@@ -104,7 +104,7 @@ app.get('/name', checkAuthentication, (req, res) => {
 passport.use(new FBStrategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: process.env.NODE_ENV === 'production' ? 'http://budgeteer.org/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer.org/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
 },
 	function(accessToken, refreshToken, profile, done) {
 		// In this example, the user's Facebook profile is supplied as the user
@@ -136,7 +136,7 @@ passport.use(new FBStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.NODE_ENV === 'production' ? 'http://budgeteer.org/login/google/return' : 'https://budgeteer-prod.com:5000/login/google/return'
+    callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer.org/login/google/return' : 'https://budgeteer-prod.com:5000/login/google/return'
 },
   	function(accessToken, refreshToken, profile, done) {
 	  	User.findOne({
