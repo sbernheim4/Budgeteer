@@ -31,29 +31,6 @@ class Navbar extends Component {
 					</div>
 				</div>
 			</nav>
-
-				// <div className="navbar--mobile">
-				// 	<div className="navbar--mobile--header">
-				// 		<Link to='/' onClick={this.closeMenu}> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
-				// 		<h2>Budgeteer</h2>
-				// 		<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
-				// 	</div>
-
-				// 	<div className='navbar--mobile--links'>
-
-				// 		<div className="navbar--mobile--links--profile">
-				// 			<img src="http://via.placeholder.com/50x50" />
-				// 			<h3>Samuel Bernheim</h3>
-				// 		</div>
-
-				// 		<div className="link-container" ><FontAwesomeIcon icon={faExchangeAlt}/><Link to='/transactions' className="first" onClick={this.toggleMenu}>Your Transactions</Link></div>
-				// 		<div className="link-container" ><FontAwesomeIcon icon={faChartPie}/><Link to='/statistics' className="second" onClick={this.toggleMenu}>Your Statistics</Link></div>
-				// 		<div className="link-container" ><FontAwesomeIcon icon={faMoneyBillAlt}/><Link to='/networth' className="third" onClick={this.toggleMenu}>Your Networth</Link></div>
-				// 		<hr />
-				// 		<div className="link-container" ><FontAwesomeIcon icon={faCogs}/><Link to='/settings' className="fourth" onClick={this.toggleMenu}>Your Settings</Link></div>
-				// 		<div className="link-container"><FontAwesomeIcon icon={faPlus}/><a className="fifth" onClick={this.addAccount}>Add Account</a></div>
-				// 	</div>
-				// </div>
 		);
 	}
 }

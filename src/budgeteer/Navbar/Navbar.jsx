@@ -125,7 +125,7 @@ class Navbar extends Component {
 					<div className='navbar--mobile--links'>
 
 						<div className="navbar--mobile--links--profile">
-							<img src="http://via.placeholder.com/50x50" />
+							<img src="https://via.placeholder.com/50x50" />
 							<h3>{this.state.name}</h3>
 						</div>
 
