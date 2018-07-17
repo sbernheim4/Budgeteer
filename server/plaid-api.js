@@ -256,6 +256,8 @@ Router.post('/remove-account', async (req, res) => {
 		});
 
 		console.log(chalk.green("Bank Removed"));
+		req.session.user.accessTokens = newAccessTokens;
+		req.session.user.itemID = newItemIDs;
 
 		res.json({
 			"status": req.body.data.bankName
