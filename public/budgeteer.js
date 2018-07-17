@@ -75440,33 +75440,162 @@ var AccountsContainer = function (_Component) {
 								_react2.default.createElement(
 									"div",
 									null,
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Food and Drink");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faUtensils }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Travel");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faPlane }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Shops");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faShoppingBag }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Service");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faWrench }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Community");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faUsers }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Healthcare");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faMedkit }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Interest");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faPercent }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Payment");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faMoneyBillAlt }),
-									_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-											_this2.getCategoryTransactions("Transfer");_this2.closeCategoryViewer();
-										}, icon: _fontawesomeFreeSolid.faExchangeAlt })
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Food and Drink");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faUtensils }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Food and Drink"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Travel");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faPlane }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Travel"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Shops");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faShoppingBag }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Shops"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Recreation");
+											}, icon: _fontawesomeFreeSolid.faRacquet }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Recreation"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Service");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faWrench }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Service"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Community");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faUsers }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Community"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Healthcare");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faMedkit }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Healthcare"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Bank Fees");
+											}, icon: _fontawesomeFreeSolid.faUtensils }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Bank Fees"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Cash Advance");
+											}, icon: _fontawesomeFreeSolid.faUtensils }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Cash Advance"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Interest");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faPercent }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Interest"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Payment");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faMoneyBillAlt }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Payment"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Tax");
+											}, icon: _fontawesomeFreeSolid.faUtensils }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Tax"
+										)
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Transfer");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faExchangeAlt }),
+										_react2.default.createElement(
+											"p",
+											null,
+											"Transfer"
+										)
+									)
 								)
 							)
 						),
@@ -76576,7 +76705,7 @@ exports = module.exports = __webpack_require__(15)(false);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.accounts--search-options--icon-search--categorical-search--categories div, .accounts--search-options--icon-search--accts-search--accts div {\n  transform: translateY(-50px);\n  visibility: hidden;\n  opacity: 0;\n  position: absolute;\n  padding: 20px;\n  background-color: black;\n  border-radius: 10px;\n  transition: all 0.3s ease-out; }\n\n.accounts--search-options--icon-search--categorical-search--categories:before, .accounts--search-options--icon-search--accts-search--accts:before {\n  transform: translateY(-50px);\n  opacity: 0;\n  content: \"\";\n  position: absolute;\n  margin-top: 20px;\n  width: 0;\n  height: 0;\n  border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n  border-left: 25px solid transparent;\n  border-right: 25px solid transparent;\n  transition: transform .3s ease-out, opacity .3s ease-out; }\n\n.accounts {\n  position: relative; }\n  @media all and (min-width: 801px) {\n    .accounts {\n      margin-top: 0; } }\n  .accounts .red {\n    text-align: center;\n    color: #f98183; }\n  .accounts .green {\n    text-align: center;\n    color: #67da9f; }\n  .accounts--search-options {\n    margin: 0 20px 20px 20px;\n    display: flex;\n    justify-content: space-around;\n    align-items: center; }\n    @media all and (max-width: 600px) {\n      .accounts--search-options {\n        flex-direction: column; } }\n    .accounts--search-options--icon-search {\n      max-width: 300px;\n      width: 30%;\n      display: flex;\n      justify-content: space-around;\n      align-items: center; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--icon-search {\n          margin-top: 15px;\n          width: 80%; } }\n      .accounts--search-options--icon-search--categorical-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--categorical-search .icon {\n          font-size: 30px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--categorical-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--categorical-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--categorical-search--categories {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories div {\n            width: 230px;\n            height: 210px;\n            display: flex;\n            justify-content: center;\n            flex-wrap: wrap;\n            z-index: 1; }\n            .accounts--search-options--icon-search--categorical-search--categories div .category-icon {\n              margin: 15px;\n              font-size: 40px; }\n              .accounts--search-options--icon-search--categorical-search--categories div .category-icon path {\n                transition: color .1s ease-in; }\n                .accounts--search-options--icon-search--categorical-search--categories div .category-icon path:hover {\n                  color: #f98183; }\n        .accounts--search-options--icon-search--categorical-search--categories__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--categorical-search--categories__active div {\n            margin-top: 60px;\n            transform: translateY(0);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n            @media all and (max-width: 525px) {\n              .accounts--search-options--icon-search--categorical-search--categories__active div {\n                margin-left: 50px; } }\n            .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon {\n              cursor: pointer; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon:hover {\n                color: #f98183; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon path {\n                color: inherit; }\n            .accounts--search-options--icon-search--categorical-search--categories__active div button {\n              width: 0;\n              height: 0; }\n      .accounts--search-options--icon-search--date-search .icon {\n        font-size: 35px;\n        cursor: pointer; }\n        .accounts--search-options--icon-search--date-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--date-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--accts-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--accts-search .icon {\n          font-size: 40px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--accts-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--accts-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--accts-search--accts {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts div {\n            width: 180px;\n            max-height: 300px;\n            padding: 20px;\n            justify-content: flex-start;\n            z-index: 1;\n            overflow-y: scroll; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar {\n              width: 7px;\n              background-color: rgba(100, 100, 100, 0.7);\n              outline: 1px solid slategrey;\n              -webkit-appearance: none; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar-thumb {\n              background-color: rgba(100, 100, 100, 0.7);\n              border-radius: 4px;\n              outline: 1px solid slategrey;\n              -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }\n            .accounts--search-options--icon-search--accts-search--accts div button {\n              margin: 15px 0;\n              width: 100%;\n              background-color: black;\n              border-radius: 5px;\n              text-align: left;\n              font-size: 1em;\n              color: white;\n              cursor: pointer; }\n              .accounts--search-options--icon-search--accts-search--accts div button:before {\n                content: \"\\25AA   \";\n                white-space: pre; }\n        .accounts--search-options--icon-search--accts-search--accts__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--accts-search--accts__active div {\n            margin-top: 60px;\n            transform: translateY(0) translateX(-23%);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n    .accounts--search-options--keyword-search {\n      width: 90%;\n      font-size: 15px; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--keyword-search {\n          margin-top: 15px;\n          width: 100%; } }\n      .accounts--search-options--keyword-search .icon {\n        padding: 15px;\n        font-size: 30px; }\n      .accounts--search-options--keyword-search form {\n        width: 100%;\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--keyword-search form input {\n          display: block;\n          margin: 0 auto;\n          width: 85%;\n          height: 61px;\n          padding: 0 15px;\n          background-color: #253847;\n          border: 1px solid white;\n          border-radius: 6px;\n          font-size: 20px;\n          color: white;\n          transition: all .2s ease-in; }\n          .accounts--search-options--keyword-search form input:focus {\n            border: 1px solid #ff8484; }\n    .accounts--search-options--date-picker {\n      display: flex;\n      flex-direction: row;\n      justify-content: center; }\n      .accounts--search-options--date-picker input {\n        width: 100px;\n        height: 30px;\n        background-color: grey;\n        color: white;\n        align-self: center; }\n      .accounts--search-options--date-picker div {\n        margin: 10px;\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: flex-end; }\n        .accounts--search-options--date-picker div p {\n          margin-bottom: 5px; }\n        .accounts--search-options--date-picker div label input {\n          margin-left: 10px;\n          width: 100px;\n          border: 1px solid black;\n          color: black; }\n  .accounts--totals {\n    padding: 20px 5px;\n    text-align: center;\n    font-size: 1.4em; }\n    @media all and (min-width: 1000px) {\n      .accounts--totals {\n        font-size: 2em; } }\n  .accounts--chart {\n    margin: 0 10px;\n    max-width: 900px; }\n    @media all and (min-width: 600px) {\n      .accounts--chart {\n        margin: 0 auto;\n        display: flex;\n        justify-content: center;\n        align-items: flex-end; } }\n    @media all and (min-width: 600px) and (max-width: 700px) {\n      .accounts--chart {\n        width: 80vw; } }\n    @media all and (min-width: 700px) {\n      .accounts--chart {\n        width: 65vw; } }\n  .accounts--sort-options {\n    text-align: center; }\n", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.accounts--search-options--icon-search--categorical-search--categories div, .accounts--search-options--icon-search--accts-search--accts div {\n  transform: translateY(-50px);\n  visibility: hidden;\n  opacity: 0;\n  position: absolute;\n  padding: 20px;\n  background-color: black;\n  border-radius: 10px;\n  transition: all 0.3s ease-out; }\n\n.accounts--search-options--icon-search--categorical-search--categories:before, .accounts--search-options--icon-search--accts-search--accts:before {\n  transform: translateY(-50px);\n  opacity: 0;\n  content: \"\";\n  position: absolute;\n  margin-top: 20px;\n  width: 0;\n  height: 0;\n  border-bottom: 50px solid rgba(0, 0, 0, 0.6);\n  border-left: 25px solid transparent;\n  border-right: 25px solid transparent;\n  transition: transform .3s ease-out, opacity .3s ease-out; }\n\n.accounts {\n  position: relative; }\n  @media all and (min-width: 801px) {\n    .accounts {\n      margin-top: 0; } }\n  .accounts .red {\n    text-align: center;\n    color: #f98183; }\n  .accounts .green {\n    text-align: center;\n    color: #67da9f; }\n  .accounts--search-options {\n    margin: 0 20px 20px 20px;\n    display: flex;\n    justify-content: space-around;\n    align-items: center; }\n    @media all and (max-width: 600px) {\n      .accounts--search-options {\n        flex-direction: column; } }\n    .accounts--search-options--icon-search {\n      max-width: 300px;\n      width: 30%;\n      display: flex;\n      justify-content: space-around;\n      align-items: center; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--icon-search {\n          margin-top: 15px;\n          width: 80%; } }\n      .accounts--search-options--icon-search--categorical-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--categorical-search .icon {\n          font-size: 30px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--categorical-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--categorical-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--categorical-search--categories {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories div {\n            width: 260px;\n            height: 250px;\n            overflow-y: scroll;\n            display: flex;\n            justify-content: flex-start;\n            flex-wrap: wrap;\n            z-index: 1; }\n            .accounts--search-options--icon-search--categorical-search--categories div section {\n              margin: 10px;\n              width: calc(33% - 20px);\n              display: flex;\n              flex-direction: column;\n              align-items: center; }\n              .accounts--search-options--icon-search--categorical-search--categories div section .category-icon {\n                margin-bottom: 5px;\n                font-size: 40px; }\n                .accounts--search-options--icon-search--categorical-search--categories div section .category-icon path {\n                  transition: color .1s ease-in; }\n                  .accounts--search-options--icon-search--categorical-search--categories div section .category-icon path:hover {\n                    color: #f98183; }\n              .accounts--search-options--icon-search--categorical-search--categories div section p {\n                font-size: 12px;\n                text-align: center; }\n        .accounts--search-options--icon-search--categorical-search--categories__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--categorical-search--categories__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--categorical-search--categories__active div {\n            margin-top: 60px;\n            transform: translateY(0);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n            @media all and (max-width: 525px) {\n              .accounts--search-options--icon-search--categorical-search--categories__active div {\n                margin-left: 50px; } }\n            .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon {\n              cursor: pointer; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon:hover {\n                color: #f98183; }\n              .accounts--search-options--icon-search--categorical-search--categories__active div .category-icon path {\n                color: inherit; }\n            .accounts--search-options--icon-search--categorical-search--categories__active div button {\n              width: 0;\n              height: 0; }\n      .accounts--search-options--icon-search--date-search .icon {\n        font-size: 35px;\n        cursor: pointer; }\n        .accounts--search-options--icon-search--date-search .icon path {\n          transition: color .2s ease-in; }\n          .accounts--search-options--icon-search--date-search .icon path:hover {\n            color: #ff8484; }\n      .accounts--search-options--icon-search--accts-search {\n        display: flex;\n        flex-direction: column;\n        align-items: center; }\n        .accounts--search-options--icon-search--accts-search .icon {\n          font-size: 40px;\n          cursor: pointer;\n          z-index: 1; }\n          .accounts--search-options--icon-search--accts-search .icon path {\n            transition: color .1s ease-in; }\n            .accounts--search-options--icon-search--accts-search .icon path:hover {\n              color: #ff8484; }\n        .accounts--search-options--icon-search--accts-search--accts {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts div {\n            width: 180px;\n            max-height: 300px;\n            padding: 20px;\n            justify-content: flex-start;\n            z-index: 1;\n            overflow-y: scroll; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar {\n              width: 7px;\n              background-color: rgba(100, 100, 100, 0.7);\n              outline: 1px solid slategrey;\n              -webkit-appearance: none; }\n            .accounts--search-options--icon-search--accts-search--accts div::-webkit-scrollbar-thumb {\n              background-color: rgba(100, 100, 100, 0.7);\n              border-radius: 4px;\n              outline: 1px solid slategrey;\n              -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }\n            .accounts--search-options--icon-search--accts-search--accts div button {\n              margin: 15px 0;\n              width: 100%;\n              background-color: black;\n              border-radius: 5px;\n              text-align: left;\n              font-size: 1em;\n              color: white;\n              cursor: pointer; }\n              .accounts--search-options--icon-search--accts-search--accts div button:before {\n                content: \"\\25AA   \";\n                white-space: pre; }\n        .accounts--search-options--icon-search--accts-search--accts__active {\n          display: flex;\n          justify-content: center; }\n          .accounts--search-options--icon-search--accts-search--accts__active:before {\n            transform: translateY(0px);\n            opacity: 1; }\n          .accounts--search-options--icon-search--accts-search--accts__active div {\n            margin-top: 60px;\n            transform: translateY(0) translateX(-23%);\n            visibility: visible;\n            opacity: 1;\n            transition: all 0.3s ease-out; }\n    .accounts--search-options--keyword-search {\n      width: 90%;\n      font-size: 15px; }\n      @media all and (max-width: 600px) {\n        .accounts--search-options--keyword-search {\n          margin-top: 15px;\n          width: 100%; } }\n      .accounts--search-options--keyword-search .icon {\n        padding: 15px;\n        font-size: 30px; }\n      .accounts--search-options--keyword-search form {\n        width: 100%;\n        display: flex;\n        justify-content: center; }\n        .accounts--search-options--keyword-search form input {\n          display: block;\n          margin: 0 auto;\n          width: 85%;\n          height: 61px;\n          padding: 0 15px;\n          background-color: #253847;\n          border: 1px solid white;\n          border-radius: 6px;\n          font-size: 20px;\n          color: white;\n          transition: all .2s ease-in; }\n          .accounts--search-options--keyword-search form input:focus {\n            border: 1px solid #ff8484; }\n    .accounts--search-options--date-picker {\n      display: flex;\n      flex-direction: row;\n      justify-content: center; }\n      .accounts--search-options--date-picker input {\n        width: 100px;\n        height: 30px;\n        background-color: grey;\n        color: white;\n        align-self: center; }\n      .accounts--search-options--date-picker div {\n        margin: 10px;\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: flex-end; }\n        .accounts--search-options--date-picker div p {\n          margin-bottom: 5px; }\n        .accounts--search-options--date-picker div label input {\n          margin-left: 10px;\n          width: 100px;\n          border: 1px solid black;\n          color: black; }\n  .accounts--totals {\n    padding: 20px 5px;\n    text-align: center;\n    font-size: 1.4em; }\n    @media all and (min-width: 1000px) {\n      .accounts--totals {\n        font-size: 2em; } }\n  .accounts--chart {\n    margin: 0 10px;\n    max-width: 900px; }\n    @media all and (min-width: 600px) {\n      .accounts--chart {\n        margin: 0 auto;\n        display: flex;\n        justify-content: center;\n        align-items: flex-end; } }\n    @media all and (min-width: 600px) and (max-width: 700px) {\n      .accounts--chart {\n        width: 80vw; } }\n    @media all and (min-width: 700px) {\n      .accounts--chart {\n        width: 65vw; } }\n  .accounts--sort-options {\n    text-align: center; }\n", ""]);
 
 // exports
 
