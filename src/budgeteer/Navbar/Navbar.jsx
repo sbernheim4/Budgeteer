@@ -68,6 +68,10 @@ class Navbar extends Component {
 
 	addAccount() {
 		this.state.handler.open();
+
+		// Clear out local and session storage --> Storing networth info
+		window.localStorage.clear();
+		window.sessionStorage.clear();
 	}
 
 	toggleMenu() {
