@@ -47,16 +47,11 @@ class Settings extends Component {
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
 			})
+			window.localStorage.clear();
+			window.sessionStorage.cleaar();
 		} catch(err) {
 			console.log("DISPLAY ERROR MESSAGE");
 			console.log(err.ERROR);
-			//const alertMessage = document.querySelector('.app-error');
-			//alertMessage.innerText = "Error: " + err.response.status + "\n" + err.response.data.status;
-			//alertMessage.classList.add('app-error__display');
-
-			//setTimeout(() => {
-				//alertMessage.classList.remove('app-error__display')
-			//}, 4000)
 		}
 	}
 

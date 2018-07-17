@@ -77170,29 +77170,24 @@ var Settings = function (_Component) {
 								this.setState({
 									linkedBanks: [].concat((0, _toConsumableArray3.default)(this.state.linkedBanks.slice(0, index)), (0, _toConsumableArray3.default)(this.state.linkedBanks.slice(index + 1)))
 								});
-								_context2.next = 15;
+								window.localStorage.clear();
+								window.sessionStorage.cleaar();
+								_context2.next = 17;
 								break;
 
-							case 11:
-								_context2.prev = 11;
+							case 13:
+								_context2.prev = 13;
 								_context2.t0 = _context2['catch'](4);
 
 								console.log("DISPLAY ERROR MESSAGE");
 								console.log(_context2.t0.ERROR);
-								//const alertMessage = document.querySelector('.app-error');
-								//alertMessage.innerText = "Error: " + err.response.status + "\n" + err.response.data.status;
-								//alertMessage.classList.add('app-error__display');
 
-								//setTimeout(() => {
-								//alertMessage.classList.remove('app-error__display')
-								//}, 4000)
-
-							case 15:
+							case 17:
 							case 'end':
 								return _context2.stop();
 						}
 					}
-				}, _callee2, this, [[4, 11]]);
+				}, _callee2, this, [[4, 13]]);
 			}));
 
 			function removeAccount(_x) {
