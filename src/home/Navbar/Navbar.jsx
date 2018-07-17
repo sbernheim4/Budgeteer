@@ -22,7 +22,7 @@ class Navbar extends Component {
 			<nav className='navbar'>
 
 				<div className='navbar--desktop'>
-					<h2>Budgeteer</h2>
+					<h2><Link to='/'>Budgeteer</Link></h2>
 					<div className="navbar--desktop--links">
 						<a href="/#product">Product</a>
 						<a href="/#about">About Us</a>
