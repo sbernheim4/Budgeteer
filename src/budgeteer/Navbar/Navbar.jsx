@@ -72,6 +72,7 @@ class Navbar extends Component {
 		// Clear out local and session storage --> Storing networth info
 		window.localStorage.clear();
 		window.sessionStorage.clear();
+		console.log("LOCAL AND SESSION STORAGE CLEARED");
 	}
 
 	toggleMenu() {

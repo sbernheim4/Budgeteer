@@ -53459,77 +53459,20 @@ var App = function (_Component) {
 		key: 'componentDidMount',
 		value: function () {
 			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-				var keyAndEnv, plaid;
 				return _regenerator2.default.wrap(function _callee$(_context) {
 					while (1) {
 						switch (_context.prev = _context.next) {
 							case 0:
 
-								this.registerServiceWorker();
-
-								_context.prev = 1;
-
-								// First make a fetch call to get info for already linked accounts
-
-								// TODO: Need to see if there is an error returned from this call --> If
-								// `{ "ERROR": "No Account Infromation Found" }` is received than it means
-								// no accounts are linked
-								/*await axios.post('/plaid-api/set-stored-access-token')*/
-
+								/*this.registerServiceWorker();*/
 								this.getTransactions();
 
-								// Used for if the user wants to link a new account
-								_context.next = 5;
-								return _axios2.default.get('/plaid-api/key-and-env');
-
-							case 5:
-								keyAndEnv = _context.sent;
-
-								keyAndEnv = keyAndEnv.data;
-
-								plaid = Plaid.create({
-									apiVersion: 'v2',
-									clientName: 'Plaid Walkthrough Demo',
-									env: keyAndEnv.env,
-									product: ['transactions'],
-									key: keyAndEnv.publicKey,
-									onSuccess: function onSuccess(public_token) {
-										console.log("APP VERSION");
-										(0, _axios2.default)({
-											method: 'POST',
-											url: '/plaid-api/get-access-token',
-											data: {
-												public_token: public_token,
-												client_id: '5a24ca6a4e95b836d37e37fe',
-												secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-											}
-										});
-									}
-								});
-
-
-								this.setState({ handler: plaid });
-
-								_context.next = 15;
-								break;
-
-							case 11:
-								_context.prev = 11;
-								_context.t0 = _context['catch'](1);
-
-								console.error(_context.t0);
-								// console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
-								this.setState({
-									showErrorMessage: true,
-									errorMessage: "It seems like you haven't linked any accounts. Click Add Account in the menu to get started"
-								});
-
-							case 15:
+							case 1:
 							case 'end':
 								return _context.stop();
 						}
 					}
-				}, _callee, this, [[1, 11]]);
+				}, _callee, this);
 			}));
 
 			function componentDidMount() {
@@ -55305,6 +55248,7 @@ var Navbar = function (_Component) {
 			// Clear out local and session storage --> Storing networth info
 			window.localStorage.clear();
 			window.sessionStorage.clear();
+			console.log("LOCAL AND SESSION STORAGE CLEARED");
 		}
 	}, {
 		key: 'toggleMenu',

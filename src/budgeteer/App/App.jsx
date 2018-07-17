@@ -41,52 +41,9 @@ class App extends Component {
 
 	async componentDidMount() {
 
-		this.registerServiceWorker();
+		/*this.registerServiceWorker();*/
+		this.getTransactions();
 
-		try {
-			// First make a fetch call to get info for already linked accounts
-
-			// TODO: Need to see if there is an error returned from this call --> If
-			// `{ "ERROR": "No Account Infromation Found" }` is received than it means
-			// no accounts are linked
-			/*await axios.post('/plaid-api/set-stored-access-token')*/
-
-			this.getTransactions();
-
-			// Used for if the user wants to link a new account
-			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
-			keyAndEnv = keyAndEnv.data;
-
-			const plaid = Plaid.create({
-				apiVersion: 'v2',
-				clientName: 'Plaid Walkthrough Demo',
-				env: keyAndEnv.env,
-				product: ['transactions'],
-				key: keyAndEnv.publicKey,
-				onSuccess: function (public_token) {
-					console.log("APP VERSION");
-					axios({
-						method: 'POST',
-						url: '/plaid-api/get-access-token',
-						data: {
-							public_token: public_token,
-							client_id: '5a24ca6a4e95b836d37e37fe',
-							secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-						}
-					});
-				}
-			});
-
-			this.setState({ handler: plaid });
-
-		} catch (err) {
-			console.error(err);
-			// console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
-			this.setState({
-				showErrorMessage: true,
-				errorMessage: "It seems like you haven't linked any accounts. Click Add Account in the menu to get started"
-			})
-		}
 	}
 
 	registerServiceWorker() {
