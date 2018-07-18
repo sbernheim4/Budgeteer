@@ -30362,6 +30362,17 @@ var App = function (_Component) {
 	}
 
 	(0, _createClass3.default)(App, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (window.location.protocol !== "https:") {
+				if (window.location.port) {
+					window.location.href = 'https://' + window.location.host.slice(0, -4) + '5000' + window.location.pathname;
+				} else {
+					window.location.href = 'https://' + window.location.host + window.location.pathname;
+				}
+			}
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 
