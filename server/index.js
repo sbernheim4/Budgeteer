@@ -66,17 +66,6 @@ app.all('*', (req, res, next) => {
 	next();
 });
 
-app.use('*', (req, res, next) => {
-	if (req.protocol !== 'https') {
-		console.log("Redirecting to https");
-		const url = process.env.NODE_ENV === 'production' ? 'www.budgeteer.org' : 'budgeteer-prod.com:5000'
-		res.redirect(`https://${url}${req.originalUrl}`);
-	} else {
-		next();
-	}
-
-})
-
 app.use('/legal', require('./legal.js'));
 
 app.use('/plaid-api', require('./plaid-api.js'));
