@@ -53687,7 +53687,9 @@ var App = function (_Component) {
 					{ className: 'main' },
 					_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', render: function render() {
 							return _react2.default.createElement(_Home2.default, {
-								loading: loading
+								loading: loading,
+								transactions: _this3.state.transactions,
+								accounts: _this3.state.accounts
 							});
 						} }),
 					_react2.default.createElement(_reactRouterDom.Route, { path: '/statistics', render: function render() {
@@ -57364,6 +57366,14 @@ var _helpers = __webpack_require__(53);
 
 var _helpers2 = _interopRequireDefault(_helpers);
 
+var _BudgetChart = __webpack_require__(469);
+
+var _BudgetChart2 = _interopRequireDefault(_BudgetChart);
+
+var _TransactionContainer = __webpack_require__(791);
+
+var _TransactionContainer2 = _interopRequireDefault(_TransactionContainer);
+
 __webpack_require__(464);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -57381,6 +57391,17 @@ var Home = function (_Component) {
 		};
 		return _this;
 	}
+
+	// static getDerivedStateFromProps(props, state) {
+	// 	if (props.transactions && props.accounts) {
+	// 		return {
+	// 			recentTransactions: "props.transactions.slice(0,5)",
+	// 			accounts: props.accounts
+	// 		}
+	// 	}
+	// 	return;
+	// }
+
 
 	(0, _createClass3.default)(Home, [{
 		key: 'componentDidMount',
@@ -57449,28 +57470,29 @@ var Home = function (_Component) {
 				{ className: 'home' },
 				text,
 				_react2.default.createElement(
-					'section',
-					{ className: 'home--info' },
+					'h1',
+					null,
+					'Your Snapshot'
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'home--monthly-budget' },
 					_react2.default.createElement(
-						'h1',
+						'h2',
 						null,
-						'Welcome to Budgeteer'
+						'Monthly Budget'
 					),
+					_react2.default.createElement(_BudgetChart2.default, { displayInput: false, transactions: this.props.transactions })
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'home--transactions' },
 					_react2.default.createElement(
-						'div',
-						{ className: 'home--info--details' },
-						_react2.default.createElement(
-							'h2',
-							{ className: 'home--info--details--acct-balance' },
-							'Total account balance: $',
-							this.state.total
-						),
-						_react2.default.createElement(
-							'h2',
-							{ className: 'home--info--details--savings-ratio' },
-							'Amount Saved this Month / Monthly Income'
-						)
-					)
+						'h2',
+						null,
+						'Recent Transactions'
+					),
+					_react2.default.createElement(_TransactionContainer2.default, { transactions: this.props.transactions.slice(0, 3), accounts: this.props.accounts })
 				)
 			);
 		}
@@ -57520,7 +57542,7 @@ exports = module.exports = __webpack_require__(15)(false);
 
 
 // module
-exports.push([module.i, ".home--loading h1 {\n  text-align: center; }\n\n.home--loading img {\n  margin: 0 auto;\n  width: 80vw;\n  padding: 10px;\n  display: block;\n  border: 5px solid #6490b7;\n  border-radius: 50%; }\n\n.home--info {\n  margin: 30px auto;\n  max-width: 1000px; }\n  .home--info h1 {\n    margin: 0;\n    text-align: center; }\n  .home--info h2 {\n    text-align: center; }\n  .home--info--details {\n    margin: 30px;\n    font-weight: bold; }\n    .home--info--details p {\n      margin: 10px 0 0 20px; }\n      .home--info--details p:before {\n        content: '- '; }\n", ""]);
+exports.push([module.i, ".home * {\n  overflow-y: hidden; }\n\n.home h1 {\n  margin-bottom: 30px;\n  text-align: center; }\n\n.home h2 {\n  text-align: center; }\n\n.home--loading img {\n  margin: 0 auto;\n  width: 80vw;\n  padding: 10px;\n  display: block;\n  border: 5px solid #6490b7;\n  border-radius: 50%; }\n\n.home--details {\n  margin: 30px;\n  font-weight: bold; }\n\n.home--transactions {\n  margin: 0 auto;\n  width: 100%; }\n", ""]);
 
 // exports
 
@@ -58623,18 +58645,12 @@ var BudgetChart = function (_Component2) {
 			remaining = _helpers2.default.formatAmount(remaining);
 			remaining = _helpers2.default.numberWithCommas(remaining);
 
+			var input = this.props.displayInput === false ? "" : "<form className=\"budget--form\">\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input placeholder=\"Enter your budget\" type=\"number\" name=\"budget\" value={this.state.monthlyBudget} onChange={this.handleChange} />\n\t\t\t\t\t</label>\n\t\t\t\t</form>";
+
 			return _react2.default.createElement(
 				"div",
 				{ className: "budget" },
-				_react2.default.createElement(
-					"form",
-					{ className: "budget--form" },
-					_react2.default.createElement(
-						"label",
-						null,
-						_react2.default.createElement("input", { placeholder: "Enter your budget", type: "number", name: "budget", value: this.state.monthlyBudget, onChange: this.handleChange })
-					)
-				),
+				input,
 				_react2.default.createElement(
 					_recharts.ResponsiveContainer,
 					{ className: "budget--doughnut-chart", width: "100%", "min-height": 400, height: 400 },

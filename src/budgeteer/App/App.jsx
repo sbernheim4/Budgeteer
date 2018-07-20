@@ -160,6 +160,8 @@ class App extends Component {
 					<Route exact path='/' render={() => (
 						<Home
 							loading={loading}
+							transactions={this.state.transactions}
+							accounts={this.state.accounts}
 						/>
 					)}/>
 

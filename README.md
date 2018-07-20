@@ -1,10 +1,10 @@
-# MoneySaver
+# Budgeteer
 
 ## Installation and Setup
 
 To install and get setup with the repo run the following. 
 
-`git clone https://github.com/sbernheim4/MoneySaver.git`
+`git clone https://github.com/sbernheim4/budgeteer.git`
 
 `cd Budgeteer`
 

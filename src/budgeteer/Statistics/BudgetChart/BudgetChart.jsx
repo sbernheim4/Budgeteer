@@ -119,14 +119,16 @@ class BudgetChart extends Component {
 		remaining = helpers.formatAmount(remaining);
 		remaining = helpers.numberWithCommas(remaining);
 
-		return (
-			<div className="budget">
-
-				<form className="budget--form">
+		const input = this.props.displayInput === false ? "" : `<form className="budget--form">
 					<label>
 						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
 					</label>
-				</form>
+				</form>`
+
+		return (
+			<div className="budget">
+
+				{input}
 
 				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
 				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
