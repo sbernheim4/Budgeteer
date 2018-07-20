@@ -58,27 +58,24 @@ class Home extends Component {
 				{text}
 
 				<h1>Your Snapshot</h1>
-
 				{/*					
 				<div className="home--details">
 					<h2 className="home--details--acct-balance">Networth: ${this.state.total}</h2>
 					<h2 className="home--details--savings-ratio">Amount Saved this Month / Monthly Income</h2>
 				</div>
 				*/}
-				{/* Amt saved this month is monthly budget - total spent this month*/}
-				{/* Monthly income is defined for the statistics page --> This should be stored in the DB and on the session */}
+				{/*Amt saved this month is monthly budget - total spent this month*/}
+				{/*Monthly income is defined for the statistics page --> This should be stored in the DB and on the session */}
 
 				<div className="home--monthly-budget">
 					<h2>Monthly Budget</h2>
 					<Budget displayInput={false} transactions={this.props.transactions} />
 				</div>
 
-
 				<div className='home--transactions'>
 					<h2>Recent Transactions</h2>
 					<TransactionContainer transactions={this.props.transactions.slice(0, 3)} accounts={this.props.accounts} />
 				</div>
-
 
 			</div>
 		);
