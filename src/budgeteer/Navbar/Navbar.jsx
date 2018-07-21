@@ -24,7 +24,9 @@ class Navbar extends Component {
 		super(props);
 
 		this.state = {
-			handler: {}
+			handler: {
+				user: "..."
+			}
 		}
 
 		this.addAccount = this.addAccount.bind(this);
@@ -44,7 +46,7 @@ class Navbar extends Component {
 				console.log("NAVBAR VERSION");
 				axios({
 					method: "POST",
-					url: "/plaid-api/get-access-token", 
+					url: "/plaid-api/get-access-token",
 					data: {
 						public_token: public_token,
 						client_id: '5a24ca6a4e95b836d37e37fe',
@@ -54,13 +56,23 @@ class Navbar extends Component {
 			}
 		});
 
+		let name = await axios.get("/user-info/name");
+		name = name.data;
+
+
 		this.setState({
-			handler: plaid
+			handler: plaid,
+			name: name
 		});
 	}
 
 	addAccount() {
 		this.state.handler.open();
+
+		// Clear out local and session storage --> Storing networth info
+		window.localStorage.clear();
+		window.sessionStorage.clear();
+		console.log("LOCAL AND SESSION STORAGE CLEARED");
 	}
 
 	toggleMenu() {
@@ -118,16 +130,16 @@ class Navbar extends Component {
 					<div className='navbar--mobile--links'>
 
 						<div className="navbar--mobile--links--profile">
-							<img src="http://via.placeholder.com/50x50" />
-							<h3>Samuel Bernheim</h3>
+							<img src="https://via.placeholder.com/50x50" />
+							<h3>{this.state.name}</h3>
 						</div>
 
-						<div className="link-container" ><FontAwesomeIcon icon={faExchangeAlt}/><Link to='/transactions' className="first" onClick={this.toggleMenu}>Your Transactions</Link></div>
-						<div className="link-container" ><FontAwesomeIcon icon={faChartPie}/><Link to='/statistics' className="second" onClick={this.toggleMenu}>Your Statistics</Link></div>
-						<div className="link-container" ><FontAwesomeIcon icon={faMoneyBillAlt}/><Link to='/networth' className="third" onClick={this.toggleMenu}>Your Networth</Link></div>
+						<Link to='/transactions' className="first" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faExchangeAlt}/>Your Transactions</div></Link>
+						<Link to='/statistics' className="second" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faChartPie}/>Your Statistics</div></Link>
+						<Link to='/networth' className="third" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faMoneyBillAlt}/>Your Networth</div></Link>
 						<hr />
-						<div className="link-container" ><FontAwesomeIcon icon={faCogs}/><Link to='/settings' className="fourth" onClick={this.toggleMenu}>Your Settings</Link></div>
-						<div className="link-container"><FontAwesomeIcon icon={faPlus}/><a className="fifth" onClick={this.addAccount}>Add Account</a></div>
+						<Link to='/settings' className="fourth" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faCogs}/>Your Settings</div></Link>
+						<a className="fifth" onClick={this.addAccount}><div className="link-container"><FontAwesomeIcon icon={faPlus}/>Add Account</div></a>
 					</div>
 				</div>
 			</nav>

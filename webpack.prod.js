@@ -16,7 +16,7 @@ module.exports = {
 		home: "./src/home/index.jsx"
 	},
 	output: {
-		// output build file to /public folder and call the file bundle.js
+		// output build file to /public folder and call the file the same name as its input
 		path: __dirname + "/public",
 		filename: "[name].js"
 	},

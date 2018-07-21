@@ -75,7 +75,6 @@
 					cursor: pointer;
 					z-index: 1;
 
-
 					path {
 						transition: color .1s ease-in;
 
@@ -95,25 +94,40 @@
 
 					div {
 						@extend %icon-containers;
-						width: 230px;
-						height: 210px;
+						width: 260px;
+						height: 250px;
+						overflow-y: scroll;
 						display: flex;
-						justify-content: center;
+						justify-content: flex-start;
 						flex-wrap: wrap;
 						z-index: 1;
 
-						.category-icon {
-							margin: 15px;
-							font-size: 40px;
+						section {
+							margin: 10px;
+							width: calc(33% - 20px); // 2 * the margin (multiply by 2 for both sides)
+							display: flex;
+							flex-direction: column;
+							align-items: center;
 
-							path {
-								transition: color .1s ease-in;
+							.category-icon {
+								margin-bottom: 5px;
+								font-size: 40px;
 
-								&:hover {
-									color: $red;
+								path {
+									transition: color .1s ease-in;
+
+									&:hover {
+										color: $red;
+									}
 								}
 							}
+
+							p {
+								font-size: 12px;
+								text-align: center;
+							}
 						}
+
 					}
 				}
 

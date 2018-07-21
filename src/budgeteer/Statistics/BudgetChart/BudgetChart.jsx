@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
+import axios from 'axios';
 
 import helpers from "../../helpers.js";
 
@@ -108,7 +109,15 @@ class BudgetChart extends Component {
 		this.setState({
 			rechartsData: amts,
 			monthlyBudget: event.target.value.trim()
-		})
+		});
+
+		axios({
+			method: 'POST',
+			url: '/user-info/monthly-budget',
+			data: {
+				monthlyBudget: event.target.value.trim()
+			}
+		});
 	}
 
 	render() {
@@ -119,14 +128,16 @@ class BudgetChart extends Component {
 		remaining = helpers.formatAmount(remaining);
 		remaining = helpers.numberWithCommas(remaining);
 
-		return (
-			<div className="budget">
-
-				<form className="budget--form">
+		const input = this.props.displayInput === false ? "" : (<form className="budget--form">
 					<label>
 						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
 					</label>
-				</form>
+				</form>);
+
+		return (
+			<div className="budget">
+
+				{input}
 
 				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
 				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >

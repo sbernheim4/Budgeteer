@@ -13,7 +13,8 @@ const http = require('http');
 const util = require('util');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const Strategy = require('passport-facebook').Strategy;
+const FBStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
@@ -67,22 +68,25 @@ app.all('*', (req, res, next) => {
 
 app.use('/legal', require('./legal.js'));
 
-app.use('/plaid-api', require('./plaid-api.js'));
+app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
+
+app.use('/user-info', checkAuthentication, require('./userInfo.js'));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));
 });
 
+app.get('/login', (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/home-page.html'));
+});
+
 app.get('/budgeteer', checkAuthentication, (req, res) => {
-	console.log('BUDGETEER GET');
-	console.log(req.session.user);
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
 app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
-
 
 /****************** Passport Authentication ******************/
 
@@ -93,23 +97,64 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 // behalf, along with the user's profile.  The function must invoke `cb`
 // with a user object, which will be set at `req.user` in route handlers after
 // authentication.
-passport.use(new Strategy({
+passport.use(new FBStrategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: process.env.NODE_ENV === 'production' ? 'https://budgeteer-prod.herokuapp.com/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
 },
-
-
-
-	function(accessToken, refreshToken, profile, cb) {
+	function(accessToken, refreshToken, profile, done) {
 		// In this example, the user's Facebook profile is supplied as the user
 		// record.  In a production-quality application, the Facebook profile should
 		// be associated with a user record in the application's database, which
 		// allows for account linking and authentication with other identity
 		// providers.
-		return cb(null, profile);
+
+		User.findOne({
+			facebookID: profile.id
+		}).then((dbUserRecord, err) => {
+			if (dbUserRecord) {
+				done(null, dbUserRecord);
+			} else {
+				new User({
+					facebookID: profile.id,
+					name: profile.displayName
+				}).save().then((newUser) => {
+					console.log("NEW USER HAS BEEN SAVED TO DB");
+					done(null, newUser);
+				});
+			}
+		}).catch(err => {
+			console.log(err);
+		});
 	}
 ));
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/google/return' : 'https://budgeteer-prod.com:5000/login/google/return'
+},
+  	function(accessToken, refreshToken, profile, done) {
+	  	User.findOne({
+			googleID: profile.id
+		}).then((dbUserRecord, err) => {
+			if (dbUserRecord) {
+				done(null, dbUserRecord);
+			} else {
+				new User({
+					googleID: profile.id,
+					name: profile.displayName
+				}).save().then((newUser) => {
+					console.log("NEW USER HAS BEEN SAVED TO DB");
+					done(null, newUser);
+				});
+			}
+		}).catch(err => {
+			console.log(err);
+		});
+	}
+));
+
 
 // Configure Passport authenticated session persistence.
 //
@@ -120,78 +165,56 @@ passport.use(new Strategy({
 // from the database when deserializing.  However, due to the fact that this
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
-passport.serializeUser(function(user, cb) {
-	cb(null, user);
+passport.serializeUser(function(user, done) {
+	done(null, user.id);
 });
 
-passport.deserializeUser(function(obj, cb) {
-	cb(null, obj);
+passport.deserializeUser(function(id, done) {
+	User.findById(id).then(user => {
+		done(null, user);
+	});
 });
 
-app.get('/login/facebook',
-	passport.authenticate('facebook')
-);
+app.get('/login/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
+	console.log("Logging in via Google");
+});
 
-app.get('/login/facebook/return',
-	passport.authenticate('facebook', { failureRedirect: '/' }), (req, res) => {
-		// req.user contains the fbProfile information
+app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
+	// Passportjs sends back the user attached to the request object, I set it as part of the session
+	req.session.user = req.user;
+	// Redirect to budgeteer after the session has been set
+	res.redirect("/budgeteer");
+});
 
-		User.findOne({ facebookID:req.user.id }, (err, existingUser) => {
-            if (err) {console.log('EROORRRRR______________'); return }
 
-            if (existingUser) {
-				console.log('USER FOUND:');
-				console.log(existingUser)
-                req.session.user = existingUser;;
-				return res.redirect('/budgeteer');
-			} else {
-				const fName = req.user.displayName.split(' ')[0];
-				const lName = req.user.displayName.split(' ')[1];
+app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
+	console.log("Logging in via FB");
+});
 
-				const newUser = new User ({
-					facebookID: req.user.id,
-					firstName: fName,
-					lastName: lName
-				});
+app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) => {
+	// Passportjs sends back the user attached to the request object, I set it as part of the session
+	req.session.user = req.user;
+	// Redirect to budgeteer after the session has been set
+	res.redirect("/budgeteer");
+});
 
-				newUser.save( err => {
-					if (err) {console.log(err); return}
-					req.session.profile = existingUser;
-				});
-
-				return res.redirect('/');
-			}
-		});
-	}
-);
-
-app.get('/profile', (req, res) => {
-	if (req.session.user !== undefined) {
-		res.send(req.session);
-	} else {
-		res.redirect('/nope');
-	}
+app.get('/profile', checkAuthentication, (req, res) => {
+	res.send(req.session);
 });
 
 app.get('/nope', (req, res) => {
 	res.send('NOPE');
 });
 
-function checkAuthentication(req,res,next){
-    if(req.session.user !== undefined){
+function checkAuthentication(req, res, next) {
+	// Check if the user variable on the session is set. If not redirect to /nope
+	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
+    if (req.session.user !== undefined) {
         next();
-    } else{
-        res.redirect('/nope');
+    } else {
+        res.redirect('/login');
     }
 }
-
-// function logInfo(req, res, next) {
-// 	console.log();console.log();console.log();console.log();
-// 	console.log(req.session);
-// 	console.log();console.log();console.log();console.log();
-// 	next();
-
-// }
 
 /****************** Start the DB and Server ******************/
 
