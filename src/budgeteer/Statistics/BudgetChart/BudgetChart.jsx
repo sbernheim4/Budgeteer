@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
+import axios from 'axios';
 
 import helpers from "../../helpers.js";
 
@@ -108,7 +109,15 @@ class BudgetChart extends Component {
 		this.setState({
 			rechartsData: amts,
 			monthlyBudget: event.target.value.trim()
-		})
+		});
+
+		axios({
+			method: 'POST',
+			url: '/user-info/monthly-budget',
+			data: {
+				monthlyBudget: event.target.value.trim()
+			}
+		});
 	}
 
 	render() {

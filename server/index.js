@@ -68,7 +68,9 @@ app.all('*', (req, res, next) => {
 
 app.use('/legal', require('./legal.js'));
 
-app.use('/plaid-api', require('./plaid-api.js'));
+app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
+
+app.use('/user-info', checkAuthentication, require('./userInfo.js'));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));
@@ -84,12 +86,6 @@ app.get('/budgeteer', checkAuthentication, (req, res) => {
 
 app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
-});
-
-// Used by navbar.jsx to display the users name
-// TODO: Should also include photo URL from the profile either fb or google+
-app.get('/name', checkAuthentication, (req, res) => {
-	res.send(req.session.user.name);
 });
 
 /****************** Passport Authentication ******************/

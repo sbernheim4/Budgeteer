@@ -56,7 +56,7 @@ class Navbar extends Component {
 			}
 		});
 
-		let name = await axios.get("/name");
+		let name = await axios.get("/user-info/name");
 		name = name.data;
 
 
