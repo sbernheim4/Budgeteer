@@ -58,7 +58,7 @@ class Home extends Component {
 				{text}
 
 				<h1>Your Snapshot</h1>
-				{/*					
+				{/*
 				<div className="home--details">
 					<h2 className="home--details--acct-balance">Networth: ${this.state.total}</h2>
 					<h2 className="home--details--savings-ratio">Amount Saved this Month / Monthly Income</h2>

@@ -91,8 +91,6 @@ class BudgetChart extends Component {
 	}
 
 	handleChange(event) {
-		// Update the state variable
-
 		// Save data to the current local store
 		localStorage.setItem("monthlyBudget", event.target.value.trim());
 

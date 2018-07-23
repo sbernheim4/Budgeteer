@@ -20,6 +20,13 @@ Router.post('/monthly-budget', (req, res) => {
 	req.session.save();
 });
 
+Router.get('/monthly-budget', (req, res) => {
+	if (req.session.user.monthlyBudget) {
+		res.json({"monthlyBudget": req.session.user.monthlyBudget});
+	} else {
+		res.json({"monthlyBudget": 0});
+	}
+});
 
 // Used by navbar.jsx to display the users name
 Router.get('/name', (req, res) => {
@@ -29,6 +36,7 @@ Router.get('/name', (req, res) => {
 Router.get('/profile', (req, res) => {
 	console.log(req.session.user);
 	res.send(req.session.user);
-})
+});
+
 
 module.exports = Router;

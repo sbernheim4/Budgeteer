@@ -70,7 +70,7 @@ app.use('/legal', require('./legal.js'));
 
 app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
 
-app.use('/user-info', checkAuthentication, require('./userInfo.js'));
+app.use('/user-info', checkAuthentication, require('./user-info.js'));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));

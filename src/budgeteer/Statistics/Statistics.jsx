@@ -73,7 +73,7 @@ class Statistics extends Component {
 						<h1>Heat Map</h1>
 						<HeatMap transactions={this.props.transactions} />
 					</div>
-					
+
 					<div className="item">
 						<h1>Annual Spending History</h1>
 						<AnnualChart transactions={this.props.transactions} />

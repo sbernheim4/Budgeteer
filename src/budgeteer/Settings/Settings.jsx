@@ -13,16 +13,22 @@ class Settings extends Component {
 		super(props);
 
 		this.state = {
-			linkedBanks: []
+			linkedBanks: [],
+			monthlyBudget: "Loading..."
 		}
+
+		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
 	}
 
 	async componentDidMount() {
 
 		let linkedBanks = await axios.post('/plaid-api/linked-accounts');
+		let monthlyBudget = await axios.get('/user-info/monthly-budget');
+
 		this.setState({
-			linkedBanks: linkedBanks.data.accounts
-		})
+			linkedBanks: linkedBanks.data.accounts,
+			monthlyBudget: monthlyBudget.data.monthlyBudget
+		});
 	}
 
 	async removeAccount(e) {
@@ -67,6 +73,20 @@ class Settings extends Component {
 		//}, 4000)
 	}
 
+	updateMonthlyBudget(e) {
+		axios({
+			method: 'POST',
+			url: '/user-info/monthly-budget',
+			data: {
+				monthlyBudget: e.target.value.trim()
+			}
+		});
+
+		this.setState({
+			monthlyBudget: e.target.value.trim()
+		});
+	}
+
 	render() {
 		return (
 
@@ -78,6 +98,13 @@ class Settings extends Component {
 						<button onClick={(e) => this.removeAccount(e)}>Remove</button>
 					</div>
 				)}
+
+				<form className='settings--monthly-budget'>
+					<label>
+						<h1>Your Monthly Budget</h1>
+						<input placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateMonthlyBudget} />
+					</label>
+				</form>
 
 				<div className="settings--rotate-tokens">
 					<p>If you think your account has been compromised, click the button below to delete and generate new access tokens</p>
