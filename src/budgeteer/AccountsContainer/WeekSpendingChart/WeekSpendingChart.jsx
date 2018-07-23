@@ -88,12 +88,13 @@ class WeekSpendingChart extends Component {
 				amts.reverse();
 			}
 
-			const labels = [6, 5, 4, 3, 2, 1, "Today"];
+			const week = ["Mon.", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat.", "Sun."];
 			let data = [];
 
+			const today = new Date().getDay();
 			for (let i = 0; i < 7; i++) {
 				data.push({
-					name: labels[i],
+					name: i === 6 ? "Today" : week[(today + i) % 7],
 					value: amts[i]
 				});
 			}
