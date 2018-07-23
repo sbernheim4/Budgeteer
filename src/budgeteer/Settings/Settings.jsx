@@ -23,11 +23,18 @@ class Settings extends Component {
 	async componentDidMount() {
 
 		let linkedBanks = await axios.post('/plaid-api/linked-accounts');
-		let monthlyBudget = await axios.get('/user-info/monthly-budget');
+
+		// Try looking in local storage first for the monthlyBudget
+		let monthlyBudget = localStorage.getItem("monthlyBudget");
+		if (!monthlyBudget) {
+			// If that fails grab it from the server
+			monthlyBudget = await axios.get('/user-info/monthly-budget');
+			monthlyBudget = monthlyBudget.data.monthlyBudget;
+		}
 
 		this.setState({
 			linkedBanks: linkedBanks.data.accounts,
-			monthlyBudget: monthlyBudget.data.monthlyBudget
+			monthlyBudget: monthlyBudget
 		});
 	}
 
@@ -74,6 +81,10 @@ class Settings extends Component {
 	}
 
 	updateMonthlyBudget(e) {
+		// Update local storage value
+		localStorage.setItem("monthlyBudget", e.target.value.trim());
+
+		// Update Session/DB value
 		axios({
 			method: 'POST',
 			url: '/user-info/monthly-budget',
@@ -82,6 +93,7 @@ class Settings extends Component {
 			}
 		});
 
+		// Update state value
 		this.setState({
 			monthlyBudget: e.target.value.trim()
 		});

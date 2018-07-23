@@ -47453,26 +47453,27 @@ var BudgetChart = function (_Component2) {
 	(0, _createClass3.default)(BudgetChart, [{
 		key: "handleChange",
 		value: function handleChange(event) {
+			var newMonthlyBudget = event.target.value.trim();
 			// Save data to the current local store
-			localStorage.setItem("monthlyBudget", event.target.value.trim());
+			localStorage.setItem("monthlyBudget", newMonthlyBudget);
 
 			// Update the percentage calculator
 			var spent = this.state.spentThisMonth;
-			var remaining = event.target.value - this.state.spentThisMonth <= 0 ? 0 : event.target.value - this.state.spentThisMonth;
+			var remaining = newMonthlyBudget - this.state.spentThisMonth <= 0 ? 0 : newMonthlyBudget - this.state.spentThisMonth;
 
 			// Update the chart
 			var amts = [{ name: 'Spent', value: spent }, { name: 'Remaining', value: remaining }];
 
 			this.setState({
 				rechartsData: amts,
-				monthlyBudget: event.target.value.trim()
+				monthlyBudget: newMonthlyBudget
 			});
 
 			(0, _axios2.default)({
 				method: 'POST',
 				url: '/user-info/monthly-budget',
 				data: {
-					monthlyBudget: event.target.value.trim()
+					monthlyBudget: newMonthlyBudget
 				}
 			});
 		}
@@ -89406,19 +89407,32 @@ var Settings = function (_Component) {
 
 							case 2:
 								linkedBanks = _context.sent;
-								_context.next = 5;
+
+
+								// Try looking in local storage first for the monthlyBudget
+								monthlyBudget = localStorage.getItem("monthlyBudget");
+
+								if (monthlyBudget) {
+									_context.next = 9;
+									break;
+								}
+
+								_context.next = 7;
 								return _axios2.default.get('/user-info/monthly-budget');
 
-							case 5:
+							case 7:
 								monthlyBudget = _context.sent;
 
+								monthlyBudget = monthlyBudget.data.monthlyBudget;
+
+							case 9:
 
 								this.setState({
 									linkedBanks: linkedBanks.data.accounts,
-									monthlyBudget: monthlyBudget.data.monthlyBudget
+									monthlyBudget: monthlyBudget
 								});
 
-							case 7:
+							case 10:
 							case 'end':
 								return _context.stop();
 						}
@@ -89525,6 +89539,10 @@ var Settings = function (_Component) {
 	}, {
 		key: 'updateMonthlyBudget',
 		value: function updateMonthlyBudget(e) {
+			// Update local storage value
+			localStorage.setItem("monthlyBudget", e.target.value.trim());
+
+			// Update Session/DB value
 			(0, _axios2.default)({
 				method: 'POST',
 				url: '/user-info/monthly-budget',
@@ -89533,6 +89551,7 @@ var Settings = function (_Component) {
 				}
 			});
 
+			// Update state value
 			this.setState({
 				monthlyBudget: e.target.value.trim()
 			});
