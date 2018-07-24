@@ -81,6 +81,7 @@ class Settings extends Component {
 	}
 
 	updateMonthlyBudget(e) {
+		e.preventDefault();
 		// Update local storage value
 		localStorage.setItem("monthlyBudget", e.target.value.trim());
 
@@ -111,7 +112,7 @@ class Settings extends Component {
 					</div>
 				)}
 
-				<form className='settings--monthly-budget'>
+				<form className='settings--monthly-budget' onSubmit={this.updateMonthlyBudget}>
 					<label>
 						<h1>Your Monthly Budget</h1>
 						<input placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateMonthlyBudget} />

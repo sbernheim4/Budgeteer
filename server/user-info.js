@@ -31,7 +31,7 @@ Router.get('/monthly-budget', (req, res) => {
 });
 
 Router.get('/name', (req, res) => {
-	// Send back user's name 
+	// Send back user's name
 	res.send(req.session.user.name);
 });
 

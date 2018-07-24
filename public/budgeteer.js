@@ -89540,6 +89540,7 @@ var Settings = function (_Component) {
 	}, {
 		key: 'updateMonthlyBudget',
 		value: function updateMonthlyBudget(e) {
+			e.preventDefault();
 			// Update local storage value
 			localStorage.setItem("monthlyBudget", e.target.value.trim());
 
@@ -89590,7 +89591,7 @@ var Settings = function (_Component) {
 				}),
 				_react2.default.createElement(
 					'form',
-					{ className: 'settings--monthly-budget' },
+					{ className: 'settings--monthly-budget', onSubmit: this.updateMonthlyBudget },
 					_react2.default.createElement(
 						'label',
 						null,
