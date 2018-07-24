@@ -119,7 +119,6 @@ passport.use(new FBStrategy({
 					facebookID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
-					console.log("NEW USER HAS BEEN SAVED TO DB");
 					done(null, newUser);
 				});
 			}
@@ -145,7 +144,6 @@ passport.use(new GoogleStrategy({
 					googleID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
-					console.log("NEW USER HAS BEEN SAVED TO DB");
 					done(null, newUser);
 				});
 			}
