@@ -82,11 +82,11 @@ app.get('/login', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));
 });
 
-app.get('/portal', checkAuthentication, (req, res) => {
+app.get('/budgeteer', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get('/portal/*', checkAuthentication, (req, res) => {
+app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
@@ -182,8 +182,8 @@ app.get('/login/google', passport.authenticate('google', { scope: ['email', 'pro
 app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
-	// Redirect to portal after the session has been set
-	res.redirect("/portal");
+	// Redirect to budgeteer after the session has been set
+	res.redirect("/budgeteer");
 });
 
 
@@ -194,8 +194,8 @@ app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
 app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
-	// Redirect to portal after the session has been set
-	res.redirect("/portal");
+	// Redirect to budgeteer after the session has been set
+	res.redirect("/budgeteer");
 });
 
 app.get('/profile', checkAuthentication, (req, res) => {
