@@ -1,3 +1,5 @@
+/* eslint no-undefined: "off" */
+
 require('dotenv').config();
 
 const express = require('express');
@@ -80,11 +82,11 @@ app.get('/login', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));
 });
 
-app.get('/budgeteer', checkAuthentication, (req, res) => {
+app.get('/portal', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get('/budgeteer/*', checkAuthentication, (req, res) => {
+app.get('/portal/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
@@ -180,8 +182,8 @@ app.get('/login/google', passport.authenticate('google', { scope: ['email', 'pro
 app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
-	// Redirect to budgeteer after the session has been set
-	res.redirect("/budgeteer");
+	// Redirect to portal after the session has been set
+	res.redirect("/portal");
 });
 
 
@@ -192,8 +194,8 @@ app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
 app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
-	// Redirect to budgeteer after the session has been set
-	res.redirect("/budgeteer");
+	// Redirect to portal after the session has been set
+	res.redirect("/portal");
 });
 
 app.get('/profile', checkAuthentication, (req, res) => {

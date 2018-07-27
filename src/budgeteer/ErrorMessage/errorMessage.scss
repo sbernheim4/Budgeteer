@@ -8,13 +8,13 @@
 	width: 350px;
 	text-align: center;
 	padding: 15px;
+	background-color: $red;
+	border-radius: 10px;
 
 	transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);
 	transform: translateY(30px);
 	animation: slideFromTop .7s 1;
 
-	background-color: $red;
-	border-radius: 10px;
 	transition: opacity .2s ease;
 	z-index: 3;
 	display: flex;
@@ -28,6 +28,6 @@
 }
 
 @keyframes slideFromTop {
-    0%   { transform: translateY(-100vw); }
-    100% { transform: translateY(30px); }
+	0%   { transform: translateY(-100vw); }
+	100% { transform: translateY(30px); }
 }

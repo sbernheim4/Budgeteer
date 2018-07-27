@@ -1,4 +1,7 @@
+/* eslint no-undefined: "off" */
+
 import React, { Component } from "react";
+import ErrorMessage from "../ErrorMessage/ErrorMessage.jsx";
 import axios from 'axios';
 
 import './settings.scss';
@@ -14,9 +17,11 @@ class Settings extends Component {
 
 		this.state = {
 			linkedBanks: [],
-			monthlyBudget: "Loading..."
+			monthlyBudget: "Loading...",
+			message: ''
 		}
 
+		this.updateInputValue = this.updateInputValue.bind(this);
 		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
 	}
 
@@ -80,30 +85,44 @@ class Settings extends Component {
 		//}, 4000)
 	}
 
+	updateInputValue(e) {
+		const updatedMonthlyBudget = e.target.value.trim();
+		// Update state value
+		this.setState({
+			monthlyBudget: updatedMonthlyBudget
+		});
+	}
+
 	updateMonthlyBudget(e) {
 		e.preventDefault();
+
+		const updatedMonthlyBudget = document.querySelector("#monthly-budget").value;
+
 		// Update local storage value
-		localStorage.setItem("monthlyBudget", e.target.value.trim());
+		localStorage.setItem("monthlyBudget", updatedMonthlyBudget);
 
 		// Update Session/DB value
 		axios({
 			method: 'POST',
 			url: '/user-info/monthly-budget',
 			data: {
-				monthlyBudget: e.target.value.trim()
+				monthlyBudget: updatedMonthlyBudget
 			}
 		});
 
-		// Update state value
 		this.setState({
-			monthlyBudget: e.target.value.trim()
-		});
+			message: <ErrorMessage display="true" text="Your monthly budget was updated" />
+		})
 	}
 
 	render() {
+
 		return (
 
 			<section className='settings'>
+
+				{this.state.message}
+
 				<h1>Linked Accounts</h1>
 				{this.state.linkedBanks.map( (bank, index) =>
 					<div key={index} className='settings--linked-accounts'>
@@ -115,9 +134,11 @@ class Settings extends Component {
 				<form className='settings--monthly-budget' onSubmit={this.updateMonthlyBudget}>
 					<label>
 						<h1>Your Monthly Budget</h1>
-						<input placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateMonthlyBudget} />
+						<input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue}/>
+						<input className='submit' type='submit' value='Update' onClick={this.updateMonthlyBudget}/>
 					</label>
 				</form>
+
 
 				<div className="settings--rotate-tokens">
 					<p>If you think your account has been compromised, click the button below to delete and generate new access tokens</p>

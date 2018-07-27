@@ -7,28 +7,25 @@ class ErrorMessage extends Component {
 		super(props);
 
 		this.state = {
-
+			display: this.props.display
 		};
 	}
 
-	componentDidUpdate(prevProps, prevState, snapshot) {
-
-		// Hide compoent after 5.5 seconds of displaying the error message
-		if (this.props.display) {
-			setTimeout(() => {
-				document.querySelector(".error").classList.add("hide");
-			}, 5500);
-		}
+	componentDidMount() {
+		// Timeout the error message after 5.5 seconds
+		setTimeout(() => {
+			this.setState({
+				display: false
+			})
+		}, 5500);
 	}
 
-
 	render() {
-		if (this.props.display) {
-			return <div className="error">{this.props.text}</div>;
+		if (this.state.display) {
+			return <div className="error"><h2>{this.props.text}</h2></div>;
 		} else {
 			return '';
 		}
-
 	}
 }
 

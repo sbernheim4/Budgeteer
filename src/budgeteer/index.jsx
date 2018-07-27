@@ -10,7 +10,7 @@ import "./scss/reset.scss";
 import App from './App/App.jsx';
 
 ReactDOM.render(
-	<BrowserRouter basename="/budgeteer">
+	<BrowserRouter basename="/portal">
 		<App />
 	</BrowserRouter>
 	,document.getElementById("root")
