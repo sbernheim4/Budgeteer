@@ -18,11 +18,14 @@ class Settings extends Component {
 		this.state = {
 			linkedBanks: [],
 			monthlyBudget: "Loading...",
-			message: ''
+			display: false,
+			message: "",
+			color: "green"
 		}
 
 		this.updateInputValue = this.updateInputValue.bind(this);
 		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
+		this.displayMessage = this.displayMessage.bind(this);
 	}
 
 	async componentDidMount() {
@@ -110,9 +113,21 @@ class Settings extends Component {
 			}
 		});
 
+		// Display a success message optimistically
+		this.displayMessage("Your monthly budget was updated");
+	}
+
+	displayMessage(msg) {
 		this.setState({
-			message: <ErrorMessage display="true" text="Your monthly budget was updated" />
-		})
+			message: msg,
+			display: true
+		});
+
+		setTimeout(() => {
+			this.setState({
+				display: false,
+			});
+		}, 5500);
 	}
 
 	render() {
@@ -121,7 +136,11 @@ class Settings extends Component {
 
 			<section className='settings'>
 
-				{this.state.message}
+				<ErrorMessage
+					display={this.state.display}
+					text={this.state.message}
+					color={this.state.color}
+				/>
 
 				<h1>Linked Accounts</h1>
 				{this.state.linkedBanks.map( (bank, index) =>

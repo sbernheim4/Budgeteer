@@ -2,6 +2,14 @@ import React, { Component } from "react";
 
 import './errorMessage.scss';
 
+const green = {
+	background: 'rgb(70, 145, 107)',
+};
+
+const red = {
+	background: 'rgb(216, 69, 69)'
+}
+
 class ErrorMessage extends Component {
 	constructor(props) {
 		super(props);
@@ -9,20 +17,24 @@ class ErrorMessage extends Component {
 		this.state = {
 			display: this.props.display
 		};
+
 	}
 
-	componentDidMount() {
-		// Timeout the error message after 5.5 seconds
-		setTimeout(() => {
-			this.setState({
-				display: false
-			})
-		}, 5500);
+	static getDerivedStateFromProps(props, state) {
+
+		return {
+			display: props.display,
+			color: props.color === "green" ? green : red
+		}
 	}
 
 	render() {
 		if (this.state.display) {
-			return <div className="error"><h2>{this.props.text}</h2></div>;
+			return (
+				<div style={this.state.color} className="error">
+					<h2>{this.props.text}</h2>
+				</div>
+			);
 		} else {
 			return '';
 		}
