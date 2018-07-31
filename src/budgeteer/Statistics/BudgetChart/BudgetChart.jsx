@@ -65,6 +65,7 @@ class BudgetChart extends Component {
 				}
 			}
 
+			totalSpent *= -1
 
 			// Retrieve monthly budget from session storage
 			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
