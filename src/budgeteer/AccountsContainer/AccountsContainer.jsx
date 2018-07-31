@@ -358,7 +358,7 @@ class AccountsContainer extends Component {
 
 									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map( (a, index) =>
-										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
+										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{helpers.toTitleCase(a.name)}</button>
 									)}
 								</div>
 							</div>

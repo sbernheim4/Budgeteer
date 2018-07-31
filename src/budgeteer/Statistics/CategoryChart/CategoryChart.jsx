@@ -151,13 +151,14 @@ class CategoryChart extends Component {
 		let total = 0;
 
 		amts.forEach( (entry, index) => {
-			if (entry.value !== 0) {
+			if (entry.value > 0) {
+				const roundedValue = Math.round(entry.value * 100)/100;
 				newAmts.push({
 					name: entry.name,
-					value: entry.value
+					value: roundedValue
 				});
 
-				total += entry.value;
+				total += roundedValue;
 			}
 		});
 
