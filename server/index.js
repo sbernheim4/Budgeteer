@@ -13,6 +13,7 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 const util = require('util');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const FBStrategy = require('passport-facebook').Strategy;
@@ -27,6 +28,8 @@ const mongodbUri = process.env.DB_URI;
 
 mongoose.connect(mongodbUri);
 let db = mongoose.connection;
+
+app.use(helmet());
 
 app.use(session({
 	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
