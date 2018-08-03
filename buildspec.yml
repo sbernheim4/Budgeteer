@@ -7,7 +7,7 @@ phases:
       - echo nothing to see here
   pre_build:
     commands:
-        - echo Installing node modules
+      - echo Installing node modules
       - npm install
   build:
     commands:
