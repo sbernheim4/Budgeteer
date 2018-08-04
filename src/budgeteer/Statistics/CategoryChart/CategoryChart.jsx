@@ -3,7 +3,7 @@ import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Toolti
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
-import helpers from '../../helpers';
+import { numberWithCommas, formatAmount } from '../../helpers';
 
 import "./categoryCharts.scss";
 
@@ -36,8 +36,8 @@ class CustomTooltip extends Component {
 				background: `${payload[0].payload.fill}`
 			}
 
-			let value = helpers.formatAmount(payload[0].value);
-			value = helpers.numberWithCommas(value);
+			let value = formatAmount(payload[0].value);
+			value = numberWithCommas(value);
 
 			return (
 				<div style={style} className="custom-tooltip">
@@ -152,7 +152,7 @@ class CategoryChart extends Component {
 
 		amts.forEach( (entry, index) => {
 			if (entry.value > 0) {
-				const roundedValue = Math.round(entry.value * 100)/100;
+				const roundedValue = Math.round(entry.value * 100) / 100;
 				newAmts.push({
 					name: entry.name,
 					value: roundedValue
@@ -164,7 +164,7 @@ class CategoryChart extends Component {
 
 		this.setState({
 			categoryDoughnutData: newAmts,
-			totalSpent: helpers.numberWithCommas(helpers.formatAmount(total))
+			totalSpent: numberWithCommas(formatAmount(total))
 		});
 	}
 

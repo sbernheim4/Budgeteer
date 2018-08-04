@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { Component } from "react";
-import helpers from "../helpers.js";
+import { numberWithCommas, formatAmount, toTitleCase, isNumber } from "../helpers.js";
 
 import './networth.scss';
 
@@ -58,11 +58,14 @@ class Networth extends Component {
 			data = window.sessionStorage.getItem("balance");
 			data = JSON.parse(data);
 		} else {
+			console.log("getting data")
 			data = await axios({
 				method: "POST",
 				url: '/plaid-api/balance'
 			});
+
 			data = data.data
+			console.log(data)
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
 		}
@@ -99,14 +102,14 @@ class Networth extends Component {
 						{this.state.accountBalances.map( (keyName, index) => (
 							Object.keys(keyName).map( (acctName, index) => (
 							<tr key={index} className='networth--entry'>
-								<td className='acct-name'>{acctName}</td>
-								<td className='acct-value'>${helpers.numberWithCommas(helpers.formatAmount(keyName[acctName]))}</td>
+								<td className='acct-name'>{toTitleCase(acctName)}</td>
+								<td className='acct-value'>{isNumber(keyName[acctName]) === true ? '$' + numberWithCommas(formatAmount(keyName[acctName])) : "N/A"}</td>
 							</tr>
 							))
 						))}
 						<tr>
 							<td className='acct-name'>Total</td>
-							<td className='acct-value'>${helpers.numberWithCommas(helpers.formatAmount(this.state.total))}</td>
+							<td className='acct-value'>${numberWithCommas(formatAmount(this.state.total))}</td>
 						</tr>
 					</tbody>
 				</table>)

@@ -7,7 +7,7 @@ import isAfter from 'date-fns/is_after';
 import isWithinRange from 'date-fns/is_within_range';
 import differenceInDays from 'date-fns/difference_in_days';
 
-import helpers from '../../helpers';
+import { numberWithCommas, formatAmount, isNumber } from '../../helpers';
 
 import "./weekSpendingChart.scss";
 
@@ -21,7 +21,7 @@ class CustomTooltip extends Component {
 
 			if (payload !== null) {
 				const normalizedLabel = typeof label === "string" ? label : label + " day(s) ago";
-				const amount = helpers.numberWithCommas(helpers.formatAmount(payload[0].value));
+				const amount = numberWithCommas(formatAmount(payload[0].value));
 
 				return (
 					<div className="week-spending-chart--custom-tooltip">
@@ -43,7 +43,8 @@ class WeekSpendingChart extends Component {
 		super(props)
 
 		this.state = {
-			weekData: []
+			weekData: [],
+			totalSpent: '...'
 		};
 	}
 
@@ -92,15 +93,19 @@ class WeekSpendingChart extends Component {
 			let data = [];
 
 			const today = new Date().getDay();
+			let pastWeekTotal = 0;
 			for (let i = 0; i < 7; i++) {
 				data.push({
 					name: i === 6 ? "Today" : week[(today + i) % 7],
-					value: amts[i]
+					value: amts[i] * -1 // Multiple by -1 since spending is viewed as positive and income as negative
 				});
+
+				pastWeekTotal += amts[i];
 			}
 
 			return {
-				weekData: data
+				weekData: data,
+				totalSpent: pastWeekTotal * -1
 			}
 		}
 
@@ -109,19 +114,25 @@ class WeekSpendingChart extends Component {
 
 	render() {
 
+		const totalSpent = isNumber(this.state.totalSpent) ? this.state.totalSpent.toFixed(2) : 'Loading...';
+		const amtColor = totalSpent <= 0 && isNumber(totalSpent) ? 'red' : 'green' ;
+
 		return (
-			<ResponsiveContainer className="week-spending-chart" width="90%" height={200} >
-				<ComposedChart data={this.state.weekData}>
-					<CartesianGrid vertical={false} horizontal={true}/>
+			<div>
+				<h1 className='total-spent'>This Week's Spending: <span className={amtColor}>${totalSpent}</span></h1>
+				<ResponsiveContainer className="week-spending-chart" width="90%" height={200} >
+					<ComposedChart data={this.state.weekData}>
+						<CartesianGrid vertical={false} horizontal={true}/>
 
-					<XAxis dataKey="name" tick={{stroke: 'white'}}/>
-					<YAxis tick={{stroke: 'white'}}/>
+						<XAxis dataKey="name" tick={{stroke: 'white'}}/>
+						<YAxis tick={{stroke: 'white'}}/>
 
-					<Tooltip content={<CustomTooltip />}/>
+						<Tooltip content={<CustomTooltip />}/>
 
-					<Bar barSize={8} dataKey="value" stackId="a" fill="rgb(78,  153, 114)" />
-				</ComposedChart>
-			</ResponsiveContainer>
+						<Bar barSize={8} dataKey="value" stackId="a" fill="rgb(78,  153, 114)" />
+					</ComposedChart>
+				</ResponsiveContainer>
+			</div>
 		);
 	}
 }

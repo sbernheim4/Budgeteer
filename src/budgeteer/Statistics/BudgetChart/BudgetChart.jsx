@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 import axios from 'axios';
 
-import helpers from "../../helpers.js";
+import {formatAmount, numberWithCommas } from "../../helpers.js";
 
 import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
@@ -121,12 +121,12 @@ class BudgetChart extends Component {
 	}
 
 	render() {
-		let spent = helpers.formatAmount(this.state.spentThisMonth)
-		spent = helpers.numberWithCommas(spent);
+		let spent = formatAmount(this.state.spentThisMonth)
+		spent = numberWithCommas(spent);
 
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth);
-		remaining = helpers.formatAmount(remaining);
-		remaining = helpers.numberWithCommas(remaining);
+		remaining = formatAmount(remaining);
+		remaining = numberWithCommas(remaining);
 
 		const input = this.props.displayInput === false ? "" : (<form className="budget--form">
 					<label>
