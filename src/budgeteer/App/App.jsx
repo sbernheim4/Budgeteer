@@ -14,7 +14,6 @@ import Settings from '../Settings/Settings.jsx';
 import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
 
 // Helper Functions
-import helpers from '../helpers.js';
 import differenceInDays from 'date-fns/difference_in_days';
 import startOfWeek from 'date-fns/start_of_week';
 import addWeeks from 'date-fns/add_weeks';
