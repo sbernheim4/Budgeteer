@@ -42,8 +42,6 @@ class WeekWeekendChart extends Component {
 	constructor(props) {
 		super(props);
 
-		// this.generateLineChart = this.generateLineChart.bind(this);
-
 		this.state = {
 			weekVsWeekend: [],
 			transactions: []
@@ -159,8 +157,8 @@ class WeekWeekendChart extends Component {
 					<Tooltip content={<CustomTooltip/>}/>
 					<Legend />
 
-					<Bar dataKey="Weekday" stackId="a" fill="rgb(52, 108, 161)" />
-					<Bar dataKey="Weekend" stackId="a" fill="rgb(77,  153, 114)" />
+					<Bar dataKey="Weekday" stackId="a" fill="rgb(77,  153, 114)" />
+					<Bar dataKey="Weekend" stackId="a" fill="rgb(52, 108, 161)" />
 				</BarChart>
 			</ResponsiveContainer>
 		);

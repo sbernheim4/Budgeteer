@@ -86,7 +86,7 @@ class Navbar extends Component {
 			document.querySelector("body").style.overflowY = "hidden";
 
 			document.querySelector(".navbar--mobile--header").style.filter = "brightness(.8)";
-			document.querySelector(".main").style.filter = "brightness(.8)";
+			/*document.querySelector(".main").style.filter = "brightness(.8)";*/
 		} else {
 			document.querySelector("body").style.maxHeight = null;
 			document.querySelector("body").style.overflowY = null;
