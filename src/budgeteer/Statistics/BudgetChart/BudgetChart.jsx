@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 import axios from 'axios';
 
-import helpers from "../../helpers.js";
+import {formatAmount, numberWithCommas } from "../../helpers.js";
 
 import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
@@ -65,6 +65,7 @@ class BudgetChart extends Component {
 				}
 			}
 
+			totalSpent *= -1
 
 			// Retrieve monthly budget from session storage
 			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
@@ -91,14 +92,13 @@ class BudgetChart extends Component {
 	}
 
 	handleChange(event) {
-		// Update the state variable
-
+		const newMonthlyBudget = event.target.value.trim();
 		// Save data to the current local store
-		localStorage.setItem("monthlyBudget", event.target.value.trim());
+		localStorage.setItem("monthlyBudget", newMonthlyBudget);
 
 		// Update the percentage calculator
 		const spent = this.state.spentThisMonth;
-		const remaining = (event.target.value - this.state.spentThisMonth) <= 0 ? 0 : (event.target.value - this.state.spentThisMonth);
+		const remaining = (newMonthlyBudget - this.state.spentThisMonth) <= 0 ? 0 : (newMonthlyBudget - this.state.spentThisMonth);
 
 		// Update the chart
 		let amts = [
@@ -108,25 +108,25 @@ class BudgetChart extends Component {
 
 		this.setState({
 			rechartsData: amts,
-			monthlyBudget: event.target.value.trim()
+			monthlyBudget: newMonthlyBudget
 		});
 
 		axios({
 			method: 'POST',
 			url: '/user-info/monthly-budget',
 			data: {
-				monthlyBudget: event.target.value.trim()
+				monthlyBudget: newMonthlyBudget
 			}
 		});
 	}
 
 	render() {
-		let spent = helpers.formatAmount(this.state.spentThisMonth)
-		spent = helpers.numberWithCommas(spent);
+		let spent = formatAmount(this.state.spentThisMonth)
+		spent = numberWithCommas(spent);
 
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth);
-		remaining = helpers.formatAmount(remaining);
-		remaining = helpers.numberWithCommas(remaining);
+		remaining = formatAmount(remaining);
+		remaining = numberWithCommas(remaining);
 
 		const input = this.props.displayInput === false ? "" : (<form className="budget--form">
 					<label>

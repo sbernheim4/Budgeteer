@@ -10,7 +10,7 @@ import TransactionContainer from "./TransactionContainer/TransactionContainer.js
 
 import "./accountsContainer.scss"
 
-import helpers from '../helpers';
+import { numberWithCommas, formatAmount, toTitleCase } from '../helpers';
 
 // Font Awesome base package
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
@@ -85,7 +85,7 @@ class AccountsContainer extends Component {
 			total += transaction.amount;
 		});
 
-		total = helpers.formatAmount(total);
+		total = formatAmount(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
@@ -151,7 +151,7 @@ class AccountsContainer extends Component {
 			total += transaction.amount;
 		});
 
-		total = helpers.formatAmount(total);
+		total = formatAmount(total);
 
 		this.openCategoryViewer();
 
@@ -204,7 +204,7 @@ class AccountsContainer extends Component {
 				});
 			});
 
-			total = helpers.formatAmount(total);
+			total = formatAmount(total);
 
 			// Sort the transactions newest to oldest
 			releventTransactions.sort((a, b) => {
@@ -247,7 +247,7 @@ class AccountsContainer extends Component {
 			});
 		}
 
-		total = helpers.formatAmount(total);
+		total = formatAmount(total);
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
@@ -257,7 +257,7 @@ class AccountsContainer extends Component {
 		});
 
 		this.setState({
-			categoryType: helpers.toTitleCase(keyWord),
+			categoryType: toTitleCase(keyWord),
 			categoryTransactions: releventTransactions,
 			categoryTotal: total
 		});
@@ -301,10 +301,7 @@ class AccountsContainer extends Component {
 
 	render() {
 
-		let amtColor = 'red';
-		if (this.state.categoryTotal * -1 > 0) {
-			amtColor = 'green';
-		}
+		const amtColor = this.state.categoryTotal * -1 > 0 ? 'green' : 'red';
 
 		return (
 			<div className="accounts">
@@ -358,7 +355,7 @@ class AccountsContainer extends Component {
 
 									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map( (a, index) =>
-										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
+										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{toTitleCase(a.name)}</button>
 									)}
 								</div>
 							</div>
@@ -368,9 +365,9 @@ class AccountsContainer extends Component {
 
 				</div>
 
-				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
-
 				<WeekSpendingChart transactions={this.state.categoryTransactions}/>
+
+				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
 
 				<TransactionContainer transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
 			</div>

@@ -1,3 +1,18 @@
+@import '../../scss/variables';
+
+.green {
+	color: $green;
+}
+
+.red {
+	color: $red
+}
+
+.total-spent {
+	margin-bottom: 30px;
+	text-align: center;
+}
+
 .week-spending-chart {
 	margin: 0 auto;
 	max-width: 900px !important;

@@ -21,7 +21,7 @@ import {
 } from '@fortawesome/fontawesome-free-solid';
 
 
-import helpers from '../../../helpers';
+import {numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
 import "./transaction.scss";
 
@@ -156,21 +156,22 @@ class Transaction extends Component {
 
 	render() {
 
-		let date = this.formatDate(JSON.stringify(this.props.transaction.date));
-		let amount = helpers.formatAmount(this.props.transaction.amount);
+		const date = this.formatDate(JSON.stringify(this.props.transaction.date));
+		const amount = formatAmount(this.props.transaction.amount);
 
-		let googleMap = "";
 		// The below URL doesn't require an API key, might be better
 		// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
 
 		// Get the category of the transaction or Null if unknown
 		let category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
 
-		let amt = helpers.formatAmount(this.props.transaction.amount * -1);
-		amt = "$" + helpers.numberWithCommas(amt);
+		let amt = formatAmount(this.props.transaction.amount * -1);
+		amt = "$" + numberWithCommas(amt);
 
 		// Should the color for the amount be red or green based based on it being positive or negative
-		let amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
+		const amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
+
+		const name = toTitleCase(this.props.transaction.name)
 
 		return (
 			<div className='transaction' onClick={this.showMap}>
@@ -179,8 +180,8 @@ class Transaction extends Component {
 					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
 
 					<div className='name-info'>
-						<p className='name-info--name'>{this.props.transaction.name}</p>
-						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)}</p>
+						<p className='name-info--name'>{name}</p>
+						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
 					</div>
 
 					<div className='amount'>

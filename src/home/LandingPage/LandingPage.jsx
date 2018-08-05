@@ -12,6 +12,10 @@ class LandingPage extends Component {
 		};
 	}
 
+	componentDidMount() {
+
+	}
+
 	render() {
 
 		return (

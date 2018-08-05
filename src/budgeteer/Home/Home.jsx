@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { Component } from "react";
-import helpers from '../helpers';
+import { formatAmount, numberWithCommas } from '../helpers';
 
 import Budget from "../Statistics/BudgetChart/BudgetChart.jsx";
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
@@ -34,7 +34,7 @@ class Home extends Component {
 				url: '/plaid-api/balance'
 			});
 		data = data.data;
-		data = helpers.numberWithCommas(helpers.formatAmount(data.networth));
+		data = numberWithCommas(formatAmount(data.networth));
 
 		this.setState({
 			total: data
@@ -58,7 +58,7 @@ class Home extends Component {
 				{text}
 
 				<h1>Your Snapshot</h1>
-				{/*					
+				{/*
 				<div className="home--details">
 					<h2 className="home--details--acct-balance">Networth: ${this.state.total}</h2>
 					<h2 className="home--details--savings-ratio">Amount Saved this Month / Monthly Income</h2>

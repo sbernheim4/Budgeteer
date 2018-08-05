@@ -14,7 +14,6 @@ import Settings from '../Settings/Settings.jsx';
 import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
 
 // Helper Functions
-import helpers from '../helpers.js';
 import differenceInDays from 'date-fns/difference_in_days';
 import startOfWeek from 'date-fns/start_of_week';
 import addWeeks from 'date-fns/add_weeks';
@@ -40,10 +39,8 @@ class App extends Component {
 	}
 
 	async componentDidMount() {
-
 		/*this.registerServiceWorker();*/
 		this.getTransactions();
-
 	}
 
 	registerServiceWorker() {
@@ -60,63 +57,109 @@ class App extends Component {
 		// }
 	}
 
+	async getLastAccessedDate() {
+		let lastAccessed = await axios.get("/user-info/last-accessed");
+		lastAccessed = new Date(lastAccessed.data);
+
+		const now = new Date();
+		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed)
+
+		axios.post("/user-info/last-accessed", {
+			date: now
+		});
+
+		return numDaysSinceCacheUpdate
+	}
+
 	// Get transactions for the past year and store them in the state
 	async getTransactions() {
 
-		let now = new Date(); // Jan. 12th 2018
-		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-		prev = addMonths(prev, 1); // Feb. 12th 2017
-		prev = startOfMonth(prev); // Returns Feb 1st 2017
-		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
-
 		try {
 
-			let blob = await axios.post('/plaid-api/transactions', {
-				days: numDays
-			});
-			blob = blob.data;
+			if (window.localStorage.getItem("allData") === null) {
+				// No data in local storage
 
-			await this.storeAccounts(blob); // Store account info
-			await this.storeTransactions(blob); // store transaction info
+				let now = new Date(); // Jan. 12th 2018
+				let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+				prev = addMonths(prev, 1); // Feb. 12th 2017
+				prev = startOfMonth(prev); // Returns Feb 1st 2017
+				let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
+				let blob = await axios.post('/plaid-api/transactions', {
+					days: numDays
+				});
+				blob = blob.data;
+
+				// Store transactions in local storage for future use
+				window.localStorage.setItem("allData", JSON.stringify(blob));
+
+				await this.storeAccounts(blob); // Store account info in state
+				await this.storeTransactions(blob); // store transaction info in state
+
+			} else {
+				// Some data is in local storage -- get all new data from after most recent transaction in storage
+				const cachedData = JSON.parse(window.localStorage.getItem("allData"));
+
+				await this.storeAccounts(cachedData); // Store account info
+				await this.storeTransactions(cachedData); // store transaction info
+
+				const numDays = await this.getLastAccessedDate();
+				let newData = await axios.post('/plaid-api/transactions', {
+					days: numDays
+				});
+				newData = newData.data;
+
+				// Update transactions state variable
+				await this.storeTransactions(newData);
+
+				// Merge cached data and new data to store in local storage
+				for (let i = 0; i < cachedData.length; i++) {
+					cachedData[i].transactions.push(...newData[i].transactions);
+					cachedData[i].total_transactions += newData[i].total_transactions;
+				}
+
+				window.localStorage.setItem("allData", JSON.stringify(cachedData));
+			}
+
+			// Counter used to know when components have loaded
 			let x = this.state.counter;
 			x++;
 			this.setState({
 				counter: x
 			});
-
 		} catch (err) {
-			// const errorMessage = document.querySelector('.app-error');
-			// errorMessage.classList.add('app-error__display');
-
-			// setTimeout(() => {
-			// 	errorMessage.classList.remove('app-error__display')
-			// }, 4000)
-
+			console.log("ERROR: ")
 			console.error(err);
 		}
+	}
+
+	transactionDateToDate(str) {
+		const split = str.split("-");
+		return new Date(parseInt(split[0]), parseInt(split[1]) - 1, parseInt(split[2]));
 	}
 
 	async storeTransactions(data) {
 		let currentTransactions = this.state.transactions;
 		let currentTransactionIds = this.state.transaction_ids;
 
-		data.forEach(val => {
+		data.forEach(bank => {
 			// Add all the transactions for the new bank the user just selected
-			val.transactions.forEach(t => {
+			bank.transactions.forEach(t => {
 				if (!currentTransactionIds.has(t.transaction_id)) {
 					currentTransactionIds.add(t.transaction_id);
 					currentTransactions.push(t);
 				}
 			})
-
-			// Sort the transactions based on account_id
-			currentTransactions = currentTransactions.sort((a, b) => {
-				return a.account_id - b.account_id;
-			});
-
 		});
 
+		// Sort the transactions based on account_id
+		currentTransactions = currentTransactions.sort((a, b) => {
+			const dateA = this.transactionDateToDate(a.date);
+			const dateB = this.transactionDateToDate(b.date);
+
+			return dateB - dateA;
+		});
+		//
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,

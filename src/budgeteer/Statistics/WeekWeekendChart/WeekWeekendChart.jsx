@@ -9,7 +9,7 @@ import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
 import isSameWeek from "date-fns/is_same_week";
 import isWeekend from "date-fns/is_weekend";
 
-import helpers from '../../helpers';
+import { numberWithCommas, formatAmount } from '../../helpers';
 import "./weekweekendchart.scss";
 
 class CustomTooltip extends Component {
@@ -20,8 +20,8 @@ class CustomTooltip extends Component {
 		if (active) {
 			const { payload, label } = this.props;
 
-			const weekdayValue = helpers.numberWithCommas(helpers.formatAmount(payload[0].value));
-			const weekendValue = helpers.numberWithCommas(helpers.formatAmount(payload[1].value));
+			const weekdayValue = numberWithCommas(formatAmount(payload[0].value));
+			const weekendValue = numberWithCommas(formatAmount(payload[1].value));
 
 			return (
 				<div className="week-weekend-tooltip">
@@ -41,8 +41,6 @@ class WeekWeekendChart extends Component {
 
 	constructor(props) {
 		super(props);
-
-		// this.generateLineChart = this.generateLineChart.bind(this);
 
 		this.state = {
 			weekVsWeekend: [],
@@ -159,8 +157,8 @@ class WeekWeekendChart extends Component {
 					<Tooltip content={<CustomTooltip/>}/>
 					<Legend />
 
-					<Bar dataKey="Weekday" stackId="a" fill="rgb(52, 108, 161)" />
-					<Bar dataKey="Weekend" stackId="a" fill="rgb(77,  153, 114)" />
+					<Bar dataKey="Weekday" stackId="a" fill="rgb(77,  153, 114)" />
+					<Bar dataKey="Weekend" stackId="a" fill="rgb(52, 108, 161)" />
 				</BarChart>
 			</ResponsiveContainer>
 		);

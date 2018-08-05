@@ -13,20 +13,41 @@ Router.use(bodyParser.urlencoded({
 Router.use(bodyParser.json());
 
 Router.post('/monthly-budget', (req, res) => {
+	// Update monthly budget on session and DB
 	User.update({ _id: req.session.user._id }, { $set: { monthlyBudget: req.body.monthlyBudget } });
 	req.session.user.monthlyBudget = req.body.monthlyBudget;
 	req.session.save();
 });
 
+Router.get('/monthly-budget', (req, res) => {
+	// Send back monthly budget from session variable or 0 if it doesn't exist
+	if (req.session.user.monthlyBudget) {
+		res.json({"monthlyBudget": req.session.user.monthlyBudget});
+	} else {
+		res.json({"monthlyBudget": 0});
+	}
+});
 
-// Used by navbar.jsx to display the users name
 Router.get('/name', (req, res) => {
+	// Send back user's name
 	res.send(req.session.user.name);
 });
 
 Router.get('/profile', (req, res) => {
-	console.log(req.session.user);
+	// Send back all profile information
 	res.send(req.session.user);
+});
+
+Router.get("/last-accessed", (req, res) => {
+	res.send(req.session.user.lastAccessed || new Date());
+})
+
+Router.post("/last-accessed", (req, res) => {
+	const date = req.body.date;
+	User.update({ _id: req.session.user._id }, { $set: { lastAccessed: date } });
+
+	req.session.user.lastAccessed = date;
+	req.session.save();
 })
 
 module.exports = Router;

@@ -9,8 +9,6 @@ import HeatMap from "./HeatMap/HeatMap.jsx";
 
 import isSameMonth from 'date-fns/is_same_month';
 
-import helpers from '../helpers';
-
 import "./statistics.scss";
 
 class Statistics extends Component {
@@ -73,7 +71,7 @@ class Statistics extends Component {
 						<h1>Heat Map</h1>
 						<HeatMap transactions={this.props.transactions} />
 					</div>
-					
+
 					<div className="item">
 						<h1>Annual Spending History</h1>
 						<AnnualChart transactions={this.props.transactions} />

@@ -1,3 +1,7 @@
+/* eslint no-undefined: "off" */
+
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -9,6 +13,7 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 const util = require('util');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const FBStrategy = require('passport-facebook').Strategy;
@@ -23,6 +28,8 @@ const mongodbUri = process.env.DB_URI;
 
 mongoose.connect(mongodbUri);
 let db = mongoose.connection;
+
+app.use(helmet());
 
 app.use(session({
 	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
@@ -68,7 +75,7 @@ app.use('/legal', require('./legal.js'));
 
 app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
 
-app.use('/user-info', checkAuthentication, require('./userInfo.js'));
+app.use('/user-info', checkAuthentication, require('./user-info.js'));
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home-page.html'));
@@ -117,7 +124,6 @@ passport.use(new FBStrategy({
 					facebookID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
-					console.log("NEW USER HAS BEEN SAVED TO DB");
 					done(null, newUser);
 				});
 			}
@@ -143,7 +149,6 @@ passport.use(new GoogleStrategy({
 					googleID: profile.id,
 					name: profile.displayName
 				}).save().then((newUser) => {
-					console.log("NEW USER HAS BEEN SAVED TO DB");
 					done(null, newUser);
 				});
 			}
@@ -200,8 +205,8 @@ app.get('/profile', checkAuthentication, (req, res) => {
 	res.send(req.session);
 });
 
-app.get('/nope', (req, res) => {
-	res.send('NOPE');
+app.get("*", (req, res) => {
+	res.status(404).send(`<h1>404 Page Not Found</h1>`);
 });
 
 function checkAuthentication(req, res, next) {
