@@ -93,10 +93,6 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get("*", (req, res) => {
-	res.status(404).send(`<h1>404 Page Not Found</h1>`);
-});
-
 /****************** Passport Authentication ******************/
 
 // Configure the Facebook strategy for use by Passport.
@@ -209,8 +205,8 @@ app.get('/profile', checkAuthentication, (req, res) => {
 	res.send(req.session);
 });
 
-app.get('/nope', (req, res) => {
-	res.send('NOPE');
+app.get("*", (req, res) => {
+	res.status(404).send(`<h1>404 Page Not Found</h1>`);
 });
 
 function checkAuthentication(req, res, next) {

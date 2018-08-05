@@ -62,27 +62,83 @@ class App extends Component {
 	// Get transactions for the past year and store them in the state
 	async getTransactions() {
 
-		let now = new Date(); // Jan. 12th 2018
-		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-		prev = addMonths(prev, 1); // Feb. 12th 2017
-		prev = startOfMonth(prev); // Returns Feb 1st 2017
-		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 		try {
+			let now = new Date(); // Jan. 12th 2018
+			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+			prev = addMonths(prev, 1); // Feb. 12th 2017
+			prev = startOfMonth(prev); // Returns Feb 1st 2017
+			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
-			let blob = await axios.post('/plaid-api/transactions', {
-				days: numDays
-			});
-			blob = blob.data;
+			if (window.localStorage.getItem("transactions") === null) {
+				// No data in local storage
+				console.log("no data found")
 
-			await this.storeAccounts(blob); // Store account info
-			await this.storeTransactions(blob); // store transaction info
+				let blob = await axios.post('/plaid-api/transactions', {
+					days: numDays
+				});
+				blob = blob.data;
 
-			let x = this.state.counter;
-			x++;
-			this.setState({
-				counter: x
-			});
+				// Store transactions in local storage for future use
+				window.localStorage.setItem("transactions", JSON.stringify(blob));
+
+				await this.storeAccounts(blob); // Store account info in state
+				await this.storeTransactions(blob); // store transaction info in state
+
+				let x = this.state.counter;
+				x++;
+				this.setState({
+					counter: x
+				});
+			} else {
+				console.log("data found");
+
+				// Some data in local storage -- get all new data from after most recent transaction in storage
+				const mostRecentTransactions = JSON.parse(window.localStorage.getItem("transactions"));
+
+				console.log(mostRecentTransactions);
+
+				/*mostRecentTransactions.sort((a, b) => {
+					console.log()
+					let aVals = a.date.split("-");
+					aVals = aVals.map( str => parseInt(str));
+					const dateA = new Date (aVals[0], aVals[1] - 1, aVals[2])
+
+					let bVals = b.date.split("-");
+					bVals = bVals.map( str => parseInt(str));
+					const dateB = new Date (bVals[0], bVals[1] - 1, bVals[2]);
+
+					return dateA - dateB;
+				});
+
+				console.log(mostRecentTransactions)
+
+				// Some date either today or in the past
+				const mostRecentTransactionDate = mostRecentTransactions[0];
+				const now = new Date();
+				const numDays = differenceInDays(now, mostRecentTransactionDate);
+
+				console.log(numDays);
+
+				[>let newData = await axios.post('/plaid-api/transactions', {
+					days: numDays
+				});
+
+				newData = newData.data;
+
+				console.log(newData);
+				console.log(mostRecentTransactions)<]
+*/
+				console.log('storing state info...')
+				await this.storeAccounts(mostRecentTransactions); // Store account info
+				await this.storeTransactions(mostRecentTransactions); // store transaction info
+
+				let x = this.state.counter;
+				x++;
+				this.setState({
+					counter: x
+				});
+			}
 
 		} catch (err) {
 			// const errorMessage = document.querySelector('.app-error');
