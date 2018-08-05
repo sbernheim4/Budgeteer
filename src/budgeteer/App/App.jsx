@@ -97,7 +97,6 @@ class App extends Component {
 				await this.storeTransactions(blob); // store transaction info in state
 
 			} else {
-				console.log("Local Storage data found")
 				// Some data is in local storage -- get all new data from after most recent transaction in storage
 				const cachedData = JSON.parse(window.localStorage.getItem("allData"));
 
@@ -134,26 +133,33 @@ class App extends Component {
 		}
 	}
 
+	transactionDateToDate(str) {
+		const split = str.split("-");
+		return new Date(parseInt(split[0]), parseInt(split[1]) - 1, parseInt(split[2]));
+	}
+
 	async storeTransactions(data) {
 		let currentTransactions = this.state.transactions;
 		let currentTransactionIds = this.state.transaction_ids;
 
-		data.forEach(val => {
+		data.forEach(bank => {
 			// Add all the transactions for the new bank the user just selected
-			val.transactions.forEach(t => {
+			bank.transactions.forEach(t => {
 				if (!currentTransactionIds.has(t.transaction_id)) {
 					currentTransactionIds.add(t.transaction_id);
 					currentTransactions.push(t);
 				}
 			})
-
-			// Sort the transactions based on account_id
-			currentTransactions = currentTransactions.sort((a, b) => {
-				return a.account_id - b.account_id;
-			});
-
 		});
 
+		// Sort the transactions based on account_id
+		currentTransactions = currentTransactions.sort((a, b) => {
+			const dateA = this.transactionDateToDate(a.date);
+			const dateB = this.transactionDateToDate(b.date);
+
+			return dateB - dateA;
+		});
+		//
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,

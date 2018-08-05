@@ -13,7 +13,7 @@ class LandingPage extends Component {
 	}
 
 	componentDidMount() {
-		console.log("YOY YO  YO")
+
 	}
 
 	render() {

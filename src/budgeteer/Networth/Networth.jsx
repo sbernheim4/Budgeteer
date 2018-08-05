@@ -58,14 +58,12 @@ class Networth extends Component {
 			data = window.sessionStorage.getItem("balance");
 			data = JSON.parse(data);
 		} else {
-			console.log("getting data")
 			data = await axios({
 				method: "POST",
 				url: '/plaid-api/balance'
 			});
 
 			data = data.data
-			console.log(data)
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
 		}

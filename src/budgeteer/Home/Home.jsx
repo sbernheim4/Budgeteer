@@ -74,7 +74,7 @@ class Home extends Component {
 
 				<div className='home--transactions'>
 					<h2>Recent Transactions</h2>
-					<TransactionContainer transactions={this.props.transactions.slice(-3)} accounts={this.props.accounts} />
+					<TransactionContainer transactions={this.props.transactions.slice(0, 3)} accounts={this.props.accounts} />
 				</div>
 
 			</div>
