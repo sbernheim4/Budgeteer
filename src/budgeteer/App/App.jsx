@@ -39,10 +39,8 @@ class App extends Component {
 	}
 
 	async componentDidMount() {
-
 		/*this.registerServiceWorker();*/
 		this.getTransactions();
-
 	}
 
 	registerServiceWorker() {
@@ -59,20 +57,33 @@ class App extends Component {
 		// }
 	}
 
+	async getLastAccessedDate() {
+		let lastAccessed = await axios.get("/user-info/last-accessed");
+		lastAccessed = new Date(lastAccessed.data);
+
+		const now = new Date();
+		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed)
+
+		axios.post("/user-info/last-accessed", {
+			date: now
+		});
+
+		return numDaysSinceCacheUpdate
+	}
+
 	// Get transactions for the past year and store them in the state
 	async getTransactions() {
 
-
 		try {
-			let now = new Date(); // Jan. 12th 2018
-			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-			prev = addMonths(prev, 1); // Feb. 12th 2017
-			prev = startOfMonth(prev); // Returns Feb 1st 2017
-			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
-			if (window.localStorage.getItem("transactions") === null) {
+			if (window.localStorage.getItem("allData") === null) {
 				// No data in local storage
-				console.log("no data found")
+
+				let now = new Date(); // Jan. 12th 2018
+				let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+				prev = addMonths(prev, 1); // Feb. 12th 2017
+				prev = startOfMonth(prev); // Returns Feb 1st 2017
+				let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 				let blob = await axios.post('/plaid-api/transactions', {
 					days: numDays
@@ -80,74 +91,45 @@ class App extends Component {
 				blob = blob.data;
 
 				// Store transactions in local storage for future use
-				window.localStorage.setItem("transactions", JSON.stringify(blob));
+				window.localStorage.setItem("allData", JSON.stringify(blob));
 
 				await this.storeAccounts(blob); // Store account info in state
 				await this.storeTransactions(blob); // store transaction info in state
 
-				let x = this.state.counter;
-				x++;
-				this.setState({
-					counter: x
-				});
 			} else {
-				console.log("data found");
+				console.log("Local Storage data found")
+				// Some data is in local storage -- get all new data from after most recent transaction in storage
+				const cachedData = JSON.parse(window.localStorage.getItem("allData"));
 
-				// Some data in local storage -- get all new data from after most recent transaction in storage
-				const mostRecentTransactions = JSON.parse(window.localStorage.getItem("transactions"));
+				await this.storeAccounts(cachedData); // Store account info
+				await this.storeTransactions(cachedData); // store transaction info
 
-				console.log(mostRecentTransactions);
-
-				/*mostRecentTransactions.sort((a, b) => {
-					console.log()
-					let aVals = a.date.split("-");
-					aVals = aVals.map( str => parseInt(str));
-					const dateA = new Date (aVals[0], aVals[1] - 1, aVals[2])
-
-					let bVals = b.date.split("-");
-					bVals = bVals.map( str => parseInt(str));
-					const dateB = new Date (bVals[0], bVals[1] - 1, bVals[2]);
-
-					return dateA - dateB;
-				});
-
-				console.log(mostRecentTransactions)
-
-				// Some date either today or in the past
-				const mostRecentTransactionDate = mostRecentTransactions[0];
-				const now = new Date();
-				const numDays = differenceInDays(now, mostRecentTransactionDate);
-
-				console.log(numDays);
-
-				[>let newData = await axios.post('/plaid-api/transactions', {
+				const numDays = await this.getLastAccessedDate();
+				let newData = await axios.post('/plaid-api/transactions', {
 					days: numDays
 				});
-
 				newData = newData.data;
 
-				console.log(newData);
-				console.log(mostRecentTransactions)<]
-*/
-				console.log('storing state info...')
-				await this.storeAccounts(mostRecentTransactions); // Store account info
-				await this.storeTransactions(mostRecentTransactions); // store transaction info
+				// Update transactions state variable
+				await this.storeTransactions(newData);
 
-				let x = this.state.counter;
-				x++;
-				this.setState({
-					counter: x
-				});
+				// Merge cached data and new data to store in local storage
+				for (let i = 0; i < cachedData.length; i++) {
+					cachedData[i].transactions.push(...newData[i].transactions);
+					cachedData[i].total_transactions += newData[i].total_transactions;
+				}
+
+				window.localStorage.setItem("allData", JSON.stringify(cachedData));
 			}
 
+			// Counter used to know when components have loaded
+			let x = this.state.counter;
+			x++;
+			this.setState({
+				counter: x
+			});
 		} catch (err) {
-			// const errorMessage = document.querySelector('.app-error');
-			// errorMessage.classList.add('app-error__display');
-
-			// setTimeout(() => {
-			// 	errorMessage.classList.remove('app-error__display')
-			// }, 4000)
-
+			console.log("ERROR: ")
 			console.error(err);
 		}
 	}

@@ -1,3 +1,5 @@
+/* eslint no-undefined: off */
+
 require("dotenv").config()
 
 const express = require("express");
@@ -136,7 +138,7 @@ Router.post("/get-access-token", async (req, res) => {
 // Get Transaction information
 Router.post("/transactions", async (req, res, next) => {
 	// Default to past 30 days if no specific date is specified
-	const days = req.body.days || 30;
+	const days = req.body.days === undefined ? 30 : req.body.days;
 
 	let tempStartDate;
 	let tempEndDate;

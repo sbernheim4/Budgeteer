@@ -40,4 +40,16 @@ Router.get('/profile', (req, res) => {
 	res.send(req.session.user);
 });
 
+Router.get("/last-accessed", (req, res) => {
+	res.send(req.session.user.lastAccessed || new Date());
+})
+
+Router.post("/last-accessed", (req, res) => {
+	const date = req.body.date;
+	User.update({ _id: req.session.user._id }, { $set: { lastAccessed: date } });
+
+	req.session.user.lastAccessed = date;
+	req.session.save();
+})
+
 module.exports = Router;

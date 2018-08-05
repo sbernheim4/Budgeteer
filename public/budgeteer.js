@@ -57596,6 +57596,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _toConsumableArray2 = __webpack_require__(482);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _stringify = __webpack_require__(461);
 
 var _stringify2 = _interopRequireDefault(_stringify);
@@ -57726,7 +57730,6 @@ var App = function (_Component) {
 					while (1) {
 						switch (_context.prev = _context.next) {
 							case 0:
-
 								/*this.registerServiceWorker();*/
 								this.getTransactions();
 
@@ -57759,20 +57762,69 @@ var App = function (_Component) {
 			// 	});
 			// }
 		}
+	}, {
+		key: 'getLastAccessedDate',
+		value: function () {
+			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
+				var lastAccessed, now, numDaysSinceCacheUpdate;
+				return _regenerator2.default.wrap(function _callee2$(_context2) {
+					while (1) {
+						switch (_context2.prev = _context2.next) {
+							case 0:
+								_context2.next = 2;
+								return _axios2.default.get("/user-info/last-accessed");
+
+							case 2:
+								lastAccessed = _context2.sent;
+
+								lastAccessed = new Date(lastAccessed.data);
+
+								now = new Date();
+								numDaysSinceCacheUpdate = (0, _difference_in_days2.default)(now, lastAccessed);
+
+
+								_axios2.default.post("/user-info/last-accessed", {
+									date: now
+								});
+
+								return _context2.abrupt('return', numDaysSinceCacheUpdate);
+
+							case 8:
+							case 'end':
+								return _context2.stop();
+						}
+					}
+				}, _callee2, this);
+			}));
+
+			function getLastAccessedDate() {
+				return _ref2.apply(this, arguments);
+			}
+
+			return getLastAccessedDate;
+		}()
 
 		// Get transactions for the past year and store them in the state
 
 	}, {
 		key: 'getTransactions',
 		value: function () {
-			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
-				var now, prev, numDays, blob, x, mostRecentTransactions, _x;
+			var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+				var now, prev, numDays, blob, cachedData, _numDays, newData, i, _cachedData$i$transac, x;
 
-				return _regenerator2.default.wrap(function _callee2$(_context2) {
+				return _regenerator2.default.wrap(function _callee3$(_context3) {
 					while (1) {
-						switch (_context2.prev = _context2.next) {
+						switch (_context3.prev = _context3.next) {
 							case 0:
-								_context2.prev = 0;
+								_context3.prev = 0;
+
+								if (!(window.localStorage.getItem("allData") === null)) {
+									_context3.next = 18;
+									break;
+								}
+
+								// No data in local storage
+
 								now = new Date(); // Jan. 12th 2018
 
 								prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
@@ -57781,123 +57833,100 @@ var App = function (_Component) {
 								prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
 								numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
 
-								if (!(window.localStorage.getItem("transactions") === null)) {
-									_context2.next = 22;
-									break;
-								}
-
-								// No data in local storage
-								console.log("no data found");
-
-								_context2.next = 10;
+								_context3.next = 9;
 								return _axios2.default.post('/plaid-api/transactions', {
 									days: numDays
 								});
 
-							case 10:
-								blob = _context2.sent;
+							case 9:
+								blob = _context3.sent;
 
 								blob = blob.data;
 
 								// Store transactions in local storage for future use
-								window.localStorage.setItem("transactions", (0, _stringify2.default)(blob));
+								window.localStorage.setItem("allData", (0, _stringify2.default)(blob));
 
-								_context2.next = 15;
+								_context3.next = 14;
 								return this.storeAccounts(blob);
 
-							case 15:
-								_context2.next = 17;
+							case 14:
+								_context3.next = 16;
 								return this.storeTransactions(blob);
 
-							case 17:
-								// store transaction info in state
+							case 16:
+								_context3.next = 35;
+								break;
 
+							case 18:
+								console.log("Local Storage data found");
+								// Some data is in local storage -- get all new data from after most recent transaction in storage
+								cachedData = JSON.parse(window.localStorage.getItem("allData"));
+								_context3.next = 22;
+								return this.storeAccounts(cachedData);
+
+							case 22:
+								_context3.next = 24;
+								return this.storeTransactions(cachedData);
+
+							case 24:
+								_context3.next = 26;
+								return this.getLastAccessedDate();
+
+							case 26:
+								_numDays = _context3.sent;
+								_context3.next = 29;
+								return _axios2.default.post('/plaid-api/transactions', {
+									days: _numDays
+								});
+
+							case 29:
+								newData = _context3.sent;
+
+								newData = newData.data;
+
+								// Update transactions state variable
+								_context3.next = 33;
+								return this.storeTransactions(newData);
+
+							case 33:
+
+								// Merge cached data and new data to store in local storage
+								for (i = 0; i < cachedData.length; i++) {
+									(_cachedData$i$transac = cachedData[i].transactions).push.apply(_cachedData$i$transac, (0, _toConsumableArray3.default)(newData[i].transactions));
+									cachedData[i].total_transactions += newData[i].total_transactions;
+								}
+
+								window.localStorage.setItem("allData", (0, _stringify2.default)(cachedData));
+
+							case 35:
+
+								// Counter used to know when components have loaded
 								x = this.state.counter;
 
 								x++;
 								this.setState({
 									counter: x
 								});
-								_context2.next = 33;
+								_context3.next = 44;
 								break;
 
-							case 22:
-								console.log("data found");
+							case 40:
+								_context3.prev = 40;
+								_context3.t0 = _context3['catch'](0);
 
-								// Some data in local storage -- get all new data from after most recent transaction in storage
-								mostRecentTransactions = JSON.parse(window.localStorage.getItem("transactions"));
+								console.log("ERROR: ");
+								console.error(_context3.t0);
 
-
-								console.log(mostRecentTransactions);
-
-								/*mostRecentTransactions.sort((a, b) => {
-        	console.log()
-        	let aVals = a.date.split("-");
-        	aVals = aVals.map( str => parseInt(str));
-        	const dateA = new Date (aVals[0], aVals[1] - 1, aVals[2])
-        		let bVals = b.date.split("-");
-        	bVals = bVals.map( str => parseInt(str));
-        	const dateB = new Date (bVals[0], bVals[1] - 1, bVals[2]);
-        		return dateA - dateB;
-        });
-        	console.log(mostRecentTransactions)
-        	// Some date either today or in the past
-        const mostRecentTransactionDate = mostRecentTransactions[0];
-        const now = new Date();
-        const numDays = differenceInDays(now, mostRecentTransactionDate);
-        	console.log(numDays);
-        	[>let newData = await axios.post('/plaid-api/transactions', {
-        	days: numDays
-        });
-        	newData = newData.data;
-        	console.log(newData);
-        console.log(mostRecentTransactions)<]
-        */
-								console.log('storing state info...');
-								_context2.next = 28;
-								return this.storeAccounts(mostRecentTransactions);
-
-							case 28:
-								_context2.next = 30;
-								return this.storeTransactions(mostRecentTransactions);
-
-							case 30:
-								// store transaction info
-
-								_x = this.state.counter;
-
-								_x++;
-								this.setState({
-									counter: _x
-								});
-
-							case 33:
-								_context2.next = 38;
-								break;
-
-							case 35:
-								_context2.prev = 35;
-								_context2.t0 = _context2['catch'](0);
-
-								// const errorMessage = document.querySelector('.app-error');
-								// errorMessage.classList.add('app-error__display');
-
-								// setTimeout(() => {
-								// 	errorMessage.classList.remove('app-error__display')
-								// }, 4000)
-
-								console.error(_context2.t0);
-
-							case 38:
+							case 44:
 							case 'end':
-								return _context2.stop();
+								return _context3.stop();
 						}
 					}
-				}, _callee2, this, [[0, 35]]);
+				}, _callee3, this, [[0, 40]]);
 			}));
 
 			function getTransactions() {
-				return _ref2.apply(this, arguments);
+				return _ref3.apply(this, arguments);
 			}
 
 			return getTransactions;
@@ -57905,11 +57934,11 @@ var App = function (_Component) {
 	}, {
 		key: 'storeTransactions',
 		value: function () {
-			var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(data) {
+			var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(data) {
 				var currentTransactions, currentTransactionIds;
-				return _regenerator2.default.wrap(function _callee3$(_context3) {
+				return _regenerator2.default.wrap(function _callee4$(_context4) {
 					while (1) {
-						switch (_context3.prev = _context3.next) {
+						switch (_context4.prev = _context4.next) {
 							case 0:
 								currentTransactions = this.state.transactions;
 								currentTransactionIds = this.state.transaction_ids;
@@ -57938,14 +57967,14 @@ var App = function (_Component) {
 
 							case 4:
 							case 'end':
-								return _context3.stop();
+								return _context4.stop();
 						}
 					}
-				}, _callee3, this);
+				}, _callee4, this);
 			}));
 
-			function storeTransactions(_x2) {
-				return _ref3.apply(this, arguments);
+			function storeTransactions(_x) {
+				return _ref4.apply(this, arguments);
 			}
 
 			return storeTransactions;
@@ -57953,13 +57982,13 @@ var App = function (_Component) {
 	}, {
 		key: 'storeAccounts',
 		value: function () {
-			var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(data) {
+			var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(data) {
 				var _this2 = this;
 
 				var currentAccounts;
-				return _regenerator2.default.wrap(function _callee4$(_context4) {
+				return _regenerator2.default.wrap(function _callee5$(_context5) {
 					while (1) {
-						switch (_context4.prev = _context4.next) {
+						switch (_context5.prev = _context5.next) {
 							case 0:
 								// Get all the connected accounts so far
 								currentAccounts = this.state.accounts;
@@ -57986,14 +58015,14 @@ var App = function (_Component) {
 
 							case 3:
 							case 'end':
-								return _context4.stop();
+								return _context5.stop();
 						}
 					}
-				}, _callee4, this);
+				}, _callee5, this);
 			}));
 
-			function storeAccounts(_x3) {
-				return _ref4.apply(this, arguments);
+			function storeAccounts(_x2) {
+				return _ref5.apply(this, arguments);
 			}
 
 			return storeAccounts;
