@@ -119,7 +119,7 @@ class WeekSpendingChart extends Component {
 
 		return (
 			<div>
-				<h1 className='total-spent'>This Week's Spending: <span className={amtColor}>${totalSpent}</span></h1>
+				<h1 className='total-spent'>This Week's Bottom Line: <span className={amtColor}>${totalSpent}</span></h1>
 				<ResponsiveContainer className="week-spending-chart" width="90%" height={200} >
 					<ComposedChart data={this.state.weekData}>
 						<CartesianGrid vertical={false} horizontal={true}/>

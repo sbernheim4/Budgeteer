@@ -184,19 +184,17 @@ Router.post ("/balance", async (req, res, next) => {
 		let bankTotal = 0;
 		let map = {};
 		bank.accounts.forEach(acct => {
-			if (acct.balances.available !== null) {
-				let value = acct.balances.available;
-
+			if (acct.balances.current !== null && acct.type !== 'credit') {
+				let value = acct.balances.current;
 				bankTotal += value;
 				map[acct.name] = value;
-			} else {
+			} else if (acct.type !== 'credit') {
 				map[acct.name] = "N/A";
 			}
 		});
 
 		banks[index] = {"bankTotal": bankTotal, "map": map};
 	});
-
 
 	let networth = 0;
 	banks.forEach(bank => {
@@ -215,7 +213,7 @@ Router.post ("/balance", async (req, res, next) => {
 });
 
 
-Router.post('/linked-accounts', async (req, res) => {
+Router.get('/linked-accounts', async (req, res) => {
 
 	try {
 

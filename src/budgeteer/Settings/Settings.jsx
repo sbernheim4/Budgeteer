@@ -29,9 +29,6 @@ class Settings extends Component {
 	}
 
 	async componentDidMount() {
-
-		let linkedBanks = await axios.post('/plaid-api/linked-accounts');
-
 		// Try looking in local storage first for the monthlyBudget
 		let monthlyBudget = localStorage.getItem("monthlyBudget");
 		if (!monthlyBudget) {
@@ -40,6 +37,7 @@ class Settings extends Component {
 			monthlyBudget = monthlyBudget.data.monthlyBudget;
 		}
 
+		let linkedBanks = await axios.get('/plaid-api/linked-accounts');
 		this.setState({
 			linkedBanks: linkedBanks.data.accounts,
 			monthlyBudget: monthlyBudget
