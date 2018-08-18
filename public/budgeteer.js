@@ -90060,6 +90060,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _axios = __webpack_require__(68);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 __webpack_require__(945);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -90081,55 +90085,72 @@ var AccountNames = function (_Component) {
 	}
 
 	(0, _createClass3.default)(AccountNames, [{
-		key: "getValue",
+		key: 'getValue',
 		value: function getValue(account_id) {
 			return this.state.account_id;
 		}
 	}, {
-		key: "handleChange",
+		key: 'handleClick',
+		value: function handleClick(e, accountID) {
+
+			var inputVal = e.target.parentNode.querySelector("input");
+			var displayName = inputVal.value;
+			console.log();
+
+			_axios2.default.post('/user-info/display-name', {
+				data: (0, _defineProperty3.default)({}, accountID, displayName)
+			});
+		}
+	}, {
+		key: 'handleChange',
 		value: function handleChange(e, id) {
 			var newState = (0, _defineProperty3.default)({}, id, e.target.value);
 
 			this.setState(newState);
-			console.log(newState);
 		}
 	}, {
-		key: "render",
+		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
 			return _react2.default.createElement(
-				"div",
-				{ className: "accounts" },
+				'div',
+				{ className: 'accounts' },
 				_react2.default.createElement(
-					"h1",
+					'h1',
 					null,
-					"Account Display Names"
+					'Account Display Names'
 				),
 				this.state.accounts.map(function (acct, index) {
 					return _react2.default.createElement(
-						"div",
-						{ className: "account-names", key: index },
+						'div',
+						{ className: 'account-names', key: index },
 						_react2.default.createElement(
-							"h3",
-							{ className: "account-names--name" },
+							'h3',
+							{ className: 'account-names--name' },
 							acct.name
 						),
 						_react2.default.createElement(
-							"h3",
-							{ className: "account-names--display" },
-							"Display Name: "
+							'h3',
+							{ className: 'account-names--display' },
+							'Display Name: '
 						),
-						_react2.default.createElement("input", { className: "account-names--input", id: index, value: _this2.getValue(acct.account_id), onChange: function onChange(e) {
+						_react2.default.createElement('input', { className: 'account-names--input', id: index, value: _this2.getValue(acct.account_id), onChange: function onChange(e) {
 								return _this2.handleChange(e, acct.account_id);
-							}, type: "text" }),
-						_react2.default.createElement("input", { className: "account-names--submit", type: "submit", value: "Update" })
+							}, type: 'text' }),
+						_react2.default.createElement(
+							'button',
+							{ onClick: function onClick(e) {
+									return _this2.handleClick(e, acct.account_id);
+								}, className: 'account-names--submit' },
+							'Update'
+						)
 					);
 				})
 			);
 		}
 	}], [{
-		key: "getDerivedStateFromProps",
+		key: 'getDerivedStateFromProps',
 		value: function getDerivedStateFromProps(props, state) {
 			return {
 				accounts: props.accounts
@@ -90181,7 +90202,7 @@ exports = module.exports = __webpack_require__(20)(false);
 
 
 // module
-exports.push([module.i, ".accounts {\n  margin-top: 30px; }\n\n.account-names {\n  height: 60px;\n  margin: 15px 0;\n  display: flex;\n  align-items: center;\n  border-radius: 5px; }\n  .account-names--name {\n    margin: 0 30px;\n    width: 40%; }\n  .account-names--input {\n    margin: 0 10px;\n    padding: 10px;\n    width: 35%;\n    color: black;\n    font-size: 18px; }\n  .account-names--submit {\n    position: relative;\n    padding: 10px 20px;\n    border-radius: 5px;\n    color: white;\n    font-size: 18px;\n    background-color: #46926b;\n    cursor: pointer;\n    transition: background-color .2s ease;\n    box-shadow: 0 6px #357052; }\n    .account-names--submit:hover {\n      background-color: #357052;\n      box-shadow: 0 6px #254d38; }\n    .account-names--submit:active {\n      top: 3px;\n      box-shadow: 0 0 #254d38; }\n\n.account-names:nth-child(2n+1) {\n  background: #365269; }\n", ""]);
+exports.push([module.i, ".accounts {\n  margin-top: 30px; }\n\n.account-names {\n  height: 60px;\n  margin: 15px 0;\n  display: flex;\n  align-items: center;\n  border-radius: 5px; }\n  .account-names--name {\n    margin: 0 30px;\n    width: 40%; }\n  .account-names--input {\n    margin: 0 10px;\n    padding: 10px;\n    width: 35%;\n    color: black;\n    font-size: 18px; }\n  .account-names--submit {\n    position: relative;\n    padding: 10px 20px;\n    border-radius: 5px;\n    color: white;\n    font-size: 18px;\n    background-color: #46926b;\n    cursor: pointer;\n    transition: background-color .1s ease;\n    box-shadow: 0 6px #357052; }\n    .account-names--submit:hover {\n      background-color: #418863;\n      box-shadow: 0 6px #31654a; }\n    .account-names--submit:active {\n      top: 3px;\n      box-shadow: 0 0 #357052; }\n\n.account-names:nth-child(2n+1) {\n  background: #365269; }\n", ""]);
 
 // exports
 

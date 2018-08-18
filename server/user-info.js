@@ -40,7 +40,7 @@ Router.get('/profile', (req, res) => {
 
 Router.get("/last-accessed", (req, res) => {
 	res.send(req.session.user.lastAccessed || new Date());
-})
+});
 
 Router.post("/last-accessed", (req, res) => {
 	const date = req.body.date;
@@ -48,6 +48,20 @@ Router.post("/last-accessed", (req, res) => {
 
 	req.session.user.lastAccessed = date;
 	req.session.save();
-})
+});
+
+Router.post("/display-name", (req, res) => {
+	const val = req.body.data;
+
+	if (req.session.displayNames === undefined) {
+		req.session.user.displayNames = {};
+	}
+
+	const newDisplayNames = Object.assign(val, req.session.user.displayNames);
+	req.session.user.displayNames = newDisplayNames;
+	req.session.save();
+
+	console.log(req.session.user.displayNames);
+});	
 
 module.exports = Router;

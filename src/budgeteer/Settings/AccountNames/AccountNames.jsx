@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios';
 
 import './accountNames.scss';
 
@@ -23,13 +24,25 @@ class AccountNames extends Component {
 		return this.state.account_id;
 	}
 
+	handleClick(e, accountID) {
+
+		const inputVal = e.target.parentNode.querySelector("input");
+		const displayName = inputVal.value;
+		console.log();
+
+		axios.post('/user-info/display-name', {
+			data: {
+				[accountID]: displayName
+			}
+		});
+	}
+
 	handleChange(e, id) {
 		const newState = {
 			[id]: e.target.value
 		}
 
 		this.setState(newState);
-		console.log(newState);
 	}
 
 	render() {
@@ -41,7 +54,7 @@ class AccountNames extends Component {
 						<h3 className="account-names--name">{acct.name}</h3>
 						<h3 className="account-names--display">Display Name: </h3>
 						<input className="account-names--input" id={index} value={this.getValue(acct.account_id)} onChange={(e) => this.handleChange(e, acct.account_id)} type='text'/>
-						<input className="account-names--submit" type="submit" value="Update" />
+						<button onClick={(e) => this.handleClick(e, acct.account_id)} className="account-names--submit">Update</button>
 					</div>
 				)}
 			</div>

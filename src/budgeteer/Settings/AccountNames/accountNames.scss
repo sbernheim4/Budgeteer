@@ -36,23 +36,22 @@
 		font-size: 18px;
 		background-color: $green;
 		cursor: pointer;
-		transition: background-color .2s ease;
+		transition: background-color .1s ease;
 		box-shadow: 0 6px darken($green, 10%);
 
 		&:hover {
-			background-color: darken($green, 10%);
-			box-shadow: 0 6px darken($green, 20%);
+			background-color: darken($green, 3%);
+			box-shadow: 0 6px darken($green, 13%);
 		}
 
 		&:active {
 			top: 3px;
-			box-shadow: 0 0 darken($green, 20%);;
+			box-shadow: 0 0 darken($green, 10%);;
 		}
 	}
 }
 
 .account-names:nth-child(2n+1) {
-
 	background: lighten($background-color, 10%);
 }
 

@@ -158,7 +158,7 @@ class Settings extends Component {
 				</form>
 
 				<AccountNames accounts={this.props.accounts}/>
-				
+
 				<div className="settings--rotate-tokens">
 					<p>If you think your account has been compromised, click the button below to delete and generate new access tokens</p>
 					<button onClick={this.rotateAccessTokens}>Rotate Access Tokens</button>
