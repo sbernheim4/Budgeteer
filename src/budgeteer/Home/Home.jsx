@@ -12,20 +12,22 @@ class Home extends Component {
 		super(props);
 
 		this.state = {
-			total: window.sessionStorage.getItem("total") || "..."
+			total: window.sessionStorage.getItem("total") || "...",
+			transactions: []
 		};
 	}
 
-	// static getDerivedStateFromProps(props, state) {
-	// 	if (props.transactions && props.accounts) {
-	// 		return {
-	// 			recentTransactions: "props.transactions.slice(0,5)",
-	// 			accounts: props.accounts
-	// 		}
-	// 	}
-	// 	return;
-	// }
+	static getDerivedStateFromProps(props, state) {
+		const sortedTransactions = props.transactions.sort((a, b) => {
+			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			return dateTwo - dateOne;
+		});
 
+		return {
+			transactions: sortedTransactions.slice(0, 3)
+		}
+	}
 
 	async componentDidMount() {
 
@@ -74,7 +76,7 @@ class Home extends Component {
 
 				<div className='home--transactions'>
 					<h2>Recent Transactions</h2>
-					<TransactionContainer transactions={this.props.transactions.slice(0, 3)} accounts={this.props.accounts} />
+					<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
 				</div>
 
 			</div>

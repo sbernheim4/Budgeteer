@@ -61041,21 +61041,11 @@ var Home = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Home.__proto__ || (0, _getPrototypeOf2.default)(Home)).call(this, props));
 
 		_this.state = {
-			total: window.sessionStorage.getItem("total") || "..."
+			total: window.sessionStorage.getItem("total") || "...",
+			transactions: []
 		};
 		return _this;
 	}
-
-	// static getDerivedStateFromProps(props, state) {
-	// 	if (props.transactions && props.accounts) {
-	// 		return {
-	// 			recentTransactions: "props.transactions.slice(0,5)",
-	// 			accounts: props.accounts
-	// 		}
-	// 	}
-	// 	return;
-	// }
-
 
 	(0, _createClass3.default)(Home, [{
 		key: 'componentDidMount',
@@ -61146,9 +61136,22 @@ var Home = function (_Component) {
 						null,
 						'Recent Transactions'
 					),
-					_react2.default.createElement(_TransactionContainer2.default, { transactions: this.props.transactions.slice(0, 3), accounts: this.props.accounts })
+					_react2.default.createElement(_TransactionContainer2.default, { transactions: this.state.transactions, accounts: this.props.accounts })
 				)
 			);
+		}
+	}], [{
+		key: 'getDerivedStateFromProps',
+		value: function getDerivedStateFromProps(props, state) {
+			var sortedTransactions = props.transactions.sort(function (a, b) {
+				var dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				var dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+				return dateTwo - dateOne;
+			});
+
+			return {
+				transactions: sortedTransactions.slice(0, 3)
+			};
 		}
 	}]);
 	return Home;
