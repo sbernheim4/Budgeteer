@@ -208,16 +208,20 @@ app.get("*", (req, res) => {
 });
 
 function checkAuthentication(req, res, next) {
-	// Check if the user variable on the session is set. If not redirect to /nope
+	// Check if the user variable on the session is set. If not redirect to /login
 	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
     if (req.session.user !== undefined) {
+		// User is authenticated :)
         next();
     } else {
+		// User is not authenticated :(
+
 		// If the user tried to go straight to /budgeteer/transactions without being
 		// logged in store the route they tried to visit in the session to redirect
 		// them too after authentication completes
 		req.session.returnUrl = req.url;
 		req.session.save();
+
         res.redirect('/login');
     }
 }
