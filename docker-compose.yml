@@ -6,12 +6,11 @@ services:
     env_file:
       - .env
     ports:
-      - "5000:5000"
-      - "5001:5001"
-      - "8080:8080"
+      - "443:5000"
     links:
       - db
-
+    volumes:
+      - ./:/usr/workdir
   db:
     container_name: mongodb
     image: mongo

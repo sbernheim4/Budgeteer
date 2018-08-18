@@ -1,6 +1,5 @@
 #!/bin/sh
 
-npm rebuild node-sass
+npm rebuild node-sass # relies on native modules so requires rebuilding in the container
 
-npm run build:prod;
-npm run es;
+concurrently "npm run es" "npm run watch"
