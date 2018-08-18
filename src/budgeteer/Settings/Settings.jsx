@@ -1,6 +1,7 @@
 /* eslint no-undefined: "off" */
 
 import React, { Component } from "react";
+import AccountNames from "./AccountNames/AccountNames.jsx";
 import ErrorMessage from "../ErrorMessage/ErrorMessage.jsx";
 import axios from 'axios';
 
@@ -140,7 +141,7 @@ class Settings extends Component {
 					color={this.state.color}
 				/>
 
-				<h1>Linked Accounts</h1>
+				<h1>Linked Banks</h1>
 				{this.state.linkedBanks.map( (bank, index) =>
 					<div key={index} className='settings--linked-accounts'>
 						<h2>{bank}</h2>
@@ -156,7 +157,8 @@ class Settings extends Component {
 					</label>
 				</form>
 
-
+				<AccountNames accounts={this.props.accounts}/>
+				
 				<div className="settings--rotate-tokens">
 					<p>If you think your account has been compromised, click the button below to delete and generate new access tokens</p>
 					<button onClick={this.rotateAccessTokens}>Rotate Access Tokens</button>
