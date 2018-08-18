@@ -1,10 +1,8 @@
 import axios from 'axios';
 import React, { Component } from "react";
-import { formatAmount, numberWithCommas } from '../helpers';
-
 import Budget from "../Statistics/BudgetChart/BudgetChart.jsx";
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
-
+import { formatAmount, numberWithCommas } from '../helpers';
 import './home.scss';
 
 class Home extends Component {
