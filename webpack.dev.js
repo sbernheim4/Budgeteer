@@ -7,8 +7,6 @@ const StyleLintPlugin = require("stylelint-webpack-plugin");
  */
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
-
 const WebpackBar = require('webpackbar');
 
 module.exports = {
@@ -21,23 +19,6 @@ module.exports = {
 		// output build file to /public folder and call the file bundle.js
 		path: __dirname + "/public",
 		filename: "[name].js"
-	},
-
-	// Dev server configuration
-	devServer: {
-		contentBase: __dirname + "/public", // where static files should be served from - ex: imgs
-		port: 3000, // Port that webpack dev server should use
-		// Set up a proxy for my api --> All calls to /plaid-api are redirected to use a different port where the epxress server is running
-		proxy: {
-			'/plaid-api': {
-				target: 'http://localhost:5001', // URL of the express server
-				secure: false // using https or no
-			},
-			'/budgeteer': {
-				target: 'http://localhost:5001', // URL of the express server
-				secure: false // using https or no
-			}
-		}
 	},
 	module: {
 		rules: [
@@ -68,14 +49,6 @@ module.exports = {
 		}),
 
 		new WebpackBar(),
-
-		new BrowserSyncPlugin({
-			// browse to http://localhost:3000/ during development,
-			// ./public directory is being served
-			host: 'localhost',
-			port: 3000,
-			proxy: 'http://localhost:5001/'
-    	}),
 
 		new HardSourceWebpackPlugin()
 	]

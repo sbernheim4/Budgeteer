@@ -9,14 +9,5 @@ services:
       - .env
     ports:
       - "443:5000"
-    links:
-      - db
     volumes:
       - ./:/usr/workdir
-  db:
-    container_name: mongodb
-    image: mongo
-    ports:
-      - 27017:27017
-    logging:
-      driver: none
