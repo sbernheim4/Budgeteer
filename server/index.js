@@ -181,10 +181,11 @@ app.get('/login/google', passport.authenticate('google', { scope: ['email', 'pro
 app.get('/login/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
-	// Redirect to budgeteer after the session has been set
+	// Redirect to budgeteer or url they entered after the session has been set
+	const returnURL = req.session.returnUrl !== undefined ? req.session.returnUrl : '/budgeteer';
+	res.redirect(returnURL);
 	res.redirect("/budgeteer");
 });
-
 
 app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
 	console.log("Logging in via FB");
@@ -193,8 +194,9 @@ app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
 app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
-	// Redirect to budgeteer after the session has been set
-	res.redirect("/budgeteer");
+	// Redirect to budgeteer or url they entered after the session has been set
+	const returnURL = req.session.returnUrl !== undefined ? req.session.returnUrl : '/budgeteer';
+	res.redirect(returnURL);
 });
 
 app.get('/profile', checkAuthentication, (req, res) => {
@@ -211,6 +213,11 @@ function checkAuthentication(req, res, next) {
     if (req.session.user !== undefined) {
         next();
     } else {
+		// If the user tried to go straight to /budgeteer/transactions without being
+		// logged in store the route they tried to visit in the session to redirect
+		// them too after authentication completes
+		req.session.returnUrl = req.url;
+		req.session.save();
         res.redirect('/login');
     }
 }
