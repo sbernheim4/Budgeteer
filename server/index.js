@@ -1,7 +1,5 @@
 /* eslint no-undefined: "off" */
 
-require('dotenv').config();
-
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -52,8 +50,6 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /****************** Server Options ******************/
-const port = process.env.PORT;
-const insecurePort = process.env.INSECURE_PORT;
 const cacheTime = 172800000; // 2 Days
 
 app.use(compression());
@@ -105,7 +101,7 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 passport.use(new FBStrategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : 'https://budgeteer-prod.com:5000/login/facebook/return'
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : `${process.env.DEV_BASE_URL}/login/facebook/return`
 },
 	function(accessToken, refreshToken, profile, done) {
 		// In this example, the user's Facebook profile is supplied as the user
@@ -136,7 +132,7 @@ passport.use(new FBStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/google/return' : 'https://budgeteer-prod.com:5000/login/google/return'
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : `${process.env.DEV_BASE_URL}/login/facebook/return`
 },
   	function(accessToken, refreshToken, profile, done) {
 	  	User.findOne({
@@ -220,23 +216,34 @@ function checkAuthentication(req, res, next) {
 }
 
 /****************** Start the DB and Server ******************/
+startDb.then(() => {
+	if (process.env.NODE_ENV === 'development') {
+		https.createServer(options, app).listen(process.env.PORT);
+		console.log(chalk.green(`Listening securely on port ${process.env.PORT}`));
+	} else if (process.env.NODE_ENV === 'production'){
+		app.listen(process.env.PORT, () => {
+			console.log(chalk.green(`Listening on port ${process.env.PORT}`));
+		});
+	} else {
+		throw new Error(`Invalid NODE_ENV value of ${process.env.NODE_ENV}`);
+	}
+}).catch(err => {
+	console.log(err)
+});
 
-if (process.env.NODE_ENV === 'development') {
+/*if (process.env.NODE_ENV === 'development') {
 	startDb.then(() => {
-		https.createServer(options, app).listen(port);
-		http.createServer(app).listen(insecurePort);
-		console.log(chalk.green(`Listening securely on port ${port}`));
-		console.log(chalk.green(`Listening insecurely on port ${insecurePort}`))
+		https.createServer(options, app).listen(process.env.PORT);
+		console.log(chalk.green(`Listening securely on port ${process.env.PORprocess.env.PORT}`));
 	}).catch(err => {
 		console.log(err);
 	});
 } else if (process.env.NODE_ENV === 'production') {
-
 	startDb.then(() => {
-		app.listen(port, () => {
-			console.log(chalk.green(`Listening on port ${port}`));
+		app.listen(process.env.PORT, () => {
+			console.log(chalk.green(`Listening on port ${process.env.PORT}`));
 		});
 	}).catch(err => {
 		console.log(err);
 	});
-}
+}*/
