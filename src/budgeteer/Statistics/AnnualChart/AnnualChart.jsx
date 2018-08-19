@@ -59,18 +59,19 @@ class AnnualChart extends Component {
 
 		let avg = 0;
 		this.props.transactions.forEach(t => {
+			if (t.amount > 0) {
+				// get the string value of the month from the transaction
+				let transactionMonth = t.date.slice(5, 7);
 
-			// get the string value of the month from the transaction
-			let transactionMonth = t.date.slice(5, 7);
+				// convert it to an int and subtract one for array offset
+				transactionMonth = parseInt(transactionMonth) - 1;
 
-			// convert it to an int and subtract one for array offset
-			transactionMonth = parseInt(transactionMonth) - 1;
+				// add the amount of the transaction to its corresponding index in the array
+				amounts[transactionMonth] += t.amount;
 
-			// add the amount of the transaction to its corresponding index in the array
-			amounts[transactionMonth] += t.amount;
-
-			// Get the total sum to calculate avg
-			avg += t.amount;
+				// Get the total sum to calculate avg
+				avg += t.amount;
+			}
 		});
 
 		// Divide by 12 and round to two decimal places

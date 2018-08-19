@@ -29,6 +29,14 @@ const userSchema = new Schema({
 	itemID: {
 		type: Array,
 		required: false
+	},
+	displayNames: {
+		type: String,
+		required: false
+	},
+	lastAccessed: {
+		type: String,
+		required: false
 	}
 });
 

@@ -65,7 +65,7 @@ class App extends Component {
 		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed)
 
 		axios.post("/user-info/last-accessed", {
-			date: now
+			date: now.toString()
 		});
 
 		return numDaysSinceCacheUpdate

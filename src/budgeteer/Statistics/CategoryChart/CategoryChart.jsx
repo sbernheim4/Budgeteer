@@ -77,6 +77,7 @@ class CategoryChart extends Component {
 			{name: 'Food and Drink', value: 0},
 			{name: 'Travel', value: 0},
 			{name: 'Shops', value: 0},
+			{name: 'Recreation', value: 0},
 			{name: 'Service', value: 0},
 			{name: 'Community', value: 0},
 			{name: 'Healthcare', value: 0},

@@ -30,7 +30,7 @@ class AccountNames extends Component {
 		const displayName = inputVal.value;
 		console.log();
 
-		axios.post('/user-info/display-name', {
+		axios.post('/user-info/display-names', {
 			data: {
 				[accountID]: displayName
 			}
@@ -38,11 +38,9 @@ class AccountNames extends Component {
 	}
 
 	handleChange(e, id) {
-		const newState = {
+		this.setState({
 			[id]: e.target.value
-		}
-
-		this.setState(newState);
+		});
 	}
 
 	render() {

@@ -53,6 +53,7 @@ class BudgetChart extends Component {
 	static getDerivedStateFromProps(nextProps, prevState) {
 
 		if (nextProps.transactions.length > 0) {
+			console.log("gucci")
 			let totalSpent = 0;
 			let today = new Date();
 
@@ -65,7 +66,7 @@ class BudgetChart extends Component {
 				}
 			}
 
-			totalSpent *= -1
+			/*totalSpent *= -1*/
 
 			// Retrieve monthly budget from session storage
 			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
@@ -87,6 +88,7 @@ class BudgetChart extends Component {
 			};
 
 		} else {
+			console.log("uh oh");
 			return null;
 		}
 	}

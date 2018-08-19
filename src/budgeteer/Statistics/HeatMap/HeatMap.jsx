@@ -16,7 +16,6 @@ class HeatMap extends Component {
 	}
 
 	componentDidMount() {
-		console.log("Heat map loaded");
 
 	}
 

@@ -47562,6 +47562,7 @@ var BudgetChart = function (_Component2) {
 		value: function getDerivedStateFromProps(nextProps, prevState) {
 
 			if (nextProps.transactions.length > 0) {
+				console.log("gucci");
 				var totalSpent = 0;
 				var today = new Date();
 
@@ -47580,6 +47581,10 @@ var BudgetChart = function (_Component2) {
 							totalSpent += t.amount;
 						}
 					}
+
+					/*totalSpent *= -1*/
+
+					// Retrieve monthly budget from session storage
 				} catch (err) {
 					_didIteratorError = true;
 					_iteratorError = err;
@@ -47595,9 +47600,6 @@ var BudgetChart = function (_Component2) {
 					}
 				}
 
-				totalSpent *= -1;
-
-				// Retrieve monthly budget from session storage
 				var monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
 
 				// Calculate remaining amount left to spend
@@ -47613,6 +47615,7 @@ var BudgetChart = function (_Component2) {
 					monthlyBudget: monthlyBudgetFromSessionStorage
 				};
 			} else {
+				console.log("uh oh");
 				return null;
 			}
 		}
@@ -57878,7 +57881,7 @@ var App = function (_Component) {
 
 
 								_axios2.default.post("/user-info/last-accessed", {
-									date: now
+									date: now.toString()
 								});
 
 								return _context2.abrupt('return', numDaysSinceCacheUpdate);
@@ -78743,7 +78746,7 @@ var CategoryChart = function (_Component2) {
 		value: function generateDoughnutChart() {
 
 			// Default names and values for each category
-			var amts = [{ name: 'Food and Drink', value: 0 }, { name: 'Travel', value: 0 }, { name: 'Shops', value: 0 }, { name: 'Service', value: 0 }, { name: 'Community', value: 0 }, { name: 'Healthcare', value: 0 }, { name: 'Bank Fees', value: 0 }, { name: 'Cash Advance', value: 0 }, { name: 'Interest', value: 0 }, { name: 'Payment', value: 0 }, { name: 'Tax', value: 0 }, { name: 'Transfer', value: 0 }, { name: 'Other', value: 0 }];
+			var amts = [{ name: 'Food and Drink', value: 0 }, { name: 'Travel', value: 0 }, { name: 'Shops', value: 0 }, { name: 'Recreation', value: 0 }, { name: 'Service', value: 0 }, { name: 'Community', value: 0 }, { name: 'Healthcare', value: 0 }, { name: 'Bank Fees', value: 0 }, { name: 'Cash Advance', value: 0 }, { name: 'Interest', value: 0 }, { name: 'Payment', value: 0 }, { name: 'Tax', value: 0 }, { name: 'Transfer', value: 0 }, { name: 'Other', value: 0 }];
 
 			var now = new Date();
 			var oneMonthAgo = (0, _sub_months2.default)(now, 1);
@@ -79082,18 +79085,19 @@ var AnnualChart = function (_Component2) {
 
 			var avg = 0;
 			this.props.transactions.forEach(function (t) {
+				if (t.amount > 0) {
+					// get the string value of the month from the transaction
+					var transactionMonth = t.date.slice(5, 7);
 
-				// get the string value of the month from the transaction
-				var transactionMonth = t.date.slice(5, 7);
+					// convert it to an int and subtract one for array offset
+					transactionMonth = parseInt(transactionMonth) - 1;
 
-				// convert it to an int and subtract one for array offset
-				transactionMonth = parseInt(transactionMonth) - 1;
+					// add the amount of the transaction to its corresponding index in the array
+					amounts[transactionMonth] += t.amount;
 
-				// add the amount of the transaction to its corresponding index in the array
-				amounts[transactionMonth] += t.amount;
-
-				// Get the total sum to calculate avg
-				avg += t.amount;
+					// Get the total sum to calculate avg
+					avg += t.amount;
+				}
 			});
 
 			// Divide by 12 and round to two decimal places
@@ -79259,9 +79263,7 @@ var HeatMap = function (_Component) {
 
 	(0, _createClass3.default)(HeatMap, [{
 		key: "componentDidMount",
-		value: function componentDidMount() {
-			console.log("Heat map loaded");
-		}
+		value: function componentDidMount() {}
 	}, {
 		key: "render",
 		value: function render() {
@@ -90144,16 +90146,14 @@ var AccountNames = function (_Component) {
 			var displayName = inputVal.value;
 			console.log();
 
-			_axios2.default.post('/user-info/display-name', {
+			_axios2.default.post('/user-info/display-names', {
 				data: (0, _defineProperty3.default)({}, accountID, displayName)
 			});
 		}
 	}, {
 		key: 'handleChange',
 		value: function handleChange(e, id) {
-			var newState = (0, _defineProperty3.default)({}, id, e.target.value);
-
-			this.setState(newState);
+			this.setState((0, _defineProperty3.default)({}, id, e.target.value));
 		}
 	}, {
 		key: 'render',

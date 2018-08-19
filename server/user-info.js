@@ -1,3 +1,5 @@
+/* eslint no-undefined: off */
+
 const express = require("express");
 const Router = express.Router();
 const path = require("path");
@@ -14,7 +16,7 @@ Router.use(bodyParser.json());
 
 Router.post('/monthly-budget', (req, res) => {
 	// Update monthly budget on session and DB
-	User.update({ _id: req.session.user._id }, { $set: { monthlyBudget: req.body.monthlyBudget } });
+	User.update({ _id: req.session.user._id }, { monthlyBudget: req.body.monthlyBudget }, () => {});
 	req.session.user.monthlyBudget = req.body.monthlyBudget;
 	req.session.save();
 });
@@ -28,50 +30,87 @@ Router.get('/monthly-budget', (req, res) => {
 	}
 });
 
-Router.get('/name', (req, res) => {
-	// Send back user's name
-	res.send(req.session.user.name);
-});
-
 Router.get('/profile', (req, res) => {
 	// Send back all profile information
 	res.send(req.session.user);
 });
 
+Router.get('/name', (req, res) => {
+	// Send back user's name
+	res.send(req.session.user.name);
+});
+
 Router.get("/last-accessed", (req, res) => {
-	res.send(req.session.user.lastAccessed || new Date());
+	if (req.session.user.lastAccessed !== undefined) {	
+		// Try the session
+		const lastAccessed = new Date(req.session.user.lastAccessed);
+		res.send(lastAccessed);
+	} else {
+		// Try the DB
+		try {
+			const record = User.findOne({
+				_id: req.session.user._id
+			});
+			const x = new Date(record.lastAccessed);
+			res.send(x);
+		} catch(err) {
+			// TODO: Send back some kind of error for the front end to parse
+			console.log(err);
+			res.json("ERROR");
+		}
+
+	}
 });
 
 Router.post("/last-accessed", (req, res) => {
 	const date = req.body.date;
-	User.update({ _id: req.session.user._id }, { $set: { lastAccessed: date } });
+	User.update({ _id: req.session.user._id }, { lastAccessed: date.toString() }, () => {});
 
 	req.session.user.lastAccessed = date;
 	req.session.save();
 });
 
-Router.post("/display-name", (req, res) => {
+Router.post("/display-names", (req, res) => {
 	const val = req.body.data;
-
-	if (req.session.displayNames === undefined) {
-		req.session.user.displayNames = {};
+	
+	let currentObj = {}
+	if (req.session.displayNames !== undefined) {
+		currentObj = req.session.user.displayNames;
 	}
 
-	const newDisplayNames = Object.assign(val, req.session.user.displayNames);
+	// Build new displayNames object
+	const newDisplayNames = Object.assign(val, currentObj);
+	console.log(newDisplayNames);
+
+	// Save new object in DB -- Callback function is needed apparently so don't remove it
+	User.update({ _id: req.session.user._id }, { displayNames: JSON.stringify(newDisplayNames) }, () => {});
+
+	// Save new object in session
 	req.session.user.displayNames = newDisplayNames;
 	req.session.save();
 
-	User.update({ _id: req.session.user._id }, { $set: { displayNames: newDisplayNames } });
-
-	console.log(req.session.user.displayNames);
-});	
+});
 
 Router.get("/display-names", (req, res) => {
-	console.log(chalk.green("INCOMING!!"));
+
+	if (req.session.user.displayNames !== undefined) {
+		// Send it from the session
+		res.send(req.session.user.displayNames);
+	} else {
+		// Send it from the DB
+		try {
+			const record = User.findOne({
+				_id: req.session.user._id
+			});
+			res.send(JSON.parse(record.displayNames));
+
+		} catch(err) {
+			// TODO: Send back some kind of error for the front end to parse
+			console.log(err);
+			res.json("ERROR");
+		}
+	}
 	
-	// Otehrwise send it straight back from the session value
-	console.log(req.session.user.displayNames);
-	res.send(req.session.user.displayNames);
 });
 
 module.exports = Router;
