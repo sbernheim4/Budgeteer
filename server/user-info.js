@@ -61,7 +61,17 @@ Router.post("/display-name", (req, res) => {
 	req.session.user.displayNames = newDisplayNames;
 	req.session.save();
 
+	User.update({ _id: req.session.user._id }, { $set: { displayNames: newDisplayNames } });
+
 	console.log(req.session.user.displayNames);
 });	
+
+Router.get("/display-names", (req, res) => {
+	console.log(chalk.green("INCOMING!!"));
+	
+	// Otehrwise send it straight back from the session value
+	console.log(req.session.user.displayNames);
+	res.send(req.session.user.displayNames);
+});
 
 module.exports = Router;

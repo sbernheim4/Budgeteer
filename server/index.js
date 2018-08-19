@@ -199,10 +199,6 @@ app.get('/login/facebook/return', passport.authenticate('facebook'), (req, res) 
 	res.redirect(returnURL);
 });
 
-app.get('/profile', checkAuthentication, (req, res) => {
-	res.send(req.session);
-});
-
 app.get("*", (req, res) => {
 	res.status(404).send(`<h1>404 Page Not Found</h1>`);
 });

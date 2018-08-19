@@ -87983,6 +87983,10 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _defineProperty2 = __webpack_require__(30);
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
 var _regenerator = __webpack_require__(66);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -87990,10 +87994,6 @@ var _regenerator2 = _interopRequireDefault(_regenerator);
 var _asyncToGenerator2 = __webpack_require__(67);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
-var _defineProperty2 = __webpack_require__(30);
-
-var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
 var _getPrototypeOf = __webpack_require__(6);
 
@@ -88066,6 +88066,7 @@ var AccountsContainer = function (_Component) {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0.00,
+			displayNames: {},
 			keyWord: "",
 			months: ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
 		};
@@ -88076,14 +88077,51 @@ var AccountsContainer = function (_Component) {
 		_this.searchByDate = _this.searchByDate.bind(_this);
 		_this.searchByKeyword = _this.searchByKeyword.bind(_this);
 		_this.getKeyword = _this.getKeyword.bind(_this);
+		_this.getAccountDisplayName = _this.getAccountDisplayName.bind(_this);
 		return _this;
 	}
 
 	(0, _createClass3.default)(AccountsContainer, [{
 		key: "componentDidMount",
-		value: function componentDidMount() {
-			this.getAccountTransactions("all");
-		}
+		value: function () {
+			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+				var displayNames;
+				return _regenerator2.default.wrap(function _callee$(_context) {
+					while (1) {
+						switch (_context.prev = _context.next) {
+							case 0:
+								this.getAccountTransactions("all");
+								_context.next = 3;
+								return _axios2.default.get("/user-info/display-names");
+
+							case 3:
+								displayNames = _context.sent;
+
+								displayNames = displayNames.data;
+
+								if (displayNames !== undefined) {
+									this.setState({
+										displayNames: displayNames
+									});
+									console.log(displayNames);
+								} else {
+									console.log("displayNames was undefined");
+								}
+
+							case 6:
+							case "end":
+								return _context.stop();
+						}
+					}
+				}, _callee, this);
+			}));
+
+			function componentDidMount() {
+				return _ref.apply(this, arguments);
+			}
+
+			return componentDidMount;
+		}()
 	}, {
 		key: "componentWillReceiveProps",
 		value: function componentWillReceiveProps() {
@@ -88203,13 +88241,22 @@ var AccountsContainer = function (_Component) {
 			this.setState((0, _defineProperty3.default)({}, val, e.target.value));
 		}
 	}, {
+		key: "getAccountDisplayName",
+		value: function getAccountDisplayName(accountID, defaultName) {
+			var x = this.state.displayNames;
+			var displayName = x[accountID];
+
+			if (displayName !== undefined) return displayName;
+			return defaultName;
+		}
+	}, {
 		key: "searchByDate",
 		value: function () {
-			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(e) {
+			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(e) {
 				var dateOne, dateTwo, releventTransactions, total, data;
-				return _regenerator2.default.wrap(function _callee$(_context) {
+				return _regenerator2.default.wrap(function _callee2$(_context2) {
 					while (1) {
-						switch (_context.prev = _context.next) {
+						switch (_context2.prev = _context2.next) {
 							case 0:
 								// TODO: Need additional validation if using forms to get data
 								// Ensure month is between 1 and 12
@@ -88221,8 +88268,8 @@ var AccountsContainer = function (_Component) {
 								dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
 								releventTransactions = [];
 								total = 0;
-								_context.prev = 5;
-								_context.next = 8;
+								_context2.prev = 5;
+								_context2.next = 8;
 								return (0, _axios2.default)({
 									method: "POST",
 									url: "/plaid-api/transactions",
@@ -88233,7 +88280,7 @@ var AccountsContainer = function (_Component) {
 								});
 
 							case 8:
-								data = _context.sent;
+								data = _context2.sent;
 
 
 								data.forEach(function (acct) {
@@ -88257,25 +88304,25 @@ var AccountsContainer = function (_Component) {
 									categoryType: this.state.months[dateOne.getMonth()] + " " + dateOne.getDate() + " - " + this.state.months[dateTwo.getMonth()] + " " + dateTwo.getDate(),
 									categoryTotal: total
 								});
-								_context.next = 18;
+								_context2.next = 18;
 								break;
 
 							case 15:
-								_context.prev = 15;
-								_context.t0 = _context["catch"](5);
+								_context2.prev = 15;
+								_context2.t0 = _context2["catch"](5);
 
-								console.error(_context.t0);
+								console.error(_context2.t0);
 
 							case 18:
 							case "end":
-								return _context.stop();
+								return _context2.stop();
 						}
 					}
-				}, _callee, this, [[5, 15]]);
+				}, _callee2, this, [[5, 15]]);
 			}));
 
 			function searchByDate(_x) {
-				return _ref.apply(this, arguments);
+				return _ref2.apply(this, arguments);
 			}
 
 			return searchByDate;
@@ -88283,11 +88330,11 @@ var AccountsContainer = function (_Component) {
 	}, {
 		key: "searchByKeyword",
 		value: function () {
-			var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(e) {
+			var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(e) {
 				var releventTransactions, keyWord, normalizedKeyWord, total;
-				return _regenerator2.default.wrap(function _callee2$(_context2) {
+				return _regenerator2.default.wrap(function _callee3$(_context3) {
 					while (1) {
-						switch (_context2.prev = _context2.next) {
+						switch (_context3.prev = _context3.next) {
 							case 0:
 								e.preventDefault();
 								releventTransactions = [];
@@ -88298,12 +88345,12 @@ var AccountsContainer = function (_Component) {
 								// If the user doesn't enter anything, show them the default stuff
 
 								if (!(normalizedKeyWord === "all")) {
-									_context2.next = 10;
+									_context3.next = 10;
 									break;
 								}
 
 								this.getAccountTransactions("all");
-								return _context2.abrupt("return");
+								return _context3.abrupt("return");
 
 							case 10:
 								this.props.transactions.forEach(function (t) {
@@ -88334,14 +88381,14 @@ var AccountsContainer = function (_Component) {
 
 							case 14:
 							case "end":
-								return _context2.stop();
+								return _context3.stop();
 						}
 					}
-				}, _callee2, this);
+				}, _callee3, this);
 			}));
 
 			function searchByKeyword(_x2) {
-				return _ref2.apply(this, arguments);
+				return _ref3.apply(this, arguments);
 			}
 
 			return searchByKeyword;
@@ -88611,7 +88658,7 @@ var AccountsContainer = function (_Component) {
 											{ key: index, onClick: function onClick() {
 													_this2.getAccountTransactions(a.account_id);_this2.closeAccountsViewer();
 												} },
-											(0, _helpers.toTitleCase)(a.name)
+											_this2.getAccountDisplayName(a.account_id, a.name)
 										);
 									})
 								)

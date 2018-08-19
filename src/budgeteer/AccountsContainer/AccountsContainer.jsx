@@ -44,6 +44,7 @@ class AccountsContainer extends Component {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0.00,
+			displayNames: {},
 			keyWord: "",
 			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
@@ -54,10 +55,22 @@ class AccountsContainer extends Component {
 		this.searchByDate = this.searchByDate.bind(this);
 		this.searchByKeyword = this.searchByKeyword.bind(this);
 		this.getKeyword = this.getKeyword.bind(this);
+		this.getAccountDisplayName = this.getAccountDisplayName.bind(this);
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		this.getAccountTransactions("all");
+		let displayNames = await axios.get("/user-info/display-names");
+		displayNames = displayNames.data;
+		
+		if (displayNames !== undefined) {
+			this.setState({
+				displayNames: displayNames
+			});	
+			console.log(displayNames);
+		} else {
+			console.log("displayNames was undefined");
+		}
 	}
 
 	componentWillReceiveProps() {
@@ -172,6 +185,14 @@ class AccountsContainer extends Component {
 
 	getDate(e, val) {
 		this.setState({ [val]: e.target.value });
+	}
+
+	getAccountDisplayName(accountID, defaultName) {
+		const x = this.state.displayNames;
+		const displayName = x[accountID];
+
+		if (displayName !== undefined) return displayName
+		return defaultName;
 	}
 
 	async searchByDate(e) {
@@ -355,7 +376,7 @@ class AccountsContainer extends Component {
 
 									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map( (a, index) =>
-										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{toTitleCase(a.name)}</button>
+										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{this.getAccountDisplayName(a.account_id, a.name)}</button>
 									)}
 								</div>
 							</div>
