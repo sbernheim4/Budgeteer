@@ -72,7 +72,6 @@ Router.post("/last-accessed", (req, res) => {
 
 Router.post("/display-names", (req, res) => {
 	const val = req.body.data;
-	console.log(typeof val);
 
 	let currentObj = {}
 	if (req.session.displayNames !== undefined) {
@@ -81,6 +80,7 @@ Router.post("/display-names", (req, res) => {
 
 	// Build new displayNames object
 	const newDisplayNames = Object.assign(val, currentObj);
+	console.log(newDisplayNames);
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
 	User.update({ _id: req.session.user._id }, { displayNames: JSON.stringify(newDisplayNames) }, () => {});
@@ -91,7 +91,7 @@ Router.post("/display-names", (req, res) => {
 
 });
 
-Router.get("/display-names", (req, res) => {
+Router.get("/display-names", async (req, res) => {
 
 	if (req.session.user.displayNames !== undefined) {
 		// Send it from the session
@@ -99,9 +99,10 @@ Router.get("/display-names", (req, res) => {
 	} else {
 		// Send it from the DB
 		try {
-			const record = User.findOne({
+			const record = await User.findOne({
 				_id: req.session.user._id
 			});
+			console.log(record.displayNames);
 			res.send(JSON.parse(record.displayNames));
 
 		} catch(err) {
@@ -110,6 +111,7 @@ Router.get("/display-names", (req, res) => {
 			res.json("ERROR");
 		}
 	}
+
 });
 
 module.exports = Router;

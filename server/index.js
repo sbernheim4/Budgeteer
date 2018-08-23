@@ -132,7 +132,7 @@ passport.use(new FBStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : `${process.env.DEV_BASE_URL}/login/facebook/return`
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/google/return' : `${process.env.DEV_BASE_URL}/login/google/return`
 },
   	function(accessToken, refreshToken, profile, done) {
 	  	User.findOne({
@@ -184,7 +184,6 @@ app.get('/login/google/return', passport.authenticate('google', { scope: ['email
 	// Redirect to budgeteer or url they entered after the session has been set
 	const returnURL = req.session.returnUrl !== undefined ? req.session.returnUrl : '/budgeteer';
 	res.redirect(returnURL);
-	res.redirect("/budgeteer");
 });
 
 app.get('/login/facebook', passport.authenticate('facebook'), (req, res) => {
