@@ -43,7 +43,6 @@ class Navbar extends Component {
 			product: ['transactions'],
 			key: keyAndEnv.data.publicKey,
 			onSuccess: function (public_token) {
-				console.log("NAVBAR VERSION");
 				axios({
 					method: "POST",
 					url: "/plaid-api/get-access-token",

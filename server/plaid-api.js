@@ -106,6 +106,7 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 Router.post("/get-access-token", async (req, res) => {
 
 	const PUBLIC_TOKEN = req.body.public_token;
+	console.log(`public token: ${PUBLIC_TOKEN}`);
 	try {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
@@ -173,43 +174,59 @@ Router.post("/transactions", async (req, res, next) => {
 });
 
 Router.post ("/balance", async (req, res, next) => {
-	const promiseArray = req.session.user.accessTokens.map(token => client.getBalance(token) );
+	try {
+		const allData = await resolvePlaidBalance(req.session.user.accessTokens);
+		console.log("ALL Data is: ")
+		console.log(allData)
+		let banks = [];
 
-	let allData = await Promise.all(promiseArray);
-	let banks = [];
+		allData.forEach( (bank, index) => {
+			let bankTotal = 0;
+			let map = {};
+			bank.accounts.forEach(acct => {
+				if (acct.balances.current !== null && acct.type !== 'credit') {
+					let value = acct.balances.current;
+					bankTotal += value;
+					map[acct.name] = value;
+				} else if (acct.type !== 'credit') {
+					map[acct.name] = "N/A";
+				}
+			});
 
-	allData.forEach( (bank, index) => {
-		let bankTotal = 0;
-		let map = {};
-		bank.accounts.forEach(acct => {
-			if (acct.balances.current !== null && acct.type !== 'credit') {
-				let value = acct.balances.current;
-				bankTotal += value;
-				map[acct.name] = value;
-			} else if (acct.type !== 'credit') {
-				map[acct.name] = "N/A";
-			}
+			banks[index] = {"bankTotal": bankTotal, "map": map};
 		});
 
-		banks[index] = {"bankTotal": bankTotal, "map": map};
-	});
+		let networth = 0;
+		let arrayOfMaps = [];
+		banks.forEach((bank, index) => {
+			networth += bank.bankTotal;
+			arrayOfMaps[index] = bank.map;
+		});
 
-	let networth = 0;
-	banks.forEach(bank => {
-		networth += bank.bankTotal;
-	});
-
-	let arrayOfMaps = [];
-	banks.forEach( (bank, index) => {
-		arrayOfMaps[index] = bank.map;
-	})
-
-	res.json({
-		"networth": networth,
-		"maps": arrayOfMaps
-	});
+		res.json({
+			"networth": networth,
+			"maps": arrayOfMaps
+		});
+	} catch (err) {
+		console.log(chalk.red("Error from /balance"));
+		console.log(err);
+	}
 });
 
+async function resolvePlaidBalance(accessTokensArray) {
+		const allData = [];
+		accessTokensArray.map(async token => {
+			try {
+				const newData = await client.getBalance(token);
+				allData.push(newData);
+			} catch (err) {
+				console.log(chalk.red("Error from resolvePlaidBalance"));
+				// Bad token is `token`
+				console.log(err);
+			}
+});
+return allData
+}
 
 Router.get('/linked-accounts', async (req, res) => {
 

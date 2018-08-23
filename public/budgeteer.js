@@ -58862,7 +58862,6 @@ var Navbar = function (_Component) {
 									product: ['transactions'],
 									key: keyAndEnv.data.publicKey,
 									onSuccess: function onSuccess(public_token) {
-										console.log("NAVBAR VERSION");
 										(0, _axios2.default)({
 											method: "POST",
 											url: "/plaid-api/get-access-token",
@@ -90085,6 +90084,18 @@ var _defineProperty2 = __webpack_require__(30);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
+var _regenerator = __webpack_require__(66);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = __webpack_require__(67);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _map = __webpack_require__(951);
+
+var _map2 = _interopRequireDefault(_map);
+
 var _getPrototypeOf = __webpack_require__(6);
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -90126,14 +90137,47 @@ var AccountNames = function (_Component) {
 		var _this = (0, _possibleConstructorReturn3.default)(this, (AccountNames.__proto__ || (0, _getPrototypeOf2.default)(AccountNames)).call(this, props));
 
 		_this.state = {
-			accounts: []
+			accounts: [],
+			mapOfAccountNamesToDisplayNames: new _map2.default()
 		};
 
 		_this.handleChange = _this.handleChange.bind(_this);
+		_this.getValue = _this.getValue.bind(_this);
 		return _this;
 	}
 
 	(0, _createClass3.default)(AccountNames, [{
+		key: 'componentDidMount',
+		value: function () {
+			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
+				var names;
+				return _regenerator2.default.wrap(function _callee$(_context) {
+					while (1) {
+						switch (_context.prev = _context.next) {
+							case 0:
+								_context.next = 2;
+								return _axios2.default.get('/user-info/display-names');
+
+							case 2:
+								names = _context.sent;
+
+								names = names.data;
+
+							case 4:
+							case 'end':
+								return _context.stop();
+						}
+					}
+				}, _callee, this);
+			}));
+
+			function componentDidMount() {
+				return _ref.apply(this, arguments);
+			}
+
+			return componentDidMount;
+		}()
+	}, {
 		key: 'getValue',
 		value: function getValue(account_id) {
 			return this.state.account_id;
@@ -90141,10 +90185,8 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'handleClick',
 		value: function handleClick(e, accountID) {
-
 			var inputVal = e.target.parentNode.querySelector("input");
 			var displayName = inputVal.value;
-			console.log();
 
 			_axios2.default.post('/user-info/display-names', {
 				data: (0, _defineProperty3.default)({}, accountID, displayName)
@@ -90252,6 +90294,82 @@ exports = module.exports = __webpack_require__(20)(false);
 exports.push([module.i, ".accounts {\n  margin-top: 30px; }\n\n.account-names {\n  height: 60px;\n  margin: 15px 0;\n  display: flex;\n  align-items: center;\n  border-radius: 5px; }\n  .account-names--name {\n    margin: 0 30px;\n    width: 40%; }\n  .account-names--input {\n    margin: 0 10px;\n    padding: 10px;\n    width: 35%;\n    color: black;\n    font-size: 18px; }\n  .account-names--submit {\n    position: relative;\n    padding: 10px 20px;\n    border-radius: 5px;\n    color: white;\n    font-size: 18px;\n    background-color: #46926b;\n    cursor: pointer;\n    transition: background-color .1s ease;\n    box-shadow: 0 6px #357052; }\n    .account-names--submit:hover {\n      background-color: #418863;\n      box-shadow: 0 6px #31654a; }\n    .account-names--submit:active {\n      top: 3px;\n      box-shadow: 0 0 #357052; }\n\n.account-names:nth-child(2n+1) {\n  background: #365269; }\n", ""]);
 
 // exports
+
+
+/***/ }),
+/* 947 */,
+/* 948 */,
+/* 949 */,
+/* 950 */,
+/* 951 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(952), __esModule: true };
+
+/***/ }),
+/* 952 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(112);
+__webpack_require__(62);
+__webpack_require__(74);
+__webpack_require__(953);
+__webpack_require__(954);
+__webpack_require__(955);
+__webpack_require__(956);
+module.exports = __webpack_require__(9).Map;
+
+
+/***/ }),
+/* 953 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var strong = __webpack_require__(501);
+var validate = __webpack_require__(361);
+var MAP = 'Map';
+
+// 23.1 Map Objects
+module.exports = __webpack_require__(502)(MAP, function (get) {
+  return function Map() { return get(this, arguments.length > 0 ? arguments[0] : undefined); };
+}, {
+  // 23.1.3.6 Map.prototype.get(key)
+  get: function get(key) {
+    var entry = strong.getEntry(validate(this, MAP), key);
+    return entry && entry.v;
+  },
+  // 23.1.3.9 Map.prototype.set(key, value)
+  set: function set(key, value) {
+    return strong.def(validate(this, MAP), key === 0 ? 0 : key, value);
+  }
+}, strong, true);
+
+
+/***/ }),
+/* 954 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/DavidBruant/Map-Set.prototype.toJSON
+var $export = __webpack_require__(17);
+
+$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(507)('Map') });
+
+
+/***/ }),
+/* 955 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
+__webpack_require__(510)('Map');
+
+
+/***/ }),
+/* 956 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://tc39.github.io/proposal-setmap-offrom/#sec-map.from
+__webpack_require__(512)('Map');
 
 
 /***/ })

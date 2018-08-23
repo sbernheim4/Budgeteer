@@ -8,10 +8,17 @@ class AccountNames extends Component {
 		super(props);
 
 		this.state = {
-			accounts: []
+			accounts: [],
+			mapOfAccountNamesToDisplayNames: new Map()
 		}
 
 		this.handleChange = this.handleChange.bind(this);
+		this.getValue = this.getValue.bind(this);
+	}
+
+	async componentDidMount() {
+		let names = await axios.get('/user-info/display-names');
+		names = names.data;
 	}
 
 	static getDerivedStateFromProps(props, state) {
@@ -22,13 +29,12 @@ class AccountNames extends Component {
 
 	getValue(account_id) {
 		return this.state.account_id;
+
 	}
 
 	handleClick(e, accountID) {
-
 		const inputVal = e.target.parentNode.querySelector("input");
 		const displayName = inputVal.value;
-		console.log();
 
 		axios.post('/user-info/display-names', {
 			data: {

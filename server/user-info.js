@@ -41,7 +41,7 @@ Router.get('/name', (req, res) => {
 });
 
 Router.get("/last-accessed", (req, res) => {
-	if (req.session.user.lastAccessed !== undefined) {	
+	if (req.session.user.lastAccessed !== undefined) {
 		// Try the session
 		const lastAccessed = new Date(req.session.user.lastAccessed);
 		res.send(lastAccessed);
@@ -72,7 +72,8 @@ Router.post("/last-accessed", (req, res) => {
 
 Router.post("/display-names", (req, res) => {
 	const val = req.body.data;
-	
+	console.log(typeof val);
+
 	let currentObj = {}
 	if (req.session.displayNames !== undefined) {
 		currentObj = req.session.user.displayNames;
@@ -80,7 +81,6 @@ Router.post("/display-names", (req, res) => {
 
 	// Build new displayNames object
 	const newDisplayNames = Object.assign(val, currentObj);
-	console.log(newDisplayNames);
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
 	User.update({ _id: req.session.user._id }, { displayNames: JSON.stringify(newDisplayNames) }, () => {});
@@ -110,7 +110,6 @@ Router.get("/display-names", (req, res) => {
 			res.json("ERROR");
 		}
 	}
-	
 });
 
 module.exports = Router;
