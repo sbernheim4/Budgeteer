@@ -1,7 +1,6 @@
 FROM node:10.9.0
 WORKDIR /usr/workdir
 
-COPY . /usr/workdir/
 COPY ./entrypoint.sh /usr/entrypoint.sh
 
 RUN npm install
