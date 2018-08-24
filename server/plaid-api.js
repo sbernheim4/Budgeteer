@@ -180,24 +180,26 @@ Router.post("/transactions", async (req, res, next) => {
 Router.post ("/balance", async (req, res, next) => {
 	try {
 
-		let allData = [];
-		req.session.user.accessTokens.map(async token => {
-			try {
-				console.log(`checking token ${token}`);
-				const newData = await client.getBalance(token);
-				allData.push(newData);
-			} catch (err) {
-				console.log(`Error with token: ${token}`);
-			}
-		});
+		const allData = await resolvePlaidBalance(req.session.user.accessTokens);
+		console.log(chalk.blue("ALL DATA: "));
+		if (allData instanceof Error) {
+			const badAccessToken = allData.message.split(":")[1].trim();
+			let publicToken;
 
-		console.log("ALL Data is: ")
-		console.log(allData)
+			const result = await client.createPublicToken(badAccessToken)
+			res.json({
+				"Error": "Expired Item ID",
+				"publicToken": result.public_token
+			});
+			return;
+		}
+
 		let banks = [];
 
 		allData.forEach( (bank, index) => {
 			let bankTotal = 0;
 			let map = {};
+
 			bank.accounts.forEach(acct => {
 				if (acct.balances.current !== null && acct.type !== 'credit') {
 					let value = acct.balances.current;
@@ -230,16 +232,15 @@ Router.post ("/balance", async (req, res, next) => {
 
 async function resolvePlaidBalance(accessTokensArray) {
 	const allData = [];
-	accessTokensArray.map(async token => {
+	for (let i = 0; i < accessTokensArray.length; i++) {
 		try {
-			const newData = await client.getBalance(token);
+			const newData = await client.getBalance(accessTokensArray[i]);
 			allData.push(newData);
 		} catch (err) {
-			console.log(chalk.red("Error from resolvePlaidBalance"));
-			// Bad token is `token`
-			console.log(err);
+			return new Error ("Error with token: " + accessTokensArray[i]);
 		}
-	});
+	}
+
 	return allData
 }
 

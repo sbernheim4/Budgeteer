@@ -64,6 +64,23 @@ class Networth extends Component {
 			});
 
 			data = data.data
+			if (data.Error) {
+				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+
+				const plaid = Plaid.create({
+					apiVersion: 'v2',
+					clientName: 'Update Account',
+					env: keyAndEnv.data.env,
+					product: ['balance'],
+					key: keyAndEnv.data.publicKey,
+					token: data.publicToken,
+					onSuccess: function (public_token) {
+						console.log("Update of Account successful");
+					}
+				});
+
+				plaid.open();
+			}
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
 		}

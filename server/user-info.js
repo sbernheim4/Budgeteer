@@ -111,7 +111,6 @@ Router.get("/display-names", async (req, res) => {
 			res.json("ERROR");
 		}
 	}
-
 });
 
 module.exports = Router;

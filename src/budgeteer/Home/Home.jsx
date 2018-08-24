@@ -28,12 +28,30 @@ class Home extends Component {
 	}
 
 	async componentDidMount() {
-
 		let data = await axios({
-				method: "POST",
-				url: '/plaid-api/balance'
-			});
+			method: "POST",
+			url: '/plaid-api/balance'
+		});
+
 		data = data.data;
+		if (data.Error) {
+			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+
+			const plaid = Plaid.create({
+				apiVersion: 'v2',
+				clientName: 'Update Account',
+				env: keyAndEnv.data.env,
+				product: ['transactions'],
+				key: keyAndEnv.data.publicKey,
+				token: data.publicToken,
+				onSuccess: function (public_token) {
+					console.log("Update of Account successful");
+				}
+			});
+
+			plaid.open();
+		}
+
 		data = numberWithCommas(formatAmount(data.networth));
 
 		this.setState({

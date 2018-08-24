@@ -47615,7 +47615,7 @@ var BudgetChart = function (_Component2) {
 					monthlyBudget: monthlyBudgetFromSessionStorage
 				};
 			} else {
-				console.log("uh oh");
+				console.error("Error from Budget Chart: transactions.length is <= 0");
 				return null;
 			}
 		}
@@ -61053,7 +61053,7 @@ var Home = function (_Component) {
 		key: "componentDidMount",
 		value: function () {
 			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-				var data;
+				var data, keyAndEnv, plaid;
 				return _regenerator2.default.wrap(function _callee$(_context) {
 					while (1) {
 						switch (_context.prev = _context.next) {
@@ -61067,7 +61067,36 @@ var Home = function (_Component) {
 							case 2:
 								data = _context.sent;
 
+
 								data = data.data;
+
+								if (!data.Error) {
+									_context.next = 10;
+									break;
+								}
+
+								_context.next = 7;
+								return _axios2.default.get('/plaid-api/key-and-env');
+
+							case 7:
+								keyAndEnv = _context.sent;
+								plaid = Plaid.create({
+									apiVersion: 'v2',
+									clientName: 'Update Account',
+									env: keyAndEnv.data.env,
+									product: ['transactions'],
+									key: keyAndEnv.data.publicKey,
+									token: data.publicToken,
+									onSuccess: function onSuccess(public_token) {
+										console.log("Update of Account successful");
+									}
+								});
+
+
+								plaid.open();
+
+							case 10:
+
 								data = (0, _helpers.numberWithCommas)((0, _helpers.formatAmount)(data.networth));
 
 								this.setState({
@@ -61076,7 +61105,7 @@ var Home = function (_Component) {
 
 								window.sessionStorage.setItem("total", data);
 
-							case 7:
+							case 13:
 							case "end":
 								return _context.stop();
 						}
@@ -89353,7 +89382,7 @@ var Networth = function (_Component) {
 		key: "componentDidMount",
 		value: function () {
 			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-				var data;
+				var data, keyAndEnv, plaid;
 				return _regenerator2.default.wrap(function _callee$(_context) {
 					while (1) {
 						switch (_context.prev = _context.next) {
@@ -89369,7 +89398,7 @@ var Networth = function (_Component) {
 
 								data = window.sessionStorage.getItem("balance");
 								data = JSON.parse(data);
-								_context.next = 11;
+								_context.next = 17;
 								break;
 
 							case 6:
@@ -89385,9 +89414,36 @@ var Networth = function (_Component) {
 
 								data = data.data;
 
+								if (!data.Error) {
+									_context.next = 16;
+									break;
+								}
+
+								_context.next = 13;
+								return _axios2.default.get('/plaid-api/key-and-env');
+
+							case 13:
+								keyAndEnv = _context.sent;
+								plaid = Plaid.create({
+									apiVersion: 'v2',
+									clientName: 'Update Account',
+									env: keyAndEnv.data.env,
+									product: ['balance'],
+									key: keyAndEnv.data.publicKey,
+									token: data.publicToken,
+									onSuccess: function onSuccess(public_token) {
+										console.log("Update of Account successful");
+									}
+								});
+
+
+								plaid.open();
+
+							case 16:
+
 								window.sessionStorage.setItem("balance", (0, _stringify2.default)(data));
 
-							case 11:
+							case 17:
 
 								this.setState({
 									total: data.networth,
@@ -89395,7 +89451,7 @@ var Networth = function (_Component) {
 									loading: false
 								});
 
-							case 12:
+							case 18:
 							case "end":
 								return _context.stop();
 						}

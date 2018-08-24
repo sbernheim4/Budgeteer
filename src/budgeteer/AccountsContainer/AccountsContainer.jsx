@@ -62,11 +62,11 @@ class AccountsContainer extends Component {
 		this.getAccountTransactions("all");
 		let displayNames = await axios.get("/user-info/display-names");
 		displayNames = displayNames.data;
-		
+
 		if (displayNames !== undefined) {
 			this.setState({
 				displayNames: displayNames
-			});	
+			});
 			console.log(displayNames);
 		} else {
 			console.log("displayNames was undefined");
