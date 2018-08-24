@@ -67,6 +67,10 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 		}
 	}
 
+	// Update access tokens on the session
+	req.session.user.accessTokens = newAccessTokens;
+	req.session.save();
+
 	// Update access tokens on the server
 	User.update({ _id: req.session.user._id }, { $set: { accessTokens: newAccessTokens } }, () => {
 		console.log(chalk.green("Access Tokens have rotated"));
@@ -175,7 +179,18 @@ Router.post("/transactions", async (req, res, next) => {
 
 Router.post ("/balance", async (req, res, next) => {
 	try {
-		const allData = await resolvePlaidBalance(req.session.user.accessTokens);
+
+		let allData = [];
+		req.session.user.accessTokens.map(async token => {
+			try {
+				console.log(`checking token ${token}`);
+				const newData = await client.getBalance(token);
+				allData.push(newData);
+			} catch (err) {
+				console.log(`Error with token: ${token}`);
+			}
+		});
+
 		console.log("ALL Data is: ")
 		console.log(allData)
 		let banks = [];
@@ -214,18 +229,18 @@ Router.post ("/balance", async (req, res, next) => {
 });
 
 async function resolvePlaidBalance(accessTokensArray) {
-		const allData = [];
-		accessTokensArray.map(async token => {
-			try {
-				const newData = await client.getBalance(token);
-				allData.push(newData);
-			} catch (err) {
-				console.log(chalk.red("Error from resolvePlaidBalance"));
-				// Bad token is `token`
-				console.log(err);
-			}
-});
-return allData
+	const allData = [];
+	accessTokensArray.map(async token => {
+		try {
+			const newData = await client.getBalance(token);
+			allData.push(newData);
+		} catch (err) {
+			console.log(chalk.red("Error from resolvePlaidBalance"));
+			// Bad token is `token`
+			console.log(err);
+		}
+	});
+	return allData
 }
 
 Router.get('/linked-accounts', async (req, res) => {
