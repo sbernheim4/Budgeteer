@@ -88,7 +88,7 @@ class BudgetChart extends Component {
 			};
 
 		} else {
-			console.log("uh oh");
+			console.error("Error from Budget Chart: transactions.length is <= 0")
 			return null;
 		}
 	}
