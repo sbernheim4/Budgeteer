@@ -41,6 +41,7 @@ class App extends Component {
 	async componentDidMount() {
 		/*this.registerServiceWorker();*/
 		this.getTransactions();
+		console.log("LOADED :)");
 	}
 
 	registerServiceWorker() {
