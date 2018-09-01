@@ -115,9 +115,9 @@ class CategoryChart extends Component {
 					case "Recreation":
 						amts[3].value += amount;
 						break;
-					case "Service":
+					/*case "Service":
 						amts[4].value += amount;
-						break;
+						break;*/
 					case "Community":
 						amts[5].value += amount;
 						break;
@@ -139,9 +139,9 @@ class CategoryChart extends Component {
 					case "Tax":
 						amts[11].value += amount;
 						break;
-					case "Transfer":
+					/*case "Transfer":
 						amts[12].value += amount;
-						break;
+						break;*/
 					default:
 						amts[13].value += amount
 				}
