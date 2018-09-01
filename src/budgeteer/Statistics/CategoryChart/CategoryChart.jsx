@@ -124,9 +124,9 @@ class CategoryChart extends Component {
 					case "Healthcare":
 						amts[6].value += amount;
 						break;
-					case "Bank Fees":
+					/*case "Bank Fees":
 						amts[7].value += amount;
-						break;
+						break;*/
 					case "Cash Advance":
 						amts[8].value += amount;
 						break;

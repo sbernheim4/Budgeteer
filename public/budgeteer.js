@@ -76948,9 +76948,9 @@ var Transaction = function (_Component) {
 				case "Shops":
 					categoryIcon = _fontawesomeFreeSolid.faShoppingBag;
 					break;
-				// case "Recreation":
-				// 	categoryIcon = ;
-				// 	break;
+				case "Recreation":
+					categoryIcon = _fontawesomeFreeSolid.faRacquet;
+					break;
 				case "Service":
 					categoryIcon = _fontawesomeFreeSolid.faWrench;
 					break;
@@ -76979,7 +76979,7 @@ var Transaction = function (_Component) {
 					categoryIcon = _fontawesomeFreeSolid.faExchangeAlt;
 					break;
 				default:
-					categoryIcon = _fontawesomeFreeSolid.faBullseye;
+					categoryIcon = _fontawesomeFreeSolid.faQuestion;
 			}
 
 			return categoryIcon;
@@ -77002,7 +77002,6 @@ var Transaction = function (_Component) {
 
 			// Should the color for the amount be red or green based based on it being positive or negative
 			var amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
-
 			var name = (0, _helpers.toTitleCase)(this.props.transaction.name);
 
 			return _react2.default.createElement(
@@ -78802,18 +78801,18 @@ var CategoryChart = function (_Component2) {
 						case "Recreation":
 							amts[3].value += amount;
 							break;
-						case "Service":
-							amts[4].value += amount;
-							break;
+						/*case "Service":
+      	amts[4].value += amount;
+      	break;*/
 						case "Community":
 							amts[5].value += amount;
 							break;
 						case "Healthcare":
 							amts[6].value += amount;
 							break;
-						case "Bank Fees":
-							amts[7].value += amount;
-							break;
+						/*case "Bank Fees":
+      	amts[7].value += amount;
+      	break;*/
 						case "Cash Advance":
 							amts[8].value += amount;
 							break;
@@ -78826,9 +78825,9 @@ var CategoryChart = function (_Component2) {
 						case "Tax":
 							amts[11].value += amount;
 							break;
-						case "Transfer":
-							amts[12].value += amount;
-							break;
+						/*case "Transfer":
+      	amts[12].value += amount;
+      	break;*/
 						default:
 							amts[13].value += amount;
 					}
@@ -88134,7 +88133,6 @@ var AccountsContainer = function (_Component) {
 									this.setState({
 										displayNames: displayNames
 									});
-									console.log(displayNames);
 								} else {
 									console.log("displayNames was undefined");
 								}
@@ -88170,17 +88168,14 @@ var AccountsContainer = function (_Component) {
 				releventTransactions = this.props.transactions;
 				type = "All Categories";
 			} else {
-				this.props.transactions.map(function (transaction) {
-					if (transaction.account_id === account_id) {
-						releventTransactions.push(transaction);
-					}
+				releventTransactions = this.props.transactions.filter(function (t) {
+					t.account_id === account_id; /*&& t.account_id !== accountIDOfLinkedCreditCardAccounts*/
 				});
 			}
 
 			releventTransactions.forEach(function (transaction) {
 				total += transaction.amount;
 			});
-
 			total = (0, _helpers.formatAmount)(total);
 
 			// Update the state with the relevent transactions and how the user is sorting them
@@ -88200,45 +88195,30 @@ var AccountsContainer = function (_Component) {
 				return dateOne - dateTwo;
 			});
 
-			//TODO: This can be cleaned up to not have two separate setState calls in the if statement
+			var now = new Date();
+			var nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
+			var prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
+			var categoryType = type === "All Categories" ? prevString + " - " + nowString : type;
 
-			if (type === "All Categories") {
-				var now = new Date();
-
-				var nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
-				var prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
-
-				this.setState({
-					categoryTransactions: releventTransactions,
-					categoryType: prevString + " - " + nowString,
-					categoryTotal: total
-				});
-			} else {
-				this.setState({
-					categoryTransactions: releventTransactions,
-					categoryType: type,
-					categoryTotal: total
-				});
-			}
+			this.setState({
+				categoryTransactions: releventTransactions,
+				categoryType: type,
+				categoryTotal: total
+			});
 		}
 	}, {
 		key: "getCategoryTransactions",
 		value: function getCategoryTransactions(categoryString) {
-
 			var releventTransactions = [];
 
 			// Other displays transactions with a category of null
 			if (categoryString === "Other") {
-				this.props.transactions.forEach(function (t) {
-					if (t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Interest" || t.category[0] === "Payment" || t.category[0] === "Tax" || t.category[0] === "Transfer") {
-						releventTransactions.push(t);
-					}
+				releventTransactions = this.props.transactions.filter(function (t) {
+					t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Tax";
 				});
 			} else {
-				this.props.transactions.forEach(function (t) {
-					if (t.category !== null && t.category[0] === categoryString) {
-						releventTransactions.push(t);
-					}
+				releventTransactions = this.props.transactions.filter(function (t) {
+					return t.category !== null && t.category[0] === categoryString;
 				});
 			}
 
@@ -88250,7 +88230,8 @@ var AccountsContainer = function (_Component) {
 
 			total = (0, _helpers.formatAmount)(total);
 
-			this.openCategoryViewer();
+			// this.openCategoryViewer();
+
 
 			// Sort the transactions newest to oldest
 			releventTransactions.sort(function (a, b) {
@@ -88386,7 +88367,6 @@ var AccountsContainer = function (_Component) {
 							case 10:
 								this.props.transactions.forEach(function (t) {
 									var normalizedTransactionName = t.name.toLowerCase();
-
 									if (normalizedTransactionName.includes(normalizedKeyWord)) {
 										total += t.amount;
 										releventTransactions.push(t);
@@ -88505,158 +88485,212 @@ var AccountsContainer = function (_Component) {
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Food and Drink");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faUtensils }),
+										"     ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Food and Drink"
-										)
+										),
+										" "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Travel");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faPlane }),
+										"        ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Travel"
-										)
+										),
+										"         "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Shops");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faShoppingBag }),
+										"  ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Shops"
-										)
+										),
+										"          "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-												_this2.getCategoryTransactions("Recreation");
+												_this2.getCategoryTransactions("Recreation");_this2.closeAccountsViewer();
 											}, icon: _fontawesomeFreeSolid.faRacquet }),
+										"     ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Recreation"
-										)
+										),
+										"     "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Service");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faWrench }),
+										"       ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Service"
-										)
+										),
+										"        "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Community");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faUsers }),
+										"        ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Community"
-										)
+										),
+										"      "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Healthcare");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faMedkit }),
+										"       ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Healthcare"
-										)
+										),
+										"     "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-												_this2.getCategoryTransactions("Bank Fees");
-											}, icon: _fontawesomeFreeSolid.faUtensils }),
+												_this2.getCategoryTransactions("Bank Fees");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faQuestion }),
+										"     ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Bank Fees"
-										)
+										),
+										"      "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-												_this2.getCategoryTransactions("Cash Advance");
-											}, icon: _fontawesomeFreeSolid.faUtensils }),
+												_this2.getCategoryTransactions("Cash Advance");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faQuestion }),
+										"    ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Cash Advance"
-										)
+										),
+										"   "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Interest");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faPercent }),
+										"     ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Interest"
-										)
+										),
+										"       "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Payment");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faMoneyBillAlt }),
+										" ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Payment"
-										)
+										),
+										"        "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
-												_this2.getCategoryTransactions("Tax");
-											}, icon: _fontawesomeFreeSolid.faUtensils }),
+												_this2.getCategoryTransactions("Tax");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faQuestion }),
+										"    ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Tax"
-										)
+										),
+										"            "
 									),
 									_react2.default.createElement(
 										"section",
 										null,
+										" ",
 										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
 												_this2.getCategoryTransactions("Transfer");_this2.closeCategoryViewer();
 											}, icon: _fontawesomeFreeSolid.faExchangeAlt }),
+										"  ",
 										_react2.default.createElement(
 											"p",
 											null,
 											"Transfer"
-										)
+										),
+										"       "
+									),
+									_react2.default.createElement(
+										"section",
+										null,
+										" ",
+										_react2.default.createElement(_reactFontawesome2.default, { className: "category-icon", onClick: function onClick() {
+												_this2.getCategoryTransactions("Other");_this2.closeCategoryViewer();
+											}, icon: _fontawesomeFreeSolid.faQuestion }),
+										"     ",
+										_react2.default.createElement(
+											"p",
+											null,
+											"Other"
+										),
+										"          "
 									)
 								)
 							)
@@ -90141,6 +90175,10 @@ var _defineProperty2 = __webpack_require__(30);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
+var _stringify = __webpack_require__(258);
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _regenerator = __webpack_require__(66);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -90220,7 +90258,11 @@ var AccountNames = function (_Component) {
 
 								names = names.data;
 
-							case 4:
+								this.setState({
+									mapOfAccountNamesToDisplayNames: names
+								});
+
+							case 5:
 							case 'end':
 								return _context.stop();
 						}
@@ -90242,11 +90284,14 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'handleClick',
 		value: function handleClick(e, accountID) {
-			var inputVal = e.target.parentNode.querySelector("input");
-			var displayName = inputVal.value;
+			var displayName = e.target.parentNode.querySelector("input").value;
+			var map = new _map2.default();
+			map.set(accountID, displayName);
 
 			_axios2.default.post('/user-info/display-names', {
-				data: (0, _defineProperty3.default)({}, accountID, displayName)
+				data: {
+					map: (0, _stringify2.default)(map)
+				}
 			});
 		}
 	}, {
@@ -90348,7 +90393,7 @@ exports = module.exports = __webpack_require__(20)(false);
 
 
 // module
-exports.push([module.i, ".accounts {\n  margin-top: 30px; }\n\n.account-names {\n  height: 60px;\n  margin: 15px 0;\n  display: flex;\n  align-items: center;\n  border-radius: 5px; }\n  .account-names--name {\n    margin: 0 30px;\n    width: 40%; }\n  .account-names--input {\n    margin: 0 10px;\n    padding: 10px;\n    width: 35%;\n    color: black;\n    font-size: 18px; }\n  .account-names--submit {\n    position: relative;\n    padding: 10px 20px;\n    border-radius: 5px;\n    color: white;\n    font-size: 18px;\n    background-color: #46926b;\n    cursor: pointer;\n    transition: background-color .1s ease;\n    box-shadow: 0 6px #357052; }\n    .account-names--submit:hover {\n      background-color: #418863;\n      box-shadow: 0 6px #31654a; }\n    .account-names--submit:active {\n      top: 3px;\n      box-shadow: 0 0 #357052; }\n\n.account-names:nth-child(2n+1) {\n  background: #365269; }\n", ""]);
+exports.push([module.i, ".accounts {\n  margin-top: 30px; }\n\n.account-names {\n  margin: 15px 0;\n  height: 60px;\n  border-radius: 5px;\n  display: flex;\n  align-items: center; }\n  .account-names--name {\n    margin: 0 30px;\n    width: 40%; }\n  .account-names--input {\n    margin: 0 10px;\n    width: 35%;\n    padding: 10px;\n    font-size: 18px;\n    color: black; }\n  .account-names--submit {\n    position: relative;\n    padding: 10px 20px;\n    background-color: #46926b;\n    border-radius: 5px;\n    font-size: 18px;\n    color: white;\n    cursor: pointer;\n    transition: background-color .1s ease;\n    box-shadow: 0 6px #357052; }\n    .account-names--submit:hover {\n      background-color: #418863;\n      box-shadow: 0 6px #31654a; }\n    .account-names--submit:active {\n      top: 3px;\n      box-shadow: 0 0 #357052; }\n\n.account-names:nth-child(2n+1) {\n  background: #365269; }\n", ""]);
 
 // exports
 

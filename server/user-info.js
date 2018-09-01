@@ -71,31 +71,43 @@ Router.post("/last-accessed", (req, res) => {
 });
 
 Router.post("/display-names", (req, res) => {
-	const val = req.body.data;
+	const val = JSON.parse(req.body.data.map);
+	console.log("--------------------------");
+	console.log("val");
+	console.log(val);
+	console.log(typeof val);
 
-	let currentObj = {}
-	if (req.session.displayNames !== undefined) {
-		currentObj = req.session.user.displayNames;
-	}
+	const currentMap = req.session.user.displayNames;
+	console.log("--------------------------");
+	console.log("currentMap")
+	console.log(currentMap)
+	console.log(typeof currentMap);
 
-	// Build new displayNames object
-	const newDisplayNames = Object.assign(val, currentObj);
-	console.log(newDisplayNames);
-
-	// Save new object in DB -- Callback function is needed apparently so don't remove it
-	User.update({ _id: req.session.user._id }, { displayNames: JSON.stringify(newDisplayNames) }, () => {});
+	const updatedMap = currentMap !== undefined ? new Map([...currentMap, ...val]) : new Map ([...val]);
+	console.log("--------------------------");
+	console.log("updatedMap: ");
+	console.log(updatedMap);
+	console.log(typeof updatedMap);
+	
+	// // Save new object in DB -- Callback function is needed apparently so don't remove it
+	User.update({ _id: req.session.user._id }, { displayNames: updatedMap }, () => {
+		console.log(chalk.green("DB Updated"));
+		console.log(updatedMap);
+	});
 
 	// Save new object in session
-	req.session.user.displayNames = newDisplayNames;
+	req.session.user.displayNames = mapToJson(updatedMap);
 	req.session.save();
-
 });
 
 Router.get("/display-names", async (req, res) => {
 
 	if (req.session.user.displayNames !== undefined) {
+		const serializedMap = req.session.user.displayNames;
+		console.log(jsonToMap(serializedMap));
+
 		// Send it from the session
-		res.send(req.session.user.displayNames);
+		res.send(jsonToMap(serializedMap));
 	} else {
 		// Send it from the DB
 		try {
@@ -103,14 +115,21 @@ Router.get("/display-names", async (req, res) => {
 				_id: req.session.user._id
 			});
 			console.log(record.displayNames);
-			res.send(JSON.parse(record.displayNames));
-
+			res.send(record.displayNames);
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse
+			res.json("Error in GET /user-info/display-names");
 			console.log(err);
-			res.json("ERROR");
 		}
 	}
 });
+
+function mapToJson(map) {
+    return JSON.stringify([...map]);
+}
+
+function jsonToMap(jsonStr) {
+    return new Map(JSON.parse(jsonStr));
+}
 
 module.exports = Router;

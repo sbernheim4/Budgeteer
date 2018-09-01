@@ -36,7 +36,7 @@
 		"use-isnan": 2,
 		"valid-jsdoc": 2,
 		"no-alert": 2,
-		"no-multi-spaces": 2,
+		"no-multi-spaces": 1,
 		"no-native-reassign": 1,
 		"no-octal": 1,
 		"strict": 2,

@@ -19,6 +19,10 @@ class AccountNames extends Component {
 	async componentDidMount() {
 		let names = await axios.get('/user-info/display-names');
 		names = names.data;
+		
+		this.setState({
+			mapOfAccountNamesToDisplayNames: names
+		});
 	}
 
 	static getDerivedStateFromProps(props, state) {
@@ -33,12 +37,13 @@ class AccountNames extends Component {
 	}
 
 	handleClick(e, accountID) {
-		const inputVal = e.target.parentNode.querySelector("input");
-		const displayName = inputVal.value;
+		const displayName = e.target.parentNode.querySelector("input").value;
+		const map = new Map();
+		map.set(accountID, displayName);
 
 		axios.post('/user-info/display-names', {
 			data: {
-				[accountID]: displayName
+				map: JSON.stringify(map)
 			}
 		});
 	}

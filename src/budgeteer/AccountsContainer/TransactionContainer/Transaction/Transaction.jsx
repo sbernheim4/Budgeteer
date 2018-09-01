@@ -1,10 +1,9 @@
 /*eslint no-undefined: 0*/
 
 import React, { Component } from "react";
-
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-
 import {
+	faRacquet,
 	faSearch,
 	faTags,
 	faCalendar,
@@ -17,10 +16,8 @@ import {
 	faPercent,
 	faMoneyBillAlt,
 	faExchangeAlt,
-	faBullseye
+	faQuestion
 } from '@fortawesome/fontawesome-free-solid';
-
-
 import {numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
 import "./transaction.scss";
@@ -116,9 +113,9 @@ class Transaction extends Component {
 			case "Shops":
 				categoryIcon = faShoppingBag;
 				break;
-			// case "Recreation":
-			// 	categoryIcon = ;
-			// 	break;
+			 case "Recreation":
+				 categoryIcon = faRacquet;
+				 break;
 			case "Service":
 				categoryIcon = faWrench;
 				break;
@@ -147,7 +144,7 @@ class Transaction extends Component {
 				categoryIcon = faExchangeAlt;
 				break;
 			default:
-				categoryIcon = faBullseye;
+				categoryIcon = faQuestion;
 		}
 
 		return categoryIcon;
@@ -170,7 +167,6 @@ class Transaction extends Component {
 
 		// Should the color for the amount be red or green based based on it being positive or negative
 		const amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
-
 		const name = toTitleCase(this.props.transaction.name)
 
 		return (
