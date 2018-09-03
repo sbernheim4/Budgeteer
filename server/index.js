@@ -26,7 +26,7 @@ const User = mongoose.model('User');
 /****************** DB Options ******************/
 const mongodbUri = process.env.DB_URI;
 
-mongoose.connect(mongodbUri);
+mongoose.connect(mongodbUri, { useNewUrlParser: true });
 let db = mongoose.connection;
 
 app.use(helmet());

@@ -90272,14 +90272,22 @@ var AccountNames = function (_Component) {
 								names = _context.sent;
 
 								names = names.data;
-								map = this.jsonToMap(names);
 
+								if (!(names === "")) {
+									_context.next = 6;
+									break;
+								}
+
+								return _context.abrupt('return');
+
+							case 6:
+								map = this.jsonToMap(names);
 
 								this.setState({
 									mapOfAccountNamesToDisplayNames: map
 								});
 
-							case 6:
+							case 8:
 							case 'end':
 								return _context.stop();
 						}
@@ -90296,7 +90304,6 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'getValue',
 		value: function getValue(account_id) {
-			console.log("map: ", this.state.mapOfAccountNamesToDisplayNames, this.state.mapOfAccountNamesToDisplayNames instanceof _map2.default);
 			return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || account_id;
 		}
 	}, {

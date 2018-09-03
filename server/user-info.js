@@ -16,7 +16,7 @@ Router.use(bodyParser.json());
 
 Router.post('/monthly-budget', (req, res) => {
 	// Update monthly budget on session and DB
-	User.update({ _id: req.session.user._id }, { monthlyBudget: req.body.monthlyBudget }, () => {});
+	User.updateOne({ _id: req.session.user._id }, { monthlyBudget: req.body.monthlyBudget }, () => {});
 	req.session.user.monthlyBudget = req.body.monthlyBudget;
 	req.session.save();
 });
@@ -64,7 +64,7 @@ Router.get("/last-accessed", (req, res) => {
 
 Router.post("/last-accessed", (req, res) => {
 	const date = req.body.date;
-	User.update({ _id: req.session.user._id }, { lastAccessed: date.toString() }, () => {});
+	User.updateOne({ _id: req.session.user._id }, { lastAccessed: date.toString() }, () => {});
 
 	req.session.user.lastAccessed = date;
 	req.session.save();
@@ -77,25 +77,22 @@ Router.post("/display-names", (req, res) => {
 	const val = JSON.parse(req.body.data.map);
 	const currentMap = req.session.user.displayNames;
 	const updatedMap = currentMap !== undefined ? new Map([...currentMap, ...val]) : new Map ([...val]);
+	const serializedMap = mapToJson(updatedMap)
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
-	User.update({ _id: req.session.user._id }, { displayNames: updatedMap }, () => {
-		console.log(chalk.green("DB Updated"));
+	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedMap }, () => {
 		console.log(updatedMap);
 	});
 
 	// Save new object in session
-	req.session.user.displayNames = mapToJson(updatedMap);
+	req.session.user.displayNames = serializedMap;
 	req.session.save();
 });
 
 Router.get("/display-names", async (req, res) => {
-
 	if (req.session.user.displayNames !== undefined) {
 		const serializedMap = req.session.user.displayNames;
-		// Send it from the session
-		console.log(chalk.red("Sending from session"));
-		console.log(serializedMap);
+		console.log("Getting from SESSION")
 		res.json(serializedMap);
 	} else {
 		// Send it from the DB
@@ -103,9 +100,7 @@ Router.get("/display-names", async (req, res) => {
 			const record = await User.findOne({
 				_id: req.session.user._id
 			});
-			console.log("GET displayNames from DB");
-
-			const serializedMap = mapToJson(record.displayNames);
+			const serializedMap = record.displayNames;
 			res.json(serializedMap);
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse

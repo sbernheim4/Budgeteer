@@ -28,8 +28,9 @@ class AccountNames extends Component {
 	async componentDidMount() {
 		let names = await axios.get('/user-info/display-names');
 		names = names.data;
-		const map = this.jsonToMap(names);
+		if (names === "") return;
 
+		const map = this.jsonToMap(names);
 		this.setState({
 			mapOfAccountNamesToDisplayNames: map
 		});
@@ -42,7 +43,6 @@ class AccountNames extends Component {
 	}
 
 	getValue(account_id) {
-		console.log("map: ", this.state.mapOfAccountNamesToDisplayNames, this.state.mapOfAccountNamesToDisplayNames instanceof Map);
 		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || account_id;
 	}
 
