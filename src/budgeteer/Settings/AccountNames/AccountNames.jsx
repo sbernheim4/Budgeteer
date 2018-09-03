@@ -14,14 +14,24 @@ class AccountNames extends Component {
 
 		this.handleChange = this.handleChange.bind(this);
 		this.getValue = this.getValue.bind(this);
+		this.jsonToMap = this.jsonToMap.bind(this);
+	}
+
+	mapToJson(map) {
+		return JSON.stringify([...map]);
+	}
+
+	jsonToMap(jsonStr) {
+		return new Map(JSON.parse(jsonStr));
 	}
 
 	async componentDidMount() {
 		let names = await axios.get('/user-info/display-names');
 		names = names.data;
-		
+		const map = this.jsonToMap(names);
+
 		this.setState({
-			mapOfAccountNamesToDisplayNames: names
+			mapOfAccountNamesToDisplayNames: map
 		});
 	}
 
@@ -32,8 +42,8 @@ class AccountNames extends Component {
 	}
 
 	getValue(account_id) {
-		return this.state.account_id;
-
+		console.log("map: ", this.state.mapOfAccountNamesToDisplayNames, this.state.mapOfAccountNamesToDisplayNames instanceof Map);
+		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || account_id;
 	}
 
 	handleClick(e, accountID) {

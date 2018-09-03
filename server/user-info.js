@@ -71,25 +71,14 @@ Router.post("/last-accessed", (req, res) => {
 });
 
 Router.post("/display-names", (req, res) => {
+	// Stored as Map obj in DB
+	// Stored as JSON in session
+
 	const val = JSON.parse(req.body.data.map);
-	console.log("--------------------------");
-	console.log("val");
-	console.log(val);
-	console.log(typeof val);
-
 	const currentMap = req.session.user.displayNames;
-	console.log("--------------------------");
-	console.log("currentMap")
-	console.log(currentMap)
-	console.log(typeof currentMap);
-
 	const updatedMap = currentMap !== undefined ? new Map([...currentMap, ...val]) : new Map ([...val]);
-	console.log("--------------------------");
-	console.log("updatedMap: ");
-	console.log(updatedMap);
-	console.log(typeof updatedMap);
-	
-	// // Save new object in DB -- Callback function is needed apparently so don't remove it
+
+	// Save new object in DB -- Callback function is needed apparently so don't remove it
 	User.update({ _id: req.session.user._id }, { displayNames: updatedMap }, () => {
 		console.log(chalk.green("DB Updated"));
 		console.log(updatedMap);
@@ -104,18 +93,20 @@ Router.get("/display-names", async (req, res) => {
 
 	if (req.session.user.displayNames !== undefined) {
 		const serializedMap = req.session.user.displayNames;
-		console.log(jsonToMap(serializedMap));
-
 		// Send it from the session
-		res.send(jsonToMap(serializedMap));
+		console.log(chalk.red("Sending from session"));
+		console.log(serializedMap);
+		res.json(serializedMap);
 	} else {
 		// Send it from the DB
 		try {
 			const record = await User.findOne({
 				_id: req.session.user._id
 			});
-			console.log(record.displayNames);
-			res.send(record.displayNames);
+			console.log("GET displayNames from DB");
+
+			const serializedMap = mapToJson(record.displayNames);
+			res.json(serializedMap);
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse
 			res.json("Error in GET /user-info/display-names");

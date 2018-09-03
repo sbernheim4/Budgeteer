@@ -90175,10 +90175,6 @@ var _defineProperty2 = __webpack_require__(30);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
-var _stringify = __webpack_require__(258);
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
 var _regenerator = __webpack_require__(66);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -90186,6 +90182,14 @@ var _regenerator2 = _interopRequireDefault(_regenerator);
 var _asyncToGenerator2 = __webpack_require__(67);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _toConsumableArray2 = __webpack_require__(252);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _stringify = __webpack_require__(258);
+
+var _stringify2 = _interopRequireDefault(_stringify);
 
 var _map = __webpack_require__(951);
 
@@ -90238,14 +90242,25 @@ var AccountNames = function (_Component) {
 
 		_this.handleChange = _this.handleChange.bind(_this);
 		_this.getValue = _this.getValue.bind(_this);
+		_this.jsonToMap = _this.jsonToMap.bind(_this);
 		return _this;
 	}
 
 	(0, _createClass3.default)(AccountNames, [{
+		key: 'mapToJson',
+		value: function mapToJson(map) {
+			return (0, _stringify2.default)([].concat((0, _toConsumableArray3.default)(map)));
+		}
+	}, {
+		key: 'jsonToMap',
+		value: function jsonToMap(jsonStr) {
+			return new _map2.default(JSON.parse(jsonStr));
+		}
+	}, {
 		key: 'componentDidMount',
 		value: function () {
 			var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
-				var names;
+				var names, map;
 				return _regenerator2.default.wrap(function _callee$(_context) {
 					while (1) {
 						switch (_context.prev = _context.next) {
@@ -90257,12 +90272,14 @@ var AccountNames = function (_Component) {
 								names = _context.sent;
 
 								names = names.data;
+								map = this.jsonToMap(names);
+
 
 								this.setState({
-									mapOfAccountNamesToDisplayNames: names
+									mapOfAccountNamesToDisplayNames: map
 								});
 
-							case 5:
+							case 6:
 							case 'end':
 								return _context.stop();
 						}
@@ -90279,7 +90296,8 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'getValue',
 		value: function getValue(account_id) {
-			return this.state.account_id;
+			console.log("map: ", this.state.mapOfAccountNamesToDisplayNames, this.state.mapOfAccountNamesToDisplayNames instanceof _map2.default);
+			return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || account_id;
 		}
 	}, {
 		key: 'handleClick',
