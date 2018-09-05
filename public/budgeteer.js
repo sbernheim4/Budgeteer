@@ -90332,8 +90332,8 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'handleClick',
 		value: function handleClick(e, accountID) {
+			var map = this.state.mapOfAccountNamesToDisplayNames !== undefined ? this.state.mapOfAccountNamesToDisplayNames : new _map2.default();
 			var displayName = e.target.parentNode.querySelector("input").value;
-			var map = new _map2.default();
 			map.set(accountID, displayName);
 
 			_axios2.default.post('/user-info/display-names', {

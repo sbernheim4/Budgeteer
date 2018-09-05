@@ -71,43 +71,37 @@ Router.post("/last-accessed", (req, res) => {
 });
 
 Router.post("/display-names", (req, res) => {
-	// Stored as Map obj in DB
-	// Stored as JSON in session
-	const val = JSON.parse(req.body.data.map);
-	const displayNames = req.session.user.displayNames;
-
-	let currentMap = displayNames === undefined || displayNames === null ? mapToJson(new Map()) : req.session.user.displayNames;
-	currentMap = jsonToMap(currentMap);
-
-	const updatedMap = currentMap !== undefined ? new Map([...currentMap, ...val]) : new Map ([...val]);
-	const serializedMap = mapToJson(updatedMap)
+	const newMap = JSON.parse(req.body.data.map);
+	const serializedNewMap = mapToJson(newMap)
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
-	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedMap }, () => {
-		console.log(updatedMap);
+	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedNewMap }, () => {
+		console.log(serializedNewMap);
 	});
 
 	// Save new object in session
-	req.session.user.displayNames = serializedMap;
+	req.session.user.displayNames = serializedNewMap;
 	req.session.save();
 });
 
 Router.get("/display-names", async (req, res) => {
 	if (req.session.user.displayNames !== undefined) {
 		const serializedMap = req.session.user.displayNames;
-		console.log("Getting from SESSION")
 		res.json(serializedMap);
 	} else {
-		console.log("Getting from DB")
-		// Send it from the DB
 		try {
 			const record = await User.findOne({
 				_id: req.session.user._id
 			});
 			const serializedMap = record.displayNames;
-			console.log(typeof record.displayNames);
+			
 			//TODO: Might just want to return an empty map then...
 			if (serializedMap === undefined) throw new Error("No account display names found :(");
+
+			// Store it on the session for next time
+			req.session.user.displayNames = serializedMap;
+
+			// Send it back to the client
 			res.json(serializedMap);
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse

@@ -52,8 +52,8 @@ class AccountNames extends Component {
 	}
 
 	handleClick(e, accountID) {
+		const map = this.state.mapOfAccountNamesToDisplayNames !== undefined ? this.state.mapOfAccountNamesToDisplayNames : new Map();
 		const displayName = e.target.parentNode.querySelector("input").value;
-		const map = new Map();
 		map.set(accountID, displayName);
 
 		axios.post('/user-info/display-names', {
