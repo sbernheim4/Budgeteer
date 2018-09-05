@@ -73,9 +73,12 @@ Router.post("/last-accessed", (req, res) => {
 Router.post("/display-names", (req, res) => {
 	// Stored as Map obj in DB
 	// Stored as JSON in session
-
 	const val = JSON.parse(req.body.data.map);
-	const currentMap = req.session.user.displayNames;
+	const displayNames = req.session.user.displayNames;
+
+	let currentMap = displayNames === undefined || displayNames === null ? mapToJson(new Map()) : req.session.user.displayNames;
+	currentMap = jsonToMap(currentMap);
+
 	const updatedMap = currentMap !== undefined ? new Map([...currentMap, ...val]) : new Map ([...val]);
 	const serializedMap = mapToJson(updatedMap)
 
@@ -95,16 +98,20 @@ Router.get("/display-names", async (req, res) => {
 		console.log("Getting from SESSION")
 		res.json(serializedMap);
 	} else {
+		console.log("Getting from DB")
 		// Send it from the DB
 		try {
 			const record = await User.findOne({
 				_id: req.session.user._id
 			});
 			const serializedMap = record.displayNames;
+			console.log(typeof record.displayNames);
+			//TODO: Might just want to return an empty map then...
+			if (serializedMap === undefined) throw new Error("No account display names found :(");
 			res.json(serializedMap);
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse
-			res.json("Error in GET /user-info/display-names");
+			res.status(404).json("Error in GET /user-info/display-names").end();
 			console.log(err);
 		}
 	}

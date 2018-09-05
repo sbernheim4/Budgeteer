@@ -13,5 +13,14 @@ export function toTitleCase(str) {
 	}).join(' ');
 }
 
-export function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
+export function isNumber(n) {
+	return !isNaN(parseFloat(n)) && !isNaN(n - 0)
+}
 
+export function mapToJson(map) {
+	return JSON.stringify([...map]);
+}
+
+export function jsonToMap(jsonStr) {
+	return new Map(JSON.parse(jsonStr));
+}

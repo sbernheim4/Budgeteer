@@ -1,3 +1,4 @@
+/*eslint no-undefined: 0*/
 import React, { Component } from "react";
 import axios from 'axios';
 
@@ -26,14 +27,18 @@ class AccountNames extends Component {
 	}
 
 	async componentDidMount() {
-		let names = await axios.get('/user-info/display-names');
-		names = names.data;
-		if (names === "") return;
+		try {
+			let names = await axios.get('/user-info/display-names');
+			names = names.data;
 
-		const map = this.jsonToMap(names);
-		this.setState({
-			mapOfAccountNamesToDisplayNames: map
-		});
+			const map = this.jsonToMap(names);
+			this.setState({
+				mapOfAccountNamesToDisplayNames: map
+			});
+		} catch (err) {
+			console.log("Error: ");
+			console.log(err);
+		}
 	}
 
 	static getDerivedStateFromProps(props, state) {
@@ -43,7 +48,7 @@ class AccountNames extends Component {
 	}
 
 	getValue(account_id) {
-		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || account_id;
+		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || "";
 	}
 
 	handleClick(e, accountID) {
@@ -72,7 +77,7 @@ class AccountNames extends Component {
 					<div className="account-names" key={index}>
 						<h3 className="account-names--name">{acct.name}</h3>
 						<h3 className="account-names--display">Display Name: </h3>
-						<input className="account-names--input" id={index} value={this.getValue(acct.account_id)} onChange={(e) => this.handleChange(e, acct.account_id)} type='text'/>
+						<input className="account-names--input" id={index} placeholder={this.getValue(acct.account_id)} onChange={(e) => this.handleChange(e, acct.account_id)} type='text'/>
 						<button onClick={(e) => this.handleClick(e, acct.account_id)} className="account-names--submit">Update</button>
 					</div>
 				)}

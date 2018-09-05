@@ -1,4 +1,6 @@
 /* eslint no-undefined: 0 */
+/* eslint no-multi-spaces: 0 */
+
 import axios from 'axios';
 
 import ReactDOM from "react-dom";
@@ -34,6 +36,8 @@ import {
 	faQuestion
 } from '@fortawesome/fontawesome-free-solid';
 
+import { jsonToMap, mapToJson } from "../helpers.js";
+
 class AccountsContainer extends Component {
 	constructor(props) {
 		super(props)
@@ -61,15 +65,20 @@ class AccountsContainer extends Component {
 
 	async componentDidMount() {
 		this.getAccountTransactions("all");
-		let displayNames = await axios.get("/user-info/display-names");
-		displayNames = displayNames.data;
 
-		if (displayNames !== undefined) {
+		try {
+			// TODO: I think displayNames is not a string, it needs additional quotes around it to be properly processed by jsonToMap;
+
+			let displayNames = await axios.get("/user-info/display-names");
+			displayNames = displayNames.data;
+			console.log(displayNames);
+			console.log(typeof jsonToMap(displayNames));
 			this.setState({
-				displayNames: displayNames
+				displayNames: jsonToMap(displayNames)
 			});
-		} else {
-			console.log("displayNames was undefined");
+		} catch(err) {
+			console.log("ERROR");
+			console.log(err);
 		}
 	}
 
@@ -167,10 +176,12 @@ class AccountsContainer extends Component {
 	}
 
 	getAccountDisplayName(accountID, defaultName) {
-		const x = this.state.displayNames;
-		const displayName = x[accountID];
-
-		if (displayName !== undefined) return displayName
+		/*let x = this.state.displayNames;
+		x = mapToJson(x);
+		console.log(x);
+		x = jsonToMap(x)
+		console.log(x);
+		console.log(x instanceof Map)*/
 		return defaultName;
 	}
 

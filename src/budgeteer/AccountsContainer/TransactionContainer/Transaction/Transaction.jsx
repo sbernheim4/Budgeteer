@@ -18,7 +18,7 @@ import {
 	faExchangeAlt,
 	faQuestion
 } from '@fortawesome/fontawesome-free-solid';
-import {numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
+import { numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
 import "./transaction.scss";
 

@@ -5597,6 +5597,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (immutable) */ __webpack_exports__["formatAmount"] = formatAmount;
 /* harmony export (immutable) */ __webpack_exports__["toTitleCase"] = toTitleCase;
 /* harmony export (immutable) */ __webpack_exports__["isNumber"] = isNumber;
+/* harmony export (immutable) */ __webpack_exports__["mapToJson"] = mapToJson;
+/* harmony export (immutable) */ __webpack_exports__["jsonToMap"] = jsonToMap;
 function numberWithCommas(number) {
 	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -5612,8 +5614,17 @@ function toTitleCase(str) {
 	}).join(' ');
 }
 
-function isNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
+function isNumber(n) {
+	return !isNaN(parseFloat(n)) && !isNaN(n - 0)
+}
 
+function mapToJson(map) {
+	return JSON.stringify([...map]);
+}
+
+function jsonToMap(jsonStr) {
+	return new Map(JSON.parse(jsonStr));
+}
 
 
 /***/ }),
@@ -88021,6 +88032,10 @@ var _regenerator = __webpack_require__(66);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _typeof2 = __webpack_require__(150);
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
 var _asyncToGenerator2 = __webpack_require__(67);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -88077,10 +88092,11 @@ var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
 var _fontawesomeFreeSolid = __webpack_require__(184);
 
+var _helpers2 = __webpack_require__(71);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Font Awesome base package
-/* eslint no-undefined: 0 */
+// Selective icons from Font Awesome
 var AccountsContainer = function (_Component) {
 	(0, _inherits3.default)(AccountsContainer, _Component);
 
@@ -88121,28 +88137,36 @@ var AccountsContainer = function (_Component) {
 						switch (_context.prev = _context.next) {
 							case 0:
 								this.getAccountTransactions("all");
-								_context.next = 3;
+
+								_context.prev = 1;
+								_context.next = 4;
 								return _axios2.default.get("/user-info/display-names");
 
-							case 3:
+							case 4:
 								displayNames = _context.sent;
 
 								displayNames = displayNames.data;
+								console.log(displayNames);
+								console.log((0, _typeof3.default)((0, _helpers2.jsonToMap)(displayNames)));
+								this.setState({
+									displayNames: (0, _helpers2.jsonToMap)(displayNames)
+								});
+								_context.next = 15;
+								break;
 
-								if (displayNames !== undefined) {
-									this.setState({
-										displayNames: displayNames
-									});
-								} else {
-									console.log("displayNames was undefined");
-								}
+							case 11:
+								_context.prev = 11;
+								_context.t0 = _context["catch"](1);
 
-							case 6:
+								console.log("ERROR");
+								console.log(_context.t0);
+
+							case 15:
 							case "end":
 								return _context.stop();
 						}
 					}
-				}, _callee, this);
+				}, _callee, this, [[1, 11]]);
 			}));
 
 			function componentDidMount() {
@@ -88255,10 +88279,12 @@ var AccountsContainer = function (_Component) {
 	}, {
 		key: "getAccountDisplayName",
 		value: function getAccountDisplayName(accountID, defaultName) {
-			var x = this.state.displayNames;
-			var displayName = x[accountID];
-
-			if (displayName !== undefined) return displayName;
+			/*let x = this.state.displayNames;
+   x = mapToJson(x);
+   console.log(x);
+   x = jsonToMap(x)
+   console.log(x);
+   console.log(x instanceof Map)*/
 			return defaultName;
 		}
 	}, {
@@ -88751,8 +88777,9 @@ var AccountsContainer = function (_Component) {
 	return AccountsContainer;
 }(_react.Component);
 
-// Selective icons from Font Awesome
-
+// Font Awesome base package
+/* eslint no-undefined: 0 */
+/* eslint no-multi-spaces: 0 */
 
 exports.default = AccountsContainer;
 
@@ -90265,34 +90292,36 @@ var AccountNames = function (_Component) {
 					while (1) {
 						switch (_context.prev = _context.next) {
 							case 0:
-								_context.next = 2;
+								_context.prev = 0;
+								_context.next = 3;
 								return _axios2.default.get('/user-info/display-names');
 
-							case 2:
+							case 3:
 								names = _context.sent;
 
 								names = names.data;
 
-								if (!(names === "")) {
-									_context.next = 6;
-									break;
-								}
-
-								return _context.abrupt('return');
-
-							case 6:
 								map = this.jsonToMap(names);
 
 								this.setState({
 									mapOfAccountNamesToDisplayNames: map
 								});
+								_context.next = 13;
+								break;
 
-							case 8:
+							case 9:
+								_context.prev = 9;
+								_context.t0 = _context['catch'](0);
+
+								console.log("Error: ");
+								console.log(_context.t0);
+
+							case 13:
 							case 'end':
 								return _context.stop();
 						}
 					}
-				}, _callee, this);
+				}, _callee, this, [[0, 9]]);
 			}));
 
 			function componentDidMount() {
@@ -90304,7 +90333,7 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'getValue',
 		value: function getValue(account_id) {
-			return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || account_id;
+			return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || "";
 		}
 	}, {
 		key: 'handleClick',
@@ -90351,7 +90380,7 @@ var AccountNames = function (_Component) {
 							{ className: 'account-names--display' },
 							'Display Name: '
 						),
-						_react2.default.createElement('input', { className: 'account-names--input', id: index, value: _this2.getValue(acct.account_id), onChange: function onChange(e) {
+						_react2.default.createElement('input', { className: 'account-names--input', id: index, placeholder: _this2.getValue(acct.account_id), onChange: function onChange(e) {
 								return _this2.handleChange(e, acct.account_id);
 							}, type: 'text' }),
 						_react2.default.createElement(
@@ -90374,7 +90403,8 @@ var AccountNames = function (_Component) {
 		}
 	}]);
 	return AccountNames;
-}(_react.Component);
+}(_react.Component); /*eslint no-undefined: 0*/
+
 
 exports.default = AccountNames;
 
