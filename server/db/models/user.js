@@ -31,7 +31,7 @@ const userSchema = new Schema({
 		required: false
 	},
 	displayNames: {
-		type: Map,
+		type: String,
 		required: false
 	},
 	lastAccessed: {

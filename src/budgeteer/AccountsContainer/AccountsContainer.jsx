@@ -19,7 +19,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
 // Selective icons from Font Awesome
 import {
-	faRacquet,
+	faRacquet, faTarget,
 	faSearch,
 	faTags,
 	faCalendar,
@@ -49,7 +49,7 @@ class AccountsContainer extends Component {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0.00,
-			displayNames: {},
+			/*displayNames: {},*/
 			keyWord: "",
 			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
@@ -71,10 +71,10 @@ class AccountsContainer extends Component {
 
 			let displayNames = await axios.get("/user-info/display-names");
 			displayNames = displayNames.data;
-			console.log(displayNames);
-			console.log(typeof jsonToMap(displayNames));
+			const map = jsonToMap(displayNames);
+
 			this.setState({
-				displayNames: jsonToMap(displayNames)
+				displayNames: map
 			});
 		} catch(err) {
 			console.log("ERROR");
@@ -176,13 +176,10 @@ class AccountsContainer extends Component {
 	}
 
 	getAccountDisplayName(accountID, defaultName) {
-		/*let x = this.state.displayNames;
-		x = mapToJson(x);
-		console.log(x);
-		x = jsonToMap(x)
-		console.log(x);
-		console.log(x instanceof Map)*/
-		return defaultName;
+		let x = this.state.displayNames;
+		if (x === undefined) return defaultName;
+
+		return x.get(accountID) || defaultName;
 	}
 
 	async searchByDate(e) {
