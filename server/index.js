@@ -226,12 +226,9 @@ function checkAuthentication(req, res, next) {
 /****************** Start the DB and Server ******************/
 startDb.then(() => {
 	if (process.env.NODE_ENV === 'development') {
-<<<<<<< Updated upstream
-=======
 		app.listen(process.env.INSECURE_PORT, () => {
 			console.log(chalk.green(`Listening on port ${process.env.INSECURE_PORT}`));
 		});
->>>>>>> Stashed changes
 		https.createServer(options, app).listen(process.env.PORT);
 		console.log(chalk.green(`Listening securely on port ${process.env.PORT}`));
 	} else if (process.env.NODE_ENV === 'production'){
