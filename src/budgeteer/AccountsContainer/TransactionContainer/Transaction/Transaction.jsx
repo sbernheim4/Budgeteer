@@ -18,7 +18,10 @@ import {
 	faExchangeAlt,
 	faQuestion
 } from '@fortawesome/fontawesome-free-solid';
-import { numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
+
+import axios from "axios";
+
+import { jsonToMap, numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
 import "./transaction.scss";
 
@@ -27,11 +30,28 @@ class Transaction extends Component {
 		super(props);
 
 		this.state = {
-			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
+			displayNames: new Map()
 		};
 
 		this.showMap = this.showMap.bind(this);
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
+	}
+
+	async componentDidMount() {
+
+		try {
+			let displayNames = await axios.get("/user-info/display-names");
+			displayNames = displayNames.data;
+			const map = jsonToMap(displayNames);
+
+			this.setState({
+				displayNames: map
+			});
+		} catch(err) {
+			console.log("ERROR");
+			console.log(err);
+		}
 	}
 
 	formatDate(date) {
@@ -90,12 +110,24 @@ class Transaction extends Component {
 		}
 	}
 
+	getAccountDisplayName(accountID, defaultName) {
+		let x = this.state.displayNames;
+		if (x === undefined) return defaultName;
+
+		return x.get(accountID) || defaultName;
+	}
+
 	getAccountNameFromID(accountID) {
+		let x = this.state.displayNames;
+		let defaultName;
+		
 		for (let acct of this.props.accounts) {
 			if (acct.account_id === accountID) {
-				return acct.name;
+				defaultName = acct.name;
 			}
 		}
+
+		return x.get(accountID) || defaultName;
 	}
 
 	getCategoryIcon(categoryName) {

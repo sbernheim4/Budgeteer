@@ -226,6 +226,12 @@ function checkAuthentication(req, res, next) {
 /****************** Start the DB and Server ******************/
 startDb.then(() => {
 	if (process.env.NODE_ENV === 'development') {
+<<<<<<< Updated upstream
+=======
+		app.listen(process.env.INSECURE_PORT, () => {
+			console.log(chalk.green(`Listening on port ${process.env.INSECURE_PORT}`));
+		});
+>>>>>>> Stashed changes
 		https.createServer(options, app).listen(process.env.PORT);
 		console.log(chalk.green(`Listening securely on port ${process.env.PORT}`));
 	} else if (process.env.NODE_ENV === 'production'){
@@ -238,20 +244,3 @@ startDb.then(() => {
 }).catch(err => {
 	console.log(err)
 });
-
-/*if (process.env.NODE_ENV === 'development') {
-	startDb.then(() => {
-		https.createServer(options, app).listen(process.env.PORT);
-		console.log(chalk.green(`Listening securely on port ${process.env.PORprocess.env.PORT}`));
-	}).catch(err => {
-		console.log(err);
-	});
-} else if (process.env.NODE_ENV === 'production') {
-	startDb.then(() => {
-		app.listen(process.env.PORT, () => {
-			console.log(chalk.green(`Listening on port ${process.env.PORT}`));
-		});
-	}).catch(err => {
-		console.log(err);
-	});
-}*/
