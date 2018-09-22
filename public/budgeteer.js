@@ -47573,7 +47573,6 @@ var BudgetChart = function (_Component2) {
 		value: function getDerivedStateFromProps(nextProps, prevState) {
 
 			if (nextProps.transactions.length > 0) {
-				console.log("gucci");
 				var totalSpent = 0;
 				var today = new Date();
 
@@ -57704,10 +57703,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _toConsumableArray2 = __webpack_require__(252);
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
 var _stringify = __webpack_require__(258);
 
 var _stringify2 = _interopRequireDefault(_stringify);
@@ -57919,19 +57914,15 @@ var App = function (_Component) {
 		key: 'getTransactions',
 		value: function () {
 			var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
-				var now, prev, numDays, blob, cachedData, _numDays, newData, i, _cachedData$i$transac, x;
-
+				var now, prev, numDays, blob, x;
 				return _regenerator2.default.wrap(function _callee3$(_context3) {
 					while (1) {
 						switch (_context3.prev = _context3.next) {
 							case 0:
 								_context3.prev = 0;
 
-								if (!(window.localStorage.getItem("allData") === null)) {
-									_context3.next = 18;
-									break;
-								}
 
+								// if (window.localStorage.getItem("allData") === null) {
 								// No data in local storage
 
 								now = new Date(); // Jan. 12th 2018
@@ -57942,12 +57933,12 @@ var App = function (_Component) {
 								prev = (0, _start_of_month2.default)(prev); // Returns Feb 1st 2017
 								numDays = (0, _difference_in_days2.default)(now, prev); // Get the number of days difference between now and about a year ago
 
-								_context3.next = 9;
+								_context3.next = 8;
 								return _axios2.default.post('/plaid-api/transactions', {
 									days: numDays
 								});
 
-							case 9:
+							case 8:
 								blob = _context3.sent;
 
 								blob = blob.data;
@@ -57955,58 +57946,41 @@ var App = function (_Component) {
 								// Store transactions in local storage for future use
 								window.localStorage.setItem("allData", (0, _stringify2.default)(blob));
 
-								_context3.next = 14;
+								_context3.next = 13;
 								return this.storeAccounts(blob);
 
-							case 14:
-								_context3.next = 16;
+							case 13:
+								_context3.next = 15;
 								return this.storeTransactions(blob);
 
-							case 16:
-								_context3.next = 34;
-								break;
+							case 15:
+								// store transaction info in state
 
-							case 18:
-								// Some data is in local storage -- get all new data from after most recent transaction in storage
-								cachedData = JSON.parse(window.localStorage.getItem("allData"));
-								_context3.next = 21;
-								return this.storeAccounts(cachedData);
+								// } else {
+								// 	// Some data is in local storage -- get all new data from after most recent transaction in storage
+								// 	const cachedData = JSON.parse(window.localStorage.getItem("allData"));
 
-							case 21:
-								_context3.next = 23;
-								return this.storeTransactions(cachedData);
+								// 	await this.storeAccounts(cachedData); // Store account info
+								// 	await this.storeTransactions(cachedData); // store transaction info
 
-							case 23:
-								_context3.next = 25;
-								return this.getLastAccessedDate();
+								// 	const numDays = await this.getLastAccessedDate();
+								// 	let newData = await axios.post('/plaid-api/transactions', {
+								// 		days: numDays
+								// 	});
+								// 	newData = newData.data;
 
-							case 25:
-								_numDays = _context3.sent;
-								_context3.next = 28;
-								return _axios2.default.post('/plaid-api/transactions', {
-									days: _numDays
-								});
+								// 	// Update transactions state variable
+								// 	await this.storeTransactions(newData);
 
-							case 28:
-								newData = _context3.sent;
+								// 	// Merge cached data and new data to store in local storage
+								// 	for (let i = 0; i < cachedData.length; i++) {
+								// 		cachedData[i].transactions.push(...newData[i].transactions);
+								// 		cachedData[i].total_transactions += newData[i].total_transactions;
+								// 	}
 
-								newData = newData.data;
+								// 	window.localStorage.setItem("allData", JSON.stringify(cachedData));
+								// }
 
-								// Update transactions state variable
-								_context3.next = 32;
-								return this.storeTransactions(newData);
-
-							case 32:
-
-								// Merge cached data and new data to store in local storage
-								for (i = 0; i < cachedData.length; i++) {
-									(_cachedData$i$transac = cachedData[i].transactions).push.apply(_cachedData$i$transac, (0, _toConsumableArray3.default)(newData[i].transactions));
-									cachedData[i].total_transactions += newData[i].total_transactions;
-								}
-
-								window.localStorage.setItem("allData", (0, _stringify2.default)(cachedData));
-
-							case 34:
 
 								// Counter used to know when components have loaded
 								x = this.state.counter;
@@ -58015,22 +57989,22 @@ var App = function (_Component) {
 								this.setState({
 									counter: x
 								});
-								_context3.next = 43;
+								_context3.next = 24;
 								break;
 
-							case 39:
-								_context3.prev = 39;
+							case 20:
+								_context3.prev = 20;
 								_context3.t0 = _context3['catch'](0);
 
 								console.log("ERROR: ");
 								console.error(_context3.t0);
 
-							case 43:
+							case 24:
 							case 'end':
 								return _context3.stop();
 						}
 					}
-				}, _callee3, this, [[0, 39]]);
+				}, _callee3, this, [[0, 20]]);
 			}));
 
 			function getTransactions() {
@@ -90275,6 +90249,10 @@ var _defineProperty2 = __webpack_require__(30);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
+var _getIterator2 = __webpack_require__(185);
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
 var _regenerator = __webpack_require__(66);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -90341,7 +90319,7 @@ var AccountNames = function (_Component) {
 		};
 
 		_this.handleChange = _this.handleChange.bind(_this);
-		_this.getValue = _this.getValue.bind(_this);
+		_this.getDisplayName = _this.getDisplayName.bind(_this);
 		_this.jsonToMap = _this.jsonToMap.bind(_this);
 		return _this;
 	}
@@ -90404,16 +90382,56 @@ var AccountNames = function (_Component) {
 			return componentDidMount;
 		}()
 	}, {
-		key: 'getValue',
-		value: function getValue(account_id) {
+		key: 'getAccountIDFromAccountName',
+		value: function getAccountIDFromAccountName(accountName) {
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = (0, _getIterator3.default)(this.props.accounts), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var account = _step.value;
+
+					if (account.name === accountName) return account.account_id;
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+		}
+	}, {
+		key: 'getDisplayName',
+		value: function getDisplayName(account_id) {
 			return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || "";
 		}
 	}, {
 		key: 'handleClick',
-		value: function handleClick(e, accountID) {
+		value: function handleClick(e) {
+			var _this2 = this;
+
 			var map = this.state.mapOfAccountNamesToDisplayNames !== undefined ? this.state.mapOfAccountNamesToDisplayNames : new _map2.default();
-			var displayName = e.target.parentNode.querySelector("input").value;
-			map.set(accountID, displayName);
+			var vals = document.querySelectorAll(".account-names--input");
+
+			vals.forEach(function (val) {
+				var displayName = val.value || val.placeholder;
+
+				// Skip the entry if there is no value
+				if (displayName === "" || displayName === null || displayName === undefined) return;
+
+				var accountName = val.parentNode.querySelector(".account-names--name").innerText;
+				var accountID = _this2.getAccountIDFromAccountName(accountName);
+				map.set(accountID, displayName);
+			});
 
 			_axios2.default.post('/user-info/display-names', {
 				data: {
@@ -90429,7 +90447,7 @@ var AccountNames = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
+			var _this3 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -90453,18 +90471,18 @@ var AccountNames = function (_Component) {
 							{ className: 'account-names--display' },
 							'Display Name: '
 						),
-						_react2.default.createElement('input', { className: 'account-names--input', id: index, placeholder: _this2.getValue(acct.account_id), onChange: function onChange(e) {
-								return _this2.handleChange(e, acct.account_id);
-							}, type: 'text' }),
-						_react2.default.createElement(
-							'button',
-							{ onClick: function onClick(e) {
-									return _this2.handleClick(e, acct.account_id);
-								}, className: 'account-names--submit' },
-							'Update'
-						)
+						_react2.default.createElement('input', { className: 'account-names--input', id: index, placeholder: _this3.getDisplayName(acct.account_id), onChange: function onChange(e) {
+								return _this3.handleChange(e, acct.account_id);
+							}, type: 'text' })
 					);
-				})
+				}),
+				_react2.default.createElement(
+					'button',
+					{ onClick: function onClick(e) {
+							return _this3.handleClick(e);
+						}, className: 'account-names--submit' },
+					'Update'
+				)
 			);
 		}
 	}], [{

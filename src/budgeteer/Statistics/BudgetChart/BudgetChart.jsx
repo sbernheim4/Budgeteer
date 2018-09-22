@@ -53,7 +53,6 @@ class BudgetChart extends Component {
 	static getDerivedStateFromProps(nextProps, prevState) {
 
 		if (nextProps.transactions.length > 0) {
-			console.log("gucci")
 			let totalSpent = 0;
 			let today = new Date();
 

@@ -14,7 +14,7 @@ class AccountNames extends Component {
 		}
 
 		this.handleChange = this.handleChange.bind(this);
-		this.getValue = this.getValue.bind(this);
+		this.getDisplayName = this.getDisplayName.bind(this);
 		this.jsonToMap = this.jsonToMap.bind(this);
 	}
 
@@ -47,14 +47,30 @@ class AccountNames extends Component {
 		}
 	}
 
-	getValue(account_id) {
+	getAccountIDFromAccountName(accountName) {
+		for (const account of this.props.accounts) {
+			if (account.name === accountName) return account.account_id;
+		}
+	}
+
+	getDisplayName(account_id) {
 		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || "";
 	}
 
-	handleClick(e, accountID) {
+	handleClick(e) {
 		const map = this.state.mapOfAccountNamesToDisplayNames !== undefined ? this.state.mapOfAccountNamesToDisplayNames : new Map();
-		const displayName = e.target.parentNode.querySelector("input").value;
-		map.set(accountID, displayName);
+		const vals = document.querySelectorAll(".account-names--input");
+
+		vals.forEach(val => {
+			const displayName = val.value || val.placeholder;
+
+			// Skip the entry if there is no value
+			if (displayName === "" || displayName === null || displayName === undefined) return;
+
+			const accountName = val.parentNode.querySelector(".account-names--name").innerText;
+			const accountID = this.getAccountIDFromAccountName(accountName);
+			map.set(accountID, displayName);
+		});
 
 		axios.post('/user-info/display-names', {
 			data: {
@@ -77,10 +93,10 @@ class AccountNames extends Component {
 					<div className="account-names" key={index}>
 						<h3 className="account-names--name">{acct.name}</h3>
 						<h3 className="account-names--display">Display Name: </h3>
-						<input className="account-names--input" id={index} placeholder={this.getValue(acct.account_id)} onChange={(e) => this.handleChange(e, acct.account_id)} type='text'/>
-						<button onClick={(e) => this.handleClick(e, acct.account_id)} className="account-names--submit">Update</button>
+						<input className="account-names--input" id={index} placeholder={this.getDisplayName(acct.account_id)} onChange={(e) => this.handleChange(e, acct.account_id)} type='text'/>
 					</div>
 				)}
+				<button onClick={(e) => this.handleClick(e)} className="account-names--submit">Update</button>
 			</div>
 		)
 	}
