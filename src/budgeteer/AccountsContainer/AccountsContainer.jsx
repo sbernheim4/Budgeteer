@@ -124,11 +124,11 @@ class AccountsContainer extends Component {
 		const now = new Date();
 		const nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
 		const prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
-		const categoryType = type === "All Categories" ? prevString + " - " + nowString : type;
+		const categoryType = type === "All Categories" ? prevString + " - " + nowString : this.getAccountDisplayName(account_id, type);
 
 		this.setState({
 			categoryTransactions: releventTransactions,
-			categoryType: type,
+			categoryType: categoryType,
 			categoryTotal: total
 		});
 	}
