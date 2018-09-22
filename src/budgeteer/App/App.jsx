@@ -77,7 +77,7 @@ class App extends Component {
 
 		try {
 
-			if (window.localStorage.getItem("allData") === null) {
+			// if (window.localStorage.getItem("allData") === null) {
 				// No data in local storage
 
 				let now = new Date(); // Jan. 12th 2018
@@ -97,30 +97,31 @@ class App extends Component {
 				await this.storeAccounts(blob); // Store account info in state
 				await this.storeTransactions(blob); // store transaction info in state
 
-			} else {
-				// Some data is in local storage -- get all new data from after most recent transaction in storage
-				const cachedData = JSON.parse(window.localStorage.getItem("allData"));
+			// } else {
+			// 	// Some data is in local storage -- get all new data from after most recent transaction in storage
+			// 	const cachedData = JSON.parse(window.localStorage.getItem("allData"));
 
-				await this.storeAccounts(cachedData); // Store account info
-				await this.storeTransactions(cachedData); // store transaction info
+			// 	await this.storeAccounts(cachedData); // Store account info
+			// 	await this.storeTransactions(cachedData); // store transaction info
 
-				const numDays = await this.getLastAccessedDate();
-				let newData = await axios.post('/plaid-api/transactions', {
-					days: numDays
-				});
-				newData = newData.data;
+			// 	const numDays = await this.getLastAccessedDate();
+			// 	let newData = await axios.post('/plaid-api/transactions', {
+			// 		days: numDays
+			// 	});
+			// 	newData = newData.data;
 
-				// Update transactions state variable
-				await this.storeTransactions(newData);
+			// 	// Update transactions state variable
+			// 	await this.storeTransactions(newData);
 
-				// Merge cached data and new data to store in local storage
-				for (let i = 0; i < cachedData.length; i++) {
-					cachedData[i].transactions.push(...newData[i].transactions);
-					cachedData[i].total_transactions += newData[i].total_transactions;
-				}
+			// 	// Merge cached data and new data to store in local storage
+			// 	for (let i = 0; i < cachedData.length; i++) {
+			// 		cachedData[i].transactions.push(...newData[i].transactions);
+			// 		cachedData[i].total_transactions += newData[i].total_transactions;
+			// 	}
 
-				window.localStorage.setItem("allData", JSON.stringify(cachedData));
-			}
+			// 	window.localStorage.setItem("allData", JSON.stringify(cachedData));
+			// }
+
 
 			// Counter used to know when components have loaded
 			let x = this.state.counter;
@@ -236,7 +237,6 @@ class App extends Component {
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
-
 			</div>
 		);
 	}
