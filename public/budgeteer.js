@@ -88269,7 +88269,7 @@ var AccountsContainer = function (_Component) {
 				type = "All Categories";
 			} else {
 				releventTransactions = this.props.transactions.filter(function (t) {
-					t.account_id === account_id; /*&& t.account_id !== accountIDOfLinkedCreditCardAccounts*/
+					return t.account_id === account_id;
 				});
 			}
 

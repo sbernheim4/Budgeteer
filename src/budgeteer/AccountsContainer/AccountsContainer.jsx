@@ -96,7 +96,9 @@ class AccountsContainer extends Component {
 			releventTransactions = this.props.transactions;
 			type = "All Categories";
 		} else {
-			releventTransactions = this.props.transactions.filter(t => {t.account_id === account_id /*&& t.account_id !== accountIDOfLinkedCreditCardAccounts*/});
+			releventTransactions = this.props.transactions.filter(t => {
+				return t.account_id === account_id
+			});
 		}
 
 		releventTransactions.forEach((transaction) => {
