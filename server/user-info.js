@@ -58,7 +58,6 @@ Router.get("/last-accessed", (req, res) => {
 			console.log(err);
 			res.json("ERROR");
 		}
-
 	}
 });
 
@@ -94,7 +93,7 @@ Router.get("/display-names", async (req, res) => {
 				_id: req.session.user._id
 			});
 			const serializedMap = record.displayNames;
-			
+
 			//TODO: Might just want to return an empty map then...
 			if (serializedMap === undefined) throw new Error("No account display names found :(");
 

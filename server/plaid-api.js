@@ -55,7 +55,7 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 
 	// Rotate access tokens
 	let newAccessTokens = [];
-	for (let token of req.session.user.accessTokens) {
+	for (const token of req.session.user.accessTokens) {
 
 		try {
 			const result = await client.invalidateAccessToken(token);
@@ -81,32 +81,6 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 		});
 	});
 });
-
-/*Router.post('/set-stored-access-token', async (req, res, next) => {
-
-	let data;
-
-	try {
-		// TODO: Generalize this for SSO
-		let person = await User.find({ _id: "5a63710527c6b237492fc1bb"});
-		person = person[0];
-		if (!person || person.accessTokens.length === 0 || person.itemID.length === 0) {
-			throw Error("No Account Infromation Found");
-		}
-
-		ACCESS_TOKENS = person.accessTokens;
-		ITEM_IDS = person.itemID;
-		console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
-		res.sendStatus(200).end();
-	} catch (err) {
-		console.log(err);
-
-		return res.status(500).json({
-			"ERROR": err
-		});
-	}
-
-});*/
 
 // Get Access Tokens and Item IDs from Plaid
 Router.post("/get-access-token", async (req, res) => {
@@ -183,12 +157,11 @@ Router.post ("/balance", async (req, res, next) => {
 	try {
 
 		const allData = await resolvePlaidBalance(req.session.user.accessTokens);
-		console.log(chalk.blue("ALL DATA: "));
+
 		if (allData instanceof Error) {
 			const badAccessToken = allData.message.split(":")[1].trim();
-			let publicToken;
-
 			const result = await client.createPublicToken(badAccessToken)
+
 			res.json({
 				"Error": "Expired Item ID",
 				"publicToken": result.public_token
@@ -233,21 +206,20 @@ Router.post ("/balance", async (req, res, next) => {
 });
 
 async function resolvePlaidBalance(accessTokensArray) {
-	const allData = [];
-	for (let i = 0; i < accessTokensArray.length; i++) {
-		try {
-			const newData = await client.getBalance(accessTokensArray[i]);
-			allData.push(newData);
-		} catch (err) {
-			return new Error ("Error with token: " + accessTokensArray[i]);
-		}
-	}
+	try {
+		const allData = [];
+		accessTokensArray.forEach(token => {
+			allData.push(client.getBalance(token));
+		});
 
-	return allData
+		const x = await Promise.all(allData);
+		return x;
+	} catch (err) {
+		throw err;
+	}
 }
 
 Router.get('/linked-accounts', async (req, res) => {
-
 	try {
 
 		let banks = [];
@@ -276,8 +248,8 @@ Router.post('/remove-account', async (req, res) => {
 	const copyOfAccessTokens = req.session.user.accessTokens;
 	const copyOfItemIDs = req.session.user.itemID;
 
-	let newAccessTokens = [...copyOfAccessTokens.slice(0, i), ...copyOfAccessTokens.slice(i + 1)];
-	let newItemIDs = [...copyOfItemIDs.slice(0,i), ...copyOfItemIDs.slice(i + 1)];
+	const newAccessTokens = [...copyOfAccessTokens.slice(0, i), ...copyOfAccessTokens.slice(i + 1)];
+	const newItemIDs = [...copyOfItemIDs.slice(0,i), ...copyOfItemIDs.slice(i + 1)];
 
 	try {
 		// Update the values in the database
@@ -288,9 +260,9 @@ Router.post('/remove-account', async (req, res) => {
 			}
 		});
 
-		console.log(chalk.green("Bank Removed"));
 		req.session.user.accessTokens = newAccessTokens;
 		req.session.user.itemID = newItemIDs;
+		console.log(chalk.green("Bank Removed"));
 
 		res.json({
 			"status": req.body.data.bankName
