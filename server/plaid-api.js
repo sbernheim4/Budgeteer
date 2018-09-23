@@ -149,6 +149,8 @@ Router.post("/transactions", async (req, res, next) => {
 			return res.status(500).json({
 				"ERROR": "Please force refresh the page. On Mac press Shift + Command + R. On Windows press Ctrl + F5"
 			});
+		} else {
+			throw err;
 		}
 	}
 });
@@ -162,11 +164,10 @@ Router.post ("/balance", async (req, res, next) => {
 			const badAccessToken = allData.message.split(":")[1].trim();
 			const result = await client.createPublicToken(badAccessToken)
 
-			res.json({
+			return res.json({
 				"Error": "Expired Item ID",
 				"publicToken": result.public_token
 			});
-			return;
 		}
 
 		let banks = [];
