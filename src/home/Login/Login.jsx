@@ -1,41 +1,30 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
+import LoginButton from './LoginButton/LoginButton.jsx';
 
-import axios from 'axios';
+import {
+	faFacebook,
+	faGoogle
+} from '@fortawesome/fontawesome-free-brands';
 
 import "./login.scss";
 
-import FacebookLoginButton from "react-social-login-buttons/lib/buttons/FacebookLoginButton";
-import GoogleLoginButton from "react-social-login-buttons/lib/buttons/GoogleLoginButton";
-
-class Navbar extends Component {
+class Login extends Component {
 
 	constructor(props) {
 		super(props);
-
-		this.state = {
-
-		}
-	}
-
-	async componentDidMount() {
-
-	}
-
-	loginWithFacebook() {
-		axios.get("/login/facebook");
 	}
 
 	render() {
 		return (
 			<div className="login">
 				<div className="login__buttons">
-					<a href="/login/facebook"><FacebookLoginButton /></a>
-					<a href="/login/google"><GoogleLoginButton /></a>
+					<LoginButton logo={faFacebook} company={'facebook'} />
+					<LoginButton logo={faGoogle} company={'google'} />
 				</div>
 			</div>
 		);
 	}
 }
 
-export default Navbar;
+export default Login;
