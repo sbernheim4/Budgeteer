@@ -61,22 +61,28 @@ class BudgetChart extends Component {
 				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 				if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
-					totalSpent += t.amount;
+					totalSpent += t.amount * -1; // Spending is a negative value
 				}
 			}
-
-			/*totalSpent *= -1*/
 
 			// Retrieve monthly budget from session storage
 			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
 
 			// Calculate remaining amount left to spend
-			let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);
+			/*let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);*/
+			const remaining = monthlyBudgetFromSessionStorage - totalSpent;
 
 			// Create chart data set
 			const chartData = [
-				{name: 'Spent', value: totalSpent},
-				{name: 'Remaining', value: remaining},
+				{
+					name: 'Spent',
+					value: totalSpent
+				},
+
+				{
+					name: 'Remaining',
+					value: remaining
+				},
 			];
 
 			// Set the state
