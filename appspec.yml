@@ -6,11 +6,11 @@ files:
 
 hooks:
   BeforeInstall:
-    - location: /home/ubuntu/Budgeteer/install.sh
+    - location: /home/ubuntu/Budgeteer/code-deploy-scripts/install.sh
       timeout: 300
   ApplicationStart:
-    - location: /home/ubuntu/Budgeteer/start.sh
+    - location: /home/ubuntu/Budgeteer/code-deploy-scripts/start.sh
       timeout: 120
   ApplicationStop:
-    - location: /home/ubuntu/Budgeteer/stop.sh
+    - location: /home/ubuntu/Budgeteer/code-deploy-scripts/stop.sh
       timeout: 120
