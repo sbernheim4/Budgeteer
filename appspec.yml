@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/Budgeteer
+
+hooks:
+  BeforeInstall:
+    - location: /home/ubuntu/Budgeteer/install.sh
+      timeout: 300
+  ApplicationStart:
+    - location: /home/ubuntu/Budgeteer/start.sh
+      timeout: 120
+  ApplicationStop:
+    - location: /home/ubuntu/Budgeteer/stop.sh
+      timeout: 120
