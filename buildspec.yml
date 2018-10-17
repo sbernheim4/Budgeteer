@@ -22,13 +22,18 @@ phases:
 # ExpressJS apps will need other artifact directories included (bin/*, public/*, routes/*, views/* etc).
 artifacts:
   files:
-    - server/*
+    - code-deploy-scripts/*
     - public/*
-    - package.json
+    - server/*
+    - src/*
+    - .babelrc
+    - .env
+    - .eslintrc
+    - .stylelintrc
+    - appspec.yml
+    - buildspec.yml
+    - entrypoint.sh
     - package-lock.json
+    - package.json
     - postcss.config.js
     - webpack.prod.js
-    - src/privacy-policy.html
-    - src/tos.html
-    - .stylelintrc
-    - .babelrc
