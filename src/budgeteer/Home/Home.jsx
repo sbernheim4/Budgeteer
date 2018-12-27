@@ -28,37 +28,48 @@ class Home extends Component {
 	}
 
 	async componentDidMount() {
+		console.log("Making call to balance now: ")
 		let data = await axios({
 			method: "POST",
 			url: '/plaid-api/balance'
 		});
 
 		data = data.data;
+
 		if (data.Error) {
 			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+			keyAndEnv = keyAndEnv.data;
+			console.log("keyAndEnv");
+			console.log(keyAndEnv);
 
+			// Open plaid in Link Mode
 			const plaid = Plaid.create({
+				key: keyAndEnv.publicKey,
+				env: keyAndEnv.env,
 				apiVersion: 'v2',
 				clientName: 'Update Account',
-				env: keyAndEnv.data.env,
 				product: ['transactions'],
-				key: keyAndEnv.data.publicKey,
 				token: data.publicToken,
-				onSuccess: function (public_token) {
+				onSuccess: function (public_token, metadata) {
 					console.log("Update of Account successful");
-				}
+					console.log("public_token:", public_token)
+					console.log("Metadata:", metadata);
+				},
+				onExit: function(err, metadata) {
+					console.log("err:", err);
+					console.log("metadata:", metadata);
+				  }
 			});
 
 			plaid.open();
+		} else {
+			data = numberWithCommas(formatAmount(data.networth));
+			this.setState({
+				total: data
+			});
+
+			window.sessionStorage.setItem("total", data);
 		}
-
-		data = numberWithCommas(formatAmount(data.networth));
-
-		this.setState({
-			total: data
-		});
-
-		window.sessionStorage.setItem("total", data);
 	}
 
 	render() {
@@ -78,7 +89,7 @@ class Home extends Component {
 				<h1>Your Snapshot</h1>
 				<div className="home--monthly-budget">
 					<h2>Monthly Budget</h2>
-					<Budget displayInput={false} transactions={this.props.transactions} />
+					{/* <Budget displayInput={false} transactions={this.props.transactions} /> */}
 				</div>
 
 				<div className='home--transactions'>

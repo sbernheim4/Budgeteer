@@ -5,7 +5,7 @@ import LoginButton from './LoginButton/LoginButton.jsx';
 import {
 	faFacebook,
 	faGoogle
-} from '@fortawesome/fontawesome-free-brands';
+} from '@fortawesome/free-brands-svg-icons';
 
 import "./login.scss";
 

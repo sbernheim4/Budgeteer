@@ -7,10 +7,10 @@ import axios from 'axios';
 
 import './settings.scss';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
 	faTimes
-} from '@fortawesome/fontawesome-free-solid';
+} from '@fortawesome/free-solid-svg-icons'
 
 class Settings extends Component {
 	constructor(props) {

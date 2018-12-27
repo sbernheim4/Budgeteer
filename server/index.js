@@ -103,7 +103,7 @@ app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 passport.use(new FBStrategy({
 	clientID: process.env.CLIENT_ID,
 	clientSecret: process.env.CLIENT_SECRET,
-	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : `${process.env.DEV_BASE_URL}/login/facebook/return`
+	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : `${process.env.DEV_BASE_URL}:5000/login/facebook/return`
 },
 	function(accessToken, refreshToken, profile, done) {
 		// In this example, the user's Facebook profile is supplied as the user

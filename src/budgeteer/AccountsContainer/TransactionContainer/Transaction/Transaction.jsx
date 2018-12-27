@@ -1,9 +1,9 @@
 /*eslint no-undefined: 0*/
 
 import React, { Component } from "react";
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-	faRacquet,
+	faTape,
 	faSearch,
 	faTags,
 	faCalendar,
@@ -17,7 +17,7 @@ import {
 	faMoneyBillAlt,
 	faExchangeAlt,
 	faQuestion
-} from '@fortawesome/fontawesome-free-solid';
+} from '@fortawesome/free-solid-svg-icons'
 
 import axios from "axios";
 
@@ -120,7 +120,7 @@ class Transaction extends Component {
 	getAccountNameFromID(accountID) {
 		let x = this.state.displayNames;
 		let defaultName;
-		
+
 		for (let acct of this.props.accounts) {
 			if (acct.account_id === accountID) {
 				defaultName = acct.name;
@@ -146,7 +146,7 @@ class Transaction extends Component {
 				categoryIcon = faShoppingBag;
 				break;
 			 case "Recreation":
-				 categoryIcon = faRacquet;
+				 categoryIcon = faTape;
 				 break;
 			case "Service":
 				categoryIcon = faWrench;

@@ -15,11 +15,11 @@ import "./accountsContainer.scss"
 import { numberWithCommas, formatAmount, toTitleCase } from '../helpers';
 
 // Font Awesome base package
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Selective icons from Font Awesome
 import {
-	faRacquet, faTarget,
+	faTape,
 	faSearch,
 	faTags,
 	faCalendar,
@@ -34,7 +34,7 @@ import {
 	faExchangeAlt,
 	faUniversity,
 	faQuestion
-} from '@fortawesome/fontawesome-free-solid';
+} from '@fortawesome/free-solid-svg-icons'
 
 import { jsonToMap, mapToJson } from "../helpers.js";
 
@@ -198,7 +198,7 @@ class AccountsContainer extends Component {
 
 		try {
 			const data = await axios({
-				method: "POST",
+				method: "GET",
 				url: "/plaid-api/transactions",
 				data: {
 					startDate: dateOne,
@@ -331,7 +331,7 @@ class AccountsContainer extends Component {
 									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Food and Drink"); this.closeCategoryViewer(); }} icon={faUtensils}/>     <p>Food and Drink</p> </section>
 									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Travel");         this.closeCategoryViewer(); }} icon={faPlane}/>        <p>Travel</p>         </section>
 									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Shops");          this.closeCategoryViewer(); }} icon={faShoppingBag}/>  <p>Shops</p>          </section>
-									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Recreation");     this.closeAccountsViewer(); }} icon={faRacquet} />     <p>Recreation</p>     </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Recreation");     this.closeAccountsViewer(); }} icon={faTape} />     <p>Recreation</p>     </section>
 									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Service");        this.closeCategoryViewer(); }} icon={faWrench}/>       <p>Service</p>        </section>
 									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Community");      this.closeCategoryViewer(); }} icon={faUsers}/>        <p>Community</p>      </section>
 									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Healthcare");     this.closeCategoryViewer(); }} icon={faMedkit}/>       <p>Healthcare</p>     </section>

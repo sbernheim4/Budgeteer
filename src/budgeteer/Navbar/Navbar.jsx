@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 // Font Awesome base package
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Selective icons from Font Awesome
 import {
@@ -14,7 +14,7 @@ import {
 	faMoneyBillAlt,
 	faCogs,
 	faPlus
-} from '@fortawesome/fontawesome-free-solid';
+} from '@fortawesome/free-solid-svg-icons'
 
 import "./navbar.scss";
 
@@ -57,7 +57,6 @@ class Navbar extends Component {
 
 		let name = await axios.get("/user-info/name");
 		name = name.data;
-
 
 		this.setState({
 			handler: plaid,

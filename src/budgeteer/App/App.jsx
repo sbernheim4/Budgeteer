@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
-
 import axios from 'axios';
 
-import "../scss/globals.scss";
+import differenceInDays from 'date-fns/difference_in_days';
+import addMonths from 'date-fns/add_months';
+import startOfMonth from 'date-fns/start_of_month';
 
 import Navbar from '../Navbar/Navbar.jsx';
 import Home from '../Home/Home.jsx';
@@ -13,12 +14,7 @@ import Networth from '../Networth/Networth.jsx';
 import Settings from '../Settings/Settings.jsx';
 import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
 
-// Helper Functions
-import differenceInDays from 'date-fns/difference_in_days';
-import startOfWeek from 'date-fns/start_of_week';
-import addWeeks from 'date-fns/add_weeks';
-import addMonths from 'date-fns/add_months';
-import startOfMonth from 'date-fns/start_of_month';
+import "../scss/globals.scss";
 
 class App extends Component {
 	constructor(props) {
@@ -76,52 +72,48 @@ class App extends Component {
 	async getTransactions() {
 
 		try {
+			let now = new Date(); // Jan. 12th 2018
+			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+			prev = addMonths(prev, 1); // Feb. 12th 2017
+			prev = startOfMonth(prev); // Feb 1st 2017
+			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
-			// if (window.localStorage.getItem("allData") === null) {
-				// No data in local storage
+			let transactions = await axios.get('/plaid-api/transactions', {
+				days: numDays
+			});
+			transactions = transactions.data;
 
-				let now = new Date(); // Jan. 12th 2018
-				let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-				prev = addMonths(prev, 1); // Feb. 12th 2017
-				prev = startOfMonth(prev); // Returns Feb 1st 2017
-				let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
+			if (transactions.Error) {
+				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+				keyAndEnv = keyAndEnv.data;
 
-				let blob = await axios.post('/plaid-api/transactions', {
-					days: numDays
+				// Open plaid in Link Mode
+				const plaid = Plaid.create({
+					key: keyAndEnv.publicKey,
+					env: keyAndEnv.env,
+					apiVersion: 'v2',
+					clientName: 'Update Account',
+					product: ['transactions'],
+					token: transactions.publicToken,
+					onSuccess: function (public_token, metadata) {
+						console.log("Update of Account successful");
+						console.log("public_token:", public_token)
+						console.log("Metadata:", metadata);
+					},
+					onExit: function(err, metadata) {
+						console.log("err:", err);
+						console.log("metadata:", metadata);
+						}
 				});
-				blob = blob.data;
 
+				plaid.open();
+			} else {
 				// Store transactions in local storage for future use
-				window.localStorage.setItem("allData", JSON.stringify(blob));
+				window.localStorage.setItem("allData", JSON.stringify(transactions));
 
-				await this.storeAccounts(blob); // Store account info in state
-				await this.storeTransactions(blob); // store transaction info in state
-
-			// } else {
-			// 	// Some data is in local storage -- get all new data from after most recent transaction in storage
-			// 	const cachedData = JSON.parse(window.localStorage.getItem("allData"));
-
-			// 	await this.storeAccounts(cachedData); // Store account info
-			// 	await this.storeTransactions(cachedData); // store transaction info
-
-			// 	const numDays = await this.getLastAccessedDate();
-			// 	let newData = await axios.post('/plaid-api/transactions', {
-			// 		days: numDays
-			// 	});
-			// 	newData = newData.data;
-
-			// 	// Update transactions state variable
-			// 	await this.storeTransactions(newData);
-
-			// 	// Merge cached data and new data to store in local storage
-			// 	for (let i = 0; i < cachedData.length; i++) {
-			// 		cachedData[i].transactions.push(...newData[i].transactions);
-			// 		cachedData[i].total_transactions += newData[i].total_transactions;
-			// 	}
-
-			// 	window.localStorage.setItem("allData", JSON.stringify(cachedData));
-			// }
-
+				await this.storeAccounts(transactions); // Store account info in state
+				await this.storeTransactions(transactions); // store transaction info in state
+			}
 
 			// Counter used to know when components have loaded
 			let x = this.state.counter;
@@ -131,7 +123,7 @@ class App extends Component {
 			});
 		} catch (err) {
 			console.log("ERROR: ")
-			console.error(err);
+			console.log(err);
 		}
 	}
 

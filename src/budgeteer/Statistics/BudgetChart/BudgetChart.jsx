@@ -4,7 +4,6 @@ import axios from 'axios';
 
 import {formatAmount, numberWithCommas } from "../../helpers.js";
 
-import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
 import isSameYear from "date-fns/is_same_year";
 
@@ -51,6 +50,8 @@ class BudgetChart extends Component {
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
+		console.log("nextProps are: ");
+		console.log(nextProps);
 
 		if (nextProps.transactions.length > 0) {
 			let totalSpent = 0;

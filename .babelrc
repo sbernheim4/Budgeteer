@@ -1,11 +1,7 @@
 {
 	"presets": [
-        "env",
-		"es2017",
-		"stage-0",
-        "react"
+		"@babel/env",
+    	"@babel/react"
     ],
-    "plugins": [
-        "transform-runtime"
-    ]
+    "plugins": ["@babel/plugin-syntax-dynamic-import"]
 }

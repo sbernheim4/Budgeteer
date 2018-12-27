@@ -2,8 +2,6 @@
 
 const express = require("express");
 const Router = express.Router();
-const path = require("path");
-const chalk = require("chalk");
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
@@ -14,11 +12,9 @@ Router.use(bodyParser.urlencoded({
 
 Router.use(bodyParser.json());
 
-Router.post('/monthly-budget', (req, res) => {
-	// Update monthly budget on session and DB
-	User.updateOne({ _id: req.session.user._id }, { monthlyBudget: req.body.monthlyBudget }, () => {});
-	req.session.user.monthlyBudget = req.body.monthlyBudget;
-	req.session.save();
+Router.get('/profile', (req, res) => {
+	// Send back all profile information
+	res.send(req.session.user);
 });
 
 Router.get('/monthly-budget', (req, res) => {
@@ -30,10 +26,13 @@ Router.get('/monthly-budget', (req, res) => {
 	}
 });
 
-Router.get('/profile', (req, res) => {
-	// Send back all profile information
-	res.send(req.session.user);
+Router.post('/monthly-budget', (req, res) => {
+	// Update monthly budget on session and DB
+	User.updateOne({ _id: req.session.user._id }, { monthlyBudget: req.body.monthlyBudget }, () => {});
+	req.session.user.monthlyBudget = req.body.monthlyBudget;
+	req.session.save();
 });
+
 
 Router.get('/name', (req, res) => {
 	// Send back user's name
@@ -69,25 +68,13 @@ Router.post("/last-accessed", (req, res) => {
 	req.session.save();
 });
 
-Router.post("/display-names", (req, res) => {
-	const newMap = JSON.parse(req.body.data.map);
-	const serializedNewMap = mapToJson(newMap)
-
-	// Save new object in DB -- Callback function is needed apparently so don't remove it
-	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedNewMap }, () => {
-		console.log(serializedNewMap);
-	});
-
-	// Save new object in session
-	req.session.user.displayNames = serializedNewMap;
-	req.session.save();
-});
-
 Router.get("/display-names", async (req, res) => {
 	if (req.session.user.displayNames !== undefined) {
+		console.log("Got it from the session");
 		const serializedMap = req.session.user.displayNames;
 		res.json(serializedMap);
 	} else {
+		console.log("Getting it from the DB");
 		try {
 			const record = await User.findOne({
 				_id: req.session.user._id
@@ -109,6 +96,21 @@ Router.get("/display-names", async (req, res) => {
 		}
 	}
 });
+
+Router.post("/display-names", (req, res) => {
+	const newMap = JSON.parse(req.body.data.map);
+	const serializedNewMap = mapToJson(newMap)
+
+	// Save new object in DB -- Callback function is needed apparently so don't remove it
+	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedNewMap }, () => {
+		console.log(serializedNewMap);
+	});
+
+	// Save new object in session
+	req.session.user.displayNames = serializedNewMap;
+	req.session.save();
+});
+
 
 function mapToJson(map) {
     return JSON.stringify([...map]);
