@@ -357,16 +357,6 @@
 		}
 	}
 
-	&--totals {
-		padding: 20px 5px;
-		text-align: center;
-		font-size: 1.4em;
-
-		@media all and (min-width: 1000px) {
-			font-size: 2em;
-		}
-	}
-
 	&--chart {
 		margin: 0 10px;
 		max-width: 900px;

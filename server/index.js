@@ -43,9 +43,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const options = {
-	key: fs.readFileSync('encryption/server.key'),
-	cert: fs.readFileSync('encryption/server.crt'),
-	ca: fs.readFileSync('encryption/server.csr')
+	key: fs.readFileSync(path.join(__dirname, './encryption/server.key')),
+	cert: fs.readFileSync(path.join(__dirname, './encryption/server.crt')),
+	ca: fs.readFileSync(path.join(__dirname, './encryption/server.csr'))
 };
 
 app.use(bodyParser.json())
@@ -76,11 +76,11 @@ app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
 app.use('/user-info', checkAuthentication, require('./user-info.js'));
 
 app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, '../public/home-page.html'));
+	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
 app.get('/login', (req, res) => {
-	res.sendFile(path.join(__dirname, '../public/home-page.html'));
+	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
 app.get('/budgeteer', checkAuthentication, (req, res) => {

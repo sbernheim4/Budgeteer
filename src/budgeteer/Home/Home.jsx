@@ -89,11 +89,10 @@ class Home extends Component {
 				<h1>Your Snapshot</h1>
 				<div className="home--monthly-budget">
 					<h2>Monthly Budget</h2>
-					{/* <Budget displayInput={false} transactions={this.props.transactions} /> */}
+					<Budget displayInput={false} transactions={this.props.transactions} />
 				</div>
 
 				<div className='home--transactions'>
-					<h2>Recent Transactions</h2>
 					<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
 				</div>
 

@@ -1,4 +1,7 @@
+export default function (templateConfig) {
+	const { title, message } = templateConfig.htmlWebpackPlugin.options;
 
+return `
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -24,8 +27,8 @@
 			<meta name="description" content="Track and gain insights into your financial situation by viewing all your accounts in one place. View and track each of your transactions, visualize your spending patterns and learn where you can save most efficiently"/>
 
 			<!-- Title -->
-			<title>Budgeteer</title>
-			<meta name="Budgeteer" content="Organize all your finances in one place">
+			<title>${title}</title>
+			<meta name="${title}" content="Organize all your finances in one place">
 
 
 			<!-- Global site tag (gtag.js) - Google Analytics -->
@@ -45,8 +48,10 @@
 			</noscript>
 
 			<div id='root'></div>
-			<script src='/budgeteer.js'></script>
+			<script src='/${message}.js'></script>
 
 			<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkUOdZ5y7hMm0yrcCQoCvLwzdM6M8s5qk&libraries=visualization&callback=initMap" type="text/javascript"></script> -->
 		</body>
 	</html>
+`;
+}

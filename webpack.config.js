@@ -1,9 +1,7 @@
 const path = require('path');
 
-const glob = require('glob');
-
 /* Used to generate html file from template */
-// const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 /* Used to minify the css after it has been written to its output file */
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -70,20 +68,35 @@ module.exports = {
 
 	devServer: {
 		historyApiFallback: true,
-		contentBase: path.join(__dirname, './public'),
+		contentBase: path.resolve('./public'),
 		proxy: {
-			"/api": "http://localhost:3000"
+			"/plaid-api": "https://budgeteer-prod:5000",
+			"/user-info": "https://budgeteer-prod:5000"
 		}
 	},
 
 	plugins: [
-		// new HtmlWebpackPlugin({
-		// 	base: './public/',
-		// 	template: 'HTMLTemplate.js',
-		// 	dest: 'index.html',
-		// 	inject: false,
-		// 	title: 'Premiere Mern Stack'
-		// }),
+		new HtmlWebpackPlugin({
+			base: './public/',
+			template: 'HTMLTemplate.js',
+			dest: 'budgeteer.html',
+			inject: false,
+			chunks: ['budgeteer'],
+			title: 'Budgeteer',
+			message: "budgeteer",
+			filename: 'budgeteer.html'
+		}),
+
+		new HtmlWebpackPlugin({
+			base: './public/',
+			template: 'HTMLTemplate.js',
+			dest: 'budgeteer.html',
+			inject: false,
+			chunks: ['home'],
+			title: "Home",
+			message: "home",
+			filename: 'home.html'
+		  }),
 
 		// Optimizes css by minifying it and removing comments
 		new OptimizeCssAssetsPlugin({

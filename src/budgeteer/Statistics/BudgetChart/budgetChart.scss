@@ -64,19 +64,6 @@
 		}
 	}
 
-	&--totals {
-		margin: 20px 0;
-		text-align: center;
-
-		@media all and (max-width: 930px) {
-			width: auto;
-		}
-
-		h2 {
-
-		}
-	}
-
 
 	&--tooltip {
 		padding: 15px;

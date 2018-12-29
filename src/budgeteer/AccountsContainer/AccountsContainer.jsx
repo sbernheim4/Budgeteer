@@ -12,7 +12,7 @@ import TransactionContainer from "./TransactionContainer/TransactionContainer.js
 
 import "./accountsContainer.scss"
 
-import { numberWithCommas, formatAmount, toTitleCase } from '../helpers';
+import { formatAmount, toTitleCase } from '../helpers';
 
 // Font Awesome base package
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -369,8 +369,7 @@ class AccountsContainer extends Component {
 				</div>
 
 				<WeekSpendingChart transactions={this.state.categoryTransactions}/>
-				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
-				<TransactionContainer transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
+				<TransactionContainer x="hello" categoryType={this.state.categoryType} categoryTotal={this.state.categoryTotal} transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
 			</div>
 		);
 	}
