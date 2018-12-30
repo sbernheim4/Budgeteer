@@ -91,6 +91,12 @@ app.get('/login', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
+// TODO: For some reason this is needed. Visiting budgeteer.org makes a request for /budgeteer/budgeteer.js instead of just /budgeteer.js
+app.get('/budgeteer/*.js', checkAuthentication, (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
+});
+
+
 app.get('/budgeteer', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
