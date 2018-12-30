@@ -2,24 +2,23 @@
 
 require("dotenv").config();
 
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
+const https = require('https');
 const express = require('express');
 const app = express();
-const path = require('path');
 const chalk = require('chalk');
 const compression = require('compression');
 const mongoose = require('mongoose');
-const startDb = require('./db');
-const fs = require('fs');
-const https = require('https');
-const http = require('http');
-const util = require('util');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const FBStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
+const startDb = require("./db");
 
 const User = mongoose.model('User');
 
@@ -29,18 +28,23 @@ const mongodbUri = process.env.DB_URI;
 mongoose.connect(mongodbUri, { useNewUrlParser: true });
 let db = mongoose.connection;
 
-app.use(helmet());
-
-app.use(session({
-	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
-	resave: true,
-	saveUninitialized: true,
-	cookie: { maxAge: 600000 },
-	store: new MongoStore({ mongooseConnection: mongoose.connection })
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
+// If you have set `DB_URI` env var in your `.env` file then use that DB to store sessions
+if (process.env.DB_URI) {
+	app.use(session({
+		secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
+		resave: true,
+		saveUninitialized: true,
+		cookie: { maxAge: 600000 },
+		store: new MongoStore({ mongooseConnection: mongoose.connection }) // Use mong to store sessions
+	}));
+} else {
+	app.use(session({
+		secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
+		resave: true,
+		saveUninitialized: true,
+		cookie: { maxAge: 600000 }
+	}));
+}
 
 const options = {
 	key: fs.readFileSync(path.join(__dirname, './encryption/server.key')),
@@ -48,19 +52,23 @@ const options = {
 	ca: fs.readFileSync(path.join(__dirname, './encryption/server.csr'))
 };
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }));
 
 /****************** Server Options ******************/
 const cacheTime = 172800000; // 2 Days
+app.use(helmet()); // Sets some good default headers
+app.use(compression()); // Enables gzip compression
+app.use(bodyParser.json()) // Lets express handle JSON encoded data sent on the body of requests
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(compression());
+app.use(passport.initialize());
+app.use(passport.session());
 
-/****************** SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
+/****************** Serve Static Files --> JS, CSS, Images  ******************/
+app.use(express.static(path.join(__dirname, '../static-assets'), { maxAge: cacheTime } ));
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime } ));
 
-/****************** Handle Requests ******************/
-app.all('*', (req, res, next) => {
+/****************** Log Requests ******************/
+app.use('*', (req, res, next) => {
 	console.log('--------------------------------------------------------------------------');
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
 	console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
@@ -224,7 +232,19 @@ function checkAuthentication(req, res, next) {
 }
 
 /****************** Start the DB and Server ******************/
-startDb.then(() => {
+if (process.env.DB_URI && process.env.DB_URI !== '') {
+	startDb.then(() => {
+		startServer();
+	}).catch(err => {
+		console.log(err);
+	})
+} else {
+	console.log(chalk.red('process.env.DB_URI is undefined (this should be set in your .env file).\nSkipping opening connection to DB.\nSessions are being stored in memory'));
+	startServer();
+}
+
+function startServer() {
+	console.log(process.env.NODE_ENV);
 	if (process.env.NODE_ENV === 'development') {
 		app.listen(process.env.INSECURE_PORT, () => {
 			console.log(chalk.green(`Listening on port ${process.env.INSECURE_PORT}`));
@@ -238,6 +258,4 @@ startDb.then(() => {
 	} else {
 		throw new Error(`Invalid NODE_ENV value of ${process.env.NODE_ENV}`);
 	}
-}).catch(err => {
-	console.log(err)
-});
+}

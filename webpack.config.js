@@ -1,4 +1,7 @@
+const fs = require('fs');
 const path = require('path');
+
+const glob = require('glob');
 
 /* Used to generate html file from template */
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -16,8 +19,8 @@ const WebpackBar = require('webpackbar');
 module.exports = {
 	devtool: 'source-map',
 	entry: {
-		budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
-		home: "./src/home/index.jsx"
+		budgeteer: "./src/Budgeteer/index.jsx", // Entry point of where webpack should start from
+		home: "./src/Home/index.jsx", // Entry point of where webpack should start from
 	},
 	output: {
 		// output build file to /public folder and call the file bundle.js
@@ -39,23 +42,12 @@ module.exports = {
 			// style-loader - injects the css into the browser in a style tag
 			{
 				test: /\.scss$/,
-				exclude: /node_modules/,
-				use: [
-					"style-loader",
-					"css-loader",
-					"postcss-loader",
-					"sass-loader"
-				]
+				use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
 			},
 
 			{
 				test: /\.css$/,
-				exclude: /node_modules/,
-				use: [
-					"style-loader",
-					"css-loader",
-					"postcss-loader"
-				]
+				use: ["style-loader", "css-loader", "postcss-loader"]
 			}
 		]
 	},
@@ -67,11 +59,29 @@ module.exports = {
 	},
 
 	devServer: {
-		historyApiFallback: true,
-		contentBase: path.resolve('./public'),
+		historyApiFallback: {
+ 			index: 'home.html',
+ 			budgeteer: 'budgeteer.html'
+		},
+		https: {
+			key: fs.readFileSync('./server/encryption/server.key'),
+			cert: fs.readFileSync('./server/encryption/server.crt'),
+			ca: fs.readFileSync('./server/encryption/server.csr')
+		},
+		contentBase: path.join(__dirname, './public'),
 		proxy: {
-			"/plaid-api": "https://budgeteer-prod:5000",
-			"/user-info": "https://budgeteer-prod:5000"
+			"/plaid-api": {
+				target: 'https://budgeteer-prod.com:5000',
+				secure: false
+			},
+			"/user-info": {
+				target: 'https://budgeteer-prod.com:5000',
+				secure: false
+			},
+			"/login/**": {
+				target: 'https://budgeteer-prod.com:5000',
+				secure: false
+			}
 		}
 	},
 
@@ -79,10 +89,10 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			base: './public/',
 			template: 'HTMLTemplate.js',
-			dest: 'budgeteer.html',
-			inject: false,
-			chunks: ['budgeteer'],
+			// dest: 'budgeteer.html',
+			inject: true,
 			title: 'Budgeteer',
+			chunks: ['budgeteer'],
 			message: "budgeteer",
 			filename: 'budgeteer.html'
 		}),
@@ -90,13 +100,13 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			base: './public/',
 			template: 'HTMLTemplate.js',
-			dest: 'budgeteer.html',
-			inject: false,
-			chunks: ['home'],
+			// dest: 'budgeteer.html',
+			inject: true,
 			title: "Home",
+			chunks: ['home'],
 			message: "home",
 			filename: 'home.html'
-		  }),
+		}),
 
 		// Optimizes css by minifying it and removing comments
 		new OptimizeCssAssetsPlugin({

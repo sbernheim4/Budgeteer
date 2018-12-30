@@ -40,4 +40,9 @@ const userSchema = new Schema({
 	}
 });
 
+// This registers the model into mongoose so that anywhere else in your server you can do
+/*
+`const User = mongoose.model('User');`
+`User.update(...)`
+*/
 mongoose.model('User', userSchema);
