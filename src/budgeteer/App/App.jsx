@@ -28,25 +28,26 @@ class App extends Component {
 		};
 
 		this.getTransactions = this.getTransactions.bind(this);
+		this.registerServiceWorker = this.registerServiceWorker.bind(this);
 	}
 
 	async componentDidMount() {
-		/*this.registerServiceWorker();*/
+		this.registerServiceWorker();
 		this.getTransactions();
 	}
 
 	registerServiceWorker() {
-		console.log("this is where the service worker should be registered");
+		console.log("Begin registration of serviceWorker");
 		// Registering ServiceWorker
-		// if ('serviceWorker' in navigator) {
-		// 	navigator.serviceWorker.register('sw.js').then(function(registration) {
-		// 		// Registration was successful
-		// 		console.log('ServiceWorker registration successful with scope: ', registration.scope);
-		// 	}).catch(function(err) {
-		// 		// registration failed :(
-		// 		console.log('ServiceWorker registration failed: ', err);
-		// 	});
-		// }
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/sw.js').then(function(registration) {
+				// Registration was successful
+				console.log('ServiceWorker registration successful with scope: ', registration.scope);
+			}).catch(function(err) {
+				// registration failed :(
+				console.log('ServiceWorker registration failed: ', err);
+			});
+		}
 	}
 
 	async getLastAccessedDate() {

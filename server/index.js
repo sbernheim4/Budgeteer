@@ -77,6 +77,8 @@ app.use('*', (req, res, next) => {
 	next();
 });
 
+/****************** Handle Requests ******************/
+
 app.use('/legal', require('./legal.js'));
 
 app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
