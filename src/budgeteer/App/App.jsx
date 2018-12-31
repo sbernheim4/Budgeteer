@@ -37,7 +37,7 @@ class App extends Component {
 		this.getTransactions();
 	}
 
-	registerServiceWorker() {
+	async registerServiceWorker() {
 		try {
 			// First make a fetch call to get info for already linked accounts
 
