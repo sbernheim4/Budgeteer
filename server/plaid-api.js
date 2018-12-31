@@ -166,7 +166,6 @@ async function resolvePlaidTransactions(accessTokensArray, startDate, endDate) {
 	return allData;
 }
 
-
 Router.post ("/balance", async (req, res, next) => {
 	let allData;
 	try {
