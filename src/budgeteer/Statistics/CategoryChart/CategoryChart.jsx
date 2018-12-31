@@ -3,7 +3,7 @@ import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Toolti
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
-import helpers from '../../helpers';
+import { numberWithCommas, formatAmount } from '../../helpers';
 
 import "./categoryCharts.scss";
 
@@ -36,8 +36,8 @@ class CustomTooltip extends Component {
 				background: `${payload[0].payload.fill}`
 			}
 
-			let value = helpers.formatAmount(payload[0].value);
-			value = helpers.numberWithCommas(value);
+			let value = formatAmount(payload[0].value);
+			value = numberWithCommas(value);
 
 			return (
 				<div style={style} className="custom-tooltip">
@@ -77,6 +77,7 @@ class CategoryChart extends Component {
 			{name: 'Food and Drink', value: 0},
 			{name: 'Travel', value: 0},
 			{name: 'Shops', value: 0},
+			{name: 'Recreation', value: 0},
 			{name: 'Service', value: 0},
 			{name: 'Community', value: 0},
 			{name: 'Healthcare', value: 0},
@@ -114,18 +115,18 @@ class CategoryChart extends Component {
 					case "Recreation":
 						amts[3].value += amount;
 						break;
-					case "Service":
+					/*case "Service":
 						amts[4].value += amount;
-						break;
+						break;*/
 					case "Community":
 						amts[5].value += amount;
 						break;
 					case "Healthcare":
 						amts[6].value += amount;
 						break;
-					case "Bank Fees":
+					/*case "Bank Fees":
 						amts[7].value += amount;
-						break;
+						break;*/
 					case "Cash Advance":
 						amts[8].value += amount;
 						break;
@@ -138,9 +139,9 @@ class CategoryChart extends Component {
 					case "Tax":
 						amts[11].value += amount;
 						break;
-					case "Transfer":
+					/*case "Transfer":
 						amts[12].value += amount;
-						break;
+						break;*/
 					default:
 						amts[13].value += amount
 				}
@@ -151,19 +152,20 @@ class CategoryChart extends Component {
 		let total = 0;
 
 		amts.forEach( (entry, index) => {
-			if (entry.value !== 0) {
+			if (entry.value > 0) {
+				const roundedValue = Math.round(entry.value * 100) / 100;
 				newAmts.push({
 					name: entry.name,
-					value: entry.value
+					value: roundedValue
 				});
 
-				total += entry.value;
+				total += roundedValue;
 			}
 		});
 
 		this.setState({
 			categoryDoughnutData: newAmts,
-			totalSpent: helpers.numberWithCommas(helpers.formatAmount(total))
+			totalSpent: numberWithCommas(formatAmount(total))
 		});
 	}
 

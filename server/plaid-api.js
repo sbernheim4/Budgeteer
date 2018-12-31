@@ -1,91 +1,71 @@
-require("dotenv").config()
+/* eslint no-undefined: off */
+
+require("dotenv").config();
 
 const express = require("express");
-const app = express();
+const Router = express.Router();
 const path = require("path");
 const chalk = require("chalk");
 const bodyParser = require("body-parser");
 const moment = require("moment");
 const plaid = require("plaid");
-const axios = require("axios");
-
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
-const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
-const PLAID_SECRET = process.env.PLAID_SECRET;
-const PLAID_PUBLIC_KEY = process.env.PLAID_PUBLIC_KEY;
-const PLAID_ENV = process.env.PLAID_ENV
-
-let ACCESS_TOKENS = [];
-let PUBLIC_TOKEN = null;
-let ITEM_IDS = [];
-
 // Initialize the Plaid client
 let client = new plaid.Client(
-	PLAID_CLIENT_ID,
-	PLAID_SECRET,
-	PLAID_PUBLIC_KEY,
-	plaid.environments[PLAID_ENV]
+	process.env.PLAID_CLIENT_ID,
+	process.env.PLAID_SECRET,
+	process.env.PLAID_PUBLIC_KEY,
+	plaid.environments[process.env.PLAID_ENV]
 );
 
-app.use(bodyParser.urlencoded({
+Router.use(bodyParser.urlencoded({
 	extended: false
 }));
 
-app.use(bodyParser.json());
+Router.use(bodyParser.json());
 
 // Log All Requests
-// app.all("*", (req, res, next) => {
-// 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
-// 	next();
-// });
-
-// Send back the public key and the environment to plaid
-app.get("/key-and-env", (req, res) => {
-	const jsonResponse = {
-		"publicKey": PLAID_PUBLIC_KEY.toString(),
-		"env": PLAID_ENV.toString()
-	}
-
-	res.send(jsonResponse);
+Router.all("*", (req, res, next) => {
+	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
+	next();
 });
 
-app.post("/rotate-access-tokens", async (req, res) => {
+// Send back the public key and the environment to plaid
+Router.get("/key-and-env", (req, res) => {
+	res.send({
+		"publicKey": process.env.PLAID_PUBLIC_KEY.toString(),
+		"env": process.env.PLAID_ENV.toString()
+	});
+});
 
-	// First ensure that the tokens have been set, if not try and set them before continuing
-	if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
-		// first try to set the access tokens and item ids by making a request to /set-storred-access-token.
-		// if length is still 0, then return error
-		let url = process.env.NODE_ENV === "production" ? "http://budgeteer-prod.herokuapp.com/" : "localhost:5001";
+Router.post("/rotate-access-tokens", async (req, res) => {
 
-		axios.post(`${url}/plaid-api/set-storred-access-token`).then(res => {
-			if (ACCESS_TOKENS.length === 0 || ITEM_IDS.length === 0) {
-				res.json({
-					"result": "No linked accounts could be found."
-				}).end();
-			}
-		});
-	}
+	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) return;
 
 	// Rotate access tokens
 	let newAccessTokens = [];
-
-	for (let token of ACCESS_TOKENS) {
+	for (const token of req.session.user.accessTokens) {
 
 		try {
 			const result = await client.invalidateAccessToken(token);
 			newAccessTokens.push(result.new_access_token);
 		} catch(err) {
 			console.error(err);
+
 			res.json({
 				"result": err
-			}).end();
+			});
 		}
 	}
 
+	// Update access tokens on the session
+	req.session.user.accessTokens = newAccessTokens;
+	req.session.save();
+
 	// Update access tokens on the server
-	User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: newAccessTokens } }, () => {
+	User.update({ _id: req.session.user._id }, { $set: { accessTokens: newAccessTokens } }, () => {
 		console.log(chalk.green("Access Tokens have rotated"));
 		res.json({
 			"result": "New tokens were successfully generated. Please refresh the page to continue."
@@ -93,48 +73,31 @@ app.post("/rotate-access-tokens", async (req, res) => {
 	});
 });
 
-app.post('/set-stored-access-token', async (req, res, next) => {
-
-	let data;
-	try {
-		// TODO: Generalize this for SSO
-		let person = await User.find({ _id: "5a63710527c6b237492fc1bb"});
-		person = person[0];
-		if (!person || person.accessTokens.length === 0 || person.itemID.length === 0) {
-
-			let JSONError = JSON.stringify({ "Error": "No Account Infromation Found" });
-			throw new Error(JSONError);
-		}
-
-		ACCESS_TOKENS = person.accessTokens;
-		ITEM_IDS = person.itemID;
-		console.log(chalk.green("✓✓✓ ACCESS_TOKENS and ITEM_IDS have been set ✓✓✓"));
-		res.sendStatus(200).end();
-	} catch (err) {
-		console.log(err);
-		res.status(500).send(err);
-	}
-
-});
-
 // Get Access Tokens and Item IDs from Plaid
-app.post("/get-access-token", async (req, res) => {
+Router.post("/get-access-token", async (req, res) => {
 
-	PUBLIC_TOKEN = req.body.public_token;
+	const PUBLIC_TOKEN = req.body.public_token;
+	console.log(`public token: ${PUBLIC_TOKEN}`);
 	try {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
 
-		// Update our arrays on the server
-		ACCESS_TOKENS.push(tokenResponse.access_token);
-		ITEM_IDS.push(tokenResponse.item_id);
+		let currAccessTokens = req.session.user.accessTokens;
+		currAccessTokens.push(tokenResponse.access_token);
 
-		// Update our arrays in the DB
-		User.update({ _id: "5a63710527c6b237492fc1bb" }, { $set: { accessTokens: ACCESS_TOKENS, itemID: ITEM_IDS } }, () => {
+		let currItemID = req.session.user.itemID;
+		currItemID.push(tokenResponse.item_id);
+
+		// Update the session with the new account info
+		req.session.user.accessTokens = currAccessTokens;
+		req.session.user.itemID = currItemID;
+		req.session.save();
+
+		// Update the db with the new account info
+		User.update({ _id: req.session.user._id }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {
 			console.log(chalk.green("New account has been saved"));
 		});
 	} catch (err) {
-		console.log("ERROR:");
 		console.log(err);
 		return res.json({
 			error: err
@@ -143,93 +106,151 @@ app.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-app.post("/transactions", async (req, res, next) => {
-
+Router.get("/transactions", async (req, res, next) => {
 	// Default to past 30 days if no specific date is specified
-	const days = req.body.days || 30;
+	const days = req.body.days === undefined ? 30 : req.body.days;
 
-	let tempStartDate;
-	let tempEndDate;
-
-	if (req.body.startDate && req.body.endDate) {
-		tempStartDate = moment(new Date(req.body.startDate)).format("YYYY-MM-DD");
-		tempEndDate = moment(new Date(req.body.endDate)).format("YYYY-MM-DD");
-	}
-
-	// Default to having today being the start date if no start date or end date were specified
-	const startDate = tempStartDate || moment().subtract(days, "days").format("YYYY-MM-DD");
-	const endDate = tempEndDate || moment().format("YYYY-MM-DD");
+	// Use passed in start and end dates, otherwise default to the last `days` number of days
+	let startDate = req.body.startDate ? moment(new Date(req.body.startDate)).format("YYYY-MM-DD") : moment().subtract(days, "days").format("YYYY-MM-DD")
+	let endDate = req.body.endDate ? moment(new Date(req.body.endDate)).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD");
 
 	try {
-		const promiseArray = ACCESS_TOKENS.map(token => {
-			return client.getTransactions(token, startDate, endDate, {
+		// let totalData = await Promise.all(promiseArray);
+		let totalData = await resolvePlaidTransactions(req.session.user.accessTokens, startDate, endDate);
+		if (totalData instanceof Error) {
+			console.log(chalk.blue("-----------------------------------------"));
+			console.log("TRANSACTIONS We got an error!!!");
+			const badAccessToken = totalData.message.split(":")[1].trim();
+			console.log("badAccessToken:", badAccessToken);
+
+			client.createPublicToken(badAccessToken, (err, result) => {
+				if (err) {
+					console.log("TRANSACTION: Error in making new public token...");
+					console.log(err);
+				} else {
+					console.log("TRANSACTION: Public token made succssfully. Is:\n", result);
+
+					return res.json({
+						"Error": "TRANSACTION Reauthentication required",
+						"publicToken": result.public_token
+					});
+				}
+			  });
+			  console.log(chalk.blue("-----------------------------------------"));
+		} else {
+			res.json(totalData);
+		}
+	} catch (err) {
+		console.log(chalk.red("--------------------------------------"))
+		console.log("ERROR in /transactions");
+		console.log(err);
+		console.log(chalk.red("--------------------------------------"));
+	}
+});
+
+async function resolvePlaidTransactions(accessTokensArray, startDate, endDate) {
+	let allData = [];
+	for (let i = 0; i < accessTokensArray.length; i++) {
+		try {
+			const newData = await client.getTransactions(accessTokensArray[i], startDate, endDate, {
 				count: 250,
 				offset: 0,
 			})
-		});
-
-		let totalData = await Promise.all(promiseArray);
-		res.json(totalData);
-
-	} catch (err) {
-		if (err !== null && err.error_code === "INVALID_ACCESS_TOKEN") {
-			console.log("TRANSACTIONS ERROR");
+			allData.push(newData);
+		} catch (err) {
 			console.log(err);
-			return res.json({
-				"result": "Please force refresh the page. On Mac press shift + command + r. On Windows press ctrl + F5"
+			return new Error ("TRANSACTION Error with token: " + accessTokensArray[i]);
+		}
+	}
+
+	return allData;
+}
+
+
+Router.post ("/balance", async (req, res, next) => {
+	let allData;
+	try {
+		allData = await resolvePlaidBalance(req.session.user.accessTokens);
+		if (allData instanceof Error) {
+			console.log("We got a bad one...");
+			const badAccessToken = allData.message.split(":")[1].trim();
+
+			client.createPublicToken(badAccessToken, (err, result) => {
+				if (err) {
+					console.log("Error in making new public token...");
+					console.log(err);
+				} else {
+					console.log("Public token made succssfully. Is:\n", result);
+
+					return res.json({
+						"Error": "BALANCE: Reauthentication Required",
+						"publicToken": result.public_token
+					});
+				}
+			  });
+		} else {
+			let banks = [];
+
+			allData.forEach( (bank, index) => {
+				let bankTotal = 0;
+				let map = {};
+
+				bank.accounts.forEach(acct => {
+					if (acct.balances.current !== null && acct.type !== 'credit') {
+						let value = acct.balances.current;
+						bankTotal += value;
+						map[acct.name] = value;
+					} else if (acct.type !== 'credit') {
+						map[acct.name] = "N/A";
+					}
+				});
+
+				banks[index] = {"bankTotal": bankTotal, "map": map};
+			});
+
+			let networth = 0;
+			let arrayOfMaps = [];
+			banks.forEach((bank, index) => {
+				networth += bank.bankTotal;
+				arrayOfMaps[index] = bank.map;
+			});
+
+			res.json({
+				"networth": networth,
+				"maps": arrayOfMaps
 			});
 		}
+	} catch (err) {
+		console.log("----------------------------")
+		console.log(chalk.red("Error from /balance"));
+		console.log(err);
+		console.log("----------------------------")
 	}
 });
 
-app.get("/balance", async (req, res, next) => {
-	const promiseArray = ACCESS_TOKENS.map(token => client.getBalance(token) );
+async function resolvePlaidBalance(accessTokensArray) {
+	let allData = [];
+	for (let i = 0; i < accessTokensArray.length; i++) {
+		try {
+			const newData = await client.getBalance(accessTokensArray[i]);
+			allData.push(newData);
+		} catch (err) {
+			return new Error ("BALANCE Error with token: " + accessTokensArray[i]);
+		}
+	}
+	return allData;
+}
 
-	let totalData = await Promise.all(promiseArray);
-	let banks = [];
-
-	totalData.forEach( (bank, index) => {
-		let bankTotal = 0;
-		let map = {};
-		bank.accounts.forEach(acct => {
-			if (acct.balances.available !== null) {
-				let value = acct.balances.available;
-
-				bankTotal += value;
-				map[acct.name] = value;
-			} else {
-				map[acct.name] = "N/A";
-			}
-		});
-
-		banks[index] = {"bankTotal": bankTotal, "map": map};
-	});
-
-
-	let networth = 0;
-	banks.forEach(bank => {
-		networth += bank.bankTotal;
-	});
-
-	let arrayOfMaps = [];
-	banks.forEach( (bank, index) => {
-		arrayOfMaps[index] = bank.map;
-	})
-
-	res.json({
-		"networth": networth,
-		"maps": arrayOfMaps
-	});
-});
-
-
+<<<<<<< HEAD
 app.get('/linked-accounts', async (req, res) => {
 
+=======
+Router.get('/linked-accounts', async (req, res) => {
+>>>>>>> master
 	try {
-
 		let banks = [];
 
-		const itemInfo = ACCESS_TOKENS.map(token => client.getItem(token)); // Get Item ID for each access token
+		const itemInfo = req.session.user.accessTokens.map(token => client.getItem(token)); // Get Item ID for each access token
 		let itemData = await Promise.all(itemInfo); // Wait for all the promises to resolve
 		const ids = itemData.map(thing => client.getInstitutionById(thing.item.institution_id)); // Get the associated instituion for the given Item ID
 		let data = await Promise.all(ids); // Wait for all the IDs to be processed
@@ -245,43 +266,38 @@ app.get('/linked-accounts', async (req, res) => {
 	}
 });
 
-app.post('/remove-account', async (req, res) => {
+Router.post('/remove-account', async (req, res) => {
 	// Index in the arrays that should be removed
 	const i = req.body.data.bankIndex;
 
 	// Remove the access token and item id for the corresponding bank
-	const copyOfAccessTokens = ACCESS_TOKENS;
-	const copyOfItemIDs = ITEM_IDS;
+	const copyOfAccessTokens = req.session.user.accessTokens;
+	const copyOfItemIDs = req.session.user.itemID;
 
-	let newAccessTokens = [...copyOfAccessTokens.slice(0,i), ...copyOfAccessTokens.slice(i + 1)];
-	let newItemIDs = [...copyOfItemIDs.slice(0,i), ...copyOfItemIDs.slice(i + 1)];
+	const newAccessTokens = [...copyOfAccessTokens.slice(0, i), ...copyOfAccessTokens.slice(i + 1)];
+	const newItemIDs = [...copyOfItemIDs.slice(0,i), ...copyOfItemIDs.slice(i + 1)];
 
 	try {
 		// Update the values in the database
-		User.update({ _id: "5a63710527c6b237492fc1bb" }, {
+		const results = await User.update({ _id: req.session.user._id }, {
 			$set: {
 				accessTokens: newAccessTokens,
 				itemID: newItemIDs
 			}
-		}, (err, raw) => {
-			if (err) throw Error(err);
-			console.log(raw);
-			console.log(chalk.green("Bank Removed"));
 		});
 
-		// Update the values on the server
-		ACCESS_TOKENS = newAccessTokens;
-		ITEM_IDS = newItemIDs;
+		req.session.user.accessTokens = newAccessTokens;
+		req.session.user.itemID = newItemIDs;
+		console.log(chalk.green("Bank Removed"));
 
-		res.status(200).json({
+		res.json({
 			"status": req.body.data.bankName
 		});
-
 	} catch(err) {
 		res.status(500).json({
-			"status": "An error has occurred, please refresh the page and try again in a few minutes"
+			"ERROR": "An error has occurred, please refresh the page and try again in a few minutes"
 		});
 	}
 });
 
-module.exports = app;
+module.exports = Router;

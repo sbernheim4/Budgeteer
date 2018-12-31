@@ -1,5 +1,6 @@
+import axios from 'axios';
 import React, { Component } from "react";
-import helpers from "../helpers.js";
+import { numberWithCommas, formatAmount, toTitleCase, isNumber } from "../helpers.js";
 
 import './networth.scss';
 
@@ -54,22 +55,32 @@ class Networth extends Component {
 
 		// Keep the data stored in the client's browser for the duration of the session
 		if (window.sessionStorage.getItem("balance")){
-
 			data = window.sessionStorage.getItem("balance");
 			data = JSON.parse(data);
-
 		} else {
+			data = await axios({
+				method: "POST",
+				url: '/plaid-api/balance'
+			});
 
-			const fetchOptions = {
-				method: 'GET',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			};
+			data = data.data
+			if (data.Error) {
+				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
-			data = await fetch('/plaid-api/balance', fetchOptions);
-			data = await data.json();
+				const plaid = Plaid.create({
+					apiVersion: 'v2',
+					clientName: 'Update Account',
+					env: keyAndEnv.data.env,
+					product: ['balance'],
+					key: keyAndEnv.data.publicKey,
+					token: data.publicToken,
+					onSuccess: function (public_token) {
+						console.log("Update of Account successful");
+					}
+				});
+
+				plaid.open();
+			}
 
 			window.sessionStorage.setItem("balance", JSON.stringify(data));
 		}
@@ -106,14 +117,14 @@ class Networth extends Component {
 						{this.state.accountBalances.map( (keyName, index) => (
 							Object.keys(keyName).map( (acctName, index) => (
 							<tr key={index} className='networth--entry'>
-								<td className='acct-name'>{acctName}</td>
-								<td className='acct-value'>{keyName[acctName]}</td>
+								<td className='acct-name'>{toTitleCase(acctName)}</td>
+								<td className='acct-value'>{isNumber(keyName[acctName]) === true ? '$' + numberWithCommas(formatAmount(keyName[acctName])) : "N/A"}</td>
 							</tr>
 							))
 						))}
 						<tr>
 							<td className='acct-name'>Total</td>
-							<td className='acct-value'>${this.state.total}</td>
+							<td className='acct-value'>${numberWithCommas(formatAmount(this.state.total))}</td>
 						</tr>
 					</tbody>
 				</table>)

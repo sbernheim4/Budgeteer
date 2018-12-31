@@ -15,11 +15,11 @@
 .budget {
 	margin: 0 auto;
 	display: flex;
+	flex-direction: column;
 	justify-content: space-around;
 	align-items: center;
 
 	@media all and (max-width: 930px) {
-		flex-direction: column;
 	}
 
 	&--doughnut-chart {
@@ -61,19 +61,6 @@
 					margin-left: 0;
 				}
 			}
-		}
-	}
-
-	&--totals {
-		margin: 20px 0;
-		text-align: center;
-
-		@media all and (max-width: 930px) {
-			width: auto;
-		}
-
-		h2 {
-
 		}
 	}
 

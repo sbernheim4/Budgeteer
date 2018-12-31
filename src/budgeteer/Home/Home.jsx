@@ -1,5 +1,8 @@
+import axios from 'axios';
 import React, { Component } from "react";
-
+import Budget from "../Statistics/BudgetChart/BudgetChart.jsx";
+import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
+import { formatAmount, numberWithCommas } from '../helpers';
 import './home.scss';
 
 class Home extends Component {
@@ -7,8 +10,66 @@ class Home extends Component {
 		super(props);
 
 		this.state = {
-
+			total: window.sessionStorage.getItem("total") || "...",
+			transactions: []
 		};
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		const sortedTransactions = props.transactions.sort((a, b) => {
+			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			return dateTwo - dateOne;
+		});
+
+		return {
+			transactions: sortedTransactions.slice(0, 3)
+		}
+	}
+
+	async componentDidMount() {
+		console.log("Making call to balance now: ")
+		let data = await axios({
+			method: "POST",
+			url: '/plaid-api/balance'
+		});
+
+		data = data.data;
+
+		if (data.Error) {
+			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+			keyAndEnv = keyAndEnv.data;
+			console.log("keyAndEnv");
+			console.log(keyAndEnv);
+
+			// Open plaid in Link Mode
+			const plaid = Plaid.create({
+				key: keyAndEnv.publicKey,
+				env: keyAndEnv.env,
+				apiVersion: 'v2',
+				clientName: 'Update Account',
+				product: ['transactions'],
+				token: data.publicToken,
+				onSuccess: function (public_token, metadata) {
+					console.log("Update of Account successful");
+					console.log("public_token:", public_token)
+					console.log("Metadata:", metadata);
+				},
+				onExit: function(err, metadata) {
+					console.log("err:", err);
+					console.log("metadata:", metadata);
+				  }
+			});
+
+			plaid.open();
+		} else {
+			data = numberWithCommas(formatAmount(data.networth));
+			this.setState({
+				total: data
+			});
+
+			window.sessionStorage.setItem("total", data);
+		}
 	}
 
 	render() {
@@ -25,33 +86,19 @@ class Home extends Component {
 			<div className="home">
 				{text}
 
-				<section className="home--info">
-					<h1>Welcome to Budgeteer</h1>
-					<h2>The easiest way to track your spending</h2>
+				<h1>Your Snapshot</h1>
+				<div className="home--monthly-budget">
+					<h2>Monthly Budget</h2>
+					<Budget displayInput={false} transactions={this.props.transactions} />
+				</div>
 
-					<div className="home--info--details">
-						<h3>Once linked we make it easy to keep track of your spending</h3>
-						<p>View all your transactions and search by account, category or keyword in our Transactions page</p>
-						<p>The statistcs sections will break down your spending to give you insight into where your money is going</p>
-						<p>The networth page will show each of your accounts' balance to get a quick look at your overall financial health</p>
-						<p>To remove any linked accounts visit the settings page.</p>
-					</div>
+				<div className='home--transactions'>
+					<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
+				</div>
 
-				</section>
 			</div>
 		);
 	}
 }
 
 export default Home;
-
-/*
-	<p>We know your financial information is incredibly sensative and that linking your accounts can be a little nerve racking so here's some information that we hope makes you feel more comfortable.</p>
-
-	<ol>
-		<li>We use the same API as Venmo and StripeJS to let users link accounts which means its incredibly secure.</li>
-		<li>All information that passes between our servers is encrypted.</li>
-		<li>Your bank credentials are never stored in our database. Instead we store access tokens which allow us to retrieve information without ever having to ask for your username and password after you link an account.</li>
-		<li>If you ever feel uncomfortable having a linked account, we make it very easy to unlink an account or to rotate the access tokens we store to get your account information.</li>
-	</ol>
-*/

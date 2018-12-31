@@ -4,7 +4,7 @@ import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianG
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
-import helpers from '../../helpers';
+import { formatAmount, numberWithCommas } from '../../helpers';
 
 import "./annualChart.scss";
 
@@ -16,9 +16,9 @@ class CustomTooltip extends Component {
 		if (active) {
 			const { payload, label } = this.props;
 
-			const avg = helpers.numberWithCommas(helpers.formatAmount(payload[1].value));
+			const avg = numberWithCommas(formatAmount(payload[1].value));
 			const month = payload[0].payload.name.endsWith(".") ? payload[0].payload.name.slice(0, -1) : payload[0].payload.name
-			const monthAmount = helpers.numberWithCommas(helpers.formatAmount(payload[0].value));
+			const monthAmount = numberWithCommas(formatAmount(payload[0].value));
 
 			return (
 				<div className="year--custom-tooltip">
@@ -59,18 +59,19 @@ class AnnualChart extends Component {
 
 		let avg = 0;
 		this.props.transactions.forEach(t => {
+			if (t.amount > 0) {
+				// get the string value of the month from the transaction
+				let transactionMonth = t.date.slice(5, 7);
 
-			// get the string value of the month from the transaction
-			let transactionMonth = t.date.slice(5, 7);
+				// convert it to an int and subtract one for array offset
+				transactionMonth = parseInt(transactionMonth) - 1;
 
-			// convert it to an int and subtract one for array offset
-			transactionMonth = parseInt(transactionMonth) - 1;
+				// add the amount of the transaction to its corresponding index in the array
+				amounts[transactionMonth] += t.amount;
 
-			// add the amount of the transaction to its corresponding index in the array
-			amounts[transactionMonth] += t.amount;
-
-			// Get the total sum to calculate avg
-			avg += t.amount;
+				// Get the total sum to calculate avg
+				avg += t.amount;
+			}
 		});
 
 		// Divide by 12 and round to two decimal places

@@ -1,4 +1,8 @@
 /* eslint no-undefined: 0 */
+/* eslint no-multi-spaces: 0 */
+
+import axios from 'axios';
+
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
@@ -8,13 +12,14 @@ import TransactionContainer from "./TransactionContainer/TransactionContainer.js
 
 import "./accountsContainer.scss"
 
-import helpers from '../helpers';
+import { formatAmount, toTitleCase } from '../helpers';
 
 // Font Awesome base package
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Selective icons from Font Awesome
 import {
+	faTape,
 	faSearch,
 	faTags,
 	faCalendar,
@@ -27,8 +32,11 @@ import {
 	faPercent,
 	faMoneyBillAlt,
 	faExchangeAlt,
-	faUniversity
-} from '@fortawesome/fontawesome-free-solid';
+	faUniversity,
+	faQuestion
+} from '@fortawesome/free-solid-svg-icons'
+
+import { jsonToMap, mapToJson } from "../helpers.js";
 
 class AccountsContainer extends Component {
 	constructor(props) {
@@ -41,6 +49,7 @@ class AccountsContainer extends Component {
 			// Stores how the user is currently sorting their transactions
 			categoryType: "",
 			categoryTotal: 0.00,
+			/*displayNames: {},*/
 			keyWord: "",
 			months : ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
@@ -51,10 +60,26 @@ class AccountsContainer extends Component {
 		this.searchByDate = this.searchByDate.bind(this);
 		this.searchByKeyword = this.searchByKeyword.bind(this);
 		this.getKeyword = this.getKeyword.bind(this);
+		this.getAccountDisplayName = this.getAccountDisplayName.bind(this);
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		this.getAccountTransactions("all");
+
+		try {
+			// TODO: I think displayNames is not a string, it needs additional quotes around it to be properly processed by jsonToMap;
+
+			let displayNames = await axios.get("/user-info/display-names");
+			displayNames = displayNames.data;
+			const map = jsonToMap(displayNames);
+
+			this.setState({
+				displayNames: map
+			});
+		} catch(err) {
+			console.log("ERROR");
+			console.log(err);
+		}
 	}
 
 	componentWillReceiveProps() {
@@ -71,18 +96,15 @@ class AccountsContainer extends Component {
 			releventTransactions = this.props.transactions;
 			type = "All Categories";
 		} else {
-			this.props.transactions.map( (transaction) => {
-				if (transaction.account_id === account_id) {
-					releventTransactions.push(transaction);
-				}
+			releventTransactions = this.props.transactions.filter(t => {
+				return t.account_id === account_id
 			});
 		}
 
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
 		});
-
-		total = helpers.formatAmount(total);
+		total = formatAmount(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
@@ -101,45 +123,28 @@ class AccountsContainer extends Component {
 			return dateOne - dateTwo;
 		});
 
-		//TODO: This can be cleaned up to not have two separate setState calls in the if statement
+		const now = new Date();
+		const nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
+		const prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
+		const categoryType = type === "All Categories" ? prevString + " - " + nowString : this.getAccountDisplayName(account_id, type);
 
-		if (type === "All Categories") {
-			const now = new Date();
-
-			const nowString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + now.getFullYear();
-			const prevString = this.state.months[now.getMonth()] + "  " + now.getDate() + ".  " + (now.getFullYear() - 1);
-
-			this.setState({
-				categoryTransactions: releventTransactions,
-				categoryType: prevString + " - " + nowString,
-				categoryTotal: total
-			});
-		} else {
-			this.setState({
-				categoryTransactions: releventTransactions,
-				categoryType: type,
-				categoryTotal: total
-			});
-		}
+		this.setState({
+			categoryTransactions: releventTransactions,
+			categoryType: categoryType,
+			categoryTotal: total
+		});
 	}
 
 	getCategoryTransactions(categoryString) {
-
 		let releventTransactions = [];
 
 		// Other displays transactions with a category of null
 		if (categoryString === "Other") {
-			this.props.transactions.forEach(t => {
-				if (t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Interest" || t.category[0] === "Payment" || t.category[0] === "Tax" || t.category[0] === "Transfer") {
-					releventTransactions.push(t);
-				}
+			releventTransactions = this.props.transactions.filter(t => {
+				t.category === null || t.category[0] === "Bank Fees" || t.category[0] === "Cash Advance" || t.category[0] === "Tax"
 			});
 		} else {
-			this.props.transactions.forEach(t => {
-				if (t.category !== null && t.category[0] === categoryString) {
-					releventTransactions.push(t);
-				}
-			});
+			releventTransactions = this.props.transactions.filter(t => t.category !== null && t.category[0] === categoryString);
 		}
 
 		// Get the total spent for the current Category
@@ -148,9 +153,10 @@ class AccountsContainer extends Component {
 			total += transaction.amount;
 		});
 
-		total = helpers.formatAmount(total);
+		total = formatAmount(total);
 
-		this.openCategoryViewer();
+		// this.openCategoryViewer();
+
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
@@ -171,6 +177,13 @@ class AccountsContainer extends Component {
 		this.setState({ [val]: e.target.value });
 	}
 
+	getAccountDisplayName(accountID, defaultName) {
+		let x = this.state.displayNames;
+		if (x === undefined) return defaultName;
+
+		return x.get(accountID) || defaultName;
+	}
+
 	async searchByDate(e) {
 		// TODO: Need additional validation if using forms to get data
 		// Ensure month is between 1 and 12
@@ -182,22 +195,16 @@ class AccountsContainer extends Component {
 		let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
 		let releventTransactions = [];
 		let total = 0;
-		let fetchOptions = {
-			method: 'post',
-			headers: {
-				"Accept": "application/json",
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				startDate: dateOne,
-				endDate: dateTwo
-			})
-		};
 
 		try {
-
-			let data = await fetch('/plaid-api/transactions', fetchOptions);
-			data = await data.json();
+			const data = await axios({
+				method: "GET",
+				url: "/plaid-api/transactions",
+				data: {
+					startDate: dateOne,
+					endDate: dateTwo
+				}
+			});
 
 			data.forEach(acct => {
 				acct.transactions.forEach(transaction => {
@@ -206,7 +213,7 @@ class AccountsContainer extends Component {
 				});
 			});
 
-			total = helpers.formatAmount(total);
+			total = formatAmount(total);
 
 			// Sort the transactions newest to oldest
 			releventTransactions.sort((a, b) => {
@@ -223,7 +230,6 @@ class AccountsContainer extends Component {
 		} catch (err) {
 			console.error(err);
 		}
-
 	}
 
 	async searchByKeyword(e) {
@@ -241,7 +247,6 @@ class AccountsContainer extends Component {
 		} else {
 			this.props.transactions.forEach(t => {
 				let normalizedTransactionName = t.name.toLowerCase();
-
 				if (normalizedTransactionName.includes(normalizedKeyWord)) {
 					total += t.amount;
 					releventTransactions.push(t);
@@ -249,7 +254,7 @@ class AccountsContainer extends Component {
 			});
 		}
 
-		total = helpers.formatAmount(total);
+		total = formatAmount(total);
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
@@ -259,7 +264,7 @@ class AccountsContainer extends Component {
 		});
 
 		this.setState({
-			categoryType: helpers.toTitleCase(keyWord),
+			categoryType: toTitleCase(keyWord),
 			categoryTransactions: releventTransactions,
 			categoryTotal: total
 		});
@@ -276,7 +281,7 @@ class AccountsContainer extends Component {
 	}
 
 	openCategoryViewer() {
-		let otherViewer = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
+		const otherViewer = document.querySelector(".accounts--search-options--icon-search--accts-search--accts");
 		otherViewer.classList.remove("accounts--search-options--icon-search--accts-search--accts__active");
 
 		const elem = document.querySelector(".accounts--search-options--icon-search--categorical-search--categories");
@@ -303,16 +308,11 @@ class AccountsContainer extends Component {
 
 	render() {
 
-		let amtColor = 'red';
-		if (this.state.categoryTotal * -1 > 0) {
-			amtColor = 'green';
-		}
+		const amtColor = this.state.categoryTotal * -1 > 0 ? 'green' : 'red';
 
 		return (
 			<div className="accounts">
-
 				<div className="accounts--search-options">
-
 					<div className="accounts--search-options--keyword-search">
 						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
 
@@ -322,26 +322,26 @@ class AccountsContainer extends Component {
 					</div>
 
 					<div className="accounts--search-options--icon-search">
-
 						<div className="accounts--search-options--icon-search--categorical-search">
 							<FontAwesomeIcon className="icon" icon={faTags} onMouseEnter={this.openCategoryViewer} />
 
 							{/* display this div when icon above is clicked */}
 							<div className="accounts--search-options--icon-search--categorical-search--categories" onMouseLeave={this.closeCategoryViewer}>
 								<div>
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Food and Drink"); this.closeCategoryViewer(); }} icon={faUtensils} />
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Travel"); this.closeCategoryViewer(); }} icon={faPlane} />
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Shops"); this.closeCategoryViewer(); }} icon={faShoppingBag} />
-									{/* <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Recreation") }} icon={faRacquet} /> */}
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Service"); this.closeCategoryViewer(); }} icon={faWrench} />
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Community"); this.closeCategoryViewer(); }} icon={faUsers} />
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Healthcare"); this.closeCategoryViewer(); }} icon={faMedkit} />
-									{/* <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Bank Fees") }} icon={Bank fees} /> */}
-									{/* <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Cash Advance") }} icon={Cash advance} /> */}
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Interest"); this.closeCategoryViewer(); }} icon={faPercent} />
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Payment"); this.closeCategoryViewer(); }} icon={faMoneyBillAlt} />
-									{/* <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Tax") }} icon={Tax} /> */}
-									<FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Transfer"); this.closeCategoryViewer(); }} icon={faExchangeAlt} />
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Food and Drink"); this.closeCategoryViewer(); }} icon={faUtensils}/>     <p>Food and Drink</p> </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Travel");         this.closeCategoryViewer(); }} icon={faPlane}/>        <p>Travel</p>         </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Shops");          this.closeCategoryViewer(); }} icon={faShoppingBag}/>  <p>Shops</p>          </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Recreation");     this.closeAccountsViewer(); }} icon={faTape} />     <p>Recreation</p>     </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Service");        this.closeCategoryViewer(); }} icon={faWrench}/>       <p>Service</p>        </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Community");      this.closeCategoryViewer(); }} icon={faUsers}/>        <p>Community</p>      </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Healthcare");     this.closeCategoryViewer(); }} icon={faMedkit}/>       <p>Healthcare</p>     </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Bank Fees");      this.closeCategoryViewer(); }} icon={faQuestion}/>     <p>Bank Fees</p>      </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Cash Advance");   this.closeCategoryViewer(); }} icon={faQuestion} />    <p>Cash Advance</p>   </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Interest");       this.closeCategoryViewer(); }} icon={faPercent} />     <p>Interest</p>       </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Payment");        this.closeCategoryViewer(); }} icon={faMoneyBillAlt}/> <p>Payment</p>        </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Tax");            this.closeCategoryViewer(); }} icon={faQuestion} />    <p>Tax</p>            </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Transfer");       this.closeCategoryViewer(); }} icon={faExchangeAlt}/>  <p>Transfer</p>       </section>
+									<section> <FontAwesomeIcon className="category-icon" onClick={() => { this.getCategoryTransactions("Other");          this.closeCategoryViewer(); }} icon={faQuestion}/>     <p>Other</p>          </section>
 								</div>
 							</div>
 						</div>
@@ -360,21 +360,16 @@ class AccountsContainer extends Component {
 
 									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map( (a, index) =>
-										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{a.name}</button>
+										<button key={index} onClick={() => { this.getAccountTransactions(a.account_id); this.closeAccountsViewer(); }}>{this.getAccountDisplayName(a.account_id, a.name)}</button>
 									)}
 								</div>
 							</div>
 						</div>
-
 					</div>
-
 				</div>
 
-				<h2 className="accounts--totals">{this.state.categoryType}: <span className={amtColor}>${helpers.numberWithCommas(this.state.categoryTotal * -1)}</span></h2>
-
 				<WeekSpendingChart transactions={this.state.categoryTransactions}/>
-
-				<TransactionContainer transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
+				<TransactionContainer x="hello" categoryType={this.state.categoryType} categoryTotal={this.state.categoryTotal} transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
 			</div>
 		);
 	}

@@ -1,13 +1,20 @@
 @import '../scss/variables';
 
+.home * {
+	overflow-y: hidden;
+}
+
 .home {
-	margin-top: 50px;
+	h1 {
+		margin-bottom: 30px;
+		text-align: center;
+	}
+
+	h2 {
+		text-align: center;
+	}
 
 	&--loading {
-
-		h1 {
-			text-align: center;
-		}
 
 		img {
 			margin: 0 auto;
@@ -20,34 +27,11 @@
 		}
 	}
 
-	&--info {
-		margin: 30px auto;
-		max-width: 1000px;
+	&--monthly-budget {
 
-		h1 {
-			margin: 0;
-			text-align: center;
-		}
+	}
 
-		h2 {
-			text-align: center;
-			margin-bottom: 90px;
-		}
+	&--transactions {
 
-		&--details {
-			margin: 30px;
-			font-weight: bold;
-
-			h3 {
-
-			}
-
-			p {
-				margin: 10px 0 0 20px;
-				&:before {
-					content: '- ';
-				}
-			}
-		}
 	}
 }

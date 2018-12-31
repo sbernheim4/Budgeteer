@@ -2,25 +2,21 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-	id: {
+	facebookID: {
+		type: String,
+		required: false
+	},
+	googleID: {
+		type: String,
+		required: false
+	},
+	name: {
 		type: String,
 		required: true
-	},
-	firstName: {
-		type: String,
-		required: false
-	},
-	lastName: {
-		type: String,
-		required: false
 	},
 	email: {
 		type: String,
-		required: true
-	},
-	password: {
-		type: String,
-		required: true
+		required: false
 	},
 	monthlyBudget: {
 		type: Number,
@@ -34,10 +30,19 @@ const userSchema = new Schema({
 		type: Array,
 		required: false
 	},
-	connectedAccounts: {
-		type: Array,
+	displayNames: {
+		type: String,
 		required: false
 	},
+	lastAccessed: {
+		type: String,
+		required: false
+	}
 });
 
+// This registers the model into mongoose so that anywhere else in your server you can do
+/*
+`const User = mongoose.model('User');`
+`User.update(...)`
+*/
 mongoose.model('User', userSchema);

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
+import axios from 'axios';
 
-import helpers from "../../helpers.js";
+import {formatAmount, numberWithCommas } from "../../helpers.js";
 
-import differenceInDays from "date-fns/difference_in_days";
 import isSameMonth from "date-fns/is_same_month";
 import isSameYear from "date-fns/is_same_year";
 
@@ -50,6 +50,8 @@ class BudgetChart extends Component {
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
+		console.log("nextProps are: ");
+		console.log(nextProps);
 
 		if (nextProps.transactions.length > 0) {
 			let totalSpent = 0;
@@ -60,21 +62,28 @@ class BudgetChart extends Component {
 				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 				if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
-					totalSpent += t.amount;
+					totalSpent += t.amount * -1; // Spending is a negative value
 				}
 			}
-
 
 			// Retrieve monthly budget from session storage
 			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
 
 			// Calculate remaining amount left to spend
-			let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);
+			/*let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);*/
+			const remaining = monthlyBudgetFromSessionStorage - totalSpent;
 
 			// Create chart data set
 			const chartData = [
-				{name: 'Spent', value: totalSpent},
-				{name: 'Remaining', value: remaining},
+				{
+					name: 'Spent',
+					value: totalSpent
+				},
+
+				{
+					name: 'Remaining',
+					value: remaining
+				},
 			];
 
 			// Set the state
@@ -85,20 +94,19 @@ class BudgetChart extends Component {
 			};
 
 		} else {
+			console.error("Error from Budget Chart: transactions.length is <= 0")
 			return null;
 		}
 	}
 
 	handleChange(event) {
-		// Update the state variable
-		this.setState({ monthlyBudget: event.target.value.trim() });
-
+		const newMonthlyBudget = event.target.value.trim();
 		// Save data to the current local store
-		localStorage.setItem("monthlyBudget", event.target.value.trim());
+		localStorage.setItem("monthlyBudget", newMonthlyBudget);
 
 		// Update the percentage calculator
 		const spent = this.state.spentThisMonth;
-		const remaining = (event.target.value - this.state.spentThisMonth) <= 0 ? 0 : (event.target.value - this.state.spentThisMonth);
+		const remaining = (newMonthlyBudget - this.state.spentThisMonth) <= 0 ? 0 : (newMonthlyBudget - this.state.spentThisMonth);
 
 		// Update the chart
 		let amts = [
@@ -107,20 +115,37 @@ class BudgetChart extends Component {
 		];
 
 		this.setState({
-			rechartsData: amts
-		})
+			rechartsData: amts,
+			monthlyBudget: newMonthlyBudget
+		});
+
+		axios({
+			method: 'POST',
+			url: '/user-info/monthly-budget',
+			data: {
+				monthlyBudget: newMonthlyBudget
+			}
+		});
 	}
 
 	render() {
-		let spent = helpers.formatAmount(this.state.spentThisMonth)
-		spent = helpers.numberWithCommas(spent);
+		let spent = formatAmount(this.state.spentThisMonth)
+		spent = numberWithCommas(spent);
 
 		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth);
-		remaining = helpers.formatAmount(remaining);
-		remaining = helpers.numberWithCommas(remaining);
+		remaining = formatAmount(remaining);
+		remaining = numberWithCommas(remaining);
+
+		const input = this.props.displayInput === false ? "" : (<form className="budget--form">
+					<label>
+						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
+					</label>
+				</form>);
 
 		return (
 			<div className="budget">
+
+				{input}
 
 				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
 				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
@@ -143,12 +168,6 @@ class BudgetChart extends Component {
 				</ResponsiveContainer>
 
 
-				<form className="budget--form">
-					<label>
-						<span>Monthly Budget</span>
-						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
-					</label>
-				</form>
 			</div>
 		);
 	}

@@ -1,23 +1,16 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
+import axios from 'axios';
 
-import "../scss/globals.scss";
-
-import Navbar from '../Navbar/Navbar.jsx';
-import Home from '../Home/Home.jsx';
-import Statistics from '../Statistics/Statistics.jsx';
-import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
-import Networth from '../Networth/Networth.jsx';
-import Settings from '../Settings/Settings.jsx';
-import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
-
-// Helper Functions
-import helpers from '../helpers.js';
 import differenceInDays from 'date-fns/difference_in_days';
-import startOfWeek from 'date-fns/start_of_week';
-import addWeeks from 'date-fns/add_weeks';
 import addMonths from 'date-fns/add_months';
 import startOfMonth from 'date-fns/start_of_month';
+
+import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
+
+import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';
+
+import "../scss/globals.scss";
 
 class App extends Component {
 	constructor(props) {
@@ -30,16 +23,21 @@ class App extends Component {
 			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
-			counter: 0
+			counter: 0,
+			showErrorMessage: false
 		};
 
 		this.getTransactions = this.getTransactions.bind(this);
+		this.registerServiceWorker = this.registerServiceWorker.bind(this);
 	}
 
 	async componentDidMount() {
 
 		this.registerServiceWorker();
+		this.getTransactions();
+	}
 
+	registerServiceWorker() {
 		try {
 			// First make a fetch call to get info for already linked accounts
 
@@ -105,71 +103,106 @@ class App extends Component {
 		}
 	}
 
-	async getTransactions() {
-		// Setup info for fetch call
-		let now = new Date(); // Jan. 12th 2018
-		let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
-		prev = addMonths(prev, 1); // Feb. 12th 2017
-		prev = startOfMonth(prev); // Returns Feb 1st 2017
-		let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
+	async getLastAccessedDate() {
+		let lastAccessed = await axios.get("/user-info/last-accessed");
+		lastAccessed = new Date(lastAccessed.data);
 
-		let fetchOptions = {
-			method: "POST",
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				days: numDays
-			})
-		};
+		const now = new Date();
+		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed)
+
+		axios.post("/user-info/last-accessed", {
+			date: now.toString()
+		});
+
+		return numDaysSinceCacheUpdate
+	}
+
+	// Get transactions for the past year and store them in the state
+	async getTransactions() {
 
 		try {
-			const response = await fetch('/plaid-api/transactions', fetchOptions); // Fetch all transaction info
-			const data = await response.json(); // convert data to json
+			let now = new Date(); // Jan. 12th 2018
+			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+			prev = addMonths(prev, 1); // Feb. 12th 2017
+			prev = startOfMonth(prev); // Feb 1st 2017
+			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
-			await this.storeAccounts(data); // Store account info
-			await this.storeTransactions(data); // store transaction info
+			let transactions = await axios.get('/plaid-api/transactions', {
+				days: numDays
+			});
+			transactions = transactions.data;
 
+			if (transactions.Error) {
+				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+				keyAndEnv = keyAndEnv.data;
+
+				// Open plaid in Link Mode
+				const plaid = Plaid.create({
+					key: keyAndEnv.publicKey,
+					env: keyAndEnv.env,
+					apiVersion: 'v2',
+					clientName: 'Update Account',
+					product: ['transactions'],
+					token: transactions.publicToken,
+					onSuccess: function (public_token, metadata) {
+						console.log("Update of Account successful");
+						console.log("public_token:", public_token)
+						console.log("Metadata:", metadata);
+					},
+					onExit: function(err, metadata) {
+						console.log("err:", err);
+						console.log("metadata:", metadata);
+						}
+				});
+
+				plaid.open();
+			} else {
+				// Store transactions in local storage for future use
+				window.localStorage.setItem("allData", JSON.stringify(transactions));
+
+				await this.storeAccounts(transactions); // Store account info in state
+				await this.storeTransactions(transactions); // store transaction info in state
+			}
+
+			// Counter used to know when components have loaded
 			let x = this.state.counter;
 			x++;
 			this.setState({
 				counter: x
 			});
-
 		} catch (err) {
-			// const errorMessage = document.querySelector('.app-error');
-			// errorMessage.classList.add('app-error__display');
-
-			// setTimeout(() => {
-			// 	errorMessage.classList.remove('app-error__display')
-			// }, 4000)
-
-			console.error(err);
+			console.log("ERROR: ")
+			console.log(err);
 		}
 	}
 
-	async storeTransactions(data) {
+	transactionDateToDate(str) {
+		const split = str.split("-");
+		return new Date(parseInt(split[0]), parseInt(split[1]) - 1, parseInt(split[2]));
+	}
 
+	async storeTransactions(data) {
 		let currentTransactions = this.state.transactions;
 		let currentTransactionIds = this.state.transaction_ids;
 
-		data.forEach(val => {
+		data.forEach(bank => {
 			// Add all the transactions for the new bank the user just selected
-			val.transactions.forEach(t => {
+			bank.transactions.forEach(t => {
 				if (!currentTransactionIds.has(t.transaction_id)) {
 					currentTransactionIds.add(t.transaction_id);
 					currentTransactions.push(t);
 				}
 			})
-
-			// Sort the transactions based on account_id
-			currentTransactions = currentTransactions.sort((a, b) => {
-				return a.account_id - b.account_id;
-			});
-
 		});
 
+		// Sort the transactions based on account_id
+		currentTransactions = currentTransactions.sort((a, b) => {
+			const dateA = this.transactionDateToDate(a.date);
+			const dateB = this.transactionDateToDate(b.date);
+
+			return dateB - dateA;
+		});
+		//
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,
@@ -207,40 +240,44 @@ class App extends Component {
 		return (
 			<div>
 				<Navbar />
-				<ErrorMessage />
+				<ErrorMessage display={this.state.showErrorMessage} text={this.state.errorMessage}/>
+
+				<div className="main">
+					<Route exact path='/' render={() => (
+						<Home
+							loading={loading}
+							transactions={this.state.transactions}
+							accounts={this.state.accounts}
+						/>
+					)}/>
+
+					<Route path='/statistics' render={() => (
+						<Statistics
+							transactions={this.state.transactions}
+						/>
+					)}/>
+
+					<Route path='/transactions' render={() => (
+						<AccountsContainer
+							transactions={this.state.transactions}
+							accounts={this.state.accounts}
+						/>
+					)}/>
+
+					<Route path='/networth' render={() => (
+						<Networth
+							transactions={this.state.transactions}
+						/>
+					)}/>
+
+					<Route path='/settings' render={() => (
+						<Settings
+							accounts={this.state.accounts}
+						/>
+					)}/>
+				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
-				<Route exact path='/' render={() => (
-					<Home
-						loading={loading}
-					/>
-				)}/>
-
-				<Route path='/statistics' render={() => (
-					<Statistics
-						transactions={this.state.transactions}
-					/>
-				)}/>
-
-				<Route path='/transactions' render={() => (
-					<AccountsContainer
-						transactions={this.state.transactions}
-						accounts={this.state.accounts}
-					/>
-				)}/>
-
-				<Route path='/networth' render={() => (
-					<Networth
-						transactions={this.state.transactions}
-					/>
-				)}/>
-
-				<Route path='/settings' render={() => (
-					<Settings
-						accounts={this.state.accounts}
-					/>
-				)}/>
-
 			</div>
 		);
 	}

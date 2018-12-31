@@ -1,13 +1,15 @@
 import React, { Component } from "react";
-import Transaction from "./Transaction/Transaction.jsx"
+import Transaction from "./Transaction/Transaction.jsx";
 
-import "./transactionContainer.scss"
+import { numberWithCommas } from '../../helpers';
+
+import "./transactionContainer.scss";
 
 class TransactionContainer extends Component {
 	constructor(props) {
 		super(props)
 
-		let initialNum = this.props.transactions.length < 10 ? this.props.transactions.length : 10
+		// let initialNum = this.props.transactions.length < 10 ? this.props.transactions.length : 10
 		let transactions = this.props.transactions.slice(-10).reverse();
 
 		this.state = {
@@ -62,12 +64,17 @@ class TransactionContainer extends Component {
 	}
 
 	render() {
+		const amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
+		const transactionInfo = this.props.categoryType ? <h2 className="transaction--totals">{this.props.categoryType}: <span className={amtColor}>${numberWithCommas(this.props.categoryTotal * -1)}</span></h2> : '';
+
 		return (
-			<div className="transaction-container">
-				{/*<div className='transaction-container--item'>*/}
+			<section className="transaction-container">
+				<h1>Past Transactions</h1>
+				{transactionInfo}
+				<div className="transactions">
 					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} accounts={this.props.accounts} transaction={t} /> )}
-				{/*</div>*/}
-			</div>
+				</div>
+			</section>
 		);
 	}
 }

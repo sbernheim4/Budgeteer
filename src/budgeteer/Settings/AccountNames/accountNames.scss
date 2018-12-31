@@ -1,0 +1,61 @@
+@import "../../scss/variables.scss";
+
+.accounts {
+	margin-top: 30px;
+}
+
+.account-names {
+	margin: 15px 0;
+	height: 60px;
+	border-radius: 5px;
+	display: flex;
+	align-items: center;
+
+	&--name {
+		margin: 0 30px;
+		width: 40%;
+	}
+
+	&--display {
+
+	}
+
+	&--input {
+		margin: 0 10px;
+		width: 35%;
+		padding: 10px;
+		font-size: 18px;
+		color: black;
+	}
+
+	&--submit {
+		position: relative;
+		margin-bottom: 6px;
+		padding: 10px 20px;
+		background-color: $green;
+		border-radius: 5px;
+		font-size: 18px;
+		color: white;
+		cursor: pointer;
+		transition: background-color .1s ease;
+		box-shadow: 0 6px darken($green, 10%);
+
+		&:hover {
+			background-color: darken($green, 3%);
+			box-shadow: 0 6px darken($green, 13%);
+		}
+
+		&:active {
+			top: 3px;
+			box-shadow: 0 0 darken($green, 10%);;
+		}
+	}
+}
+
+.account-names:nth-child(2n+1) {
+	background: lighten($background-color, 10%);
+}
+
+// .account-names:nth-child(2n) {
+// 	background: lighten($background-color, 5%);
+// }

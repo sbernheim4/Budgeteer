@@ -4,11 +4,12 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 import startOfWeek from "date-fns/start_of_week";
 import endOfWeek from "date-fns/end_of_week";
+import differenceInWeeks from "date-fns/difference_in_weeks";
 import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
 import isSameWeek from "date-fns/is_same_week";
 import isWeekend from "date-fns/is_weekend";
 
-import helpers from '../../helpers';
+import { numberWithCommas, formatAmount } from '../../helpers';
 import "./weekweekendchart.scss";
 
 class CustomTooltip extends Component {
@@ -19,8 +20,8 @@ class CustomTooltip extends Component {
 		if (active) {
 			const { payload, label } = this.props;
 
-			const weekdayValue = helpers.numberWithCommas(helpers.formatAmount(payload[0].value));
-			const weekendValue = helpers.numberWithCommas(helpers.formatAmount(payload[1].value));
+			const weekdayValue = numberWithCommas(formatAmount(payload[0].value));
+			const weekendValue = numberWithCommas(formatAmount(payload[1].value));
 
 			return (
 				<div className="week-weekend-tooltip">
@@ -41,8 +42,6 @@ class WeekWeekendChart extends Component {
 	constructor(props) {
 		super(props);
 
-		// this.generateLineChart = this.generateLineChart.bind(this);
-
 		this.state = {
 			weekVsWeekend: [],
 			transactions: []
@@ -59,6 +58,7 @@ class WeekWeekendChart extends Component {
 				return dateA - dateB;
 			});
 
+			// TODO: Should be refactored to actually only include transactions that occur within the last 6 months --> Use .filter on the array
 			let pastSixMonths = sortedTransactions.slice(nextProps.transactions.length / 2);
 
 			// Start date is the Monday following the first transaction
@@ -67,9 +67,7 @@ class WeekWeekendChart extends Component {
 			startWeek = startOfWeek(startWeek, { weekStartsOn: 1 });
 			let currentWeek = startWeek;
 
-			// End week is always the current week - 1 --> This is because data for
-			// the current week is definitionally incomplete so I can only get
-			// complete information for last week
+			// End week is the Sunday of the current week
 			let endWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
 			// Arrays only need to be as large as how many weeks have passed in the year so far
@@ -97,7 +95,7 @@ class WeekWeekendChart extends Component {
 
 					// NOTE: For example, transaction 1 could have been on 1/1/2018 but transaction 2 on 1/15/2018 so
 					// counter would need to advance by 2 not just 1
-					counter += differenceInCalendarWeeks(transactionDate, currentWeek);
+					counter += differenceInWeeks(transactionDate, currentWeek);
 
 					// Put the current transaction amount in the right array
 					if (isWeekend(transactionDate)) {
@@ -112,7 +110,7 @@ class WeekWeekendChart extends Component {
 			});
 
 			// Format values in the array to two decimals
-			weekday.forEach( (val, index) => {
+			/*weekday.forEach( (val, index) => {
 				if (isNaN(val)) {
 					weekday[index] = 0;
 				} else {
@@ -126,19 +124,16 @@ class WeekWeekendChart extends Component {
 				} else {
 					weekend[index] = parseInt(val);
 				}
-			});
+			});*/
 
 			let data = [];
-			for (let i = 0; i < arrSize; i++) {
+			for (let i = arrSize - 1; i >= 0; i--) {
 				data.push({
 					name: i,
 					Weekday: weekday[i],
 					Weekend: weekend[i]
 				})
 			}
-
-			// Reverse the data so the order is [oldest, ..., newest]
-			data = data.reverse();
 
 			return {
 				weekVsWeekend: data
@@ -156,14 +151,14 @@ class WeekWeekendChart extends Component {
 				<BarChart data={this.state.weekVsWeekend}>
 					<CartesianGrid vertical={false} horizontal={true}/>
 
-					<XAxis tick={{stroke: 'white'}}/>
+					<XAxis reversed tick={{stroke: 'white'}}/>
 					<YAxis tick={{stroke: 'white'}}/>
 
 					<Tooltip content={<CustomTooltip/>}/>
 					<Legend />
 
-					<Bar dataKey="Weekday" stackId="a" fill="rgb(52, 108, 161)" />
-					<Bar dataKey="Weekend" stackId="a" fill="rgb(77,  153, 114)" />
+					<Bar dataKey="Weekday" stackId="a" fill="rgb(77,  153, 114)" />
+					<Bar dataKey="Weekend" stackId="a" fill="rgb(52, 108, 161)" />
 				</BarChart>
 			</ResponsiveContainer>
 		);

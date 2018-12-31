@@ -1,10 +1,9 @@
 /*eslint no-undefined: 0*/
 
 import React, { Component } from "react";
-
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+	faTape,
 	faSearch,
 	faTags,
 	faCalendar,
@@ -17,11 +16,12 @@ import {
 	faPercent,
 	faMoneyBillAlt,
 	faExchangeAlt,
-	faBullseye
-} from '@fortawesome/fontawesome-free-solid';
+	faQuestion
+} from '@fortawesome/free-solid-svg-icons'
 
+import axios from "axios";
 
-import helpers from '../../../helpers';
+import { jsonToMap, numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
 import "./transaction.scss";
 
@@ -30,11 +30,28 @@ class Transaction extends Component {
 		super(props);
 
 		this.state = {
-			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
+			displayNames: new Map()
 		};
 
 		this.showMap = this.showMap.bind(this);
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
+	}
+
+	async componentDidMount() {
+
+		try {
+			let displayNames = await axios.get("/user-info/display-names");
+			displayNames = displayNames.data;
+			const map = jsonToMap(displayNames);
+
+			this.setState({
+				displayNames: map
+			});
+		} catch(err) {
+			console.log("ERROR");
+			console.log(err);
+		}
 	}
 
 	formatDate(date) {
@@ -93,12 +110,24 @@ class Transaction extends Component {
 		}
 	}
 
+	getAccountDisplayName(accountID, defaultName) {
+		let x = this.state.displayNames;
+		if (x === undefined) return defaultName;
+
+		return x.get(accountID) || defaultName;
+	}
+
 	getAccountNameFromID(accountID) {
+		let x = this.state.displayNames;
+		let defaultName;
+
 		for (let acct of this.props.accounts) {
 			if (acct.account_id === accountID) {
-				return acct.name;
+				defaultName = acct.name;
 			}
 		}
+
+		return x.get(accountID) || defaultName;
 	}
 
 	getCategoryIcon(categoryName) {
@@ -116,9 +145,9 @@ class Transaction extends Component {
 			case "Shops":
 				categoryIcon = faShoppingBag;
 				break;
-			// case "Recreation":
-			// 	categoryIcon = ;
-			// 	break;
+			 case "Recreation":
+				 categoryIcon = faTape;
+				 break;
 			case "Service":
 				categoryIcon = faWrench;
 				break;
@@ -147,7 +176,7 @@ class Transaction extends Component {
 				categoryIcon = faExchangeAlt;
 				break;
 			default:
-				categoryIcon = faBullseye;
+				categoryIcon = faQuestion;
 		}
 
 		return categoryIcon;
@@ -156,21 +185,21 @@ class Transaction extends Component {
 
 	render() {
 
-		let date = this.formatDate(JSON.stringify(this.props.transaction.date));
-		let amount = helpers.formatAmount(this.props.transaction.amount);
+		const date = this.formatDate(JSON.stringify(this.props.transaction.date));
+		const amount = formatAmount(this.props.transaction.amount);
 
-		let googleMap = "";
 		// The below URL doesn't require an API key, might be better
 		// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
 
 		// Get the category of the transaction or Null if unknown
 		let category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
 
-		let amt = helpers.formatAmount(this.props.transaction.amount * -1);
-		amt = "$" + helpers.numberWithCommas(amt);
+		let amt = formatAmount(this.props.transaction.amount * -1);
+		amt = "$" + numberWithCommas(amt);
 
 		// Should the color for the amount be red or green based based on it being positive or negative
-		let amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
+		const amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
+		const name = toTitleCase(this.props.transaction.name)
 
 		return (
 			<div className='transaction' onClick={this.showMap}>
@@ -179,8 +208,8 @@ class Transaction extends Component {
 					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
 
 					<div className='name-info'>
-						<p className='name-info--name'>{this.props.transaction.name}</p>
-						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)}</p>
+						<p className='name-info--name'>{name}</p>
+						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
 					</div>
 
 					<div className='amount'>

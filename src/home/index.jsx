@@ -1,3 +1,5 @@
+import "@babel/polyfill";
+
 import React from "react";
 import ReactDOM from "react-dom";
 
@@ -12,5 +14,5 @@ ReactDOM.render(
 	<BrowserRouter>
 		<App />
 	</BrowserRouter>,
-	document.getElementById("home")
+	document.getElementById("root")
 );
