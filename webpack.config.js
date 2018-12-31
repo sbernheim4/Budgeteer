@@ -25,7 +25,8 @@ module.exports = {
 	output: {
 		// output build file to /public folder and call the file bundle.js
 		path: __dirname + "/public",
-		filename: "[name].js"
+		filename: "[name].js",
+		publicPath: "/"
 	},
 	module: {
 		rules: [
@@ -60,8 +61,8 @@ module.exports = {
 
 	devServer: {
 		historyApiFallback: {
- 			index: 'home.html',
- 			budgeteer: 'budgeteer.html'
+			 index: 'home.html',
+			 budgeteer: 'budgeteer.html'
 		},
 		https: {
 			key: fs.readFileSync('./server/encryption/server.key'),
