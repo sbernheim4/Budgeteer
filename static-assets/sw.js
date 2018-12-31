@@ -17,7 +17,7 @@ self.addEventListener('install', (event) => {
 		}).then(() => {
 			console.log('WORKER:: install completed');
 		})
-		)
+	)
 });
 
 
@@ -28,14 +28,14 @@ self.addEventListener('install', (event) => {
 			cache.add("https://fonts.googleapis.com/css?family=Lato:300,400")
 			cache.add("https://cdn.plaid.com/link/v2/stable/link-initialize.js")
 			return fetch("https://cdn.plaid.com/link/v2/stable/link-initialize.js", { mode: 'no-cors' })
-		.then((response) => {
-			cache.put("https://cdn.plaid.com/link/v2/stable/link-initialize.js", response.clone());
-			return cache;
-		}).then(cache => {
-			return cache.addAll(CACHE_FILES);
-		}).then(() => {
-			console.log('WORKER:: install completed');
-		})
+				.then((response) => {
+					cache.put("https://cdn.plaid.com/link/v2/stable/link-initialize.js", response.clone());
+					return cache;
+				}).then(cache => {
+					return cache.addAll(CACHE_FILES);
+				}).then(() => {
+					console.log('WORKER:: install completed');
+				})
 		})
 	)
 });
@@ -50,7 +50,7 @@ self.addEventListener('fetch', function (event) {
 			}
 			requestBackend(event);
 		})
-		)
+	)
 });
 
 function requestBackend(event){
@@ -67,11 +67,11 @@ function requestBackend(event){
 			if (event.request.method.toUpperCase() === "GET") {
 				console.log("MAKING REQUEST");
 				cache.put(event.request, response);
-			// } else {
-			// 	console.log("NOT MAKING REQUEST");
-			// 	console.log(event.request);
-		}
-	});
+				// } else {
+				// 	console.log("NOT MAKING REQUEST");
+				// 	console.log(event.request);
+			}
+		});
 
 		return res;
 	})
@@ -86,5 +86,5 @@ self.addEventListener('activate', function (event) {
 				}
 			}))
 		})
-		)
+	)
 });
