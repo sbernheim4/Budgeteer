@@ -241,12 +241,7 @@ async function resolvePlaidBalance(accessTokensArray) {
 	return allData;
 }
 
-<<<<<<< HEAD
-app.get('/linked-accounts', async (req, res) => {
-
-=======
 Router.get('/linked-accounts', async (req, res) => {
->>>>>>> master
 	try {
 		let banks = [];
 

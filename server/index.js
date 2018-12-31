@@ -91,37 +91,8 @@ app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
-<<<<<<< HEAD
-
-
-
-app.get("/budgeteer/sw.js", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/sw.js"));
-});
-
-app.get("/budgeteer/loading-gifs/loading-one.gif", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/loading-gifs/loading-one.gif"));
-});
-
-app.get("/budgeteer/loading-gifs/loading-three.gif", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/loading-gifs/loading-three.gif"));
-});
-
-app.get("/budgeteer/manifest.json", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/manifest.json"));
-});
-
-app.get("/budgeteer/budgeteer.js", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/budgeteer.js"));
-});
-
-
-app.get("/budgeteer", (req, res) => {
-	res.sendFile(path.join(__dirname, "../public/budgeteer.html"));
-=======
 app.get('/login', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
->>>>>>> master
 });
 
 // TODO: For some reason this is needed. Visiting budgeteer.org makes a request for /budgeteer/budgeteer.js instead of just /budgeteer.js
@@ -129,15 +100,9 @@ app.get('/budgeteer/*.js', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-<<<<<<< HEAD
-
-
-/****************** Start the DB and Server ******************/
-=======
 app.get('/budgeteer', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
->>>>>>> master
 
 app.get('/budgeteer/*', checkAuthentication, (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
