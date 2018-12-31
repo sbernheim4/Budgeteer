@@ -11,7 +11,7 @@ class LoginButton extends Component {
 	}
 
 	render() {
-		const hrefURL = '/login/' + this.props.company;
+		const hrefURL = process.env.DEV_BASE_URL + '/login/' + this.props.company;
 		const className = 'login-btn login-btn__' + this.props.company;
 
 		return (

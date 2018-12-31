@@ -6,13 +6,9 @@ import differenceInDays from 'date-fns/difference_in_days';
 import addMonths from 'date-fns/add_months';
 import startOfMonth from 'date-fns/start_of_month';
 
-import Navbar from '../Navbar/Navbar.jsx';
-import Home from '../Home/Home.jsx';
-import Statistics from '../Statistics/Statistics.jsx';
-import AccountsContainer from '../AccountsContainer/AccountsContainer.jsx';
-import Networth from '../Networth/Networth.jsx';
-import Settings from '../Settings/Settings.jsx';
 import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
+
+import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';
 
 import "../scss/globals.scss";
 
