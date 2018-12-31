@@ -39,25 +39,11 @@ class App extends Component {
 
 	async registerServiceWorker() {
 		try {
-			// First make a fetch call to get info for already linked accounts
-
-			// TODO: Need to see if there is an error returned from this call --> If
-			// `{ "Error": "No Account Infromation Found" }` is received than it means
-			// no accounts are linked
-			fetch('/plaid-api/set-stored-access-token', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			});
-
-
 			this.getTransactions();
 
 			// Used for if the user wants to link a new account
-			let keyAndEnv = await fetch('/plaid-api/key-and-env');
-			keyAndEnv = await keyAndEnv.json();
+			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+			keyAndEnv = keyAndEnv.data;
 
 			const plaid = Plaid.create({
 				apiVersion: 'v2',
@@ -66,17 +52,14 @@ class App extends Component {
 				product: ['transactions'],
 				key: keyAndEnv.publicKey,
 				onSuccess: function (public_token) {
-					fetch('/plaid-api/get-access-token', {
-						method: 'POST',
-						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
+					axios({
+						method: "POST",
+						url: "/plaid-api/get-access-token",
+						data: {
 							public_token: public_token,
 							client_id: '5a24ca6a4e95b836d37e37fe',
 							secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-						})
+						}
 					});
 				}
 			});
