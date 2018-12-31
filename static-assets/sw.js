@@ -1,10 +1,10 @@
 const CACHE_VERSION = 'app-v8';
 const CACHE_FILES = [
-'/',
-'/budgeteer.js',
-'/manifest.json',
-'/loading-gifs/loading-one.gif',
-'/loading-gifs/loading-three.gif',
+	'/',
+	'/budgeteer.js',
+	'/manifest.json',
+	'/loading-gifs/loading-one.gif',
+	'/loading-gifs/loading-three.gif',
 ];
 
 self.addEventListener('install', (event) => {

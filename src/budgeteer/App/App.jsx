@@ -32,51 +32,15 @@ class App extends Component {
 	}
 
 	async componentDidMount() {
-
 		this.registerServiceWorker();
 		this.getTransactions();
-	}
-
-	async registerServiceWorker() {
-		try {
-			this.getTransactions();
-
-			// Used for if the user wants to link a new account
-			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
-			keyAndEnv = keyAndEnv.data;
-
-			const plaid = Plaid.create({
-				apiVersion: 'v2',
-				clientName: 'Plaid Walkthrough Demo',
-				env: keyAndEnv.env,
-				product: ['transactions'],
-				key: keyAndEnv.publicKey,
-				onSuccess: function (public_token) {
-					axios({
-						method: "POST",
-						url: "/plaid-api/get-access-token",
-						data: {
-							public_token: public_token,
-							client_id: '5a24ca6a4e95b836d37e37fe',
-							secret: 'f07a761a591de3cbbc5ac3ba2f4301'
-						}
-					});
-				}
-			});
-
-			this.setState({ handler: plaid });
-
-		} catch (err) {
-			console.error('This is likely due to the access tokens not being retrieved from the DB if its a new user');
-			console.error(err);
-		}
 	}
 
 	registerServiceWorker() {
 		console.log("Begin registration of serviceWorker");
 		// Registering ServiceWorker
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/budgeteer/sw.js').then(function(registration) {
+			navigator.serviceWorker.register('/sw.js').then(function(registration) {
 				// Registration was successful
 				console.log('ServiceWorker registration successful with scope: ', registration.scope);
 			}).catch(function(err) {
