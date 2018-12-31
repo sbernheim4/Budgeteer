@@ -38,7 +38,7 @@ class Navbar extends Component {
 
 		const plaid = Plaid.create({
 			apiVersion: 'v2',
-			clientName: 'Plaid Walkthrough Demo',
+			clientName: 'Budgeteer',
 			env: keyAndEnv.data.env,
 			product: ['transactions'],
 			key: keyAndEnv.data.publicKey,
