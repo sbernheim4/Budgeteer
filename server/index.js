@@ -76,8 +76,6 @@ app.use('*', (req, res, next) => {
 
 	next();
 });
-/****************** SERVE STATIC FILES --> JS, CSS, IMAGES ETC ******************/
-app.use(express.static(path.join(__dirname, "../public"), { maxAge: cacheTime } ));
 
 /****************** Handle Requests ******************/
 
