@@ -124,8 +124,8 @@ class WeekSpendingChart extends Component {
 					<ComposedChart data={this.state.weekData}>
 						<CartesianGrid vertical={false} horizontal={true}/>
 
-						<XAxis dataKey="name" tick={{stroke: 'white'}}/>
-						<YAxis tick={{stroke: 'white'}}/>
+						<XAxis dataKey="name" tick={{stroke: 'black'}}/>
+						<YAxis tick={{stroke: 'black'}}/>
 
 						<Tooltip content={<CustomTooltip />}/>
 
@@ -138,6 +138,3 @@ class WeekSpendingChart extends Component {
 }
 
 export default WeekSpendingChart;
-
-
-

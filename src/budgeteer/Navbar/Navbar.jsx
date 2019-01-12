@@ -114,7 +114,7 @@ class Navbar extends Component {
 					</ul>
 
 					<div>
-						<button onClick={this.addAccount}>Add Accounts</button>
+						<button onClick={this.addAccount}>Add Account</button>
 					</div>
 				</div>
 

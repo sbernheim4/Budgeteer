@@ -3,6 +3,9 @@
 $mobile-navbar-width: 80vw;
 $mobile-navbar-width-plus-one: 86vw;
 
+/* Dark Theme */
+//$navbar-background-color: $background-color;
+
 /* Light Theme */
 $navbar-background-color: white;
 
@@ -29,7 +32,8 @@ $navbar-background-color: white;
 
 			li {
 				margin-right: 15px;
-				text-transform: uppercase;
+				font-size: 23px;
+				/*text-transform: uppercase;*/
 
 				&:after {
 					content: '';
@@ -37,7 +41,7 @@ $navbar-background-color: white;
 					display: block;
 					width: 0;
 					height: 3px;
-					background: $pink;
+					background: $red;
 					transition: all .3s ease;
 				}
 
@@ -46,9 +50,7 @@ $navbar-background-color: white;
 				}
 
 				a {
-					/*color: white;*/
 					text-decoration: none;
-
 				}
 			}
 
@@ -63,13 +65,18 @@ $navbar-background-color: white;
 
 			button {
 				margin-right: 15px;
-				padding: 15px;
-				background-color: #346ca1;
-				border: 1px solid black;
+				padding: 10px;
+				/*background-color: #346ca1;*/
+				border: 3px solid $red;
 				border-radius: 5px;
 				font-size: 20px;
-				/*color: white;*/
+				color: $default-font-color;
 				cursor: pointer;
+				transition: background-color .1s ease-in;
+
+				&:hover {
+					background-color: $red;
+				}
 			}
 		}
 	}
@@ -132,7 +139,6 @@ $navbar-background-color: white;
 
 				h3 {
 					padding: 0 0 10px 10px;
-					/*color: white;*/
 					text-shadow: 0px 0px 6px black;
 					font-weight: bolder;
 				}
@@ -160,13 +166,12 @@ $navbar-background-color: white;
 				}
 
 				.link-container {
-					/*color: hsl(206, 23%, 19%);*/
 
 					svg {
 						padding: 0 15px;
 
 						path {
-							/*color: hsl(0, 5%, 29%);*/
+
 						}
 					}
 				}

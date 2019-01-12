@@ -75,10 +75,11 @@
 					z-index: 1;
 
 					path {
+						color: $gray;
 						transition: color .1s ease-in;
 
 						&:hover {
-							color: $pink;
+							color: $red;
 						}
 					}
 				}
@@ -113,6 +114,7 @@
 								font-size: 40px;
 
 								path {
+									color: $default-font-contrast-color;
 									transition: color .1s ease-in;
 
 									&:hover {
@@ -123,6 +125,7 @@
 
 							p {
 								font-size: 12px;
+								color: $default-font-contrast-color;
 								text-align: center;
 							}
 						}
@@ -176,10 +179,11 @@
 					cursor: pointer;
 
 					path {
+						color: $gray;
 						transition: color .2s ease-in;
 
 						&:hover {
-							color: $pink;
+							color: $red;
 						}
 					}
 				}
@@ -197,10 +201,11 @@
 
 
 					path {
+						color: $gray;
 						transition: color .1s ease-in;
 
 						&:hover {
-							color: $pink;
+							color: $red;
 						}
 					}
 				}
@@ -312,7 +317,7 @@
 					transition: all .2s ease-in;
 
 					&:focus {
-						border: 1px solid $pink;
+						border: 1px solid $red;
 					}
 				}
 			}
