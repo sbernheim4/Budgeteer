@@ -2,6 +2,8 @@
 
 $mobile-navbar-width: 80vw;
 $mobile-navbar-width-plus-one: 86vw;
+
+/* Light Theme */
 $navbar-background-color: white;
 
 .navbar {
@@ -11,7 +13,11 @@ $navbar-background-color: white;
 			display: none;
 		}
 
+		margin-bottom: 30px;
 		width: 100vw;
+		height: 100px;
+		border-bottom: 1px solid gray;
+		background-color: $navbar-background-color;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
@@ -40,7 +46,7 @@ $navbar-background-color: white;
 				}
 
 				a {
-					color: white;
+					/*color: white;*/
 					text-decoration: none;
 
 				}
@@ -56,14 +62,13 @@ $navbar-background-color: white;
 			align-items: center;
 
 			button {
-				margin-top: 15px;
 				margin-right: 15px;
 				padding: 15px;
 				background-color: #346ca1;
 				border: 1px solid black;
 				border-radius: 5px;
 				font-size: 20px;
-				color: white;
+				/*color: white;*/
 				cursor: pointer;
 			}
 		}
@@ -75,9 +80,11 @@ $navbar-background-color: white;
 		}
 
 		&--header {
+			margin-bottom: 30px;
 			width: 100vw;
 			height: 70px;
-			background-color: $background-color;
+			background-color: $navbar-background-color;
+			border-bottom: 1px solid rgb(208, 208, 208);
 			z-index: 3;
 			display: flex;
 			justify-content: space-between;
@@ -125,7 +132,7 @@ $navbar-background-color: white;
 
 				h3 {
 					padding: 0 0 10px 10px;
-					color: white;
+					/*color: white;*/
 					text-shadow: 0px 0px 6px black;
 					font-weight: bolder;
 				}
@@ -153,13 +160,13 @@ $navbar-background-color: white;
 				}
 
 				.link-container {
-					color: hsl(206, 23%, 19%);
+					/*color: hsl(206, 23%, 19%);*/
 
 					svg {
 						padding: 0 15px;
 
 						path {
-							color: hsl(0, 5%, 29%);
+							/*color: hsl(0, 5%, 29%);*/
 						}
 					}
 				}

@@ -1,9 +1,10 @@
 @import '../../scss/variables';
 
 .transaction-container {
+	width: 92%;
 	margin: 40px auto;
-	border-top: 3px solid black;
-	background: #304e60;
+	background: white;
+	border-radius: 5px;
 
 	h1 {
 		margin-top: 15px;

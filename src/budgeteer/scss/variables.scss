@@ -2,22 +2,27 @@
 // Every style sheet should import this file
 
 // Dark Theme
-$green: #46926b;
-$red: #f98183;
-$blue: rgb(52, 108, 161);
+// $background-color: #253847;
+// $pink: rgb(255, 132, 132);
+// $red: #f98183;
+// $green: #46926b;
+// $blue: rgb(52, 108, 161);
+// $cream: #fffaf0;
+// $default-font-color: white;
+// $default-border-color: white;
+
+// Light Theme EXPERIMENTAL
+$background-color: rgb(240, 240, 246);
 $pink: rgb(255, 132, 132);
-$background-color: #253847;
+$red: rgb(200, 0, 0);
+$green: #00B855;
+$blue: #086FA6;
 $cream: #fffaf0;
-
-// Light Theme EXPEFIMENTAL
-$blue-funky: #086FA6;
-$yellow-funky: #F07E30;
-$green-funky: #00B855;
-$red-funky: #953EAB;
+$yellow: #F07E30;
 $red-funky-text: #ffcece;
-
-// Light background color theme
-$background-color-light: rgb(240, 240, 240);
+$default-font-color: black;
+$default-font-contrast-color: white;
+$default-border-color: black;
 
 // When navbar switches from desktop to mobile
 $navbar-media-query-width: 800px;

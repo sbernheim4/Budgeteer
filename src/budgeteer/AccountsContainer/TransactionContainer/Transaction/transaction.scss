@@ -1,27 +1,38 @@
 @import '../../../scss/variables';
 
 $default-font-color: black;
-$transaction-background-color: hsla(40, 30%, 88%, 1);
+
+/* Dark Theme */
+// $default-transaction-icon-color: white;
+// $transaction-background-color: hsla(40, 30%, 88%, 1);
+
+/* Light Theme */
+$default-transaction-icon-color: black;
+$transaction-background-color: $background-color;
 
 .transaction {
-	margin: 5px;
+	margin: 5px 15px 5px 15px;
 	width: 80%;
-	background-color: $transaction-background-color;
+	background-color: lighten($transaction-background-color, 3%);
+	border-radius: 5px;
+	border-left: 2px solid $blue;
 	cursor: pointer;
 	transition: background-color .5s ease;
+	box-shadow: 0 1px 3px black;
 
 	&:hover {
 		background-color: darken($transaction-background-color, 8%);
 	}
 
 	@media all and (max-width: 600px) {
-		margin: 0;
-		width: 100%;
-		border-bottom: 1px solid gray;
+		margin: 7px 0;
+		width: 85%;
+		border-bottom: 1px solid $background-color;
+		border-radius: 5px;
 	}
 
 	@media all and (min-width: 1200px) {
-		margin: 5px;
+		margin: 15px 15px 15px 15px;
 		max-width: 700px;
 		width: 45%;
 		border-bottom: none;
@@ -55,7 +66,7 @@ $transaction-background-color: hsla(40, 30%, 88%, 1);
 			}
 
 			path {
-				color: $background-color;
+				color: $default-transaction-icon-color;
 			}
 		}
 
@@ -70,7 +81,7 @@ $transaction-background-color: hsla(40, 30%, 88%, 1);
 			&--name {
 				width: 100%;
 				font-size: 22px;
-				color: $default-font-color;
+				color: $default-transaction-icon-color;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
