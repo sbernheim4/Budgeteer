@@ -54,7 +54,7 @@ Router.get("/last-accessed", (req, res) => {
 			res.send(x);
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse
-			console.log(err);
+			console.error(err);
 			res.json("ERROR");
 		}
 	}
@@ -70,11 +70,9 @@ Router.post("/last-accessed", (req, res) => {
 
 Router.get("/display-names", async (req, res) => {
 	if (req.session.user.displayNames !== undefined) {
-		console.log("Got it from the session");
 		const serializedMap = req.session.user.displayNames;
 		res.json(serializedMap);
 	} else {
-		console.log("Getting it from the DB");
 		try {
 			const record = await User.findOne({
 				_id: req.session.user._id
@@ -92,7 +90,7 @@ Router.get("/display-names", async (req, res) => {
 		} catch(err) {
 			// TODO: Send back some kind of error for the front end to parse
 			res.status(404).json("Error in GET /user-info/display-names").end();
-			console.log(err);
+			console.error(err);
 		}
 	}
 });
@@ -103,7 +101,7 @@ Router.post("/display-names", (req, res) => {
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
 	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedNewMap }, () => {
-		console.log(serializedNewMap);
+		console.log("Updated display names");
 	});
 
 	// Save new object in session
