@@ -20,6 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import axios from "axios";
+import Swipe from 'react-easy-swipe';
 
 import { jsonToMap, numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
@@ -36,6 +37,7 @@ class Transaction extends Component {
 
 		this.showMap = this.showMap.bind(this);
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
+		this.onSwipeRight = this.onSwipeRight.bind(this);
 	}
 
 	async componentDidMount() {
@@ -180,7 +182,12 @@ class Transaction extends Component {
 		}
 
 		return categoryIcon;
+	}
 
+	onSwipeRight() {
+		this.setState({
+			active: true
+		});
 	}
 
 	render() {
@@ -201,23 +208,25 @@ class Transaction extends Component {
 		const amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
 		const name = toTitleCase(this.props.transaction.name)
 
+		const containerClassName = this.state.active ? 'container active' : 'container';
+
 		return (
 			<div className='transaction' onClick={this.showMap}>
+				<Swipe onSwipeRight={this.onSwipeRight}>
+					<div className={containerClassName}>
+						<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
 
-				<div className='container'>
-					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
+						<div className='name-info'>
+							<p className='name-info--name'>{name}</p>
+							<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
+						</div>
 
-					<div className='name-info'>
-						<p className='name-info--name'>{name}</p>
-						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
+						<div className='amount'>
+							<p className={amtColor}>{amt}</p>
+							<p className='amount--date'>{date}</p>
+						</div>
 					</div>
-
-					<div className='amount'>
-						<p className={amtColor}>{amt}</p>
-						<p className='amount--date'>{date}</p>
-					</div>
-
-				</div>
+				</Swipe>
 			</div>
 		);
 	}

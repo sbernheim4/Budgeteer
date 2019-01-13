@@ -50,6 +50,11 @@ $transaction-background-color: $background-color;
 		}
 	}
 
+	.active {
+		position: relative;
+		left: 20px;
+	}
+
 	.container {
 		padding: 15px;
 		display: flex;
