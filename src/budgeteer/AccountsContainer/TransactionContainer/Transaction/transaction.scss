@@ -39,6 +39,11 @@ $transaction-background-color: hsla(40, 30%, 88%, 1);
 		}
 	}
 
+	.active {
+		position: relative;
+		left: 20px;
+	}
+
 	.container {
 		padding: 15px;
 		display: flex;
