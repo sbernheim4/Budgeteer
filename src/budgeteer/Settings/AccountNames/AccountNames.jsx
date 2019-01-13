@@ -72,11 +72,6 @@ class AccountNames extends Component {
 			map.set(accountID, displayName);
 		});
 
-		console.log("Updated Map: ");
-		console.log(map);
-		console.log([...map]);
-		console.log(JSON.stringify([...map]));
-
 		axios.post('/user-info/display-names', {
 			data: {
 				map: JSON.stringify([...map])
