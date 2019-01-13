@@ -96,26 +96,16 @@ Router.get("/display-names", async (req, res) => {
 });
 
 Router.post("/display-names", (req, res) => {
-	const newMap = JSON.parse(req.body.data.map);
-	const serializedNewMap = mapToJson(newMap)
+	const serializedMap = req.body.data.map;
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
-	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedNewMap }, () => {
+	User.updateOne({ _id: req.session.user._id }, { displayNames: serializedMap }, () => {
 		console.log("Updated display names");
 	});
 
 	// Save new object in session
-	req.session.user.displayNames = serializedNewMap;
+	req.session.user.displayNames = serializedMap;
 	req.session.save();
 });
-
-
-function mapToJson(map) {
-    return JSON.stringify([...map]);
-}
-
-function jsonToMap(jsonStr) {
-    return new Map(JSON.parse(jsonStr));
-}
 
 module.exports = Router;

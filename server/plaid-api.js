@@ -198,9 +198,9 @@ Router.post ("/balance", async (req, res, next) => {
 					if (acct.balances.current !== null && acct.type !== 'credit') {
 						let value = acct.balances.current;
 						bankTotal += value;
-						map[acct.name] = value;
+						map[acct.account_id] = value;
 					} else if (acct.type !== 'credit') {
-						map[acct.name] = "N/A";
+						map[acct.account_id] = "N/A";
 					}
 				});
 
