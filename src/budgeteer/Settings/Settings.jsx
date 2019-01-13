@@ -149,13 +149,13 @@ class Settings extends Component {
 					</div>
 				)}
 
-				<form className='settings--monthly-budget' onSubmit={this.updateMonthlyBudget}>
-					<label>
-						<h1>Your Monthly Budget</h1>
+				<div className='settings--monthly-budget' onSubmit={this.updateMonthlyBudget}>
+					<h1>Your Monthly Budget</h1>
+					<div>
 						<input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue}/>
-						<input className='submit' type='submit' value='Update' onClick={this.updateMonthlyBudget}/>
-					</label>
-				</form>
+						<button className='submit' onClick={this.updateMonthlyBudget}> Update Budget </button>
+					</div>
+				</div>
 
 				<AccountNames accounts={this.props.accounts}/>
 

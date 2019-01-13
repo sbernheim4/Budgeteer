@@ -29,39 +29,61 @@
 
 		button {
 			padding: 15px 20px;
-			background-color: #d84545;
+			background-color: $red;
 			border-radius: 5px;
 			font-size: 1em;
+			color: $default-font-contrast-color;
 			cursor: pointer;
+			transition: background-color .1s ease-in;
+
+			&:hover {
+				background-color: darken($red, 10%);
+			}
 		}
 	}
 
 	&--monthly-budget {
-		margin-top: 60px;
-		width: 300px;
+		padding: 60px 0;
 
-		label {
+		h1 {
+			margin-bottom: 10px;
+		}
 
-			h1 {
-				margin-bottom: 10px;
-			}
+		div {
+			padding: 15px;
 
 			input {
 				padding: 10px;
 				border-radius: 5px;
-				/*width: 150px;*/
-				/*height: 30px;*/
 				font-size: 20px;
 				color: black;
 			}
 
 			.submit {
+				position: relative;
 				margin-left: 5px;
-				background: #607D8B;
+				padding: 10px 20px;
+				background: $gray;
+				border-radius: 5px;
+				font-size: 1.5em;
 				color: white;
 				cursor: pointer;
+				box-shadow: 0 6px darken($gray, 10%);
+				box-sizing: border-box;
+				top: -3px;
+
+				&:hover {
+					background-color: darken($gray, 3%);
+					box-shadow: 0 6px darken($gray, 13%);
+				}
+
+				&:active {
+					top: 3px;
+					box-shadow: 0 0 darken($gray, 10%);
+				}
 			}
 		}
+
 	}
 
 	&--rotate-tokens {
@@ -77,6 +99,7 @@
 			background-color: $green;
 			border-radius: 5px;
 			font-size: 1em;
+			color: $default-font-contrast-color;
 			cursor: pointer;
 			transition: background-color .3s ease;
 
