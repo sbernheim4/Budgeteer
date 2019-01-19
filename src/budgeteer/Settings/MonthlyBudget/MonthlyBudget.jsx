@@ -2,6 +2,7 @@
 
 import React, { Component } from "react";
 import axios from 'axios';
+import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
 import './monthlyBudget.scss';
 
@@ -11,6 +12,8 @@ class MonthlyBudget extends Component {
 
 		this.state = {
 			monthlyBudget: "Loading...",
+			message: "We've updated your monthly budget!",
+			color: "green"
 		}
 
 		this.updateInputValue = this.updateInputValue.bind(this);
@@ -57,13 +60,12 @@ class MonthlyBudget extends Component {
 		});
 
 		// Display a success message optimistically
-		this.displayMessage("Your monthly budget was updated", "green");
+		this.displayMessage();
 	}
 
-	displayMessage(msg, color) {
+	displayMessage() {
+		console.log("Displaying banner...")
 		this.setState({
-            message: msg,
-            color: color,
 			display: true
 		});
 
@@ -75,10 +77,11 @@ class MonthlyBudget extends Component {
 	}
 
 	render() {
-
 		return (
             <section className='monthly-budget' onSubmit={this.updateMonthlyBudget}>
-                <h1>Your Monthly Budget</h1>
+				<BannerMessage display={this.state.display} color={this.state.color} text={this.state.message} />
+
+                <h1>Monthly Budget</h1>
                 <div>
                     <input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue} />
                     <button className='submit' onClick={this.updateMonthlyBudget}> Update Budget </button>
@@ -89,4 +92,3 @@ class MonthlyBudget extends Component {
 }
 
 export default MonthlyBudget;
-

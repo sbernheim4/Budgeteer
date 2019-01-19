@@ -69,7 +69,7 @@ class TransactionContainer extends Component {
 
 		return (
 			<section className="transaction-container">
-				<h1>Past Transactions</h1>
+				<h1>{this.props.title || "Past Transactions"}</h1>
 				{transactionInfo}
 				<div className="transactions">
 					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} accounts={this.props.accounts} transaction={t} /> )}

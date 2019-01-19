@@ -1,20 +1,18 @@
 @import '../scss/variables';
 
 .error {
-	position: absolute;
-	left: 0;
-	right: 0;
+    position: absolute;
 	margin: 15px auto;
 	width: 350px;
-	text-align: center;
-	padding: 15px;
-	background-color: $red;
-	border-radius: 10px;
-
+    top: 0;
+    right: 0;
+	left: 0;
+	color: white;
+    text-align: center;
+    border-radius: 10px;
 	transition: transform 0.4s cubic-bezier(0.6, 0, 0.3, 1.2);
 	transform: translateY(30px);
 	animation: slideFromTop .7s 1;
-
 	transition: opacity .2s ease;
 	z-index: 3;
 	display: flex;

@@ -1,7 +1,7 @@
 /* eslint no-undefined: "off" */
 
 import React, { Component } from "react"
-import ErrorMessage from "../../ErrorMessage/ErrorMessage.jsx";
+import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 import axios from 'axios';
 
 import './LinkedAccounts.scss';

@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import AccountNames from "./AccountNames/AccountNames.jsx";
 import LinkedAccounts from "./LinkedAccounts/LinkedAccounts.jsx";
 import MonthlyBudget from "./MonthlyBudget/MonthlyBudget.jsx";
-import ErrorMessage from "../ErrorMessage/ErrorMessage.jsx";
+
 import axios from 'axios';
 
 import './settings.scss';
@@ -12,9 +12,7 @@ import './settings.scss';
 class Settings extends Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-		}
+		this.state = {};
 	}
 
 	async removeAccount(e) {
@@ -40,7 +38,7 @@ class Settings extends Component {
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
 			})
 			window.localStorage.clear();
-			window.sessionStorage.cleaar();
+			window.sessionStorage.clear();
 		} catch(err) {
 			console.log("DISPLAY ERROR MESSAGE");
 			console.log(err.ERROR);
