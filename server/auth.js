@@ -20,7 +20,7 @@ router.get('/google/return', passport.authenticate('google', { scope: ['email', 
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
 	// Redirect to budgeteer or url they entered after the session has been set
-	const returnURL = req.session.returnUrl !== undefined ? req.session.returnUrl : '/budgeteer';
+	const returnURL = req.session.returnUrl ? req.session.returnUrl : '/budgeteer';
 	res.redirect(returnURL);
 });
 
@@ -32,22 +32,22 @@ router.get('/facebook/return', passport.authenticate('facebook'), (req, res) => 
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
 	// Redirect to budgeteer or url they entered after the session has been set
-	const returnURL = req.session.returnUrl !== undefined ? req.session.returnUrl : '/budgeteer';
+	const returnURL = req.session.returnUrl ? req.session.returnUrl : '/budgeteer';
 	res.redirect(returnURL);
 });
 
 function checkAuthentication(req, res, next) {
 	// Check if the user variable on the session is set. If not redirect to /login
 	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
-	if (req.session.user !== undefined) {
+	if (req.session.user) {
 		// User is authenticated :)
 		next();
 	} else {
 		// User is not authenticated :(
 
 		// If the user tried to go straight to /budgeteer/transactions without being
-		// logged in store the route they tried to visit in the session to redirect
-		// them too after authentication completes
+		// logged in, store the route they tried to visit in the session to redirect
+		// them to after authentication completes
 		req.session.returnUrl = req.url;
 		req.session.save();
 
