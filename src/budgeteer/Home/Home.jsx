@@ -47,7 +47,7 @@ class Home extends Component {
 				key: keyAndEnv.publicKey,
 				env: keyAndEnv.env,
 				apiVersion: 'v2',
-				clientName: 'Update Account',
+				clientName: 'Budgeteer',
 				product: ['transactions'],
 				token: data.publicToken,
 				onSuccess: function (public_token, metadata) {
