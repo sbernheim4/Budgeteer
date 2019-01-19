@@ -10,7 +10,7 @@
 
     }
 
-    div {
+    &__container {
         padding: 15px;
         display: flex;
         flex-direction: column;
@@ -47,5 +47,4 @@
             }
         }
     }
-
 }

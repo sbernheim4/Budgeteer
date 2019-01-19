@@ -82,7 +82,7 @@ class MonthlyBudget extends Component {
 				<BannerMessage display={this.state.display} color={this.state.color} text={this.state.message} />
 
                 <h1>Monthly Budget</h1>
-                <div>
+                <div className='monthly-budget__container'>
                     <input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue} />
                     <button className='submit' onClick={this.updateMonthlyBudget}> Update Budget </button>
                 </div>

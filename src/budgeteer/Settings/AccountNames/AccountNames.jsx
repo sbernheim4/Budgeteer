@@ -1,6 +1,7 @@
 /*eslint no-undefined: 0*/
 import React, { Component } from "react";
 import axios from 'axios';
+import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
 import './accountNames.scss';
 
@@ -16,6 +17,7 @@ class AccountNames extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.getDisplayName = this.getDisplayName.bind(this);
 		this.jsonToMap = this.jsonToMap.bind(this);
+		this.displayMessage = this.displayMessage.bind(this);
 	}
 
 	mapToJson(map) {
@@ -77,6 +79,20 @@ class AccountNames extends Component {
 				map: JSON.stringify([...map])
 			}
 		});
+
+		this.displayMessage();
+	}
+
+	displayMessage() {
+		this.setState({
+			displayBannerMessage: true
+		});
+
+		setTimeout(() => {
+			this.setState({
+				displayBannerMessage: false,
+			});
+		}, 5500);
 	}
 
 	handleChange(e, id) {
@@ -88,6 +104,9 @@ class AccountNames extends Component {
 	render() {
 		return (
 			<div className="accounts">
+
+				<BannerMessage text={"Account names have been updated"} display={this.state.displayBannerMessage} color={"green"}/>
+
 				<h1>Account Display Names</h1>
 				{this.state.accounts.map((acct, index) =>
 					<div className="account-names" key={index}>

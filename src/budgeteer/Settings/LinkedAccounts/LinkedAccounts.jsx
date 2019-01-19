@@ -26,32 +26,32 @@ class LinkedAccounts extends Component {
 	}
 
 	async removeAccount(e) {
-		// let bankName = e.target.parentNode.querySelector('h2').innerText;
+		let bankName = e.target.parentNode.querySelector('h2').innerText;
 
-		// let index;
-		// this.state.linkedBanks.map( (bank, i) => {
-		// 	if (bank === bankName) {
-		// 		index = i;
-		// 	}
-		// });
+		let index;
+		this.state.linkedBanks.map( (bank, i) => {
+			if (bank === bankName) {
+				index = i;
+			}
+		});
 
-		// try {
-		// 	const result = await axios.post('/plaid-api/remove-account', {
-		// 		data: {
-		// 			bankIndex: index,
-		// 			bankName: this.state.linkedBanks[index]
-		// 		}
-		// 	});
+		try {
+			const result = await axios.post('/plaid-api/remove-account', {
+				data: {
+					bankIndex: index,
+					bankName: this.state.linkedBanks[index]
+				}
+			});
 
-		// 	this.setState({
-		// 		linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
-		// 	})
-		// 	window.localStorage.clear();
-		// 	window.sessionStorage.clear();
-		// } catch(err) {
-		// 	console.log("DISPLAY ERROR MESSAGE");
-		// 	console.log(err.ERROR);
-		// }
+			this.setState({
+				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
+			})
+			window.localStorage.clear();
+			window.sessionStorage.clear();
+		} catch(err) {
+			console.log("DISPLAY ERROR MESSAGE");
+			console.log(err.ERROR);
+		}
 	}
 
 	displayMessage(msg, color) {
