@@ -33,18 +33,16 @@ class Networth extends Component {
 			data = window.sessionStorage.getItem("balance");
 			data = JSON.parse(data);
 		} else {
-			data = await axios({
-				method: "POST",
-				url: '/plaid-api/balance'
-			});
 
+			data = await axios.get('/plaid-api/balance');
 			data = data.data
+
 			if (data.Error) {
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
 				const plaid = Plaid.create({
 					apiVersion: 'v2',
-					clientName: 'Update Account',
+					clientName: 'Budgeteer',
 					env: keyAndEnv.data.env,
 					product: ['balance'],
 					key: keyAndEnv.data.publicKey,

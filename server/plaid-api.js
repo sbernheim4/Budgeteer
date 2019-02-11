@@ -166,7 +166,7 @@ async function resolvePlaidTransactions(accessTokensArray, startDate, endDate) {
 	return allData;
 }
 
-Router.post ("/balance", async (req, res, next) => {
+Router.get ("/balance", async (req, res, next) => {
 	let allData;
 	try {
 		allData = await resolvePlaidBalance(req.session.user.accessTokens);

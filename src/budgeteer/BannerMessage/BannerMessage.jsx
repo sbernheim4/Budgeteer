@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 
-import './errorMessage.scss';
+import './bannerMessage.scss';
 
 const green = {
-	background: 'rgb(70, 145, 107)',
+	background: 'rgb(50, 150, 100)',
 };
 
 const red = {
 	background: 'rgb(216, 69, 69)'
 }
 
-class ErrorMessage extends Component {
+class BannerMessage extends Component {
 	constructor(props) {
 		super(props);
 
@@ -21,7 +21,6 @@ class ErrorMessage extends Component {
 	}
 
 	static getDerivedStateFromProps(props, state) {
-
 		return {
 			display: props.display,
 			color: props.color === "green" ? green : red
@@ -41,4 +40,4 @@ class ErrorMessage extends Component {
 	}
 }
 
-export default ErrorMessage;
+export default BannerMessage;

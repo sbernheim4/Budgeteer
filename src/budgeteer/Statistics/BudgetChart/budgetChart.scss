@@ -6,10 +6,11 @@
 	width: $color-block-dimension;
 	height: $color-block-dimension;
 	background-color: $green;
-	border: 1px solid white;
+	border: 1px solid black;
 	border-radius: $color-block-border-radius;
 	display: inline-block;
 	vertical-align: middle;
+	color: black;
 }
 
 .budget {
@@ -67,7 +68,7 @@
 
 	&--tooltip {
 		padding: 15px;
-		background-color: black;
+		background-color: white;
 		border-radius: 5px;
 
 		&--spent:before {

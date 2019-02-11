@@ -1,0 +1,62 @@
+@import "../../scss/variables.scss";
+
+.linked-accounts {
+	margin: 20px auto;
+	max-width: 90%;
+	width: 1000px;
+	padding: 10px;
+
+	h2 {
+		margin: 5px 10px 0 5px;
+	}
+
+	&__list {
+
+		@media all and (max-width: 500px) {
+			font-size: .9em;
+		}
+
+		&__account {
+			margin: 10px 0;
+			padding: 10px 0;
+			border-bottom: 2px solid white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			button {
+				position: relative;
+				min-width: 100px;
+				height: 50px;
+				background-color: $red;
+				border-radius: 5px;
+				font-size: 1em;
+				color: $default-font-contrast-color;
+				cursor: pointer;
+				transition: background-color .1s ease-in;
+				box-shadow: 0 6px darken($red, 10%);
+				box-sizing: border-box;
+				top: -3px;
+
+				@media all and (max-width: 500px) {
+					width: 80px;
+					height: 40px;
+					font-size: 1em;
+				}
+
+				&:hover {
+					background-color: darken($red, 3%);
+					box-shadow: 0 6px darken($red, 13%);
+				}
+
+				&:active {
+					top: 3px;
+					box-shadow: 0 0 darken($red, 10%);
+				}
+			}
+
+		}
+
+	}
+
+}

@@ -6,11 +6,11 @@
 
 .home {
 	h1 {
-		margin-bottom: 30px;
 		text-align: center;
 	}
 
 	h2 {
+		margin-top: 30px;
 		text-align: center;
 	}
 
@@ -25,13 +25,5 @@
 			border: 5px solid rgb(100, 144, 183);
 			border-radius: 50%;
 		}
-	}
-
-	&--monthly-budget {
-
-	}
-
-	&--transactions {
-
 	}
 }

@@ -1,16 +1,16 @@
 .home {
-	width: 100vw;
 	margin-bottom: 60px;
+	width: 100vw;
 
 	.landing-page {
 		width: 100%;
 		height: calc(100vh - 65px);
 		background-color: rgb(255, 65, 45);
 		color: white;
-		overflow-y: hidden;
-		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		overflow-y: hidden;
+		display: flex;
 
 		h1 {
 			margin-left: 100px;
@@ -72,10 +72,10 @@
 		}
 
 		&--amount {
-			display: flex;
 			flex-direction: row;
 			justify-content: center;
 			align-items: center;
+			display: flex;
 
 			h1 {
 				font-size: 4em;

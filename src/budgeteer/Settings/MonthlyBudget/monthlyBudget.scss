@@ -1,0 +1,50 @@
+@import '../../scss/variables';
+
+.monthly-budget {
+	margin: 0 auto;
+	max-width: 90%;
+	width: 1000px;
+	padding: 30px 0;
+
+	h1 {
+
+	}
+
+	&__container {
+		padding: 15px;
+		display: flex;
+		flex-direction: column;
+
+		input {
+			padding: 10px;
+			border-radius: 5px;
+			font-size: 20px;
+			color: black;
+		}
+
+		button {
+			position: relative;
+			margin: 10px auto;
+			width: 100%;
+			padding: 10px 20px;
+			background: $green;
+			border-radius: 5px 5px 30px 30px;
+			font-size: 1.5em;
+			color: white;
+			cursor: pointer;
+			box-shadow: 0 4px darken($green, 10%);
+			box-sizing: border-box;
+			top: -3px;
+
+			&:hover {
+				background-color: darken($green, 3%);
+				box-shadow: 0 4px darken($green, 13%);
+			}
+
+			&:active {
+				top: 3px;
+				box-shadow: 0 0 darken($green, 10%);
+			}
+		}
+	}
+}

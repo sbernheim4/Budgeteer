@@ -6,8 +6,7 @@ import differenceInDays from 'date-fns/difference_in_days';
 import addMonths from 'date-fns/add_months';
 import startOfMonth from 'date-fns/start_of_month';
 
-import ErrorMessage from '../ErrorMessage/ErrorMessage.jsx';
-
+import BannerMessage from "../BannerMessage/BannerMessage.jsx";
 import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';
 
 import "../scss/globals.scss";
@@ -88,7 +87,7 @@ class App extends Component {
 					key: keyAndEnv.publicKey,
 					env: keyAndEnv.env,
 					apiVersion: 'v2',
-					clientName: 'Update Account',
+					clientName: 'Budgeteer',
 					product: ['transactions'],
 					token: transactions.publicToken,
 					onSuccess: function (public_token, metadata) {
@@ -187,7 +186,7 @@ class App extends Component {
 		return (
 			<div>
 				<Navbar />
-				<ErrorMessage display={this.state.showErrorMessage} text={this.state.errorMessage}/>
+				<BannerMessage display={this.state.showErrorMessage} text={this.state.errorMessage}/>
 
 				<div className="main">
 					<Route exact path='/' render={() => (

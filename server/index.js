@@ -140,18 +140,6 @@ if (process.env.DB_URI && process.env.DB_URI !== '') {
 }
 
 function startServer() {
-	console.log(process.env.NODE_ENV);
-	if (process.env.NODE_ENV === 'development') {
-		app.listen(process.env.INSECURE_PORT, () => {
-			console.log(chalk.green(`Listening on port ${process.env.INSECURE_PORT}`));
-		});
-		https.createServer(options, app).listen(process.env.PORT);
-		console.log(chalk.green(`Listening securely on port ${process.env.PORT}`));
-	} else if (process.env.NODE_ENV === 'production'){
-		app.listen(process.env.PORT, () => {
-			console.log(chalk.green(`Listening on port ${process.env.PORT}`));
-		});
-	} else {
-		throw new Error(`Invalid NODE_ENV value of ${process.env.NODE_ENV}`);
-	}
+    https.createServer(options, app).listen(process.env.PORT);
+    console.log(chalk.green(`App is live on ${process.env.DEV_BASE_URL}`));
 }

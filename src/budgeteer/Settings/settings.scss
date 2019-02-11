@@ -12,58 +12,6 @@
 		font-size: 2em;
 	}
 
-	&--linked-accounts {
-		margin: 20px auto;
-		max-width: 1000px;
-		width: 80%;
-		padding: 10px;
-		border-bottom: 2px solid white;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-
-		h2 {
-			margin: 5px 0;
-		}
-
-		button {
-			padding: 15px 20px;
-			background-color: #d84545;
-			border-radius: 5px;
-			font-size: 1em;
-			cursor: pointer;
-		}
-	}
-
-	&--monthly-budget {
-		margin-top: 60px;
-		width: 300px;
-
-		label {
-
-			h1 {
-				margin-bottom: 10px;
-			}
-
-			input {
-				padding: 10px;
-				border-radius: 5px;
-				/*width: 150px;*/
-				/*height: 30px;*/
-				font-size: 20px;
-				color: black;
-			}
-
-			.submit {
-				margin-left: 5px;
-				background: #607D8B;
-				color: white;
-				cursor: pointer;
-			}
-		}
-	}
-
 	&--rotate-tokens {
 		margin: 60px 15px 0 0;
 
@@ -77,6 +25,7 @@
 			background-color: $green;
 			border-radius: 5px;
 			font-size: 1em;
+			color: $default-font-contrast-color;
 			cursor: pointer;
 			transition: background-color .3s ease;
 

@@ -47,7 +47,7 @@ class Home extends Component {
 				key: keyAndEnv.publicKey,
 				env: keyAndEnv.env,
 				apiVersion: 'v2',
-				clientName: 'Update Account',
+				clientName: 'Budgeteer',
 				product: ['transactions'],
 				token: data.publicToken,
 				onSuccess: function (public_token, metadata) {
@@ -93,7 +93,7 @@ class Home extends Component {
 				</div>
 
 				<div className='home--transactions'>
-					<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
+					<TransactionContainer title={"Recent Transactions"} transactions={this.state.transactions} accounts={this.props.accounts} />
 				</div>
 
 			</div>
