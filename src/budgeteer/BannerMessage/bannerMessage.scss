@@ -16,7 +16,7 @@
 	right: 0;
 	left: 0;
 	text-align: center;
-	transform: translateY(30px);
+	transform: translateY(10px);
 	animation: slideFromTop .7s 1;
 	z-index: 3;
 	display: flex;
@@ -29,5 +29,6 @@
 
 @keyframes slideFromTop {
 	0%   { transform: translateY(-100vw); }
-	100% { transform: translateY(30px); }
+	45%  { transform: translateY(30px); }
+	100% { transform: translateY(10px); }
 }

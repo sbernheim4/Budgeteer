@@ -50,10 +50,10 @@ class Home extends Component {
 				onSuccess: function (public_token, metadata) {
 					console.log("Update of Account successful");
 				},
-				onExit: function(err, metadata) {
+				onExit: function (err, metadata) {
 					console.log("err:", err);
 					console.log("metadata:", metadata);
-				  }
+				}
 			});
 
 			plaid.open();
@@ -82,15 +82,20 @@ class Home extends Component {
 				{text}
 
 				<h1>Your Snapshot</h1>
-				<div className="home--monthly-budget">
-					<h2>Monthly Budget</h2>
-					<Budget displayInput={false} transactions={this.props.transactions} />
-				</div>
 
-				<div className='home--transactions'>
-					<TransactionContainer title={"Recent Transactions"} transactions={this.state.transactions} accounts={this.props.accounts} />
-				</div>
+				<div className="home--snapshot">
 
+					<div className="home--snapshot--monthly-budget">
+						<h2>Monthly Budget</h2>
+						<Budget displayInput={false} transactions={this.props.transactions} />
+					</div>
+
+					<div className='home--snapshot--transactions'>
+						<h2>Recent Transactions</h2>
+						<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
+					</div>
+
+				</div>
 			</div>
 		);
 	}

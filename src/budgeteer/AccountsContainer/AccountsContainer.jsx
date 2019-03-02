@@ -369,7 +369,7 @@ class AccountsContainer extends Component {
 				</div>
 
 				<WeekSpendingChart transactions={this.state.categoryTransactions}/>
-				<TransactionContainer x="hello" categoryType={this.state.categoryType} categoryTotal={this.state.categoryTotal} transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
+				<TransactionContainer title="Past Transactions" categoryType={this.state.categoryType} categoryTotal={this.state.categoryTotal} transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
 			</div>
 		);
 	}

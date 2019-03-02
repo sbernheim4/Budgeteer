@@ -19,11 +19,36 @@
 		img {
 			margin: 0 auto;
 			width: 80vw;
-			// height: 80vh;
 			padding: 10px;
 			display: block;
 			border: 5px solid rgb(100, 144, 183);
 			border-radius: 50%;
 		}
 	}
+
+	&--snapshot {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		@media all and (max-width: 1200px) {
+			display: block;
+		}
+
+		&--monthly-budget {
+			max-width: 700px;
+			width: 100%;
+
+			@media all and (max-width: 1200px) {
+				margin: 0 auto;
+			}
+
+		}
+
+		&--transactions {
+
+		}
+
+	}
+
 }
