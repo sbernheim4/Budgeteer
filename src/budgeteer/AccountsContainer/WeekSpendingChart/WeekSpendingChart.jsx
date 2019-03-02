@@ -1,10 +1,8 @@
-import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import { ResponsiveContainer, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryTooltip, VictoryLabel } from 'victory';
 
 import subWeeks from 'date-fns/sub_weeks';
-import isAfter from 'date-fns/is_after';
 import isWithinRange from 'date-fns/is_within_range';
 import differenceInDays from 'date-fns/difference_in_days';
 
