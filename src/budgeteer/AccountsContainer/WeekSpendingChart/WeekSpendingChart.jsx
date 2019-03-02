@@ -133,7 +133,10 @@ class WeekSpendingChart extends Component {
 		});
 
 		window.addEventListener('resize', this.updateDimensions.bind(this));
-		// remove this on unmount
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('resize', this.updateDimensions.bind(this));
 	}
 
 	updateDimensions(event) {
