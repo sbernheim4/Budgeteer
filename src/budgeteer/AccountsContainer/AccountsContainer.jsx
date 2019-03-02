@@ -1,11 +1,8 @@
 /* eslint no-undefined: 0 */
 /* eslint no-multi-spaces: 0 */
 
-import axios from 'axios';
-
-import ReactDOM from "react-dom";
 import React, { Component } from "react";
-import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import axios from 'axios';
 
 import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
 import TransactionContainer from "./TransactionContainer/TransactionContainer.jsx";
