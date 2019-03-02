@@ -1,7 +1,15 @@
 @import "../../scss/variables.scss";
 
 .accounts {
+	margin: 0 auto;
+	max-width: 1100px;
 	margin-top: 30px;
+}
+
+h1 {
+	@media all and (max-width: 800px) {
+		margin-left: 15px;
+	}
 }
 
 .account-names {
@@ -9,15 +17,15 @@
 	height: 60px;
 	border-radius: 5px;
 	display: flex;
+	justify-content: center;
 	align-items: center;
 
 	&--name {
-		margin: 0 30px;
+		margin: 0px 10px;
 		width: 40%;
-	}
-
-	&--display {
-
+		white-space: nowrap;
+		overflow: scroll;
+		// text-overflow: ellipsis;
 	}
 
 	&--input {
@@ -26,11 +34,12 @@
 		padding: 10px;
 		font-size: 18px;
 		color: black;
+		outline: 1px solid rgb(50, 50, 50);
 	}
 
 	&--submit {
 		position: relative;
-		margin-bottom: 6px;
+		margin: 0 20px 6px 20px;
 		padding: 10px 20px;
 		background-color: $green;
 		border-radius: 5px;
@@ -53,7 +62,11 @@
 }
 
 .account-names:nth-child(2n+1) {
-	background: lighten($background-color, 10%);
+	background: lighten($background-color, 5%);
+}
+
+.account-names:nth-child(2n) {
+	background: darken($background-color, 2%);
 }
 
 // .account-names:nth-child(2n) {

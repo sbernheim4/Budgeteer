@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan} from "recharts"
 import axios from 'axios';
-
-import {formatAmount, numberWithCommas } from "../../helpers.js";
-
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts"
 import isSameMonth from "date-fns/is_same_month";
 import isSameYear from "date-fns/is_same_year";
+
+import { formatAmount, numberWithCommas } from "../../helpers.js";
 
 import "./budgetChart.scss";
 
@@ -38,8 +37,8 @@ class BudgetChart extends Component {
 		super(props);
 
 		this.state = {
-			monthlyBudget: "",
-			spentThisMonth: 0,
+			monthlyBudget: 0,
+			totalSpent: 0, // Total spent this month
 			rechartsData: [
 				{name: 'Spent', value: 0},
 				{name: 'Remaining', value: 1}
@@ -50,63 +49,47 @@ class BudgetChart extends Component {
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
-		console.log("nextProps are: ");
-		console.log(nextProps);
 
-		if (nextProps.transactions.length > 0) {
-			let totalSpent = 0;
+		if (nextProps.transactions.length <= 0) {
+			return null;
+		} else {
 			let today = new Date();
+			let totalSpent = 0;
 
-			// Calculate total spent this month
 			for (let t of nextProps.transactions) {
 				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 				if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
-					totalSpent += t.amount * -1; // Spending is a negative value
+					totalSpent += Math.abs(t.amount);
 				}
 			}
 
-			// Retrieve monthly budget from session storage
-			const monthlyBudgetFromSessionStorage = localStorage.getItem("monthlyBudget"); // Get monthly budget from session storage
-
-			// Calculate remaining amount left to spend
-			/*let remaining = (monthlyBudgetFromSessionStorage - totalSpent) <= 0 ? 0 : (monthlyBudgetFromSessionStorage - totalSpent);*/
-			const remaining = monthlyBudgetFromSessionStorage - totalSpent;
+			const monthlyBudget = localStorage.getItem("monthlyBudget");
+			const remaining = monthlyBudget - totalSpent;
 
 			// Create chart data set
 			const chartData = [
-				{
-					name: 'Spent',
-					value: totalSpent
-				},
-
-				{
-					name: 'Remaining',
-					value: remaining
-				},
+				{ name: 'Spent', value: totalSpent },
+				{ name: 'Remaining', value: remaining },
 			];
 
 			// Set the state
 			return {
-				spentThisMonth: totalSpent,
+				totalSpent: totalSpent,
 				rechartsData: chartData,
-				monthlyBudget: monthlyBudgetFromSessionStorage
+				monthlyBudget: monthlyBudget
 			};
-
-		} else {
-			console.error("Error from Budget Chart: transactions.length is <= 0")
-			return null;
 		}
 	}
 
 	handleChange(event) {
 		const newMonthlyBudget = event.target.value.trim();
+
 		// Save data to the current local store
 		localStorage.setItem("monthlyBudget", newMonthlyBudget);
 
-		// Update the percentage calculator
-		const spent = this.state.spentThisMonth;
-		const remaining = (newMonthlyBudget - this.state.spentThisMonth) <= 0 ? 0 : (newMonthlyBudget - this.state.spentThisMonth);
+		const spent = this.state.totalSpent;
+		const remaining = (newMonthlyBudget - this.state.totalSpent) <= 0 ? 0 : (newMonthlyBudget - this.state.totalSpent);
 
 		// Update the chart
 		let amts = [
@@ -129,10 +112,10 @@ class BudgetChart extends Component {
 	}
 
 	render() {
-		let spent = formatAmount(this.state.spentThisMonth)
+		let spent = formatAmount(this.state.totalSpent)
 		spent = numberWithCommas(spent);
 
-		let remaining = (this.state.monthlyBudget - this.state.spentThisMonth);
+		let remaining = (this.state.monthlyBudget - this.state.totalSpent);
 		remaining = formatAmount(remaining);
 		remaining = numberWithCommas(remaining);
 
@@ -151,6 +134,7 @@ class BudgetChart extends Component {
 				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
 					<PieChart>
 						<Pie
+							dataKey="value"
 							data={this.state.rechartsData}
 							innerRadius="50%"
 							outerRadius="90%"

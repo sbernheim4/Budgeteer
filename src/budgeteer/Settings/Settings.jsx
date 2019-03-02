@@ -27,12 +27,12 @@ class Settings extends Component {
 
 		let result;
 		try {
-			result = await axios.post('/plaid-api/remove-account', {
-				data: {
-					bankIndex: index,
-					bankName: this.state.linkedBanks[index]
-				}
-			});
+			// result = await axios.post('/plaid-api/remove-account', {
+			// 	data: {
+			// 		bankIndex: index,
+			// 		bankName: this.state.linkedBanks[index]
+			// 	}
+			// });
 
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
@@ -46,7 +46,7 @@ class Settings extends Component {
 	}
 
 	async rotateAccessTokens() {
-		let returnVal = await axios.post('/plaid-api/rotate-access-tokens');
+		// let returnVal = await axios.post('/plaid-api/rotate-access-tokens');
 
 		//const alertMessage = document.querySelector('.app-error');
 		//alertMessage.innerText = returnVal.data.result;

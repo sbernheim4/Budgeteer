@@ -105,13 +105,12 @@ class AccountNames extends Component {
 		return (
 			<div className="accounts">
 
-				<BannerMessage text={"Account names have been updated"} display={this.state.displayBannerMessage} color={"green"}/>
+				<BannerMessage text={"Your account names have been updated"} display={this.state.displayBannerMessage} color={"green"}/>
 
-				<h1>Account Display Names</h1>
+				<h1>Account Nicknames</h1>
 				{this.state.accounts.map((acct, index) =>
 					<div className="account-names" key={index}>
 						<h3 className="account-names--name">{acct.name}</h3>
-						<h3 className="account-names--display">Display Name: </h3>
 						<input className="account-names--input" id={index} placeholder={this.getDisplayName(acct.account_id)} onChange={(e) => this.handleChange(e, acct.account_id)} type='text'/>
 					</div>
 				)}

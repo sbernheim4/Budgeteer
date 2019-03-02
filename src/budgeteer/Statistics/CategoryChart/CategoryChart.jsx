@@ -30,7 +30,7 @@ class CustomTooltip extends Component {
 		const { active } = this.props;
 
 		if (active) {
-			const { payload, label } = this.props;
+			const { payload } = this.props;
 
 			const style = {
 				background: `${payload[0].payload.fill}`
@@ -74,20 +74,20 @@ class CategoryChart extends Component {
 
 		// Default names and values for each category
 		let amts = [
-			{name: 'Food and Drink', value: 0},
-			{name: 'Travel', value: 0},
-			{name: 'Shops', value: 0},
-			{name: 'Recreation', value: 0},
-			{name: 'Service', value: 0},
-			{name: 'Community', value: 0},
-			{name: 'Healthcare', value: 0},
-			{name: 'Bank Fees', value: 0},
-			{name: 'Cash Advance', value: 0},
-			{name: 'Interest', value: 0},
-			{name: 'Payment', value: 0},
-			{name: 'Tax', value: 0},
-			{name: 'Transfer', value: 0},
-			{name: 'Other', value: 0}
+			{ name: 'Food and Drink', value: 0 },
+			{ name: 'Travel',         value: 0 },
+			{ name: 'Shops',          value: 0 },
+			{ name: 'Recreation',     value: 0 },
+			{ name: 'Service',        value: 0 },
+			{ name: 'Community',      value: 0 },
+			{ name: 'Healthcare',     value: 0 },
+			{ name: 'Bank Fees',      value: 0 },
+			{ name: 'Cash Advance',   value: 0 },
+			{ name: 'Interest',       value: 0 },
+			{ name: 'Payment',        value: 0 },
+			{ name: 'Tax',            value: 0 },
+			{ name: 'Transfer',       value: 0 },
+			{ name: 'Other',          value: 0}
 		];
 
 		const now = new Date();
@@ -193,7 +193,7 @@ class CategoryChart extends Component {
 						{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
 
 						{this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)}
-						<Label className="center-label" fill={"white"} value={"Total Spent: $" + this.state.totalSpent} position="center" />
+						<Label className="center-label" fill={"black"} value={"Total Spent: $" + this.state.totalSpent} position="center" />
 					</Pie>
 
 					<Tooltip content={<CustomTooltip/>}/>

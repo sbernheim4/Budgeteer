@@ -65,7 +65,7 @@ class Transaction extends Component {
 	}
 
 	showMap(e) {
-		e.persist()
+		e.persist();
 		let iframe = document.createElement("iframe");
 
 		// TODO: Currently hardcoding latitude and longitude but it should come from:
@@ -211,7 +211,7 @@ class Transaction extends Component {
 		const containerClassName = this.state.active ? 'container active' : 'container';
 
 		return (
-			<div className='transaction' onClick={this.showMap}>
+			<div className='transaction' /* onClick={this.showMap} */ >
 				<Swipe onSwipeRight={this.onSwipeRight}>
 					<div className={containerClassName}>
 						<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />

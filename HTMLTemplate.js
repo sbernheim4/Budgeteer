@@ -31,6 +31,10 @@ export default function (templateConfig) {
 
                 <!-- Title -->
                 <meta name="${title}" content="Organize all your finances in one place">
+
+                <!-- Favicon -->
+                <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/dusk/64/000000/cash-in-hand.png"/>
+
             </head>
 
             <body>

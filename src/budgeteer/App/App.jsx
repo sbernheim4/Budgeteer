@@ -67,18 +67,23 @@ class App extends Component {
 	async getTransactions() {
 
 		try {
+
 			let now = new Date(); // Jan. 12th 2018
 			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
+
 			prev = addMonths(prev, 1); // Feb. 12th 2017
 			prev = startOfMonth(prev); // Feb 1st 2017
+
 			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 			let transactions = await axios.get('/plaid-api/transactions', {
 				days: numDays
 			});
+
 			transactions = transactions.data;
 
 			if (transactions.Error) {
+
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 				keyAndEnv = keyAndEnv.data;
 
@@ -98,7 +103,7 @@ class App extends Component {
 					onExit: function(err, metadata) {
 						console.log("err:", err);
 						console.log("metadata:", metadata);
-						}
+					}
 				});
 
 				plaid.open();
@@ -122,7 +127,7 @@ class App extends Component {
 		}
 	}
 
-	transactionDateToDate(str) {
+	getDateFromTransaction(str) {
 		const split = str.split("-");
 		return new Date(parseInt(split[0]), parseInt(split[1]) - 1, parseInt(split[2]));
 	}
@@ -143,12 +148,12 @@ class App extends Component {
 
 		// Sort the transactions based on account_id
 		currentTransactions = currentTransactions.sort((a, b) => {
-			const dateA = this.transactionDateToDate(a.date);
-			const dateB = this.transactionDateToDate(b.date);
+			const dateA = this.getDateFromTransaction(a.date);
+			const dateB = this.getDateFromTransaction(b.date);
 
 			return dateB - dateA;
 		});
-		//
+
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,
@@ -181,6 +186,7 @@ class App extends Component {
 	}
 
 	render() {
+
 		let loading = this.state.counter !== 1;
 
 		return (

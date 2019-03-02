@@ -28,9 +28,8 @@ class Home extends Component {
 	}
 
 	async componentDidMount() {
-		console.log("Making call to balance now: ")
 		let data = await axios({
-			method: "POST",
+			method: "GET",
 			url: '/plaid-api/balance'
 		});
 
@@ -39,8 +38,6 @@ class Home extends Component {
 		if (data.Error) {
 			let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 			keyAndEnv = keyAndEnv.data;
-			console.log("keyAndEnv");
-			console.log(keyAndEnv);
 
 			// Open plaid in Link Mode
 			const plaid = Plaid.create({
@@ -52,8 +49,6 @@ class Home extends Component {
 				token: data.publicToken,
 				onSuccess: function (public_token, metadata) {
 					console.log("Update of Account successful");
-					console.log("public_token:", public_token)
-					console.log("Metadata:", metadata);
 				},
 				onExit: function(err, metadata) {
 					console.log("err:", err);

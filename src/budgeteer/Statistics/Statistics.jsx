@@ -5,9 +5,8 @@ import Budget from "./BudgetChart/BudgetChart.jsx";
 import WeekWeekendChart from "./WeekWeekendChart/WeekWeekendChart.jsx";
 import CategoryChart from "./CategoryChart/CategoryChart.jsx";
 import AnnualChart from "./AnnualChart/AnnualChart.jsx";
-import HeatMap from "./HeatMap/HeatMap.jsx";
+// import HeatMap from "./HeatMap/HeatMap.jsx";
 
-import isSameMonth from 'date-fns/is_same_month';
 
 import "./statistics.scss";
 
@@ -53,7 +52,7 @@ class Statistics extends Component {
 
 				<ReactSwipe ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
 					<div className="item category-chart-container">
-						<h1>30 Day Categorical Breakdown</h1>
+						<h1>Categorical Spending</h1>
 						<CategoryChart transactions={this.props.transactions} />
 					</div>
 
@@ -63,14 +62,14 @@ class Statistics extends Component {
 					</div>
 
 					<div className="item">
-						<h1>Week VS Weekend Spending</h1>
+						<h1>Week vs Weekend Spending</h1>
 						<WeekWeekendChart transactions={this.props.transactions} />
 					</div>
 
-					<div className="item">
+					{/* <div className="item">
 						<h1>Heat Map</h1>
 						<HeatMap transactions={this.props.transactions} />
-					</div>
+					</div> */}
 
 					<div className="item">
 						<h1>Annual Spending History</h1>

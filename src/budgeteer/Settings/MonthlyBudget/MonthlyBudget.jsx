@@ -12,7 +12,7 @@ class MonthlyBudget extends Component {
 
 		this.state = {
 			monthlyBudget: "Loading...",
-			message: "We've updated your monthly budget!",
+			message: "Your monthly budget has been updated",
 			color: "green"
 		}
 
