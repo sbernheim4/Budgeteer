@@ -33,7 +33,6 @@ class Transaction extends Component {
 			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
 		};
 
-		this.showMap = this.showMap.bind(this);
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
 	}
 
