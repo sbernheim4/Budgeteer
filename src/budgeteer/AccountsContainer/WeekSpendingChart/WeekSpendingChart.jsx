@@ -24,8 +24,8 @@ class CustomTooltip extends Component {
 
 				return (
 					<div className="week-spending-chart--custom-tooltip">
-						<p>{normalizedLabel}</p>
-						<p>${amount}</p>
+					<p>{normalizedLabel}</p>
+					<p>${amount}</p>
 					</div>
 				);
 			}
@@ -42,18 +42,18 @@ class WeekSpendingChart extends Component {
 		super(props)
 
 		this.state = {
-			weekData: [],
+			victoryChartsData: [],
 			totalSpent: '...'
 		};
 
 		this.updateDimensions = this.updateDimensions.bind(this);
+		this.formatTooltipText = this.formatTooltipText.bind(this);
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
-		if (nextProps.transactions.length > 0) {
-
-			// this is off, need to get all the transactions in the past 7 days
-			// sum up the total spent for each day
+		if (nextProps.transactions.length <= 0) {
+			return null
+		} else {
 			const endDate = new Date();
 			const startDate = subWeeks(endDate, 1);
 
@@ -62,7 +62,7 @@ class WeekSpendingChart extends Component {
 			for (let [index, t] of nextProps.transactions.entries()) {
 				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-				// Get the index of the first transaction to fall inside the range
+				// Get the index of the first transaction to fall inside this week's range
 				if (isWithinRange(transactionDate, startDate, endDate)) {
 					startingIndex = index;
 					break;
@@ -75,7 +75,7 @@ class WeekSpendingChart extends Component {
 				}
 			}
 
-			let amts = new Array(7).fill(0);
+			let currentWeekAmounts = new Array(7).fill(0);
 
 			if (startingIndex !== 0) {
 				const pastWeekTransactions = nextProps.transactions.slice(startingIndex);
@@ -84,54 +84,60 @@ class WeekSpendingChart extends Component {
 					let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 					const index = differenceInDays(endDate, transactionDate);
 
-					amts[index] += t.amount;
+					currentWeekAmounts[index] += t.amount;
 				});
 
-				amts.reverse();
+				currentWeekAmounts.reverse();
 			}
 
 			const week = ["Mon.", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat.", "Sun."];
-			let data = [];
-			let data2 = [];
+
+			let data = []; // VictoryCharts Data
+			let data2 = []; // Recharts Data
 
 			const today = new Date().getDay();
 			let pastWeekTotal = 0;
 
+			// Values for the range of the chart
+			let rangeMax = 0;
+			let rangeMin = 0;
+
 			for (let i = 0; i < 7; i++) {
-				const amt = parseInt(formatAmount(amts[i] * -1)) // Multiple by -1 since spending is viewed as positive and income as negative
+				const amt = parseInt(formatAmount(currentWeekAmounts[i] * -1)) // Multiple by -1 since spending is viewed as positive and income as negative
+
 				data.push({
 					x: i === 6 ? "Today" : week[(today + i) % 7],
 					y: amt,
 					label: amt < 0 ? `Spent: $${numberWithCommas(formatAmount(amt))}` : `Received $${numberWithCommas(formatAmount(amt))}`
 				});
 
-				pastWeekTotal += amts[i];
-			}
-
-			for (let i = 0; i < 7; i++) {
 				data2.push({
 					name: i === 6 ? "Today" : week[(today + i) % 7],
-					value: amts[i] * -1 // Multiple by -1 since spending is viewed as positive and income as negative
+					value: currentWeekAmounts[i] * -1 // Multiple by -1 since spending is viewed as positive and income as negative
 				});
+
+				// Get the total amount spent this week
+				pastWeekTotal += currentWeekAmounts[i];
+
+				// Determine the range for the chart
+				if (amt > rangeMax) rangeMax = amt;
+				if (amt < rangeMin) rangeMin = amt;
 			}
 
-			console.log(data);
+			rangeMax = rangeMax === 0 ? 50 : rangeMax;
+			const range = [rangeMin, rangeMax];
 
 			return {
-				weekData: data,
-				recharts: data2,
-				totalSpent: pastWeekTotal * -1
+				victoryChartsData: data,
+				rechartsData: data2,
+				totalSpent: pastWeekTotal * -1,
+				range: range
 			}
-		}
 
-		return null;
+		}
 	}
 
 	componentDidMount() {
-		this.setState({
-			chartWidth: window.innerWidth
-		});
-
 		window.addEventListener('resize', this.updateDimensions.bind(this));
 	}
 
@@ -145,28 +151,43 @@ class WeekSpendingChart extends Component {
 		})
 	}
 
+	formatTooltipText(datum) {
+		const amount = datum.y;
+		const formattedAmount = numberWithCommas(formatAmount(Math.abs(amount)));
+		return amount > 0 ? `Received $${formattedAmount}` : `Spent ${formattedAmount}`
+	}
+
 	render() {
 
 		const totalSpent = isNumber(this.state.totalSpent) ? this.state.totalSpent.toFixed(2) : 'Loading...';
 		const amtColor = totalSpent <= 0 && isNumber(totalSpent) ? 'red' : 'green';
 
+		const width = this.state.chartWidth || window.innerWidth;
+
 		return (
 			<div>
-				<h1 className='total-spent'>This Week's Bottom Line: <span className={amtColor}>${totalSpent}</span></h1>
+				<h1 className='total-spent'>Past 7 Days: <span className={amtColor}>${totalSpent}</span></h1>
 
-				<div className='victory-chart'>
-					<svg viewBox={"0 0" + " " + this.state.chartWidth + " " + "350"} preserveAspectRatio="none" width="100%">
+			{/* <div className='victory-chart'>
+					<svg viewBox={"0 0 " + width + " 350"} preserveAspectRatio="none" width="100%">
 						<VictoryChart
-							domainPadding={{ x: 40 }}
+							domain={ {y: this.state.range} }
+							domainPadding={{ x: 50 }}
 							standalone={false}
 							width={this.state.chartWidth}
 							height={350}
+							standalone={false}
 						>
 
-							<VictoryBar standalone={false} labelComponent={<VictoryTooltip />}
-								barWidth={10}
+							<VictoryBar
+								data={this.state.victoryChartsData}
 								style={{ data: { fill: "rgb(78,  153, 114)" } }}
-								data={this.state.weekData}
+								barWidth={10}
+								labelComponent={<VictoryTooltip
+									renderInPortal={true}
+									text={(datum) => this.formatTooltipText(datum)}
+									style={{ fontSize: 25 }}
+								/>}
 							/>
 
 							<VictoryAxis
@@ -174,36 +195,40 @@ class WeekSpendingChart extends Component {
 								tickCount={3}
 								orientation="bottom"
 								tickLabelComponent={<VictoryLabel />}
-								// fixLabelOverlap={true}
+								fixLabelOverlap={true}
 								style={{
 									axis: { stroke: "black" },
 									tickLabels: { fontSize: 30 },
 								}}
 							/>
+
 							<VictoryAxis
 								dependentAxis
+								fixLabelOverlap={true}
 								style={{
 									axis: { stroke: "black" },
 									grid: { stroke: "rgb(222, 222, 222)" },
-									tickLabels: { fontSize: 30 },
+									tickLabels: { fontSize: 20 },
 								}}
 							/>
 						</VictoryChart>
 					</svg>
+				</div> */}
 
+				<div className='recharts'>
+					<ResponsiveContainer className="week-spending-chart" width="90%" height={200} >
+						<ComposedChart data={this.state.rechartsData}>
+							<CartesianGrid vertical={false} horizontal={true} />
+
+							<XAxis dataKey="name" tick={{ stroke: 'black' }} /> <YAxis tick={{ stroke: 'black' }} />
+
+							<Tooltip content={<CustomTooltip />} />
+
+							<Bar barSize={8} dataKey="value" stackId="a" fill="rgb(78,  153, 114)" />
+						</ComposedChart>
+					</ResponsiveContainer>
 				</div>
 
-				<ResponsiveContainer className="week-spending-chart" width="90%" height={200} >
-					<ComposedChart data={this.state.recharts}>
-						<CartesianGrid vertical={false} horizontal={true} />
-
-						<XAxis dataKey="name" tick={{ stroke: 'black' }} /> <YAxis tick={{ stroke: 'black' }} />
-
-						<Tooltip content={<CustomTooltip />} />
-
-						<Bar barSize={8} dataKey="value" stackId="a" fill="rgb(78,  153, 114)" />
-					</ComposedChart>
-				</ResponsiveContainer>
 			</div>
 		);
 	}

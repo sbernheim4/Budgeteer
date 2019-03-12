@@ -3,6 +3,8 @@
 $bottom: 60px;
 
 .statistics {
+	max-height: 100vh;
+
 	@media all and (max-width: 800px) {
 		// margin-top: 50px;
 	}
@@ -21,23 +23,31 @@ $bottom: 60px;
 	}
 
 
-	.btn {
-		position: absolute;
-		margin-top: 15px;
-		width: 50vw;
-		height: $bottom;
-		background: black;
-		color: white;
-		cursor: pointer;
+	&__btn-container {
+		position: fixed;
 		bottom: 0;
-	}
+		display: flex;
 
-	.btn__left {
-		left: 0;
-	}
+		&__btn {
 
-	.btn__right {
-		right: 0;
+			margin-top: 15px;
+			width: 50vw;
+			height: $bottom;
+			background: black;
+			color: white;
+			cursor: pointer;
+			bottom: 0;
+
+			&--left {
+				left: 0;
+			}
+
+			&--right {
+				right: 0;
+			}
+
+		}
+
 	}
 
 	.react-swipe-container > div {
