@@ -114,8 +114,8 @@ class AnnualChart extends Component {
 				<ComposedChart data={this.state.monthlyLineChartData}>
 					<CartesianGrid vertical={false} horizontal={true}/>
 
-					<XAxis dataKey="name" tick={{stroke: 'white'}}/>
-					<YAxis tick={{stroke: 'white'}}/>
+					<XAxis dataKey="name" tick={{stroke: 'black'}}/>
+					<YAxis tick={{stroke: 'black'}}/>
 
 					<Legend />
 					<Tooltip content={<CustomTooltip />}/>

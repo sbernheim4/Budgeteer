@@ -151,8 +151,8 @@ class WeekWeekendChart extends Component {
 				<BarChart data={this.state.weekVsWeekend}>
 					<CartesianGrid vertical={false} horizontal={true}/>
 
-					<XAxis reversed tick={{stroke: 'white'}}/>
-					<YAxis tick={{stroke: 'white'}}/>
+					<XAxis reversed tick={{stroke: 'black'}}/>
+					<YAxis tick={{stroke: 'black'}}/>
 
 					<Tooltip content={<CustomTooltip/>}/>
 					<Legend />

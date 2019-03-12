@@ -51,6 +51,7 @@ class Statistics extends Component {
 			<div className='statistics'>
 
 				<ReactSwipe ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
+
 					<div className="item category-chart-container">
 						<h1>Categorical Spending</h1>
 						<CategoryChart transactions={this.props.transactions} />
@@ -77,8 +78,10 @@ class Statistics extends Component {
 					</div>
 				</ReactSwipe>
 
-				<button className="btn btn__left" type="button" onClick={this.prev}>Prev</button>
-				<button className="btn btn__right" type="button" onClick={this.next}>Next</button>
+				<div className='statistics__btn-container'>
+					<button className="statistics__btn-container__btn statistics__btn-container__btn__left" type="button" onClick={this.prev}>Prev</button>
+					<button className="statistics__btn-container__btn statistics__btn-container__btn__right" type="button" onClick={this.next}>Next</button>
+				</div>
 			</div>
 		);
 	}

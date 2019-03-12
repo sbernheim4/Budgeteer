@@ -3,25 +3,11 @@
 $bottom: 60px;
 
 .statistics {
-	max-height: 100vh;
 
-	@media all and (max-width: 800px) {
-		// margin-top: 50px;
+	.item > h1 {
+		margin-bottom: 20px;
+		text-align: center;
 	}
-
-	.item {
-
-		h1 {
-			text-align: center;
-			margin: 20px;
-		}
-
-	}
-
-	.category-chart-container {
-		width: 100%;
-	}
-
 
 	&__btn-container {
 		position: fixed;
@@ -48,11 +34,6 @@ $bottom: 60px;
 
 		}
 
-	}
-
-	.react-swipe-container > div {
-		display: flex;
-		align-items: center;
 	}
 
 }
