@@ -74,20 +74,20 @@ class CategoryChart extends Component {
 
 		// Default names and values for each category
 		let amts = [
-			{ name: 'Food and Drink', value: 0 },
-			{ name: 'Travel',         value: 0 },
-			{ name: 'Shops',          value: 0 },
-			{ name: 'Recreation',     value: 0 },
-			{ name: 'Service',        value: 0 },
-			{ name: 'Community',      value: 0 },
-			{ name: 'Healthcare',     value: 0 },
-			{ name: 'Bank Fees',      value: 0 },
-			{ name: 'Cash Advance',   value: 0 },
-			{ name: 'Interest',       value: 0 },
-			{ name: 'Payment',        value: 0 },
-			{ name: 'Tax',            value: 0 },
-			{ name: 'Transfer',       value: 0 },
-			{ name: 'Other',          value: 0}
+			{ name: 'Food and Drink', value: 0 }, //eslint-disable-line
+			{ name: 'Travel',         value: 0 }, //eslint-disable-line
+			{ name: 'Shops',          value: 0 }, //eslint-disable-line
+			{ name: 'Recreation',     value: 0 }, //eslint-disable-line
+			{ name: 'Service',        value: 0 }, //eslint-disable-line
+			{ name: 'Community',      value: 0 }, //eslint-disable-line
+			{ name: 'Healthcare',     value: 0 }, //eslint-disable-line
+			{ name: 'Bank Fees',      value: 0 }, //eslint-disable-line
+			{ name: 'Cash Advance',   value: 0 }, //eslint-disable-line
+			{ name: 'Interest',       value: 0 }, //eslint-disable-line
+			{ name: 'Payment',        value: 0 }, //eslint-disable-line
+			{ name: 'Tax',            value: 0 }, //eslint-disable-line
+			{ name: 'Transfer',       value: 0 }, //eslint-disable-line
+			{ name: 'Other',          value: 0}   //eslint-disable-line
 		];
 
 		const now = new Date();

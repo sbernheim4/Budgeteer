@@ -18,7 +18,6 @@ class LinkedAccounts extends Component {
 	}
 
 	async componentDidMount() {
-		// Try looking in local storage first for the monthlyBudget
 		let linkedBanks = await axios.get('/plaid-api/linked-accounts');
 		this.setState({
 			linkedBanks: linkedBanks.data.accounts
@@ -36,6 +35,7 @@ class LinkedAccounts extends Component {
 		});
 
 		try {
+
 			const result = await axios.post('/plaid-api/remove-account', {
 				data: {
 					bankIndex: index,
@@ -46,8 +46,10 @@ class LinkedAccounts extends Component {
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
 			})
+
 			window.localStorage.clear();
 			window.sessionStorage.clear();
+
 		} catch(err) {
 			console.log("DISPLAY ERROR MESSAGE");
 			console.log(err.ERROR);

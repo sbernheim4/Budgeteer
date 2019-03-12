@@ -82,15 +82,9 @@ class Navbar extends Component {
 		if (navbarLinks.classList.contains("navbar--mobile--links__active")) {
 			document.querySelector("body").style.maxHeight = "100vh";
 			document.querySelector("body").style.overflowY = "hidden";
-
-			document.querySelector(".navbar--mobile--header").style.filter = "brightness(.8)";
-			/*document.querySelector(".main").style.filter = "brightness(.8)";*/
 		} else {
 			document.querySelector("body").style.maxHeight = null;
 			document.querySelector("body").style.overflowY = null;
-
-			document.querySelector(".navbar--mobile--header").style.filter = null
-			document.querySelector(".main").style.filter = null;
 		}
 	}
 
