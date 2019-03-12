@@ -20,7 +20,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import axios from "axios";
-import Swipe from 'react-easy-swipe';
 
 import { jsonToMap, numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
 
@@ -36,7 +35,6 @@ class Transaction extends Component {
 
 		this.showMap = this.showMap.bind(this);
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
-		this.onSwipeRight = this.onSwipeRight.bind(this);
 	}
 
 	formatDate(date) {
@@ -47,57 +45,12 @@ class Transaction extends Component {
 		return this.state.months[monthNumber - 1] + " " + day + " '" + year.slice(2,);
 	}
 
-	showMap(e) {
-		e.persist();
-		let iframe = document.createElement("iframe");
-
-		// TODO: Currently hardcoding latitude and longitude but it should come from:
-		// this.props.transaction.location.lat
-		// this.props.transaction.location.lon
-		/*iframe.src = "https://www.google.com/maps/embed/v1/place?q=40.7828647,-73.9653551&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"*/
-
-		// WITH API KEY
-		// "https://www.google.com/maps/embed/v1/place?q=40.7829,73.9654&key=AIzaSyAUsLmC72g_Z2FhkgrmgMgFbjdIx8YDPPA&zoom=15"
-
-		// WITHOUT API KEY
-		if (this.props.transaction.location.lat !== null && this.props.transaction.location.lon !== null) {
-			iframe.src = `https://maps.google.com/maps?q=${this.props.transaction.location.lat},${this.props.transaction.location.lon}&z=15&output=embed`
-		} else {
-			iframe.src = "https://maps.google.com/maps?q=40.7828647,-73.9653551&z=15&output=embed"
-		}
-
-		// this.closeAllIFrames();
-		let containsIFrame = !!e.target.querySelector("iframe");
-
-		if (!containsIFrame) {
-
-			// close any other open iframes
-			document.querySelectorAll(".transaction--map").forEach(val => {
-				val.classList.remove("transaction--map");
-
-				// Actually remove the iframe after the transition is done
-				setTimeout(() => {
-					val.removeChild(val.children[1]);
-				}, 300);
-			});
-
-			// open selected iframe
-			e.target.appendChild(iframe);
-			e.target.classList.toggle("transaction--map");
-		} else {
-			// remove the iframe from the element
-			e.target.classList.remove("transaction--map");
-
-			// Actually remove the iframe after the transition is done
-			setTimeout(() => {
-				e.target.removeChild(e.target.children[1]);
-			}, 300)
-		}
-	}
 
 	getAccountDisplayName(accountID, defaultName) {
 		let x = this.props.displayNames;
 		if (x === undefined) return defaultName;
+
+		console.log(typeof x);
 
 		return x.get(accountID) || defaultName;
 	}
@@ -105,6 +58,8 @@ class Transaction extends Component {
 	getAccountNameFromID(accountID) {
 		let x = this.props.displayNames;
 		let defaultName;
+
+		console.log(typeof x);
 
 		for (let acct of this.props.accounts) {
 			if (acct.account_id === accountID) {
@@ -167,19 +122,10 @@ class Transaction extends Component {
 		return categoryIcon;
 	}
 
-	onSwipeRight() {
-		this.setState({
-			active: true
-		});
-	}
-
 	render() {
 
 		const date = this.formatDate(JSON.stringify(this.props.transaction.date));
 		const amount = formatAmount(this.props.transaction.amount);
-
-		// The below URL doesn't require an API key, might be better
-		// let srcString = "https://maps.google.com/maps?q=" + this.props.location.lon + "," + this.props.location.lat + "&z=15&output=embed"
 
 		// Get the category of the transaction or Null if unknown
 		let category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
@@ -191,25 +137,21 @@ class Transaction extends Component {
 		const amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
 		const name = toTitleCase(this.props.transaction.name)
 
-		const containerClassName = this.state.active ? 'container active' : 'container';
-
 		return (
-			<div className='transaction' /* onClick={this.showMap} */ >
-				<Swipe onSwipeRight={this.onSwipeRight}>
-					<div className={containerClassName}>
-						<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
+			<div className='transaction'>
+				<div>
+					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
 
-						<div className='name-info'>
-							<p className='name-info--name'>{name}</p>
-							<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
-						</div>
-
-						<div className='amount'>
-							<p className={amtColor}>{amt}</p>
-							<p className='amount--date'>{date}</p>
-						</div>
+					<div className='name-info'>
+						<p className='name-info--name'>{name}</p>
+						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
 					</div>
-				</Swipe>
+
+					<div className='amount'>
+						<p className={amtColor}>{amt}</p>
+						<p className='amount--date'>{date}</p>
+					</div>
+				</div>
 			</div>
 		);
 	}
