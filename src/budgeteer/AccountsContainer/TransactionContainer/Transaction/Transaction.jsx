@@ -44,14 +44,6 @@ class Transaction extends Component {
 		return this.state.months[monthNumber - 1] + " " + day + " '" + year.slice(2,);
 	}
 
-
-	getAccountDisplayName(accountID, defaultName) {
-		let x = this.props.displayNames;
-		if (x === undefined) return defaultName;
-
-		return x.get(accountID) || defaultName;
-	}
-
 	getAccountNameFromID(accountID) {
 		let x = this.props.displayNames;
 		let defaultName;
@@ -62,7 +54,9 @@ class Transaction extends Component {
 			}
 		}
 
-		return x.get(accountID) || defaultName;
+		return defaultName;
+
+		/*return x.get(accountID) || defaultName;*/
 	}
 
 	getCategoryIcon(categoryName) {
@@ -134,7 +128,7 @@ class Transaction extends Component {
 
 		return (
 			<div className='transaction'>
-				<div>
+				<div className='container'>
 					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
 
 					<div className='name-info'>
