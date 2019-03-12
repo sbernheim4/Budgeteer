@@ -32,28 +32,11 @@ class Transaction extends Component {
 
 		this.state = {
 			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
-			displayNames: new Map()
 		};
 
 		this.showMap = this.showMap.bind(this);
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
 		this.onSwipeRight = this.onSwipeRight.bind(this);
-	}
-
-	async componentDidMount() {
-
-		try {
-			let displayNames = await axios.get("/user-info/display-names");
-			displayNames = displayNames.data;
-			const map = jsonToMap(displayNames);
-
-			this.setState({
-				displayNames: map
-			});
-		} catch(err) {
-			console.log("ERROR");
-			console.log(err);
-		}
 	}
 
 	formatDate(date) {
@@ -113,14 +96,14 @@ class Transaction extends Component {
 	}
 
 	getAccountDisplayName(accountID, defaultName) {
-		let x = this.state.displayNames;
+		let x = this.props.displayNames;
 		if (x === undefined) return defaultName;
 
 		return x.get(accountID) || defaultName;
 	}
 
 	getAccountNameFromID(accountID) {
-		let x = this.state.displayNames;
+		let x = this.props.displayNames;
 		let defaultName;
 
 		for (let acct of this.props.accounts) {

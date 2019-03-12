@@ -66,6 +66,7 @@ class AccountsContainer extends Component {
 		try {
 			// TODO: I think displayNames is not a string, it needs additional quotes around it to be properly processed by jsonToMap;
 
+			console.log('post to display names');
 			let displayNames = await axios.get("/user-info/display-names");
 			displayNames = displayNames.data;
 			const map = jsonToMap(displayNames);
@@ -366,7 +367,7 @@ class AccountsContainer extends Component {
 				</div>
 
 				<WeekSpendingChart transactions={this.state.categoryTransactions}/>
-				<TransactionContainer title="Past Transactions" categoryType={this.state.categoryType} categoryTotal={this.state.categoryTotal} transactions={this.state.categoryTransactions} accounts={this.props.accounts} />
+				<TransactionContainer title="Past Transactions" categoryType={this.state.categoryType} categoryTotal={this.state.categoryTotal} transactions={this.state.categoryTransactions} accounts={this.props.accounts} displayNames={this.state.displayNames} />
 			</div>
 		);
 	}
