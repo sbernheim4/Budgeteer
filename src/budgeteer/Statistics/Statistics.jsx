@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactSwipe from 'react-swipe';
 
-import Budget from "./BudgetChart/BudgetChart.jsx";
+import Budget from "./BudgetRecharts/budgetRecharts.jsx";
 import WeekWeekendChart from "./WeekWeekendChart/WeekWeekendChart.jsx";
 import CategoryChart from "./CategoryChart/CategoryChart.jsx";
 import AnnualChart from "./AnnualChart/AnnualChart.jsx";

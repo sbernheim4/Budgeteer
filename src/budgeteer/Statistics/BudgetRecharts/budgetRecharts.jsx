@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import { ResponsiveContainer, Label, PieChart, Pie, Cell, Tooltip } from "recharts"
-import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
-
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts"
 import isSameMonth from "date-fns/is_same_month";
 import isSameYear from "date-fns/is_same_year";
 
@@ -34,10 +32,8 @@ class CustomTooltip extends Component {
 	}
 };
 
-// CustomLabel.defaultEvents = VictoryTooltip.defaultEvents;
-
 class BudgetChart extends Component {
-	constructor(props) {
+	constructor(props){
 		super(props);
 
 		this.state = {
@@ -46,12 +42,7 @@ class BudgetChart extends Component {
 			rechartsData: [
 				{name: 'Spent', value: 0},
 				{name: 'Remaining', value: 1}
-			],
-			victoryChartsData: [
-				{ x: 'Spent', y: 0 },
-				{ x: 'Remaining', y: 1 }
 			]
-
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -77,21 +68,16 @@ class BudgetChart extends Component {
 			const remaining = monthlyBudget - totalSpent;
 
 			// Create chart data set
-			const rechartsData = [
+			const chartData = [
 				{ name: 'Spent', value: totalSpent },
 				{ name: 'Remaining', value: remaining },
-			];
-			const victoryChartsData = [
-				{ x: 'Spent', y: totalSpent },
-				{ x: 'Remaining', y: remaining },
 			];
 
 			// Set the state
 			return {
 				totalSpent: totalSpent,
-				rechartsData: rechartsData,
-				monthlyBudget: monthlyBudget,
-				victoryChartsData: victoryChartsData,
+				rechartsData: chartData,
+				monthlyBudget: monthlyBudget
 			};
 		}
 	}
@@ -107,12 +93,12 @@ class BudgetChart extends Component {
 
 		// Update the chart
 		let amts = [
-			{ x: 'Spent', y: spent },
-			{ x: 'Remaining', y: remaining },
+			{name: 'Spent', value: spent},
+			{name: 'Remaining', value: remaining},
 		];
 
 		this.setState({
-			victoryChartsData: amts,
+			rechartsData: amts,
 			monthlyBudget: newMonthlyBudget
 		});
 
@@ -134,17 +120,18 @@ class BudgetChart extends Component {
 		remaining = numberWithCommas(remaining);
 
 		const input = this.props.displayInput === false ? "" : (<form className="budget--form">
-			<label>
-				<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
-			</label>
-		</form>);
+					<label>
+						<input placeholder="Enter your budget" type="number" name="budget" value={this.state.monthlyBudget} onChange={this.handleChange} />
+					</label>
+				</form>);
 
 		return (
 			<div className="budget">
 
 				{input}
 
-				{/* <ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
+				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
+				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
 					<PieChart>
 						<Pie
 							dataKey="value"
@@ -157,49 +144,12 @@ class BudgetChart extends Component {
 							{
 								this.state.rechartsData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)
 							}
-							<Label className="center-label" fill={"black"} value={`Spent: ${this.state.totalSpent}\n\nRemaining: ${remaining}`} position="center" />
+							{/*<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />*/}
 						</Pie>
 						<Tooltip content={<CustomTooltip remaining={remaining} spent={spent}/>}/>
 					</PieChart>
-				</ResponsiveContainer> */}
-
-				<VictoryPie
-					colorScale={COLORS}
-					innerRadius={100}
-					text={`# ${this.props.text}`}
-					labels={() => ''}
-					animate={{
-						duration: 2500
-					}}
-					labelComponent={<CustomLabel />}
-					data={this.state.victoryChartsData}
-				/>
+				</ResponsiveContainer>
 			</div>
-		);
-	}
-}
-
-class CustomLabel extends React.Component {
-	render() {
-
-		const spent = numberWithCommas(formatAmount(this.props.data[0].y));
-		const remaining = numberWithCommas(formatAmount(this.props.data[1].y));
-
-		return (
-			<g>
-				<VictoryLabel {...this.props} />
-				<VictoryTooltip className="tooltip"
-					{...this.props}
-					x={200} y={275}
-					text={`Spent: $${spent}\nRemaining: $${remaining}`}
-					orientation="top"
-					pointerLength={0}
-					active={true}
-					cornerRadius={75}
-					width={150}
-					height={150}
-				/>
-			</g>
 		);
 	}
 }
