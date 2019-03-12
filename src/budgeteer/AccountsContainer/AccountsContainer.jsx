@@ -64,9 +64,6 @@ class AccountsContainer extends Component {
 		this.getAccountTransactions("all");
 
 		try {
-			// TODO: I think displayNames is not a string, it needs additional quotes around it to be properly processed by jsonToMap;
-
-			console.log('post to display names');
 			let displayNames = await axios.get("/user-info/display-names");
 			displayNames = displayNames.data;
 			const map = jsonToMap(displayNames);
