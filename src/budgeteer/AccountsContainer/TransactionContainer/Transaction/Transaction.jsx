@@ -49,16 +49,12 @@ class Transaction extends Component {
 		let x = this.props.displayNames;
 		if (x === undefined) return defaultName;
 
-		console.log(typeof x);
-
 		return x.get(accountID) || defaultName;
 	}
 
 	getAccountNameFromID(accountID) {
 		let x = this.props.displayNames;
 		let defaultName;
-
-		console.log(typeof x);
 
 		for (let acct of this.props.accounts) {
 			if (acct.account_id === accountID) {
