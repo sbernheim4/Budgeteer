@@ -32,8 +32,8 @@ module.exports = () => {
 	return {
 		devtool: 'source-map',
 		entry: {
-			budgeteer: "./src/Budgeteer/index.jsx", // Entry point of where webpack should start from
-			home: "./src/Home/index.jsx", // Entry point of where webpack should start from
+			budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
+			home: "./src/home/index.jsx", // Entry point of where webpack should start from
 		},
 		output: {
 			// output build file to /public folder and call the file bundle.js

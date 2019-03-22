@@ -4,7 +4,7 @@ import React, { Component } from "react"
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 import axios from 'axios';
 
-import './LinkedAccounts.scss';
+import './linkedAccounts.scss';
 
 class LinkedAccounts extends Component {
 	constructor(props) {

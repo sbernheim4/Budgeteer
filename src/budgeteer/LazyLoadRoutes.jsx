@@ -15,7 +15,7 @@ export const Navbar = Loadable({
 });
 
 export const Home = Loadable({
-	loader: () => import('./home/home.jsx'),
+	loader: () => import('./Home/Home.jsx'),
 	loading: () => <div>loading...</div>
 });
 
