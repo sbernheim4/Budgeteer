@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import ReactSwipe from 'react-swipe';
 
+import isSameMonth from "date-fns/is_same_month";
+import isSameYear from "date-fns/is_same_year";
+
 import Budget from "./BudgetChart/budgetCharts.jsx";
 import WeekWeekendChart from "./WeekWeekendChart/WeekWeekendChart.jsx";
 import CategoryChart from "./CategoryChart/CategoryChart.jsx";
 import AnnualChart from "./AnnualChart/AnnualChart.jsx";
 // import HeatMap from "./HeatMap/HeatMap.jsx";
+
 
 
 import "./statistics.scss";
@@ -14,9 +18,9 @@ class Statistics extends Component {
 	constructor(props) {
 		super(props);
 
-		// this.changeChart = this.changeChart.bind(this);
 		this.next = this.next.bind(this);
 		this.prev = this.prev.bind(this);
+		this.getThisMonthsTransactions = this.getThisMonthsTransactions.bind(this);
 
 		this.state = {
 		}
@@ -30,7 +34,32 @@ class Statistics extends Component {
 		this.reactSwipe.prev();
 	}
 
+	getThisMonthsTransactions() {
+		const today = new Date();
+
+		const thisMonthsTransactions = this.props.transactions.filter((transaction) => {
+
+			const rawTransactionDate = transaction.date;
+			const year = rawTransactionDate.slice(0, 4);
+			const month = rawTransactionDate.slice(5,7) - 1;
+			const day = rawTransactionDate.slice(8, 10);
+
+			const normalizedTransactionDate = new Date(year, month, day);
+
+			return isSameMonth(normalizedTransactionDate, today) && isSameYear(normalizedTransactionDate, today);
+
+		});
+
+		console.log('-----------------START--------------------------');
+		console.log(thisMonthsTransactions);
+		console.log('-------------------END------------------------');
+
+		return thisMonthsTransactions;
+
+	}
+
 	render() {
+
 		const swipeOptions = {
 			startSlide: 0,
 			auto: 0,
@@ -59,7 +88,7 @@ class Statistics extends Component {
 
 					<div className="item">
 						<h1>Monthly Budget</h1>
-						<Budget transactions={this.props.transactions} />
+						<Budget transactions={this.getThisMonthsTransactions()} />
 					</div>
 
 					<div className="item">

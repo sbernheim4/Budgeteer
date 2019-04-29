@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts"
-import isSameMonth from "date-fns/is_same_month";
-import isSameYear from "date-fns/is_same_year";
 
 import { formatAmount, numberWithCommas } from "../../helpers.js";
 
@@ -48,36 +46,44 @@ class BudgetChart extends Component {
 		this.handleChange = this.handleChange.bind(this);
 	}
 
+	calculateTotalSpent(transactions) {
+		const initialValue = 0;
+
+		const rawTotalSpent = transactions.reduce(function (initialValue, transaction) {
+			console.log(transaction.amount);
+			return initialValue + transaction.amount;
+		}, 0);
+
+		const roundedTotalSpent = Number.parseFloat(rawTotalSpent.toFixed(2));
+
+		const normalizedTotalSpent = Math.abs(roundedTotalSpent);
+
+		return normalizedTotalSpent;
+	}
+
 	static getDerivedStateFromProps(nextProps, prevState) {
 
-		if (nextProps.transactions.length <= 0) {
+		const transactions = nextProps.transactions;
+
+		if (transactions.length <= 0) {
 			return null;
 		} else {
-			let today = new Date();
-			let totalSpent = 0;
-
-			for (let t of nextProps.transactions) {
-				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
-
-				if (isSameMonth(transactionDate, today) && isSameYear(transactionDate, today)) {
-					totalSpent += Math.abs(t.amount);
-				}
-			}
-
+			const totalSpent = this.calculateTotalSpent(nextProps.transactions);
+			const totalRemaining = monthlyBudget - totalSpent;
 			const monthlyBudget = localStorage.getItem("monthlyBudget");
-			const remaining = monthlyBudget - totalSpent;
 
 			// Create chart data set
 			const chartData = [
 				{ name: 'Spent', value: totalSpent },
-				{ name: 'Remaining', value: remaining },
+				{ name: 'totalRemaining', value: totalRemaining },
 			];
 
 			// Set the state
 			return {
 				totalSpent: totalSpent,
+				totalRemaining: totalRemaining,
+				monthlyBudget: monthlyBudget,
 				rechartsData: chartData,
-				monthlyBudget: monthlyBudget
 			};
 		}
 	}
@@ -89,12 +95,12 @@ class BudgetChart extends Component {
 		localStorage.setItem("monthlyBudget", newMonthlyBudget);
 
 		const spent = this.state.totalSpent;
-		const remaining = (newMonthlyBudget - this.state.totalSpent) <= 0 ? 0 : (newMonthlyBudget - this.state.totalSpent);
+		const newRemaining = (newMonthlyBudget - this.state.totalSpent) <= 0 ? 0 : (newMonthlyBudget - this.state.totalSpent);
 
 		// Update the chart
 		let amts = [
 			{name: 'Spent', value: spent},
-			{name: 'Remaining', value: remaining},
+			{name: 'Remaining', value: newRemaining},
 		];
 
 		this.setState({
@@ -112,10 +118,11 @@ class BudgetChart extends Component {
 	}
 
 	render() {
-		let spent = formatAmount(this.state.totalSpent)
+		let spent = this.state.totalSpent;
+		spent = formatAmount(spent);
 		spent = numberWithCommas(spent);
 
-		let remaining = (this.state.monthlyBudget - this.state.totalSpent);
+		let remaining = this.state.totalSpent;
 		remaining = formatAmount(remaining);
 		remaining = numberWithCommas(remaining);
 
