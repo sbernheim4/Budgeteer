@@ -44,6 +44,7 @@ class BudgetChart extends Component {
 		};
 
 		this.handleChange = this.handleChange.bind(this);
+		this.calculateTotalSpent = this.calculateTotalSpent.bind(this);
 	}
 
 	calculateTotalSpent(transactions) {
