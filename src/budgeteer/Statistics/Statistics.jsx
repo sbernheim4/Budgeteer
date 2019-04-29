@@ -50,10 +50,6 @@ class Statistics extends Component {
 
 		});
 
-		console.log('-----------------START--------------------------');
-		console.log(thisMonthsTransactions);
-		console.log('-------------------END------------------------');
-
 		return thisMonthsTransactions;
 
 	}
