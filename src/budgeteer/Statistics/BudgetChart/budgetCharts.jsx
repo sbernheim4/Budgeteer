@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import Input from './Input/input.jsx';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts"
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Label } from "recharts"
 
 import { formatAmount, numberWithCommas } from "../../helpers.js";
 
@@ -19,8 +19,8 @@ class CustomTooltip extends Component {
 
 		if (active) {
 
-			const spent = data[0].value;
-			const remaining = data[1].value;
+			const spent = numberWithCommas(formatAmount(data[0].value));
+			const remaining = numberWithCommas(formatAmount(data[1].value));
 
 			return (
 				<div className="budget--tooltip">
@@ -54,10 +54,22 @@ class BudgetChart extends Component {
 		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
 	}
 
+	static getMonthlyBudget() {
+
+		const storedMonthlyBudget = Number.parseFloat(localStorage.getItem('monthlyBudget'));
+
+		return storedMonthlyBudget;
+	}
+
 	static calculateTotalSpent(transactions) {
 		let totalSpent = 0;
 
-		transactions.forEach(transaction => {
+		// Filter out any income from the transactions --> Should be accounted for in the monthly budget
+		const spendingTransactions = transactions.filter(transaction => {
+			return transaction.amount > 0;
+		});
+
+		spendingTransactions.forEach(transaction => {
 			totalSpent += transaction.amount
 		});
 
@@ -73,11 +85,9 @@ class BudgetChart extends Component {
 		if (transactions.length <= 0) {
 			return null;
 		} else {
-			const monthlyBudget = Number.parseFloat(localStorage.getItem("monthlyBudget"));
+			const monthlyBudget = BudgetChart.getMonthlyBudget();
 			const totalSpent = BudgetChart.calculateTotalSpent(nextProps.transactions);
 			const totalRemaining = monthlyBudget - totalSpent;
-
-			console.log(monthlyBudget, totalSpent, totalRemaining);
 
 			// Create chart data set
 			const chartData = [
@@ -101,17 +111,17 @@ class BudgetChart extends Component {
 		// Save data to the current local store
 		localStorage.setItem("monthlyBudget", newMonthlyBudget);
 
-		const spent = this.state.totalSpent;
-		const newRemaining = (newMonthlyBudget - this.state.totalSpent) <= 0 ? 0 : (newMonthlyBudget - this.state.totalSpent);
+		const totalSpent = this.state.totalSpent;
+		const newRemaining = newMonthlyBudget - totalSpent;
 
 		// Update the chart
-		let amts = [
-			{name: 'Spent', value: spent},
+		let rechartsData = [
+			{name: 'Spent', value: totalSpent},
 			{name: 'Remaining', value: newRemaining},
 		];
 
 		this.setState({
-			rechartsData: amts,
+			rechartsData: rechartsData,
 			monthlyBudget: newMonthlyBudget
 		});
 
@@ -125,6 +135,7 @@ class BudgetChart extends Component {
 	}
 
 	render() {
+
 		let spent = this.state.totalSpent;
 		spent = formatAmount(spent);
 		spent = numberWithCommas(spent);
@@ -132,6 +143,8 @@ class BudgetChart extends Component {
 		let remaining = this.state.totalSpent;
 		remaining = formatAmount(remaining);
 		remaining = numberWithCommas(remaining);
+
+		const label = `Spent: $${spent}`;
 
 		return (
 			<div className="budget">
@@ -152,7 +165,7 @@ class BudgetChart extends Component {
 							{
 								this.state.rechartsData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)
 							}
-							{/*<Label className="center-label" fill={"white"} value={this.state.totalSpent} position="center" />*/}
+							{/* <Label className="center-label" fill={"black"} value={label} position="center" /> */}
 						</Pie>
 						<Tooltip content={<CustomTooltip data={this.state.rechartsData}/>}/>
 					</PieChart>

@@ -22,8 +22,6 @@ class Statistics extends Component {
 		this.prev = this.prev.bind(this);
 		this.getThisMonthsTransactions = this.getThisMonthsTransactions.bind(this);
 
-		this.state = {
-		}
 	}
 
 	next() {
@@ -62,13 +60,6 @@ class Statistics extends Component {
 			speed: 300,
 			disableScroll: true,
 			continuous: true,
-			callback() {
-
-			},
-
-			transitionEnd() {
-
-			}
 		};
 
 		return (
@@ -77,14 +68,19 @@ class Statistics extends Component {
 
 				<ReactSwipe ref={reactSwipe => this.reactSwipe = reactSwipe} swipeOptions={swipeOptions}>
 
+					<div className="item">
+						<h1>Monthly Budget</h1>
+						<Budget transactions={this.getThisMonthsTransactions()} />
+					</div>
+
 					<div className="item category-chart-container">
 						<h1>Categorical Spending</h1>
 						<CategoryChart transactions={this.props.transactions} />
 					</div>
 
 					<div className="item">
-						<h1>Monthly Budget</h1>
-						<Budget transactions={this.getThisMonthsTransactions()} />
+						<h1>Annual Spending History</h1>
+						<AnnualChart transactions={this.props.transactions} />
 					</div>
 
 					<div className="item">
@@ -97,10 +93,6 @@ class Statistics extends Component {
 						<HeatMap transactions={this.props.transactions} />
 					</div> */}
 
-					<div className="item">
-						<h1>Annual Spending History</h1>
-						<AnnualChart transactions={this.props.transactions} />
-					</div>
 				</ReactSwipe>
 
 				<div className='statistics__btn-container'>

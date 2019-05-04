@@ -1,18 +1,5 @@
 @import '../../scss/variables';
 
-%color-block {
-	content: "";
-	margin-right: 5px;
-	width: $color-block-dimension;
-	height: $color-block-dimension;
-	background-color: $green;
-	border: 1px solid black;
-	border-radius: $color-block-border-radius;
-	display: inline-block;
-	vertical-align: middle;
-	color: black;
-}
-
 .budget {
 	margin: 0 auto;
 	display: flex;
@@ -34,40 +21,52 @@
 	&--form {
 
 		/*@media all and (max-width: 930px) {
-			margin: 10px 0;
-		}*/
+		margin: 10px 0;
+	}*/
 
-		label {
-			font-size: 20px;
-			font-weight: bold;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
+label {
+	font-size: 20px;
+	font-weight: bold;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
-			span {
+	span {
 
-			}
-
-			input {
-				max-width: 90%;
-				width: 250px;
-				padding: 10px;
-				border: 1px solid black;
-				border-radius: 5px;
-				font-size: 15px;
-				color: black;
-				box-sizing: border-box;
-
-				@media all and (max-width: 930px) {
-					margin-left: 0;
-				}
-			}
-		}
 	}
 
+	input {
+		max-width: 90%;
+		width: 250px;
+		padding: 10px;
+		border: 1px solid black;
+		border-radius: 5px;
+		font-size: 15px;
+		color: black;
+		box-sizing: border-box;
+
+		@media all and (max-width: 930px) {
+			margin-left: 0;
+		}
+	}
+}
+	}
+
+	%color-block {
+		content: "";
+		margin-right: 5px;
+		width: $color-block-dimension;
+		height: $color-block-dimension;
+		border: 1px solid black;
+		border-radius: $color-block-border-radius;
+		display: inline-block;
+		vertical-align: middle;
+		color: black;
+	}
 
 	&--tooltip {
 		padding: 15px;
+		font-size: 20px;
 		background-color: white;
 		border-radius: 5px;
 
