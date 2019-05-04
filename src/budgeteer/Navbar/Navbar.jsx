@@ -34,7 +34,7 @@ class Navbar extends Component {
 
 	async componentDidMount() {
 
-		let keyAndEnv = await axios.get('/plaid-api/key-and-env');
+		const keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
 		const plaid = Plaid.create({
 			apiVersion: 'v2',
@@ -48,8 +48,8 @@ class Navbar extends Component {
 					url: "/plaid-api/get-access-token",
 					data: {
 						public_token: public_token,
-						client_id: '5a24ca6a4e95b836d37e37fe',
-						secret: 'f07a761a591de3cbbc5ac3ba2f4301'
+						client_id: `${process.env.PLAID_CLIENT_ID}`,
+						secret: `${process.env.PLAID_SECRET}`
 					}
 				});
 			}

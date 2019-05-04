@@ -9,7 +9,7 @@ class Networth extends Component {
 		super(props);
 
 		this.state = {
-			total: 0, // Keep track of total net worth
+			networth: 0, // Keep track of total net worth
 			accountBalances: [], // Map of account name to its balance
 			recurringPayments: [], // Keep track of recurring costs like Spotify or Netflix etc
 			loading: true
@@ -59,7 +59,7 @@ class Networth extends Component {
 		}
 
 		this.setState({
-			total: data.networth,
+			networth: data.networth,
 			accountBalances: data.maps,
 			loading: false
 		});
@@ -122,11 +122,11 @@ class Networth extends Component {
 			recurringPayments = <ul> this.state.recurringPayments.map(val => <li>val.name</li>) </ul>
 		}
 
-		let netWorthChart;
+		let networthTable;
 		if (this.state.loading) {
-			netWorthChart = <div className="networth--loading"><h1>Hang tight, getting your data from the cloud</h1><img src='/loading-gifs/loading-three.gif' alt='loading' /></div>
+			networthTable = <div className="networth--loading"><h1>Hang tight, getting your data from the cloud</h1><img src='/loading-gifs/loading-three.gif' alt='loading' /></div>
 		} else {
-			netWorthChart = (<table>
+			networthTable = (<table>
 				<thead>
 					<tr>
 						<th>Account Name</th>
@@ -145,7 +145,7 @@ class Networth extends Component {
 					))}
 					<tr>
 						<td className='acct-name'>Total</td>
-						<td className='acct-value'>${numberWithCommas(formatAmount(this.state.total))}</td>
+						<td className='acct-value'>${numberWithCommas(formatAmount(this.state.networth))}</td>
 					</tr>
 				</tbody>
 			</table>)
@@ -153,7 +153,7 @@ class Networth extends Component {
 
 		return (
 			<div className='networth'>
-				{netWorthChart}
+				{networthTable}
 
 				<div className='networth--recurring-payments'>
 					<h2>Recurring Payments</h2>
