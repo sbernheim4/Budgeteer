@@ -21,7 +21,7 @@ import {
 
 import axios from "axios";
 
-import { jsonToMap, numberWithCommas, formatAmount, toTitleCase } from '../../../helpers';
+import { jsonToMap, numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';
 
 import "./transaction.scss";
 
@@ -29,19 +29,7 @@ class Transaction extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			months: ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."],
-		};
-
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
-	}
-
-	formatDate(date) {
-		let monthNumber = parseInt(date.slice(date.indexOf("-") + 1, date.indexOf("-") + 3));
-		let day = date.slice(date.length - 3, date.length - 1);
-		let year = date.slice(1, 5);
-
-		return this.state.months[monthNumber - 1] + " " + day + " '" + year.slice(2,);
 	}
 
 	getAccountNameFromID(accountID) {
@@ -74,9 +62,9 @@ class Transaction extends Component {
 			case "Shops":
 				categoryIcon = faShoppingBag;
 				break;
-			 case "Recreation":
-				 categoryIcon = faTape;
-				 break;
+			case "Recreation":
+				categoryIcon = faTape;
+				break;
 			case "Service":
 				categoryIcon = faWrench;
 				break;
@@ -86,21 +74,21 @@ class Transaction extends Component {
 			case "Healthcare":
 				categoryIcon = faMedkit;
 				break;
-			// case "Bank Fees":
-			// 	categoryIcon = ;
-			// 	break;
-			// case "Cash Advance":
-			// 	categoryIcon = ;
-			// 	break;
+				// case "Bank Fees":
+				// 	categoryIcon = ;
+				// 	break;
+				// case "Cash Advance":
+				// 	categoryIcon = ;
+				// 	break;
 			case "Interest":
 				categoryIcon = faPercent;
 				break;
 			case "Payment":
 				categoryIcon = faMoneyBillAlt;
 				break;
-			// case "Tax":
-			// 	categoryIcon = ;
-			// 	break;
+				// case "Tax":
+				// 	categoryIcon = ;
+				// 	break;
 			case "Transfer":
 				categoryIcon = faExchangeAlt;
 				break;
@@ -112,33 +100,31 @@ class Transaction extends Component {
 	}
 
 	render() {
+		const transaction = this.props.transaction;
 
-		const date = this.formatDate(JSON.stringify(this.props.transaction.date));
-		const amount = formatAmount(this.props.transaction.amount);
+		const { date, name, amount, category } = transaction;
 
-		// Get the category of the transaction or Null if unknown
-		let category = this.props.transaction.category !== null && this.props.transaction.category !== undefined ? this.props.transaction.category[0] : category = "Null";
+		const normalizedDate = formatDate(date);
+		const normalizedName = toTitleCase(name);
+		const normalizedCategory = category && category !== null ? category[0] : category = "Null";
+		const amtColor = amount > 0 ? 'amount--amt' : 'amount--amt__green';
 
-		let amt = formatAmount(this.props.transaction.amount * -1);
-		amt = "$" + numberWithCommas(amt);
-
-		// Should the color for the amount be red or green based based on it being positive or negative
-		const amtColor = this.props.transaction.amount > 0 ? 'amount--amt' : 'amount--amt__green';
-		const name = toTitleCase(this.props.transaction.name)
+		let normalizedAmount = formatAmount(amount * -1);
+		normalizedAmount = "$" + numberWithCommas(normalizedAmount);
 
 		return (
 			<div className='transaction'>
 				<div className='container'>
-					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(category)} />
+					<FontAwesomeIcon className="icon" icon={this.getCategoryIcon(normalizedCategory)} />
 
 					<div className='name-info'>
-						<p className='name-info--name'>{name}</p>
-						<p className='name-info--category'>{this.getAccountNameFromID(this.props.transaction.account_id)} <span>{this.props.transaction.pending === true ? '- Pending' : ''}</span></p>
+						<p className='name-info--name'>{normalizedName}</p>
+						<p className='name-info--category'>{this.getAccountNameFromID(transaction.account_id)} <span>{transaction.pending === true ? '- Pending' : ''}</span></p>
 					</div>
 
 					<div className='amount'>
-						<p className={amtColor}>{amt}</p>
-						<p className='amount--date'>{date}</p>
+						<p className={amtColor}>{normalizedAmount}</p>
+						<p className='amount--date'>{normalizedDate}</p>
 					</div>
 				</div>
 			</div>
