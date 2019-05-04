@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import Input from './Input/input.jsx';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Label } from "recharts"
+
+import Input from './Input/input.jsx';
+import BannerMessage from './../../BannerMessage/BannerMessage.jsx';
 
 import { formatAmount, numberWithCommas } from "../../helpers.js";
 
@@ -23,7 +25,7 @@ class CustomTooltip extends Component {
 			const remaining = numberWithCommas(formatAmount(data[1].value));
 
 			return (
-				<div className="budget--tooltip">
+				<div className="chart budget--tooltip">
 					<p className="budget--tooltip--spent" >Spent: ${spent}</p>
 					<p className="budget--tooltip--remaining">Remaining: ${remaining}</p>
 				</div>
@@ -88,7 +90,7 @@ class BudgetChart extends Component {
 			const monthlyBudget = BudgetChart.getMonthlyBudget();
 			const totalSpent = BudgetChart.calculateTotalSpent(nextProps.transactions);
 			const totalRemaining = monthlyBudget - totalSpent;
-
+			//
 			// Create chart data set
 			const chartData = [
 				{ name: 'Spent', value: totalSpent },
@@ -100,7 +102,8 @@ class BudgetChart extends Component {
 				monthlyBudget: monthlyBudget,
 				totalSpent: totalSpent,
 				totalRemaining: totalRemaining,
-				rechartsData: chartData
+				rechartsData: chartData,
+				overBudget: totalRemaining < 0
 			};
 		}
 	}
@@ -144,14 +147,27 @@ class BudgetChart extends Component {
 		remaining = formatAmount(remaining);
 		remaining = numberWithCommas(remaining);
 
-		const label = `Spent: $${spent}`;
+		//const label = `Spent: $${spent}`;
+
+		let message;
+		if (this.state.overBudget) {
+			message = <BannerMessage display={this.state.displayMessage} text={'You are over budget!!!'}/>
+
+			setTimeout(() => {
+				this.setState({
+					displayMessage: true
+				});
+			}, 1000);
+		}
 
 		return (
-			<div className="budget">
+			<div className="chart budget">
+
+				{message}
+				<h1>Monthly Budget</h1>
 
 				<Input display={this.props.displayInput} updateMonthlyBudget={this.updateMonthlyBudget} monthlyBudget={this.state.monthlyBudget}/>
 
-				{/*<Doughnut className="budget--doughnut-chart" data={this.state.data} />*/}
 				<ResponsiveContainer className="budget--doughnut-chart" width="100%" min-height={400} height={400} >
 					<PieChart>
 						<Pie

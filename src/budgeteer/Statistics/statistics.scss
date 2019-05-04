@@ -4,36 +4,4 @@ $bottom: 60px;
 
 .statistics {
 
-	.item > h1 {
-		margin-bottom: 20px;
-		text-align: center;
-	}
-
-	&__btn-container {
-		position: fixed;
-		bottom: 0;
-		display: flex;
-
-		&__btn {
-
-			margin-top: 15px;
-			width: 50vw;
-			height: $bottom;
-			background: black;
-			color: white;
-			cursor: pointer;
-			bottom: 0;
-
-			&--left {
-				left: 0;
-			}
-
-			&--right {
-				right: 0;
-			}
-
-		}
-
-	}
-
 }

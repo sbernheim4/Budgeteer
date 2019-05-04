@@ -110,7 +110,7 @@ class AnnualChart extends Component {
 
 		/*<Tooltip content={<CustomTooltip/>}/>*/
 		return (
-			<ResponsiveContainer className="year" width="100%" height={400} >
+			<ResponsiveContainer className="chart year" width="100%" height={400} >
 				<ComposedChart data={this.state.monthlyLineChartData}>
 					<CartesianGrid vertical={false} horizontal={true}/>
 

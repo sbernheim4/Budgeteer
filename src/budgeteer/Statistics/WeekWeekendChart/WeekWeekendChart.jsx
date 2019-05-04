@@ -147,20 +147,23 @@ class WeekWeekendChart extends Component {
 	render() {
 
 		return (
-			<ResponsiveContainer className="week-weekend" width="100%" height={400} >
-				<BarChart data={this.state.weekVsWeekend}>
-					<CartesianGrid vertical={false} horizontal={true}/>
+			<section className='chart'>
+				<h1>Week vs Weekend Spending</h1>
+				<ResponsiveContainer className="week-weekend" width="100%" height={400} >
+					<BarChart data={this.state.weekVsWeekend}>
+						<CartesianGrid vertical={false} horizontal={true}/>
 
-					<XAxis reversed tick={{stroke: 'black'}}/>
-					<YAxis tick={{stroke: 'black'}}/>
+						<XAxis reversed tick={{stroke: 'black'}}/>
+						<YAxis tick={{stroke: 'black'}}/>
 
-					<Tooltip content={<CustomTooltip/>}/>
-					<Legend />
+						<Tooltip content={<CustomTooltip/>}/>
+						<Legend />
 
-					<Bar dataKey="Weekday" stackId="a" fill="rgb(77,  153, 114)" />
-					<Bar dataKey="Weekend" stackId="a" fill="rgb(52, 108, 161)" />
-				</BarChart>
-			</ResponsiveContainer>
+						<Bar dataKey="Weekday" stackId="a" fill="rgb(77,  153, 114)" />
+						<Bar dataKey="Weekend" stackId="a" fill="rgb(52, 108, 161)" />
+					</BarChart>
+				</ResponsiveContainer>
+			</section>
 		);
 	}
 }

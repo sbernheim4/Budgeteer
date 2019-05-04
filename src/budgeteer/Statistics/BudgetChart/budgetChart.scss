@@ -11,7 +11,6 @@
 	}
 
 	&--doughnut-chart {
-		/*width: 100vw;*/
 
 		@media all and (min-width: 930px) {
 			width: 33% !important; // Needed to override width set in the component

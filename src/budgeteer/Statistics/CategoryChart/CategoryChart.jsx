@@ -115,7 +115,7 @@ class CategoryChart extends Component {
 					case "Recreation":
 						amts[3].value += amount;
 						break;
-					/*case "Service":
+						/*case "Service":
 						amts[4].value += amount;
 						break;*/
 					case "Community":
@@ -124,7 +124,7 @@ class CategoryChart extends Component {
 					case "Healthcare":
 						amts[6].value += amount;
 						break;
-					/*case "Bank Fees":
+						/*case "Bank Fees":
 						amts[7].value += amount;
 						break;*/
 					case "Cash Advance":
@@ -139,7 +139,7 @@ class CategoryChart extends Component {
 					case "Tax":
 						amts[11].value += amount;
 						break;
-					/*case "Transfer":
+						/*case "Transfer":
 						amts[12].value += amount;
 						break;*/
 					default:
@@ -179,29 +179,32 @@ class CategoryChart extends Component {
 	render() {
 
 		return (
+			<section className='chart'>
+				<h1>Categorical Spending</h1>
 
-			<ResponsiveContainer className="category-chart" width="100%" height={400} >
-				<PieChart>
-					<Pie
-						dataKey='value'
-						data={this.state.categoryDoughnutData}
-						innerRadius="70%"
-						outerRadius="90%"
-						fill="#8884d8"
-						paddingAngle={2}>
-						{/*onMouseOver={(a) => this.changeCenterText(a)}>*/}
-						{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
+				<ResponsiveContainer className="category-chart" width="100%" height={400} >
+					<PieChart>
+						<Pie
+							dataKey='value'
+							data={this.state.categoryDoughnutData}
+							innerRadius="70%"
+							outerRadius="90%"
+							fill="#8884d8"
+							paddingAngle={2}>
+							{/*onMouseOver={(a) => this.changeCenterText(a)}>*/}
+							{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
 
-						{this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)}
-						<Label className="center-label" fill={"black"} value={"Total Spent: $" + this.state.totalSpent} position="center" />
-					</Pie>
+							{this.state.categoryDoughnutData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]}/>)}
+							<Label className="center-label" fill={"black"} value={"Total Spent: $" + this.state.totalSpent} position="center" />
+						</Pie>
 
-					<Tooltip content={<CustomTooltip/>}/>
-					<Legend align="center" verticalAlign="bottom"/>
-				</PieChart>
-			</ResponsiveContainer>
+						<Tooltip content={<CustomTooltip/>}/>
+						<Legend align="center" verticalAlign="bottom"/>
+					</PieChart>
+				</ResponsiveContainer>
+			</section>
 
-		)
+			)
 	}
 }
 
