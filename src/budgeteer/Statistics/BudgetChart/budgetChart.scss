@@ -1,14 +1,12 @@
 @import '../../scss/variables';
 
 .budget {
+
 	margin: 0 auto;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
 	align-items: center;
-
-	@media all and (max-width: 930px) {
-	}
 
 	&--doughnut-chart {
 
@@ -17,39 +15,6 @@
 		}
 	}
 
-	&--form {
-
-		/*@media all and (max-width: 930px) {
-		margin: 10px 0;
-	}*/
-
-label {
-	font-size: 20px;
-	font-weight: bold;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
-	span {
-
-	}
-
-	input {
-		max-width: 90%;
-		width: 250px;
-		padding: 10px;
-		border: 1px solid black;
-		border-radius: 5px;
-		font-size: 15px;
-		color: black;
-		box-sizing: border-box;
-
-		@media all and (max-width: 930px) {
-			margin-left: 0;
-		}
-	}
-}
-	}
 
 	%color-block {
 		content: "";
@@ -64,6 +29,8 @@ label {
 	}
 
 	&--tooltip {
+		//margin: 0 auto;
+		//width: 300px !important;
 		padding: 15px;
 		font-size: 20px;
 		background-color: white;
@@ -79,6 +46,33 @@ label {
 			background-color: $green;
 		}
 
+	}
+
+	label {
+		font-size: 20px;
+		font-weight: bold;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		span {
+
+		}
+
+		input {
+			max-width: 90%;
+			width: 250px;
+			padding: 10px;
+			border: 1px solid black;
+			border-radius: 5px;
+			font-size: 15px;
+			color: black;
+			box-sizing: border-box;
+
+			@media all and (max-width: 930px) {
+				margin-left: 0;
+			}
+		}
 	}
 }
 

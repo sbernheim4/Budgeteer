@@ -161,7 +161,7 @@ class BudgetChart extends Component {
 		}
 
 		return (
-			<div className="chart budget">
+			<section className="chart budget">
 
 				{message}
 				<h1>Monthly Budget</h1>
@@ -186,7 +186,7 @@ class BudgetChart extends Component {
 						<Tooltip content={<CustomTooltip data={this.state.rechartsData}/>}/>
 					</PieChart>
 				</ResponsiveContainer>
-			</div>
+			</section>
 		);
 	}
 }

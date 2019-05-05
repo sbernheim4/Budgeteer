@@ -25,7 +25,10 @@
 			justify-content: center;
 			align-items: center;
 
-			div, section {
+			// @note elements that are scrollable must be wrapped in a
+			// <section> tag and NOT a <div> tag to work properly. <section>s
+			// will not have the right width if wrapped with a div.
+			section {
 				width: 100%;
 			}
 		}
