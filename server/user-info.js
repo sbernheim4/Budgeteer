@@ -27,10 +27,16 @@ Router.get('/monthly-budget', (req, res) => {
 });
 
 Router.post('/monthly-budget', (req, res) => {
-	// Update monthly budget on session and DB
-	User.updateOne({ _id: req.session.user._id }, { monthlyBudget: req.body.monthlyBudget }, () => {});
-	req.session.user.monthlyBudget = req.body.monthlyBudget;
+	const newMonthlyBudget = req.body.monthlyBudget;
+
+	// Update monthly budget in DB
+	User.updateOne({ _id: req.session.user._id }, { monthlyBudget: newMonthlyBudget }, () => {});
+
+	// Update monthlyBudget in session
+	req.session.user.monthlyBudget = newMonthlyBudget;
 	req.session.save();
+
+	res.status(204).end();
 });
 
 
@@ -66,6 +72,8 @@ Router.post("/last-accessed", (req, res) => {
 
 	req.session.user.lastAccessed = date;
 	req.session.save();
+
+	res.status(204).end();
 });
 
 Router.get("/display-names", async (req, res) => {
@@ -106,6 +114,8 @@ Router.post("/display-names", (req, res) => {
 	// Save new object in session
 	req.session.user.displayNames = serializedMap;
 	req.session.save();
+
+	res.status(204).end();
 });
 
 module.exports = Router;

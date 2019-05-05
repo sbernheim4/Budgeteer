@@ -12,8 +12,8 @@ class MonthlyBudget extends Component {
 
 		this.state = {
 			monthlyBudget: "Loading...",
-			message: "Your monthly budget has been updated",
-			color: "green"
+			message: "",
+			color: ""
 		}
 
 		this.updateInputValue = this.updateInputValue.bind(this);
@@ -24,15 +24,20 @@ class MonthlyBudget extends Component {
 	async componentDidMount() {
 		// Try looking in local storage first for the monthlyBudget
 		let monthlyBudget = localStorage.getItem("monthlyBudget");
-		if (!monthlyBudget) {
-			// If that fails grab it from the server
+		const retrievedFromLocalStorage = !!monthlyBudget;
+
+		// If local storage doesn't contain the monthlyBudget get it from the server
+		if (retrievedFromLocalStorage === false) {
 			monthlyBudget = await axios.get('/user-info/monthly-budget');
 			monthlyBudget = monthlyBudget.data.monthlyBudget;
-        }
+		} else {
+			// Fallback, tell the user to enter in their monthly budget
+			this.displayMessage('You must enter a monthly budget', 'red');
+		}
 
-        this.setState({
-            monthlyBudget: monthlyBudget
-        });
+		this.setState({
+			monthlyBudget: monthlyBudget
+		});
 	}
 
 	updateInputValue(e) {
@@ -60,13 +65,14 @@ class MonthlyBudget extends Component {
 		});
 
 		// Display a success message optimistically
-		this.displayMessage();
+		this.displayMessage('Your monthly budget has budget updated', 'green');
 	}
 
-	displayMessage() {
-		console.log("Displaying banner...")
+	displayMessage(text, color) {
 		this.setState({
-			display: true
+			display: true,
+			message: text,
+			color: color
 		});
 
 		setTimeout(() => {
@@ -78,15 +84,15 @@ class MonthlyBudget extends Component {
 
 	render() {
 		return (
-            <section className='monthly-budget' onSubmit={this.updateMonthlyBudget}>
+			<section className='monthly-budget' onSubmit={this.updateMonthlyBudget}>
 				<BannerMessage display={this.state.display} color={this.state.color} text={this.state.message} />
 
-                <h1>Monthly Budget</h1>
-                <div className='monthly-budget__container'>
-                    <input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue} />
-                    <button className='submit' onClick={this.updateMonthlyBudget}> Update Budget </button>
-                </div>
-            </section>
+				<h1>Monthly Budget</h1>
+				<div className='monthly-budget__container'>
+					<input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue} />
+					<button className='submit' onClick={this.updateMonthlyBudget}> Update Budget </button>
+				</div>
+			</section>
 		);
 	}
 }

@@ -44,19 +44,17 @@ function calculateTranslationAmount(element, totalNumElements, direction) {
 	const margin = 0; // This should be pulled from the elements style property
 	const innerItemWidth = document.querySelector(".chart").offsetWidth + (margin * 2);
 
-	console.log(`innerItemWidth: ${innerItemWidth}`);
-
 	let currentXTranslateAmt;
 
 	try {
-		currentXTranslateAmt = parseInt(element.style.transform.split("(")[1].slice(0, -3));
-	} catch (err) {
-		console.log('err caught');
-		console.log(err);
-		currentXTranslateAmt = 0;
-	}
 
-	console.log(`currentXTranslateAmt: ${currentXTranslateAmt}`);
+		currentXTranslateAmt = parseInt(element.style.transform.split("(")[1].slice(0, -3));
+
+	} catch (err) {
+
+		currentXTranslateAmt = 0;
+
+	}
 
 	const minimumBound = ((totalNumElements * innerItemWidth) - window.innerWidth) * -1;
 	const maximumBound = 0;

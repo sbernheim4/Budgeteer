@@ -39,6 +39,8 @@ class CustomTooltip extends Component {
 	}
 };
 
+let updated = false;
+
 class BudgetChart extends Component {
 	constructor(props){
 		super(props);
@@ -56,11 +58,27 @@ class BudgetChart extends Component {
 		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
 	}
 
+	componentDidUpdate() {
+
+		// Note: Use `updated` here to prevent an infinite loop as calling
+		// this.displayMessage updates state which causes cDU to be called again etc
+		if (this.state.overBudget && (updated === false) ) {
+			// Wait 500ms before displaying the banner
+			setTimeout(()=> {
+				this.displayMessage('You are over budget!', 'red');
+			}, 500);
+
+			updated = true;
+		}
+
+	}
+
 	static getMonthlyBudget() {
 
-		const storedMonthlyBudget = Number.parseFloat(localStorage.getItem('monthlyBudget'));
+		const rawMonthlyBudget = localStorage.getItem('monthlyBudget');
+		const monthlyBudget = Number.parseFloat(rawMonthlyBudget);
 
-		return storedMonthlyBudget;
+		return monthlyBudget;
 	}
 
 	static calculateTotalSpent(transactions) {
@@ -135,6 +153,26 @@ class BudgetChart extends Component {
 				monthlyBudget: newMonthlyBudget
 			}
 		});
+
+		const overBudget = newRemaining < 0;
+		if (overBudget) {
+			this.displayMessage('You are over budget!', 'red');
+		}
+
+	}
+
+	displayMessage(text, color) {
+		this.setState({
+			display: true,
+			message: text,
+			color: color
+		});
+
+		setTimeout(() => {
+			this.setState({
+				display: false,
+			});
+		}, 5500);
 	}
 
 	render() {
@@ -147,23 +185,11 @@ class BudgetChart extends Component {
 		remaining = formatAmount(remaining);
 		remaining = numberWithCommas(remaining);
 
-		//const label = `Spent: $${spent}`;
-
-		let message;
-		if (this.state.overBudget) {
-			message = <BannerMessage display={this.state.displayMessage} text={'You are over budget!!!'}/>
-
-			setTimeout(() => {
-				this.setState({
-					displayMessage: true
-				});
-			}, 1000);
-		}
-
 		return (
 			<section className="chart budget">
 
-				{message}
+				<BannerMessage color={this.state.color} display={this.state.display} text={this.state.message}/>
+
 				<h1>Monthly Budget</h1>
 
 				<Input display={this.props.displayInput} updateMonthlyBudget={this.updateMonthlyBudget} monthlyBudget={this.state.monthlyBudget}/>

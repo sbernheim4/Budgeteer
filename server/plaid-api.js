@@ -46,17 +46,23 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 
 	// Rotate access tokens
 	let newAccessTokens = [];
+
 	for (const token of req.session.user.accessTokens) {
 
 		try {
+
 			const result = await client.invalidateAccessToken(token);
+
 			newAccessTokens.push(result.new_access_token);
+
 		} catch(err) {
+
 			console.error(err);
 
 			res.json({
 				"result": err
 			});
+
 		}
 	}
 
@@ -78,6 +84,7 @@ Router.post("/get-access-token", async (req, res) => {
 
 	const PUBLIC_TOKEN = req.body.public_token;
 	console.log(`public token: ${PUBLIC_TOKEN}`);
+
 	try {
 		// Get the token response
 		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
@@ -97,12 +104,19 @@ Router.post("/get-access-token", async (req, res) => {
 		User.update({ _id: req.session.user._id }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {
 			console.log(chalk.green("New account has been saved"));
 		});
+
+
+		res.status(204).end();
+
 	} catch (err) {
+
 		console.log(err);
+
 		return res.json({
 			error: err
 		});
 	}
+
 });
 
 // Get Transaction information
