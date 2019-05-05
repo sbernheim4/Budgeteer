@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './scrollContainer.scss';
 
-class ScrollContainer extends Component {
+export default class ScrollContainer extends Component {
 	constructor(props) {
 		super(props);
 
@@ -25,7 +25,7 @@ class ScrollContainer extends Component {
 				<div className='scrollable-elements'>
 					{this.props.elements.map((element, index) => {
 						return (
-							<div className='wrapper'>
+							<div key={index} className='wrapper'>
 								{element}
 							</div>
 						);
@@ -41,9 +41,7 @@ class ScrollContainer extends Component {
 }
 
 function calculateTranslationAmount(element, totalNumElements, direction) {
-	console.log(element, totalNumElements, direction);
-
-	const margin = 20; // This should be pulled from the elements style property
+	const margin = 0; // This should be pulled from the elements style property
 	const innerItemWidth = document.querySelector(".chart").offsetWidth + (margin * 2);
 
 	console.log(`innerItemWidth: ${innerItemWidth}`);
@@ -74,4 +72,3 @@ function calculateTranslationAmount(element, totalNumElements, direction) {
 	}
 }
 
-export default ScrollContainer;
