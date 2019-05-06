@@ -1,100 +1,107 @@
 /* eslint no-undefined: "off" */
-
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
 import './monthlyBudget.scss';
 
-class MonthlyBudget extends Component {
-	constructor(props) {
-		super(props);
+function MonthlyBudget() {
 
-		this.state = {
-			monthlyBudget: "Loading...",
-			message: "",
-			color: ""
+	const [monthlyBudget, setMonthlyBudget] = useState('Loading...');
+	useEffect(() => {
+		const fetchData = async () => {
+			const budget = await getDefaultBudget();
+			setMonthlyBudget(budget);
+		};
+
+		fetchData();
+	}, []);
+
+	const [bannerOptions, setBannerOptions] = useState({
+		message: '',
+		color: 'green',
+		display: false
+	});
+
+	useEffect(() => {
+		// Remove the banner after some time
+		if (bannerOptions.display) {
+			setTimeout(() => {
+				setBannerOptions({
+					message: '',
+					color: 'green',
+					display: false
+				});
+			}, 5500);
 		}
+	});
 
-		this.updateInputValue = this.updateInputValue.bind(this);
-		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
-		this.displayMessage = this.displayMessage.bind(this);
-	}
-
-	async componentDidMount() {
-		// Try looking in local storage first for the monthlyBudget
-		let monthlyBudget = localStorage.getItem("monthlyBudget");
-		const retrievedFromLocalStorage = !!monthlyBudget;
-
-		// If local storage doesn't contain the monthlyBudget get it from the server
-		if (retrievedFromLocalStorage === false) {
-			monthlyBudget = await axios.get('/user-info/monthly-budget');
-			monthlyBudget = monthlyBudget.data.monthlyBudget;
-		} else {
-			// Fallback, tell the user to enter in their monthly budget
-			this.displayMessage('You must enter a monthly budget', 'red');
-		}
-
-		this.setState({
-			monthlyBudget: monthlyBudget
-		});
-	}
-
-	updateInputValue(e) {
-		const updatedMonthlyBudget = e.target.value.trim();
-		this.setState({
-			monthlyBudget: updatedMonthlyBudget
-		});
-	}
-
-	updateMonthlyBudget(e) {
-		e.preventDefault();
-
-		const updatedMonthlyBudget = document.querySelector("#monthly-budget").value;
-
+	function updateMonthlyBudget() {
 		// Update local storage value
-		localStorage.setItem("monthlyBudget", updatedMonthlyBudget);
+		localStorage.setItem("monthlyBudget", monthlyBudget);
 
 		// Update Session/DB value
 		axios({
 			method: 'POST',
 			url: '/user-info/monthly-budget',
 			data: {
-				monthlyBudget: updatedMonthlyBudget
+				monthlyBudget: monthlyBudget
 			}
 		});
 
 		// Display a success message optimistically
-		this.displayMessage('Your monthly budget has budget updated', 'green');
+		displayMessage('Your monthly budget has budget updated', 'green');
 	}
 
-	displayMessage(text, color) {
-		this.setState({
-			display: true,
+
+	async function getDefaultBudget() {
+		let monthlyBudget = localStorage.getItem("monthlyBudget");
+		const retrievedFromLocalStorage = !!monthlyBudget && monthlyBudget !== null && monthlyBudget !== undefined;
+
+		if (retrievedFromLocalStorage) {
+			console.log('found in localStorage');
+			return monthlyBudget;
+		} else {
+			try {
+				monthlyBudget = await axios.get('/user-info/monthly-budget');
+				monthlyBudget = monthlyBudget.data.monthlyBudget;
+
+				// Store in local storage for quick access
+				localStorage.setItem("monthlyBudget", monthlyBudget);
+
+				console.log(`found in db`);
+
+				return monthlyBudget;
+			} catch (err) {
+				console.log('Not found in db...')
+				console.log('err caught in getDefaultBudget');
+
+				displayMessage('You must enter a monthly budget', 'red');
+				return 0;
+			}
+		}
+	}
+
+	function displayMessage(text, color) {
+		setBannerOptions({
 			message: text,
-			color: color
+			color: color,
+			display: true
 		});
-
-		setTimeout(() => {
-			this.setState({
-				display: false,
-			});
-		}, 5500);
 	}
 
-	render() {
-		return (
-			<section className='monthly-budget' onSubmit={this.updateMonthlyBudget}>
-				<BannerMessage display={this.state.display} color={this.state.color} text={this.state.message} />
+	return (
+		<section className='monthly-budget'>
+			<BannerMessage display={bannerOptions.display} color={bannerOptions.color} text={bannerOptions.message} />
 
-				<h1>Monthly Budget</h1>
-				<div className='monthly-budget__container'>
-					<input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={this.state.monthlyBudget} onChange={this.updateInputValue} />
-					<button className='submit' onClick={this.updateMonthlyBudget}> Update Budget </button>
-				</div>
-			</section>
-		);
-	}
+			<h1>Monthly Budget</h1>
+			<div className='monthly-budget__container'>
+				<input id="monthly-budget" placeholder="Loading..." type="number" name="budget" value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.target.value)} />
+				<button className='submit' onClick={updateMonthlyBudget}> Update Budget </button>
+			</div>
+		</section>
+	);
+
 }
 
 export default MonthlyBudget;
