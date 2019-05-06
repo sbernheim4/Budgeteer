@@ -1,6 +1,7 @@
 /* eslint no-undefined: "off" */
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
 import './monthlyBudget.scss';
@@ -22,7 +23,6 @@ function MonthlyBudget() {
 		color: 'green',
 		display: false
 	});
-
 	useEffect(() => {
 		// Remove the banner after some time
 		if (bannerOptions.display) {
@@ -59,25 +59,20 @@ function MonthlyBudget() {
 		const retrievedFromLocalStorage = !!monthlyBudget && monthlyBudget !== null && monthlyBudget !== undefined;
 
 		if (retrievedFromLocalStorage) {
-			console.log('found in localStorage');
 			return monthlyBudget;
 		} else {
 			try {
 				monthlyBudget = await axios.get('/user-info/monthly-budget');
 				monthlyBudget = monthlyBudget.data.monthlyBudget;
 
-				// Store in local storage for quick access
 				localStorage.setItem("monthlyBudget", monthlyBudget);
-
-				console.log(`found in db`);
 
 				return monthlyBudget;
 			} catch (err) {
-				console.log('Not found in db...')
-				console.log('err caught in getDefaultBudget');
 
 				displayMessage('You must enter a monthly budget', 'red');
 				return 0;
+
 			}
 		}
 	}
