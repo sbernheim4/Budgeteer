@@ -11,7 +11,7 @@ let db = mongoose.connection;
 // anywhere the User model needs to be used.
 require('./models');
 
-const startDbPromise = new Promise(function (resolve, reject) {
+const startDbPromise = new Promise(function (resolve) {
     db.on('open', resolve);
     db.on('error', console.error.bind(console, 'connection error:'));
 });

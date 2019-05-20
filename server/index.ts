@@ -4,26 +4,38 @@ require("dotenv").config();
 
 import * as fs from 'fs';
 import * as path from 'path';
-//import * as util from 'util';
 import * as https from 'https';
+import * as bodyParser from 'body-parser';
 import express from 'express';
 import { Request, Response } from 'express';
 import compression from 'compression';
-import * as mongoose from 'mongoose';
 import helmet from 'helmet';
-import * as bodyParser from 'body-parser';
-//import * as mongo from 'connect-mongo';
 import session from 'express-session';
-import * as passport from 'passport';
-//import startDb from './db/';
 
-//const MongoStore = mongo(session)
+// ---------------------------------------
+// TO BE CONVERTED LATER
+
+// import * as passport from 'passport';
+const passport = require('passport');
+
+// import * as mongoose from 'mongoose';
+const mongoose = require('mongoose');
+
+// import * as mongo from 'connect-mongo';
+const mongo = require('connect-mongo');
+
+const util = require('util');
+
+const chalk = require('chalk');
+
+const startDb = require('./db');
+// ---------------------------------------
+
+const MongoStore = mongo(session)
 const app = express();
 
 /****************** DB Options ******************/
-const mongodbUri = process.env.DB_URI;
-
-mongoose.connect(mongodbUri, { useNewUrlParser: true });
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true });
 
 // If you have set `DB_URI` env var in your `.env` file then use that DB to store sessions
 if (process.env.DB_URI) {
@@ -32,7 +44,7 @@ if (process.env.DB_URI) {
 		resave: true,
 		saveUninitialized: true,
 		cookie: { maxAge: 600000 },
-		//store: new MongoStore({ mongooseConnection: mongoose.connection }) // Use mong to store sessions
+		store: new MongoStore({ mongooseConnection: mongoose.connection }) // Use mong to store sessions
 	}));
 } else {
 	app.use(session({
@@ -65,13 +77,13 @@ app.use(express.static(path.join(__dirname, '../static-assets'), { maxAge: cache
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime } ));
 
 /****************** Log Requests ******************/
-/*app.use('*', (req, res, next) => {
+app.all('*', (req, _res, next) => {
 	console.log('--------------------------------------------------------------------------');
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
 	console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
 	console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
 	next();
-});*/
+});
 
 /****************** Handle Requests ******************/
 
@@ -79,13 +91,13 @@ app.use('/legal', require('./legal.js'));
 
 app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
 
-//app.use('/user-info', checkAuthentication, require('./user-info.js'));
+app.use('/user-info', checkAuthentication, require('./user-info.js'));
 
 app.get('/', (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
-//app.use('/login', require("./auth.js"));
+app.use('/login', require("./auth.js"));
 
 // TODO: For some reason this is needed. Visiting budgeteer.org makes a request for /budgeteer/budgeteer.js instead of just /budgeteer.js
 app.get('/budgeteer/*.js', checkAuthentication, (_req, res) => {
@@ -125,12 +137,11 @@ function checkAuthentication(req: Request, res: Response, next: () => void) {
 
 /****************** Start the DB and Server ******************/
 if (process.env.DB_URI && process.env.DB_URI !== '') {
-	startServer();
-	//startDb.then(() => {
-		//startServer();
-	//}).catch(err => {
-		//console.log(err);
-	//})
+	startDb.then(() => {
+		startServer();
+	}).catch(err => {
+		console.log(err);
+	})
 } else {
 	console.log('process.env.DB_URI is undefined (this should be set in your .env file).\nSkipping opening connection to DB.\nSessions are being stored in memory');
 	startServer();
