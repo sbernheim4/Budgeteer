@@ -16,11 +16,7 @@ const StyleLintPlugin = require("stylelint-webpack-plugin");
 const WebpackBar = require('webpackbar');
 
 const dotenv = require('dotenv');
-
-// call dotenv and it will return an Object with a parsed key
 const env = dotenv.config().parsed;
-
-// reduce it to a nice object, the same as before
 const envKeys = Object.keys(env).reduce((prev, next) => {
 	prev[`process.env.${next}`] = JSON.stringify(env[next]);
 	return prev;
@@ -48,7 +44,6 @@ module.exports = {
 			},
 
 			// use sass-loader, css-loader, and style-loader for all scss files
-			//
 			// sass-loader - converts scss to css
 			// postcss-loader for backwards compatibility
 			// css-loader - allows for using import or require statements in jsx files
