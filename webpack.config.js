@@ -22,7 +22,42 @@ const envKeys = Object.keys(env).reduce((prev, next) => {
 	return prev;
 }, {});
 
-module.exports = {
+const serverConfig = {
+	devtool: 'source-map',
+	target: 'node',
+	entry: {
+		server: './server/index.ts'
+	},
+	output: {
+		path: __dirname + '/public',
+		filename: '[name].js',
+		publicPath: '/'
+	},
+	module: {
+
+		rules: [
+			{
+				test: /\.ts$/,
+				exclude: /node_modules/,
+				use: ['awesome-typescript-loader']
+			}
+		]
+	},
+
+	mode: process.env.NODE_ENV || 'development',
+
+	resolve: {
+		extensions: ['.ts', '.js', '.json']
+	},
+
+	plugins: [
+
+		new webpack.DefinePlugin(envKeys)
+
+	]
+}
+
+const clientConfig = {
 	devtool: 'source-map',
 	entry: {
 		budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
@@ -132,3 +167,5 @@ module.exports = {
 		new webpack.DefinePlugin(envKeys)
 	]
 }
+
+module.exports = [serverConfig, clientConfig]
