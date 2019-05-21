@@ -1,59 +1,50 @@
 /* eslint no-undefined: "off" */
 
-require("dotenv").config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as https from 'https';
-import * as bodyParser from 'body-parser';
+import fs from 'fs';
+import path from 'path';
+import https from 'https';
+import util from 'util';
+import bodyParser from 'body-parser';
 import express from 'express';
 import { Request, Response } from 'express';
 import compression from 'compression';
 import helmet from 'helmet';
 import session from 'express-session';
+import passport from 'passport';
+import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
+import chalk from 'chalk';
 
-// ---------------------------------------
-// TO BE CONVERTED LATER
+// Route Handlers
+import legal from './legal';
+import plaidApi from './plaid-api';
+import userInfo from './user-info';
+import auth from './auth';
 
-// import * as passport from 'passport';
-const passport = require('passport');
+import startDb from './db';
 
-// import * as mongoose from 'mongoose';
-const mongoose = require('mongoose');
-
-// import * as mongo from 'connect-mongo';
-const mongo = require('connect-mongo');
-
-const util = require('util');
-
-const chalk = require('chalk');
-
-const startDb = require('./db');
-// ---------------------------------------
-
-const MongoStore = mongo(session)
 const app = express();
 
 /****************** DB Options ******************/
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true });
 
-// If you have set `DB_URI` env var in your `.env` file then use that DB to store sessions
+const sessionInfo = session({
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
+	resave: true,
+	saveUninitialized: true,
+	cookie: { maxAge: 600000 }
+});
+
 if (process.env.DB_URI) {
-	app.use(session({
-		secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
-		resave: true,
-		saveUninitialized: true,
-		cookie: { maxAge: 600000 },
-		store: new MongoStore({ mongooseConnection: mongoose.connection }) // Use mong to store sessions
-	}));
-} else {
-	app.use(session({
-		secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
-		resave: true,
-		saveUninitialized: true,
-		cookie: { maxAge: 600000 }
-	}));
+	const sessionStore = MongoStore(session)
+	sessionInfo['store'] = new sessionStore({ mongooseConnection: mongoose.connection });
 }
+
+app.use(sessionInfo);
+/***************** DB Options ******************/
 
 const options = {
 	key: fs.readFileSync(path.join(__dirname, './encryption/server.key')),
@@ -86,18 +77,17 @@ app.all('*', (req, _res, next) => {
 });
 
 /****************** Handle Requests ******************/
+app.use('/legal', legal);
 
-app.use('/legal', require('./legal.js'));
+app.use('/plaid-api', checkAuthentication, plaidApi);
 
-app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
-
-app.use('/user-info', checkAuthentication, require('./user-info.js'));
+app.use('/user-info', checkAuthentication, userInfo);
 
 app.get('/', (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
-app.use('/login', require("./auth.js"));
+app.use('/login', auth);
 
 // TODO: For some reason this is needed. Visiting budgeteer.org makes a request for /budgeteer/budgeteer.js instead of just /budgeteer.js
 app.get('/budgeteer/*.js', checkAuthentication, (_req, res) => {
@@ -143,11 +133,16 @@ if (process.env.DB_URI && process.env.DB_URI !== '') {
 		console.log(err);
 	})
 } else {
-	console.log('process.env.DB_URI is undefined (this should be set in your .env file).\nSkipping opening connection to DB.\nSessions are being stored in memory');
+	console.log(chalk.red(`
+		process.env.DB_URI is undefined (this should be set in your .env file).
+		Not connecting to MongoDB.
+		Sessions are being stored in memory`
+	));
+
 	startServer();
 }
 
 function startServer() {
     https.createServer(options, app).listen(process.env.PORT);
-    console.log(`App is live on ${process.env.DEV_BASE_URL}`);
+    console.log(chalk.blue(`App is live on ${process.env.DEV_BASE_URL}`));
 }

@@ -1,22 +1,25 @@
-const express = require('express');
-const path = require('path');
-const passport = require('passport');
-const mongoose = require('mongoose');
+import express, { Request, Response } from 'express';
+import path from 'path';
+import passport from 'passport';
+import mongoose from 'mongoose';
+
+import IUser from './db/interfaces/IUser';
+
 const FBStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-const router = express.Router();
+const authRouter = express.Router();
 const User = mongoose.model('User');
 
-router.get('/', (req, res) => {
+authRouter.get('/', (_req: Request, res: Response) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
-router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
+authRouter.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (_req, _res) => {
 	console.log("Logging in via Google");
 });
 
-router.get('/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
+authRouter.get('/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req: Request, res: Response) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
 	// Redirect to budgeteer or url they entered after the session has been set
@@ -24,11 +27,11 @@ router.get('/google/return', passport.authenticate('google', { scope: ['email', 
 	res.redirect(returnURL);
 });
 
-router.get('/facebook', passport.authenticate('facebook'), (req, res) => {
+authRouter.get('/facebook', passport.authenticate('facebook'), (_req, _res) => {
 	console.log("Logging in via FB");
 });
 
-router.get('/facebook/return', passport.authenticate('facebook'), (req, res) => {
+authRouter.get('/facebook/return', passport.authenticate('facebook'), (req: Request, res: Response) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
 	// Redirect to budgeteer or url they entered after the session has been set
@@ -36,7 +39,7 @@ router.get('/facebook/return', passport.authenticate('facebook'), (req, res) => 
 	res.redirect(returnURL);
 });
 
-function checkAuthentication(req, res, next) {
+function checkAuthentication(req: Request, res: Response, next) {
 	// Check if the user variable on the session is set. If not redirect to /login
 	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
 	if (req.session.user) {
@@ -49,7 +52,7 @@ function checkAuthentication(req, res, next) {
 		// logged in, store the route they tried to visit in the session to redirect
 		// them to after authentication completes
 		req.session.returnUrl = req.url;
-		req.session.save();
+		req.session.save(() => { });
 
 		res.redirect('/login');
 	}
@@ -67,29 +70,40 @@ passport.use(new FBStrategy({
 	clientSecret: process.env.CLIENT_SECRET,
 	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/facebook/return' : `${process.env.DEV_BASE_URL}/login/facebook/return`
 },
-	function(accessToken, refreshToken, profile, done) {
+	async function (_accessToken, _refreshToken, profile, done) {
 		// In this example, the user's Facebook profile is supplied as the user
 		// record.  In a production-quality application, the Facebook profile should
 		// be associated with a user record in the application's database, which
 		// allows for account linking and authentication with other identity
 		// providers.
 
-		User.findOne({
-			facebookID: profile.id
-		}).then((dbUserRecord, err) => {
-			if (dbUserRecord) {
-				done(null, dbUserRecord);
+		try {
+
+			const user: IUser = await User.findOne({
+				facebookID: profile.id
+			});
+
+			if (user) {
+
+				done(null, user);
+
 			} else {
-				new User({
+
+				const newUser = new User({
 					facebookID: profile.id,
 					name: profile.displayName
-				}).save().then((newUser) => {
-					done(null, newUser);
 				});
+
+				await newUser.save();
+
+				done(null, newUser);
+
 			}
-		}).catch(err => {
-			console.log(err);
-		});
+		} catch (err) {
+
+			console.error(err);
+
+		}
 	}
 ));
 
@@ -98,23 +112,33 @@ passport.use(new GoogleStrategy({
 	clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 	callbackURL: process.env.NODE_ENV === 'production' ? 'https://www.budgeteer.org/login/google/return' : `${process.env.DEV_BASE_URL}/login/google/return`
 },
-	function(accessToken, refreshToken, profile, done) {
-		User.findOne({
-			googleID: profile.id
-		}).then((dbUserRecord, err) => {
-			if (dbUserRecord) {
-				done(null, dbUserRecord);
+	async function (_accessToken, _refreshToken, profile, done) {
+
+		try {
+
+			const user: IUser = await User.findOne({
+				googleID: profile.id
+			});
+
+			if (user) {
+				done(null, user);
 			} else {
-				new User({
+
+				const newUser = new User({
 					googleID: profile.id,
 					name: profile.displayName
-				}).save().then((newUser) => {
-					done(null, newUser);
 				});
+
+				await newUser.save();
+
+				done(null, newUser);
 			}
-		}).catch(err => {
-			console.log(err);
-		});
+
+		} catch (err) {
+
+			console.error(err);
+
+		}
 	}
 ));
 
@@ -128,14 +152,14 @@ passport.use(new GoogleStrategy({
 // from the database when deserializing.  However, due to the fact that this
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user: IUser, done) {
 	done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function (id, done) {
 	User.findById(id).then(user => {
 		done(null, user);
 	});
 });
 
-module.exports = router;
+export default authRouter;

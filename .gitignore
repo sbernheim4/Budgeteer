@@ -69,11 +69,5 @@ typings/
 
 public/
 
-server/plaid-api.js
-server/plaid-api.js.map
-
-server/index.js
-server/index.js.map
-
-server/user-info.js
-server/user-info.js.map
+server/**/*.js
+server/**/*.js.map
