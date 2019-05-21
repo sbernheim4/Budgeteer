@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import passport from 'passport';
 import mongoose from 'mongoose';
@@ -10,6 +10,10 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 const authRouter = express.Router();
 const User = mongoose.model('User');
+
+authRouter.all('*', checkAuthentication, (_req: Request, _res: Response) => {
+
+});
 
 authRouter.get('/', (_req: Request, res: Response) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
@@ -39,7 +43,7 @@ authRouter.get('/facebook/return', passport.authenticate('facebook'), (req: Requ
 	res.redirect(returnURL);
 });
 
-function checkAuthentication(req: Request, res: Response, next) {
+function checkAuthentication(req: Request, res: Response, next: NextFunction) {
 	// Check if the user variable on the session is set. If not redirect to /login
 	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
 	if (req.session.user) {

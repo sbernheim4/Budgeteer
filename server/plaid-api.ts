@@ -9,6 +9,8 @@ import moment from "moment";
 import plaid from "plaid";
 import mongoose from 'mongoose';
 
+import './db/models/index';
+
 const User = mongoose.model('User');
 const plaidApiRouter = express.Router({});
 
@@ -297,7 +299,7 @@ plaidApiRouter.post('/remove-account', async (req, res) => {
 
 	try {
 		// Update the values in the database
-		const results = await User.update({ _id: req.session.user._id }, {
+		await User.update({ _id: req.session.user._id }, {
 			$set: {
 				accessTokens: newAccessTokens,
 				itemID: newItemIDs
