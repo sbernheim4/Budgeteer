@@ -1,50 +1,50 @@
 /* eslint no-undefined: "off" */
 
-require("dotenv").config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-const https = require('https');
-const express = require('express');
+import fs from 'fs';
+import path from 'path';
+import https from 'https';
+import util from 'util';
+import bodyParser from 'body-parser';
+import express from 'express';
+import { Request, Response } from 'express';
+import compression from 'compression';
+import helmet from 'helmet';
+import session from 'express-session';
+import passport from 'passport';
+import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
+import chalk from 'chalk';
+
+// Route Handlers
+import legal from './legal';
+import plaidApi from './plaid-api';
+import userInfo from './user-info';
+import auth from './auth';
+
+import startDb from './db';
+
 const app = express();
-const chalk = require('chalk');
-const compression = require('compression');
-const mongoose = require('mongoose');
-const helmet = require('helmet');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-const passport = require('passport');
-const FBStrategy = require('passport-facebook').Strategy;
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const startDb = require("./db");
-
-const User = mongoose.model('User');
 
 /****************** DB Options ******************/
-const mongodbUri = process.env.DB_URI;
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true });
 
-mongoose.connect(mongodbUri, { useNewUrlParser: true });
-let db = mongoose.connection;
+const sessionInfo = session({
+	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
+	resave: true,
+	saveUninitialized: true,
+	cookie: { maxAge: 600000 }
+});
 
-// If you have set `DB_URI` env var in your `.env` file then use that DB to store sessions
 if (process.env.DB_URI) {
-	app.use(session({
-		secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
-		resave: true,
-		saveUninitialized: true,
-		cookie: { maxAge: 600000 },
-		store: new MongoStore({ mongooseConnection: mongoose.connection }) // Use mong to store sessions
-	}));
-} else {
-	app.use(session({
-		secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
-		resave: true,
-		saveUninitialized: true,
-		cookie: { maxAge: 600000 }
-	}));
+	const sessionStore = MongoStore(session)
+	sessionInfo['store'] = new sessionStore({ mongooseConnection: mongoose.connection });
 }
+
+app.use(sessionInfo);
+/***************** DB Options ******************/
 
 const options = {
 	key: fs.readFileSync(path.join(__dirname, './encryption/server.key')),
@@ -68,47 +68,45 @@ app.use(express.static(path.join(__dirname, '../static-assets'), { maxAge: cache
 app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime } ));
 
 /****************** Log Requests ******************/
-app.use('*', (req, res, next) => {
+app.all('*', (req, _res, next) => {
 	console.log('--------------------------------------------------------------------------');
 	console.log(util.format(chalk.red('%s: %s %s'), 'REQUEST ', req.method, req.path));
 	console.log(util.format(chalk.yellow('%s: %s'), 'QUERY   ', util.inspect(req.query)));
 	console.log(util.format(chalk.cyan('%s: %s'), 'BODY    ', util.inspect(req.body)));
-
 	next();
 });
 
 /****************** Handle Requests ******************/
+app.use('/legal', legal);
 
-app.use('/legal', require('./legal.js'));
+app.use('/plaid-api', checkAuthentication, plaidApi);
 
-app.use('/plaid-api', checkAuthentication, require('./plaid-api.js'));
+app.use('/user-info', checkAuthentication, userInfo);
 
-app.use('/user-info', checkAuthentication, require('./user-info.js'));
-
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
-app.use('/login', require("./auth.js"));
+app.use('/login', auth);
 
 // TODO: For some reason this is needed. Visiting budgeteer.org makes a request for /budgeteer/budgeteer.js instead of just /budgeteer.js
-app.get('/budgeteer/*.js', checkAuthentication, (req, res) => {
+app.get('/budgeteer/*.js', checkAuthentication, (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get('/budgeteer', checkAuthentication, (req, res) => {
+app.get('/budgeteer', checkAuthentication, (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get('/budgeteer/*', checkAuthentication, (req, res) => {
+app.get('/budgeteer/*', checkAuthentication, (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
 });
 
-app.get("*", (req, res) => {
+app.get("*", (_req, res) => {
 	res.status(404).send(`<h1>404 Page Not Found</h1>`);
 });
 
-function checkAuthentication(req, res, next) {
+function checkAuthentication(req: Request, res: Response, next: () => void) {
 	// Check if the user variable on the session is set. If not redirect to /login
 	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
 	if (req.session.user !== undefined) {
@@ -121,7 +119,7 @@ function checkAuthentication(req, res, next) {
 		// logged in store the route they tried to visit in the session to redirect
 		// them too after authentication completes
 		req.session.returnUrl = req.url;
-		req.session.save();
+		req.session.save(() => {});
 
 		res.redirect('/login');
 	}
@@ -135,11 +133,16 @@ if (process.env.DB_URI && process.env.DB_URI !== '') {
 		console.log(err);
 	})
 } else {
-	console.log(chalk.red('process.env.DB_URI is undefined (this should be set in your .env file).\nSkipping opening connection to DB.\nSessions are being stored in memory'));
+	console.log(chalk.red(`
+		process.env.DB_URI is undefined (this should be set in your .env file).
+		Not connecting to MongoDB.
+		Sessions are being stored in memory`
+	));
+
 	startServer();
 }
 
 function startServer() {
     https.createServer(options, app).listen(process.env.PORT);
-    console.log(chalk.green(`App is live on ${process.env.DEV_BASE_URL}`));
+    console.log(chalk.blue(`App is live on ${process.env.DEV_BASE_URL}`));
 }

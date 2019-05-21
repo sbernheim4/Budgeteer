@@ -16,10 +16,7 @@ const StyleLintPlugin = require("stylelint-webpack-plugin");
 const WebpackBar = require('webpackbar');
 
 const dotenv = require('dotenv');
-
 const env = dotenv.config().parsed;
-
-// reduce it to a nice object
 const envKeys = Object.keys(env).reduce((prev, next) => {
 	prev[`process.env.${next}`] = JSON.stringify(env[next]);
 	return prev;

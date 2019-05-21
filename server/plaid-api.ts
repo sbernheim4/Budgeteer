@@ -2,15 +2,15 @@
 
 require("dotenv").config();
 
-const express = require("express");
-const Router = express.Router();
-const path = require("path");
-const chalk = require("chalk");
-const bodyParser = require("body-parser");
-const moment = require("moment");
-const plaid = require("plaid");
-const mongoose = require('mongoose');
+import express from "express";
+import chalk from "chalk";
+import bodyParser from "body-parser";
+import moment from "moment";
+import plaid from "plaid";
+import mongoose from 'mongoose';
+
 const User = mongoose.model('User');
+const plaidApiRouter = express.Router({});
 
 // Initialize the Plaid client
 let client = new plaid.Client(
@@ -20,27 +20,27 @@ let client = new plaid.Client(
 	plaid.environments[process.env.PLAID_ENV]
 );
 
-Router.use(bodyParser.urlencoded({
+plaidApiRouter.use(bodyParser.urlencoded({
 	extended: false
 }));
 
-Router.use(bodyParser.json());
+plaidApiRouter.use(bodyParser.json());
 
 // Log All Requests
-Router.all("*", (req, res, next) => {
-	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
-	next();
-});
+// Router.all("*", (req: { method: any; path: any; }, res: any, next: () => void) => {
+// 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
+// 	next();
+// });
 
 // Send back the public key and the environment to plaid
-Router.get("/key-and-env", (req, res) => {
+plaidApiRouter.get("/key-and-env", (_req: any, res: { send: (arg0: { "publicKey": string; "env": string; }) => void; }) => {
 	res.send({
 		"publicKey": process.env.PLAID_PUBLIC_KEY.toString(),
 		"env": process.env.PLAID_ENV.toString()
 	});
 });
 
-Router.post("/rotate-access-tokens", async (req, res) => {
+plaidApiRouter.post("/rotate-access-tokens", async (req, res) => {
 
 	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) return;
 
@@ -68,7 +68,7 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 
 	// Update access tokens on the session
 	req.session.user.accessTokens = newAccessTokens;
-	req.session.save();
+	req.session.save(() => {});
 
 	// Update access tokens on the server
 	User.update({ _id: req.session.user._id }, { $set: { accessTokens: newAccessTokens } }, () => {
@@ -80,7 +80,7 @@ Router.post("/rotate-access-tokens", async (req, res) => {
 });
 
 // Get Access Tokens and Item IDs from Plaid
-Router.post("/get-access-token", async (req, res) => {
+plaidApiRouter.post("/get-access-token", async (req, res) => {
 
 	const PUBLIC_TOKEN = req.body.public_token;
 	console.log(`public token: ${PUBLIC_TOKEN}`);
@@ -98,7 +98,7 @@ Router.post("/get-access-token", async (req, res) => {
 		// Update the session with the new account info
 		req.session.user.accessTokens = currAccessTokens;
 		req.session.user.itemID = currItemID;
-		req.session.save();
+		req.session.save(() => {});
 
 		// Update the db with the new account info
 		User.update({ _id: req.session.user._id }, { $set: { accessTokens: currAccessTokens, itemID: currItemID } }, () => {
@@ -120,7 +120,7 @@ Router.post("/get-access-token", async (req, res) => {
 });
 
 // Get Transaction information
-Router.get("/transactions", async (req, res, next) => {
+plaidApiRouter.get("/transactions", async (req, res) => {
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days === undefined ? 30 : req.body.days;
 
@@ -162,7 +162,7 @@ Router.get("/transactions", async (req, res, next) => {
 	}
 });
 
-async function resolvePlaidTransactions(accessTokensArray, startDate, endDate) {
+async function resolvePlaidTransactions(accessTokensArray: string[], startDate: string, endDate: string) {
 	let allData = [];
 	for (let i = 0; i < accessTokensArray.length; i++) {
 		try {
@@ -180,7 +180,11 @@ async function resolvePlaidTransactions(accessTokensArray, startDate, endDate) {
 	return allData;
 }
 
-Router.get("/balance", async (req, res, next) => {
+interface networkMap {
+	[key: string]: Number | string;
+}
+
+plaidApiRouter.get("/balance", async (req, res) => {
 	let allData;
 	try {
 		allData = await resolvePlaidBalance(req.session.user.accessTokens);
@@ -202,27 +206,33 @@ Router.get("/balance", async (req, res, next) => {
 				}
 			  });
 		} else {
-			let banks = [];
+			let banks: any[] | { "bankTotal": number; "map": {}; }[] = [];
 
 			allData.forEach( (bank, index) => {
 				let bankTotal = 0;
-				let map = {};
+				let networth: networkMap = {};
 
 				bank.accounts.forEach(acct => {
+					const id = acct.account_id;
+
 					if (acct.balances.current !== null && acct.type !== 'credit') {
-						let value = acct.balances.current;
+						const value = acct.balances.current;
 						bankTotal += value;
-						map[acct.account_id] = value;
+						networth[id] = value;
 					} else if (acct.type !== 'credit') {
-						map[acct.account_id] = "N/A";
+						networth[id] = "N/A";
 					}
 				});
 
-				banks[index] = {"bankTotal": bankTotal, "map": map};
+				banks[index] = {
+					"bankTotal": bankTotal,
+					"map": networth
+				};
+
 			});
 
 			let networth = 0;
-			let arrayOfMaps = [];
+			let arrayOfMaps: any[] = [];
 			banks.forEach((bank, index) => {
 				networth += bank.bankTotal;
 				arrayOfMaps[index] = bank.map;
@@ -241,7 +251,7 @@ Router.get("/balance", async (req, res, next) => {
 	}
 });
 
-async function resolvePlaidBalance(accessTokensArray) {
+async function resolvePlaidBalance(accessTokensArray: string[]) {
 	let allData = [];
 	for (let i = 0; i < accessTokensArray.length; i++) {
 		try {
@@ -254,13 +264,13 @@ async function resolvePlaidBalance(accessTokensArray) {
 	return allData;
 }
 
-Router.get('/linked-accounts', async (req, res) => {
+plaidApiRouter.get('/linked-accounts', async (req, res) => {
 	try {
-		let banks = [];
+		let banks: string[] = [];
 
-		const itemInfo = req.session.user.accessTokens.map(token => client.getItem(token)); // Get Item ID for each access token
+		const itemInfo = req.session.user.accessTokens.map((token: string): Promise<plaid.ItemResponse> => client.getItem(token)); // Get Item ID for each access token
 		let itemData = await Promise.all(itemInfo); // Wait for all the promises to resolve
-		const ids = itemData.map(thing => client.getInstitutionById(thing.item.institution_id)); // Get the associated instituion for the given Item ID
+		const ids = itemData.map((thing: { item: { institution_id: string; }; }) => client.getInstitutionById(thing.item.institution_id)); // Get the associated instituion for the given Item ID
 		let data = await Promise.all(ids); // Wait for all the IDs to be processed
 		data.forEach(place => banks.push(place.institution.name)); // Collate all the institutions into one array
 
@@ -274,7 +284,7 @@ Router.get('/linked-accounts', async (req, res) => {
 	}
 });
 
-Router.post('/remove-account', async (req, res) => {
+plaidApiRouter.post('/remove-account', async (req, res) => {
 	// Index in the arrays that should be removed
 	const i = req.body.data.bankIndex;
 
@@ -308,4 +318,4 @@ Router.post('/remove-account', async (req, res) => {
 	}
 });
 
-module.exports = Router;
+export default plaidApiRouter;

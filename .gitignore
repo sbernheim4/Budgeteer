@@ -68,3 +68,6 @@ typings/
 .hgignore
 
 public/
+
+server/**/*.js
+server/**/*.js.map

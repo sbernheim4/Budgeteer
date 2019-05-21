@@ -1,7 +1,11 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from 'mongoose';
+import IUser from './../interfaces/IUser';
 
-const userSchema = new Schema({
+export const UserSchema: Schema = new Schema({
+	name: {
+		type: String,
+		required: true
+	},
 	facebookID: {
 		type: String,
 		required: false
@@ -9,10 +13,6 @@ const userSchema = new Schema({
 	googleID: {
 		type: String,
 		required: false
-	},
-	name: {
-		type: String,
-		required: true
 	},
 	email: {
 		type: String,
@@ -40,9 +40,4 @@ const userSchema = new Schema({
 	}
 });
 
-// This registers the model into mongoose so that anywhere else in your server you can do
-/*
-`const User = mongoose.model('User');`
-`User.update(...)`
-*/
-mongoose.model('User', userSchema);
+export default mongoose.model<IUser>('User', UserSchema);

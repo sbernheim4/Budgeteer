@@ -1,29 +1,31 @@
 /* eslint no-undefined: off */
 
-const express = require('express');
-const Router = express.Router();
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import IUser from './db/interfaces/IUser';
+
+const userInfoRouter = express.Router();
 const User = mongoose.model('User');
 
-Router.use(bodyParser.urlencoded({
+userInfoRouter.use(bodyParser.urlencoded({
 	extended: false
 }));
 
-Router.use(bodyParser.json());
+userInfoRouter.use(bodyParser.json());
 
-Router.get('/profile', (req, res) => {
+userInfoRouter.get('/profile', (req, res) => {
 	// Send back all profile information
 	res.send(req.session.user);
 });
 
-Router.get('/monthly-budget', async (req, res) => {
+userInfoRouter.get('/monthly-budget', async (req, res) => {
 	// Send back monthly budget from session variable or 0 if it doesn't exist
 	if (req.session.user.monthlyBudget) {
 		res.json({'monthlyBudget': req.session.user.monthlyBudget});
 	} else {
 		try {
-			const userData = await User.findOne({ _id: req.session.user._id }, () => {});
+			const userData: IUser = await User.findOne({ _id: req.session.user._id }, () => {});
 			if (userData.monthlyBudget === undefined) {
 				throw new Error('No monthly budget found');
 			} else {
@@ -36,7 +38,7 @@ Router.get('/monthly-budget', async (req, res) => {
 	}
 });
 
-Router.post('/monthly-budget', (req, res) => {
+userInfoRouter.post('/monthly-budget', (req, res) => {
 	const newMonthlyBudget = req.body.monthlyBudget;
 
 	// Update monthly budget in DB
@@ -44,55 +46,64 @@ Router.post('/monthly-budget', (req, res) => {
 
 	// Update monthlyBudget in session
 	req.session.user.monthlyBudget = newMonthlyBudget;
-	req.session.save();
+	req.session.save(() => {});
 
 	res.status(204).end();
 });
 
 
-Router.get('/name', (req, res) => {
+userInfoRouter.get('/name', (req, res) => {
 	// Send back user's name
 	res.send(req.session.user.name);
 });
 
-Router.get('/last-accessed', (req, res) => {
+userInfoRouter.get('/last-accessed', async (req, res) => {
 	if (req.session.user.lastAccessed !== undefined) {
-		// Try the session
+
 		const lastAccessed = new Date(req.session.user.lastAccessed);
+
 		res.send(lastAccessed);
+
 	} else {
-		// Try the DB
+
 		try {
-			const record = User.findOne({
+
+			const record: IUser = await User.findOne({
 				_id: req.session.user._id
 			});
-			const x = new Date(record.lastAccessed);
-			res.send(x);
+
+			const date = new Date(record.lastAccessed);
+
+			res.send(date);
+
 		} catch(err) {
-			// TODO: Send back some kind of error for the front end to parse
 			console.error(err);
+
 			res.json('ERROR');
 		}
 	}
 });
 
-Router.post('/last-accessed', (req, res) => {
+userInfoRouter.post('/last-accessed', (req, res) => {
+
 	const date = req.body.date;
+
 	User.updateOne({ _id: req.session.user._id }, { lastAccessed: date.toString() }, () => {});
 
 	req.session.user.lastAccessed = date;
-	req.session.save();
+	req.session.save(() => {});
 
 	res.status(204).end();
+
 });
 
-Router.get('/display-names', async (req, res) => {
+userInfoRouter.get('/display-names', async (req, res) => {
 	if (req.session.user.displayNames !== undefined) {
 		const serializedMap = req.session.user.displayNames;
 		res.json(serializedMap);
 	} else {
 		try {
-			const record = await User.findOne({
+			const record: IUser = await User.findOne({
 				_id: req.session.user._id
 			});
 			const serializedMap = record.displayNames;
@@ -113,7 +124,7 @@ Router.get('/display-names', async (req, res) => {
 	}
 });
 
-Router.post('/display-names', (req, res) => {
+userInfoRouter.post('/display-names', (req, res) => {
 	const serializedMap = req.body.data.map;
 
 	// Save new object in DB -- Callback function is needed apparently so don't remove it
@@ -123,9 +134,9 @@ Router.post('/display-names', (req, res) => {
 
 	// Save new object in session
 	req.session.user.displayNames = serializedMap;
-	req.session.save();
+	req.session.save(() => {});
 
 	res.status(204).end();
 });
 
-module.exports = Router;
+export default userInfoRouter;
