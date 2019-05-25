@@ -2,7 +2,7 @@
 
 require("dotenv").config();
 
-import express from "express";
+import express, {Request, Response, NextFunction } from "express";
 import chalk from "chalk";
 import bodyParser from "body-parser";
 import moment from "moment";
@@ -29,10 +29,10 @@ plaidApiRouter.use(bodyParser.urlencoded({
 plaidApiRouter.use(bodyParser.json());
 
 // Log All Requests
-// Router.all("*", (req: { method: any; path: any; }, res: any, next: () => void) => {
-// 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
-// 	next();
-// });
+plaidApiRouter.all("*", (req: Request, _res: Response, next: NextFunction) => {
+	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
+	next();
+});
 
 // Send back the public key and the environment to plaid
 plaidApiRouter.get("/key-and-env", (_req: any, res: { send: (arg0: { "publicKey": string; "env": string; }) => void; }) => {
