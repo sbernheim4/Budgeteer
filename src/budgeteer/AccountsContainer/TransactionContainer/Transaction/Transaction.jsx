@@ -19,8 +19,6 @@ import {
 	faQuestion
 } from '@fortawesome/free-solid-svg-icons'
 
-import axios from "axios";
-
 import { jsonToMap, numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';
 
 import "./transaction.scss";
@@ -33,7 +31,6 @@ class Transaction extends Component {
 	}
 
 	getAccountNameFromID(accountID) {
-		let x = this.props.displayNames;
 		let defaultName;
 
 		for (let acct of this.props.accounts) {
@@ -42,9 +39,7 @@ class Transaction extends Component {
 			}
 		}
 
-		return defaultName;
-
-		/*return x.get(accountID) || defaultName;*/
+        return this.props.displayNames.get(accountID) || defaultName;
 	}
 
 	getCategoryIcon(categoryName) {

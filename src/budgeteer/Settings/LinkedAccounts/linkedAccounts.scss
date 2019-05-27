@@ -44,13 +44,13 @@
 				}
 
 				&:hover {
-					background-color: darken($red, 3%);
-					box-shadow: 0 6px darken($red, 13%);
+					background-color: darken($red, 10%);
+					box-shadow: 0 6px darken($red, 20%);
 				}
 
 				&:active {
 					top: 3px;
-					box-shadow: 0 0 darken($red, 10%);
+					box-shadow: 0 0 darken($red, 17%);
 				}
 			}
 
