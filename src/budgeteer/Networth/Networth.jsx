@@ -135,7 +135,7 @@ class Networth extends Component {
 				</thead>
 
 				<tbody>
-					{this.state.accountBalances.map((keyName, index) => (
+					{this.state.accountBalances.map((keyName) => (
 						Object.keys(keyName).map((acctName, index) => (
 							<tr key={index} className='networth--entry'>
 								<td className='acct-name'>{this.state.displayNames.get(acctName)}</td>
@@ -143,9 +143,9 @@ class Networth extends Component {
 							</tr>
 						))
 					))}
-					<tr>
-						<td className='acct-name'>Total</td>
-						<td className='acct-value'>${numberWithCommas(formatAmount(this.state.networth))}</td>
+					<tr className='networth-total'>
+						<td className='networth-total acct-name'>Your Savings</td>
+						<td className='networth-total acct-value'>${numberWithCommas(formatAmount(this.state.networth))}</td>
 					</tr>
 				</tbody>
 			</table>)

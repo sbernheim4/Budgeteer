@@ -1,11 +1,10 @@
 /* eslint no-undefined: "off" */
 
 import React, { Component } from "react";
+
 import AccountNames from "./AccountNames/AccountNames.jsx";
 import LinkedAccounts from "./LinkedAccounts/LinkedAccounts.jsx";
 import MonthlyBudget from "./MonthlyBudget/MonthlyBudget.jsx";
-
-import axios from 'axios';
 
 import './settings.scss';
 

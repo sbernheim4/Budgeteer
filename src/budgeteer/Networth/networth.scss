@@ -1,4 +1,5 @@
 @import '../scss/variables';
+@import '../scss/variables.scss';
 
 .networth {
 	position: relative;
@@ -63,7 +64,17 @@
 				.acct-value {
 
 				}
+
+                .networth-total {
+                    color: white;
+                    background-color: $green;
+                }
+
 			}
+
+            .networth-total {
+                margin-top: 30px;
+            }
 
 			tr:nth-child(even) {
 				background: darken($background-color, 5%);

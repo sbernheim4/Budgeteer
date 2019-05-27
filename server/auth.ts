@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import passport from 'passport';
 import mongoose from 'mongoose';
+import chalk from 'chalk';
 
 import IUser from './db/interfaces/IUser';
 
@@ -11,7 +12,15 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const authRouter = express.Router();
 const User = mongoose.model('User');
 
-authRouter.all('*', checkAuthentication, (_req: Request, _res: Response) => {
+authRouter.all('*', (req: Request, _res: Response, next: NextFunction) => {
+
+    console.log(chalk.yellow(`
+
+------- Auth Router ${req.method} request for /login${req.url} ----------
+
+`))
+
+    next()
 
 });
 
