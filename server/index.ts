@@ -47,9 +47,8 @@ app.use(sessionInfo);
 /***************** DB Options ******************/
 
 const options = {
-	key: fs.readFileSync(path.join(__dirname, './encryption/server.key')),
-	cert: fs.readFileSync(path.join(__dirname, './encryption/server.crt')),
-	ca: fs.readFileSync(path.join(__dirname, './encryption/server.csr'))
+    key: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com-key.pem')),
+	cert: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com.pem'))
 };
 
 
