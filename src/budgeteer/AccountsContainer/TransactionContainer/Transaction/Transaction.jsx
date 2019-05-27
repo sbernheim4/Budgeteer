@@ -31,15 +31,22 @@ class Transaction extends Component {
 	}
 
 	getAccountNameFromID(accountID) {
-		let defaultName;
 
-		for (let acct of this.props.accounts) {
-			if (acct.account_id === accountID) {
-				defaultName = acct.name;
-			}
-		}
+        try {
 
-        return this.props.displayNames.get(accountID) || defaultName;
+           const defaultName = this.props.displayNames.get(accountID);
+
+           return defaultName;
+
+        } catch (err) {
+
+    		for (let acct of this.props.accounts) {
+    			if (acct.account_id === accountID) {
+    				return acct.name;
+    			}
+    		}
+
+        }
 	}
 
 	getCategoryIcon(categoryName) {
