@@ -103,9 +103,8 @@ const clientConfig = {
 
 	devServer: {
 		https: {
-			key: fs.readFileSync('./server/encryption/server.key'),
-			cert: fs.readFileSync('./server/encryption/server.crt'),
-			ca: fs.readFileSync('./server/encryption/server.csr')
+			key: fs.readFileSync('./server/encryption/budgeteer-prod.com-key.pem'),
+			cert: fs.readFileSync('./server/encryption/budgeteer-prod.com.pem')
 		},
 		contentBase: path.join(__dirname, './public'),
 		proxy: {
