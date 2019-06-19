@@ -87,13 +87,15 @@
     "start": "concurrently \"npm run wds\" \"npm run server\"",
     "wds": "./node_modules/.bin/webpack-dev-server --open --hot",
     "docker": "docker-compose up",
-    "server": "nodemon --watch server server/index.js",
-    "build:dev": "rm -rf ./public && ./node_modules/.bin/webpack",
-    "build:prod": "rm -rf ./public && ./node_modules/.bin/webpack --mode=production",
-    "build:watch": "rm -rf ./public && ./node_modules/.bin/webpack -w",
+    "server": "concurrently \"npm run tsc\" \"nodemon --watch server server/index.js\"",
+    "tsc": "tsc --watch --p ./tsconfig.json",
+    "build:dev": "./node_modules/.bin/webpack",
+    "build:prod": "./node_modules/.bin/webpack --mode=production",
+    "build:watch": "./node_modules/.bin/webpack -w",
     "lint": "npm run lintServer; npm run lintCSS",
     "lintCSS": "node_modules/.bin/stylelint --fix src/**/*",
-    "lintServer": "node_modules/.bin/eslint --fix server/",
+    "lintServer": "node_modules/.bin/eslint --fix server/**.ts",
+    "postinstall": "tsc",
     "cert": "cd ./server/encryption/ && mkcert --install budgeteer-prod.com"
   }
 }
