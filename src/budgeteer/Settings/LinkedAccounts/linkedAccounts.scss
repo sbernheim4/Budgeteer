@@ -1,15 +1,16 @@
 @import "../../scss/variables.scss";
 
 .linked-accounts {
-	margin: 20px auto;
-	max-width: 90%;
-	width: 1000px;
 
-	h2 {
-		margin: 5px 10px 0 5px;
+	h1 {
+
 	}
 
 	&__list {
+
+		margin: 20px auto;
+		max-width: 90%;
+		width: 1000px;
 
 		@media all and (max-width: 500px) {
 			font-size: .9em;

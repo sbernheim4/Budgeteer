@@ -76,14 +76,22 @@ class LinkedAccounts extends Component {
 
 			<section className='linked-accounts'>
 				<h1>Linked Banks</h1>
+
 				<div className='linked-accounts__list'>
+
 					{this.state.linkedBanks.map((bank, index) =>
+
 						<div key={index} className='linked-accounts__list__account'>
+
 							<h2>{bank}</h2>
 							<button onClick={(e) => this.removeAccount(e)}>Remove</button>
+
 						</div>
+
 					)}
+
 				</div>
+
 			</section>
 		);
 	}
