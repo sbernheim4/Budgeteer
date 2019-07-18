@@ -187,34 +187,49 @@ interface networkMap {
 }
 
 plaidApiRouter.get("/balance", async (req, res) => {
+
 	let allData;
+
 	try {
+
 		allData = await resolvePlaidBalance(req.session.user.accessTokens);
+
 		if (allData instanceof Error) {
+
 			console.log("We got a bad one...");
 			const badAccessToken = allData.message.split(":")[1].trim();
 
 			client.createPublicToken(badAccessToken, (err, result) => {
+
 				if (err) {
+
 					console.log("Error in making new public token...");
 					console.log(err);
+
 				} else {
+
 					console.log("Public token made succssfully. Is:\n", result);
 
 					return res.json({
 						"Error": "BALANCE: Reauthentication Required",
 						"publicToken": result.public_token
 					});
+
 				}
+
 			  });
+
 		} else {
+
 			let banks: any[] | { "bankTotal": number; "map": {}; }[] = [];
 
 			allData.forEach( (bank, index) => {
+
 				let bankTotal = 0;
 				let networth: networkMap = {};
 
 				bank.accounts.forEach(acct => {
+
 					const id = acct.account_id;
 
 					if (acct.balances.current !== null && acct.type !== 'credit') {
@@ -224,6 +239,7 @@ plaidApiRouter.get("/balance", async (req, res) => {
 					} else if (acct.type !== 'credit') {
 						networth[id] = "N/A";
 					}
+
 				});
 
 				banks[index] = {

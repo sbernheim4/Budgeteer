@@ -1,0 +1,70 @@
+@import './../../scss/variables.scss';
+
+table {
+
+	margin: 0 auto;
+	padding: 30px;
+	border-collapse: collapse; // needed to show border on the tr element
+	cursor: default;
+
+	thead {
+
+		tr {
+
+			border-bottom: 1px solid $red;
+
+			th {
+
+				width: 200px;
+				padding-bottom: 10px;
+				font-size: 30px;
+				text-align: center;
+
+			}
+		}
+	}
+
+	tbody {
+
+		tr {
+
+				border-bottom: 1px solid rgb(200, 200, 200);
+
+			td {
+
+				width: 300px;
+				height: 40px;
+				padding: 10px;
+				font-size: 30px;
+				text-align: center;
+
+			}
+
+			.acct-name {
+
+				//text-align: center;
+
+			}
+
+			.acct-value {
+
+			}
+
+			.networth-total {
+
+				color: white;
+				background-color: $green;
+
+			}
+
+		}
+
+		.networth-total {
+
+			margin-top: 30px;
+
+		}
+
+	}
+}
+

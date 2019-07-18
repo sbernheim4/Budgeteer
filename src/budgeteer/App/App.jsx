@@ -27,15 +27,15 @@ class App extends Component {
 		};
 
 		this.getTransactions = this.getTransactions.bind(this);
-		this.registerServiceWorker = this.registerServiceWorker.bind(this);
+		//this.registerServiceWorker = this.registerServiceWorker.bind(this);
 	}
 
 	async componentDidMount() {
-		this.registerServiceWorker();
+		/*this.registerServiceWorker();*/
 		this.getTransactions();
 	}
 
-	registerServiceWorker() {
+	/*registerServiceWorker() {
 		console.log("Begin registration of serviceWorker");
 		// Registering ServiceWorker
 		if ('serviceWorker' in navigator) {
@@ -47,7 +47,7 @@ class App extends Component {
 				console.log('ServiceWorker registration failed: ', err);
 			});
 		}
-	}
+	}*/
 
 	async getLastAccessedDate() {
 		let lastAccessed = await axios.get("/user-info/last-accessed");

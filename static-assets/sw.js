@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'app-v8';
+/*const CACHE_VERSION = 'app-v8';
 const CACHE_FILES = [
 	'/',
 	'/budgeteer.js',
@@ -87,4 +87,4 @@ self.addEventListener('activate', function (event) {
 			}))
 		})
 	)
-});
+});*/

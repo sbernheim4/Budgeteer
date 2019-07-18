@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
 import axios from 'axios';
 
-const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
-
 function NetworthChart (props) {
 
     const defaultRechartsData = calculateHistoricalNetworth();
@@ -34,14 +32,22 @@ function NetworthChart (props) {
 
     return (
         <section>
-            <LineChart width={730} height={250} data={rechartsData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart
+                width={730}
+                height={250}
+                data={rechartsData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="value" stroke="#8884d8" />
+                <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#8884d8"
+                />
             </LineChart>
         </section>
     );
