@@ -84,7 +84,7 @@ class LinkedAccounts extends Component {
 						<div key={index} className='linked-accounts__list__account'>
 
 							<h2>{bank}</h2>
-							<button onClick={(e) => this.removeAccount(e)}>Remove</button>
+							<button onClick={(e) => this.removeAccount(e)}>Unlink</button>
 
 						</div>
 
