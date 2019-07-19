@@ -555,7 +555,6 @@ class AccountsContainer extends Component {
 
 				<WeekSpendingChart transactions={this.state.categoryTransactions} />
 				<TransactionContainer
-					title='Past Transactions'
 					categoryType={this.state.categoryType}
 					categoryTotal={this.state.categoryTotal}
 					transactions={this.state.categoryTransactions}

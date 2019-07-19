@@ -153,7 +153,7 @@ class Navbar extends Component {
 						<Link to='/networth' className='third' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faMoneyBillAlt} />
-								Your Savings
+								Your Accounts
 							</div>
 						</Link>
 						<hr />
@@ -166,7 +166,7 @@ class Navbar extends Component {
 						<a className='fifth' onClick={this.addAccount}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faPlus} />
-								Add Account
+								Link Bank Account
 							</div>
 						</a>
 					</div>

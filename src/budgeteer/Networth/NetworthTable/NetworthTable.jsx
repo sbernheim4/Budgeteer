@@ -32,7 +32,7 @@ export default function NetworthTable(props) {
 				)}
 
 				<tr className='networth-total'>
-					<td className='networth-total acct-name'>Your Savings</td>
+					<td className='networth-total acct-name'>Savings</td>
 					<td className='networth-total acct-value'>${numberWithCommas(formatAmount(props.networth))}</td>
 				</tr>
 			</tbody>
