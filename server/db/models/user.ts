@@ -4,40 +4,40 @@ import IUser from './../interfaces/IUser';
 export const UserSchema: Schema = new Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
 	},
 	facebookID: {
 		type: String,
-		required: false
+		required: false,
 	},
 	googleID: {
 		type: String,
-		required: false
+		required: false,
 	},
 	email: {
 		type: String,
-		required: false
+		required: false,
 	},
 	monthlyBudget: {
 		type: Number,
-		required: false
+		required: false,
 	},
 	accessTokens: {
 		type: Array,
-		required: false
+		required: false,
 	},
 	itemID: {
 		type: Array,
-		required: false
+		required: false,
 	},
 	displayNames: {
 		type: String,
-		required: false
+		required: false,
 	},
 	lastAccessed: {
 		type: String,
-		required: false
-	}
+		required: false,
+	},
 });
 
 export default mongoose.model<IUser>('User', UserSchema);

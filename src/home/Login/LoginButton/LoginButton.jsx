@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toTitleCase } from '../../../budgeteer/helpers.js';
 
-import "./LoginButton.scss";
+import './LoginButton.scss';
 
 class LoginButton extends Component {
 	constructor(props) {
@@ -16,7 +16,13 @@ class LoginButton extends Component {
 
 		return (
 			<div className={className}>
-				<p><a href={hrefURL}> <FontAwesomeIcon className='icon' icon={this.props.logo} />Login with {toTitleCase(this.props.company)}</a></p>
+				<p>
+					<a href={hrefURL}>
+						{' '}
+						<FontAwesomeIcon className='icon' icon={this.props.logo} />
+						Login with {toTitleCase(this.props.company)}
+					</a>
+				</p>
 			</div>
 		);
 	}

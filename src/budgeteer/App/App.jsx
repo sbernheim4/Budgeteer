@@ -6,16 +6,16 @@ import differenceInDays from 'date-fns/difference_in_days';
 import addMonths from 'date-fns/add_months';
 import startOfMonth from 'date-fns/start_of_month';
 
-import BannerMessage from "../BannerMessage/BannerMessage.jsx";
+import BannerMessage from '../BannerMessage/BannerMessage.jsx';
 import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';
 
-import "../scss/globals.scss";
+import '../scss/globals.scss';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		let x = new Set();
-		let y = new Set()
+		let y = new Set();
 
 		this.state = {
 			transactions: [],
@@ -23,7 +23,7 @@ class App extends Component {
 			account_ids: x,
 			transaction_ids: y,
 			counter: 0,
-			showErrorMessage: false
+			showErrorMessage: false,
 		};
 
 		this.getTransactions = this.getTransactions.bind(this);
@@ -50,24 +50,22 @@ class App extends Component {
 	}*/
 
 	async getLastAccessedDate() {
-		let lastAccessed = await axios.get("/user-info/last-accessed");
+		let lastAccessed = await axios.get('/user-info/last-accessed');
 		lastAccessed = new Date(lastAccessed.data);
 
 		const now = new Date();
-		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed)
+		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed);
 
-		axios.post("/user-info/last-accessed", {
-			date: now.toString()
+		axios.post('/user-info/last-accessed', {
+			date: now.toString(),
 		});
 
-		return numDaysSinceCacheUpdate
+		return numDaysSinceCacheUpdate;
 	}
 
 	// Get transactions for the past year and store them in the state
 	async getTransactions() {
-
 		try {
-
 			let now = new Date(); // Jan. 12th 2018
 			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
 
@@ -77,13 +75,12 @@ class App extends Component {
 			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 			let transactions = await axios.get('/plaid-api/transactions', {
-				days: numDays
+				days: numDays,
 			});
 
 			transactions = transactions.data;
 
 			if (transactions.Error) {
-
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 				keyAndEnv = keyAndEnv.data;
 
@@ -95,21 +92,21 @@ class App extends Component {
 					clientName: 'Budgeteer',
 					product: ['transactions'],
 					token: transactions.publicToken,
-					onSuccess: function (public_token, metadata) {
-						console.log("Update of Account successful");
-						console.log("public_token:", public_token)
-						console.log("Metadata:", metadata);
+					onSuccess: function(public_token, metadata) {
+						console.log('Update of Account successful');
+						console.log('public_token:', public_token);
+						console.log('Metadata:', metadata);
 					},
 					onExit: function(err, metadata) {
-						console.log("err:", err);
-						console.log("metadata:", metadata);
-					}
+						console.log('err:', err);
+						console.log('metadata:', metadata);
+					},
 				});
 
 				plaid.open();
 			} else {
 				// Store transactions in local storage for future use
-				window.localStorage.setItem("allData", JSON.stringify(transactions));
+				window.localStorage.setItem('allData', JSON.stringify(transactions));
 
 				await this.storeAccounts(transactions); // Store account info in state
 				await this.storeTransactions(transactions); // store transaction info in state
@@ -119,16 +116,16 @@ class App extends Component {
 			let x = this.state.counter;
 			x++;
 			this.setState({
-				counter: x
+				counter: x,
 			});
 		} catch (err) {
-			console.log("ERROR: ")
+			console.log('ERROR: ');
 			console.log(err);
 		}
 	}
 
 	getDateFromTransaction(str) {
-		const split = str.split("-");
+		const split = str.split('-');
 		return new Date(parseInt(split[0]), parseInt(split[1]) - 1, parseInt(split[2]));
 	}
 
@@ -136,14 +133,14 @@ class App extends Component {
 		let currentTransactions = this.state.transactions;
 		let currentTransactionIds = this.state.transaction_ids;
 
-		data.forEach(bank => {
+		data.forEach((bank) => {
 			// Add all the transactions for the new bank the user just selected
-			bank.transactions.forEach(t => {
+			bank.transactions.forEach((t) => {
 				if (!currentTransactionIds.has(t.transaction_id)) {
 					currentTransactionIds.add(t.transaction_id);
 					currentTransactions.push(t);
 				}
-			})
+			});
 		});
 
 		// Sort the transactions based on account_id
@@ -157,7 +154,7 @@ class App extends Component {
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,
-			transactions: currentTransactions
+			transactions: currentTransactions,
 		});
 	}
 
@@ -165,10 +162,9 @@ class App extends Component {
 		// Get all the connected accounts so far
 		let currentAccounts = this.state.accounts;
 
-		data.forEach(val => {
-
+		data.forEach((val) => {
 			// Add all the accounts for the new bank the user just selected
-			val.accounts.forEach(acct => {
+			val.accounts.forEach((acct) => {
 				if (!this.state.account_ids.has(acct.account_id)) {
 					this.state.account_ids.add(acct.account_id);
 					currentAccounts.push(acct);
@@ -177,56 +173,47 @@ class App extends Component {
 
 			// Sort the accounts based on account_id
 			currentAccounts = currentAccounts.sort((a, b) => {
-				return a.account_id - b.account_id
+				return a.account_id - b.account_id;
 			});
 		});
 
 		// Update accounts state variable
-		this.setState({ accounts: currentAccounts })
+		this.setState({ accounts: currentAccounts });
 	}
 
 	render() {
-
 		let loading = this.state.counter !== 1;
 
 		return (
 			<div>
 				<Navbar />
-				<BannerMessage display={this.state.showErrorMessage} text={this.state.errorMessage}/>
+				<BannerMessage display={this.state.showErrorMessage} text={this.state.errorMessage} />
 
-				<div className="main">
-					<Route exact path='/' render={() => (
-						<Home
-							loading={loading}
-							transactions={this.state.transactions}
-							accounts={this.state.accounts}
-						/>
-					)}/>
+				<div className='main'>
+					<Route
+						exact
+						path='/'
+						render={() => (
+							<Home
+								loading={loading}
+								transactions={this.state.transactions}
+								accounts={this.state.accounts}
+							/>
+						)}
+					/>
 
-					<Route path='/statistics' render={() => (
-						<Statistics
-							transactions={this.state.transactions}
-						/>
-					)}/>
+					<Route path='/statistics' render={() => <Statistics transactions={this.state.transactions} />} />
 
-					<Route path='/transactions' render={() => (
-						<AccountsContainer
-							transactions={this.state.transactions}
-							accounts={this.state.accounts}
-						/>
-					)}/>
+					<Route
+						path='/transactions'
+						render={() => (
+							<AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
+						)}
+					/>
 
-					<Route path='/networth' render={() => (
-						<Networth
-							transactions={this.state.transactions}
-						/>
-					)}/>
+					<Route path='/networth' render={() => <Networth transactions={this.state.transactions} />} />
 
-					<Route path='/settings' render={() => (
-						<Settings
-							accounts={this.state.accounts}
-						/>
-					)}/>
+					<Route path='/settings' render={() => <Settings accounts={this.state.accounts} />} />
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}

@@ -1,15 +1,14 @@
-import React, { Component } from "react";
-import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import React, { Component } from 'react';
+import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 import subMonths from 'date-fns/sub_months';
 import isWithinRange from 'date-fns/is_within_range';
 
 import { formatAmount, numberWithCommas } from '../../helpers';
 
-import "./annualChart.scss";
+import './annualChart.scss';
 
 class CustomTooltip extends Component {
-
 	render() {
 		const { active } = this.props;
 
@@ -17,12 +16,16 @@ class CustomTooltip extends Component {
 			const { payload, label } = this.props;
 
 			const avg = numberWithCommas(formatAmount(payload[1].value));
-			const month = payload[0].payload.name.endsWith(".") ? payload[0].payload.name.slice(0, -1) : payload[0].payload.name
+			const month = payload[0].payload.name.endsWith('.')
+				? payload[0].payload.name.slice(0, -1)
+				: payload[0].payload.name;
 			const monthAmount = numberWithCommas(formatAmount(payload[0].value));
 
 			return (
-				<div className="year--custom-tooltip">
-					<p>{month}: ${monthAmount}</p>
+				<div className='year--custom-tooltip'>
+					<p>
+						{month}: ${monthAmount}
+					</p>
 					<p>Average: ${avg}</p>
 				</div>
 			);
@@ -30,16 +33,15 @@ class CustomTooltip extends Component {
 
 		return null;
 	}
-};
+}
 
 class AnnualChart extends Component {
-
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			monthlyLineChartData: []
-		}
+			monthlyLineChartData: [],
+		};
 	}
 
 	componentDidMount() {
@@ -58,7 +60,7 @@ class AnnualChart extends Component {
 		amounts.fill(0);
 
 		let avg = 0;
-		this.props.transactions.forEach(t => {
+		this.props.transactions.forEach((t) => {
 			if (t.amount > 0) {
 				// get the string value of the month from the transaction
 				let transactionMonth = t.date.slice(5, 7);
@@ -77,9 +79,21 @@ class AnnualChart extends Component {
 		// Divide by 12 and round to two decimal places
 		avg = avg / 12;
 
-		let monthsDefault = ["Jan.", "Feb.", "Mar.", "April", "May", "June", "July", "Aug. ", "Sept.", "Oct.", "Nov.", "Dec."];
+		let monthsDefault = [
+			'Jan.',
+			'Feb.',
+			'Mar.',
+			'April',
+			'May',
+			'June',
+			'July',
+			'Aug. ',
+			'Sept.',
+			'Oct.',
+			'Nov.',
+			'Dec.',
+		];
 		let currMonth = new Date().getMonth(); // 0
-
 
 		// Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
 		let orderedLabels = [];
@@ -97,31 +111,30 @@ class AnnualChart extends Component {
 			data.push({
 				name: orderedLabels[i],
 				Average: parseInt(avg),
-				Month: parseInt(orderedAmounts[i])
-			})
+				Month: parseInt(orderedAmounts[i]),
+			});
 		}
 
 		this.setState({
-			monthlyLineChartData: data
+			monthlyLineChartData: data,
 		});
 	}
 
 	render() {
-
 		/*<Tooltip content={<CustomTooltip/>}/>*/
 		return (
-			<ResponsiveContainer className="chart year" width="100%" height={400} >
+			<ResponsiveContainer className='chart year' width='100%' height={400}>
 				<ComposedChart data={this.state.monthlyLineChartData}>
-					<CartesianGrid vertical={false} horizontal={true}/>
+					<CartesianGrid vertical={false} horizontal={true} />
 
-					<XAxis dataKey="name" tick={{stroke: 'black'}}/>
-					<YAxis tick={{stroke: 'black'}}/>
+					<XAxis dataKey='name' tick={{ stroke: 'black' }} />
+					<YAxis tick={{ stroke: 'black' }} />
 
 					<Legend />
-					<Tooltip content={<CustomTooltip />}/>
+					<Tooltip content={<CustomTooltip />} />
 
-					<Bar dataKey="Month" stackId="a" fill="rgb(78,  153, 114)" />
-					<Line strokeWidth={6} dot={false} dataKey="Average" stackId="a" fill="blue" />
+					<Bar dataKey='Month' stackId='a' fill='rgb(78,  153, 114)' />
+					<Line strokeWidth={6} dot={false} dataKey='Average' stackId='a' fill='blue' />
 				</ComposedChart>
 			</ResponsiveContainer>
 		);

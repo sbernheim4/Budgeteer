@@ -6,12 +6,9 @@ import { Router } from 'express';
 import { join } from 'path';
 const router = Router();
 
-const routes = [
-	'/',
-	'/subpage'
-];
+const routes = ['/', '/subpage'];
 
-router.get("*", (req, res, next) => {
+router.get('*', (req, res, next) => {
 	if (routes.includes(req.url)) {
 		res.sendFile(join(__dirname, '../public/index.html'));
 	} else {

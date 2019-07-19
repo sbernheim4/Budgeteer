@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 
-import Navbar from "./Navbar/Navbar.jsx";
-import LandingPage from "./LandingPage/LandingPage.jsx";
-import Login from "./Login/Login.jsx";
+import Navbar from './Navbar/Navbar.jsx';
+import LandingPage from './LandingPage/LandingPage.jsx';
+import Login from './Login/Login.jsx';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-
-		};
+		this.state = {};
 	}
 
 	componentDidMount() {
-		if (window.location.protocol !== "https:") {
+		if (window.location.protocol !== 'https:') {
 			if (window.location.port) {
 				window.location.href = `https://${window.location.host.slice(0, -4)}5000${window.location.pathname}`;
 			} else {
@@ -25,7 +23,6 @@ class App extends Component {
 	}
 
 	render() {
-
 		return (
 			<div>
 				<Navbar />

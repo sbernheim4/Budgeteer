@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import Loadable from 'react-loadable';
 import './home.css';
 
@@ -6,14 +6,12 @@ class Home extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-
-		};
+		this.state = {};
 	}
 
 	render() {
 		return (
-			<div className="home">
+			<div className='home'>
 				<h1>Welcome</h1>
 
 				<h2>Here's a list of awesome features that you have!</h2>
