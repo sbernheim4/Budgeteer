@@ -29,11 +29,14 @@ export default class Networth extends Component {
 
 		let data = window.sessionStorage.getItem('balance');
 
-		if (data.networth && data.accountBalances) {
+		if (data && data.networth && data.accountBalances) {
 			data = JSON.parse(data);
+			console.log(data);
 		} else {
+			console.log('fetching from api');
 			data = await axios.get('/plaid-api/balance');
 			data = data.data;
+			console.log(data);
 
 			if (data.Error) {
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');

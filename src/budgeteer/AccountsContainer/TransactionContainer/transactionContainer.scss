@@ -1,7 +1,7 @@
 @import '../../scss/variables';
 
 .transaction-container {
-	margin: 40px auto;
+	margin: 40px auto 0 auto;
 	background: white;
 	box-shadow: 0px 0 4px black;
 
@@ -23,12 +23,18 @@
 	}
 
 	.transactions {
-		margin: 15px 0 30px 0;
+		margin-top: 15px;
 		border-radius: 5px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+
+		@media all and (max-width: 600px) {
+
+			border-radius: 0;
+
+		}
 
 		@media all and (min-width: 1200px) {
 			margin: 15px auto;

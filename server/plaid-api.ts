@@ -172,8 +172,10 @@ interface networkMap {
 }
 
 plaidRouter.get('/balance', async (req: Request, res) => {
+	let allData;
+
 	try {
-		let allData = await resolvePlaidBalance(req.session.user.accessTokens);
+		allData = await resolvePlaidBalance(req.session.user.accessTokens);
 
 		if (allData instanceof Error) {
 			console.log('We got a bad one...');
@@ -193,7 +195,7 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 				}
 			});
 		} else {
-			let banks;
+			let banks: any[] | { bankTotal: number; map: {} }[] = [];
 
 			allData.forEach((bank, index) => {
 				let bankTotal = 0;

@@ -1,34 +1,30 @@
 @import '../../../scss/variables';
 
-$default-font-color: black;
-
-/* Dark Theme */
-// $default-transaction-icon-color: white;
-// $transaction-background-color: hsla(40, 30%, 88%, 1);
-
 /* Light Theme */
-$default-transaction-icon-color: black;
-$transaction-background-color: $background-color;
+$default-font-color: black;
+$default-transaction-icon-color: #484848;
+$name-font-size: 24px;
 
 .transaction {
 	margin: 5px 15px 5px 15px;
 	width: 80%;
-	background-color: lighten($transaction-background-color, 3%);
 	border-radius: 5px;
 	border-left: 2px solid $blue;
 	cursor: pointer;
-	transition: background-color .5s ease;
+	transition: background-color .3s ease;
 	box-shadow: 0 1px 3px black;
 
 	&:hover {
-		background-color: darken($transaction-background-color, 8%);
+		background-color: darken($background-color, 4%);
 	}
 
 	@media all and (max-width: 600px) {
-		margin: 7px 0;
-		width: 85%;
-		border-bottom: 1px solid $background-color;
-		border-radius: 5px;
+		margin: 0;
+		width: 100%;
+		border-left: none;
+		border-bottom: 1px solid #cecece;
+		border-radius: 0;
+		box-shadow: none;
 	}
 
 	@media all and (min-width: 1200px) {
@@ -36,23 +32,6 @@ $transaction-background-color: $background-color;
 		max-width: 700px;
 		width: 45%;
 		border-bottom: none;
-	}
-
-	&--map {
-
-		iframe {
-			margin: 0 auto;
-			width: 100%;
-			height: 300px;
-			transition: height .3s ease-in;
-			display: flex;
-			justify-content: center;
-		}
-	}
-
-	.active {
-		position: relative;
-		left: 20px;
 	}
 
 	.container {
@@ -85,7 +64,7 @@ $transaction-background-color: $background-color;
 
 			&--name {
 				width: 100%;
-				font-size: 22px;
+				font-size: $name-font-size;
 				color: $default-transaction-icon-color;
 				text-overflow: ellipsis;
 				white-space: nowrap;
@@ -94,7 +73,7 @@ $transaction-background-color: $background-color;
 
 			&--category {
 				width: 100%;
-				font-size: 17px;
+				font-size: calc(#{$name-font-size} - 6px);
 				color: $default-font-color;
 				text-overflow: ellipsis;
 				white-space: nowrap;
@@ -114,15 +93,20 @@ $transaction-background-color: $background-color;
 
 			&--amt {
 				width: 100%;
+				font-size: calc(#{$name-font-size} - 5px);
 				color: hsla(0, 95%, 32%, 1); // Standard red is unreadable with transaction background color
+				text-align: right;
 
 				&__green {
 					width: 100%;
-					color: hsla(110, 100%, 20%, 1) // Standard green is unreadable with transaction background color
+					font-size: calc(#{$name-font-size} - 5px);
+					color: hsla(110, 100%, 20%, 1); // Standard green is unreadable with transaction background color
+					text-align: right;
 				}
 			}
 
 			&--date {
+				font-size: calc(#{$name-font-size} - 8px);
 				color: $default-font-color;
 				align-self: flex-end;
 

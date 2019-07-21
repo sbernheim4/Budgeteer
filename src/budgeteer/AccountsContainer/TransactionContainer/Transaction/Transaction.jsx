@@ -19,7 +19,7 @@ import {
 	faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { jsonToMap, numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';
+import { numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';
 
 import './transaction.scss';
 
