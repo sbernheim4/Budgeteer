@@ -30,7 +30,7 @@ import {
 	faMoneyBillAlt,
 	faExchangeAlt,
 	faUniversity,
-	faQuestion,
+	faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
 import { jsonToMap } from '../helpers.js';
@@ -48,7 +48,7 @@ class AccountsContainer extends Component {
 			categoryTotal: 0.0,
 			/*displayNames: {},*/
 			keyWord: '',
-			months: ['Jan.', 'Feb.', 'Mar.', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+			months: ['Jan.', 'Feb.', 'Mar.', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
 		};
 
 		this.displayNames = new Map();
@@ -103,6 +103,7 @@ class AccountsContainer extends Component {
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
 		});
+
 		total = formatAmount(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
@@ -131,7 +132,7 @@ class AccountsContainer extends Component {
 		this.setState({
 			categoryTransactions: releventTransactions,
 			categoryType: categoryType,
-			categoryTotal: total,
+			categoryTotal: total
 		});
 	}
 
@@ -173,7 +174,7 @@ class AccountsContainer extends Component {
 		this.setState({
 			categoryTransactions: releventTransactions,
 			categoryType: categoryString,
-			categoryTotal: total,
+			categoryTotal: total
 		});
 	}
 
@@ -206,8 +207,8 @@ class AccountsContainer extends Component {
 				url: '/plaid-api/transactions',
 				data: {
 					startDate: dateOne,
-					endDate: dateTwo,
-				},
+					endDate: dateTwo
+				}
 			});
 
 			data.forEach((acct) => {
@@ -231,22 +232,18 @@ class AccountsContainer extends Component {
 				categoryType: `${this.state.months[dateOne.getMonth()]} ${dateOne.getDate()} - ${
 					this.state.months[dateTwo.getMonth()]
 				} ${dateTwo.getDate()}`,
-				categoryTotal: total,
+				categoryTotal: total
 			});
 		} catch (err) {
 			console.error(err);
 		}
 	}
 
-	async searchByKeyword(e) {
-		e.preventDefault();
-		let releventTransactions = [];
-		const keyWord = this.state.keyWord || 'all';
-		const normalizedKeyWord = keyWord.toLowerCase();
+	searchByKeyword(searchTerm = 'all') {
+		let categoryTotal = 0;
+		let matchingTransactions = [];
+		const normalizedKeyWord = searchTerm.toLowerCase();
 
-		let total = 0;
-
-		// If the user doesn't enter anything, show them the default stuff
 		if (normalizedKeyWord === 'all') {
 			this.getAccountTransactions('all');
 			return;
@@ -254,35 +251,37 @@ class AccountsContainer extends Component {
 			this.props.transactions.forEach((t) => {
 				let normalizedTransactionName = t.name.toLowerCase();
 				if (normalizedTransactionName.includes(normalizedKeyWord)) {
-					total += t.amount;
-					releventTransactions.push(t);
+					categoryTotal += t.amount;
+					matchingTransactions.push(t);
 				}
 			});
 		}
 
-		total = formatAmount(total);
+		categoryTotal = formatAmount(categoryTotal);
 
 		// Sort the transactions newest to oldest
-		releventTransactions.sort((a, b) => {
+		matchingTransactions.sort((a, b) => {
 			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
 			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateOne - dateTwo;
 		});
 
+		const categoryType = toTitleCase(searchTerm);
+
 		this.setState({
-			categoryType: toTitleCase(keyWord),
-			categoryTransactions: releventTransactions,
-			categoryTotal: total,
+			categoryTransactions: matchingTransactions,
+			categoryType,
+			categoryTotal
 		});
 	}
 
 	getKeyword(e) {
-		e.preventDefault();
+		let searchTerm = e.target.value.trim();
 
-		let keyWord = e.target.value.trim(); // helpers.toTitleCase(e.target.value);
+		this.searchByKeyword(searchTerm);
 
 		this.setState({
-			keyWord: keyWord,
+			keyWord: searchTerm
 		});
 	}
 
@@ -323,7 +322,7 @@ class AccountsContainer extends Component {
 					<div className='accounts--search-options--keyword-search'>
 						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
 
-						<form onSubmit={this.searchByKeyword}>
+						<form onSubmit={(e) => e.preventDefault()}>
 							<input
 								type='text'
 								placeholder='Search by transaction name'
