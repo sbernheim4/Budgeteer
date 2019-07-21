@@ -33,7 +33,7 @@ import {
 	faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { jsonToMap, mapToJson } from '../helpers.js';
+import { jsonToMap } from '../helpers.js';
 
 class AccountsContainer extends Component {
 	constructor(props) {
@@ -51,6 +51,8 @@ class AccountsContainer extends Component {
 			months: ['Jan.', 'Feb.', 'Mar.', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
 		};
 
+		this.displayNames = new Map();
+
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
 		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
 		this.getDate = this.getDate.bind(this);
@@ -63,14 +65,16 @@ class AccountsContainer extends Component {
 	async componentDidMount() {
 		this.getAccountTransactions('all');
 
+		await this.getDisplayNames();
+	}
+
+	async getDisplayNames() {
 		try {
 			let displayNames = await axios.get('/user-info/display-names');
 			displayNames = displayNames.data;
-			const map = jsonToMap(displayNames);
+			displayNames = jsonToMap(displayNames);
 
-			this.setState({
-				displayNames: map,
-			});
+			this.displayNames = displayNames;
 		} catch (err) {
 			console.log('ERROR');
 			console.log(err);
@@ -559,7 +563,7 @@ class AccountsContainer extends Component {
 					categoryTotal={this.state.categoryTotal}
 					transactions={this.state.categoryTransactions}
 					accounts={this.props.accounts}
-					displayNames={this.state.displayNames}
+					displayNames={this.displayNames}
 				/>
 			</div>
 		);

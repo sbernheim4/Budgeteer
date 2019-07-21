@@ -18,7 +18,6 @@ export default class Networth extends Component {
 
 		this.getDisplayNames = this.getDisplayNames.bind(this);
 		this.getRecurringPayments = this.getRecurringPayments.bind(this);
-		this.storeDisplayNames = this.storeDisplayNames.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -26,17 +25,15 @@ export default class Networth extends Component {
 	}
 
 	async componentDidMount() {
-		await this.getDisplayNames();
+		this.getDisplayNames();
 
-		let data;
+		let data = window.sessionStorage.getItem('balance');
 
-		if (window.sessionStorage.getItem('balance')) {
-			data = window.sessionStorage.getItem('balance');
+		if (data.networth && data.accountBalances) {
 			data = JSON.parse(data);
 		} else {
 			data = await axios.get('/plaid-api/balance');
 			data = data.data;
-			console.log(data);
 
 			if (data.Error) {
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
@@ -66,7 +63,11 @@ export default class Networth extends Component {
 		});
 	}
 
-	storeDisplayNames(serializedDisplayNames) {
+	async getDisplayNames() {
+		let serializedDisplayNames = await axios.get('/user-info/display-names');
+		serializedDisplayNames = serializedDisplayNames.data;
+		serializedDisplayNames = JSON.parse(serializedDisplayNames);
+
 		const displayNames = new Map();
 
 		serializedDisplayNames.forEach((val) => {
@@ -76,13 +77,6 @@ export default class Networth extends Component {
 		this.setState({
 			displayNames: displayNames,
 		});
-	}
-
-	async getDisplayNames() {
-		let serializedDisplayNames = await axios.get('/user-info/display-names');
-		serializedDisplayNames = JSON.parse(serializedDisplayNames.data);
-
-		this.storeDisplayNames(serializedDisplayNames);
 	}
 
 	getRecurringPayments(transactions = []) {
@@ -130,28 +124,13 @@ export default class Networth extends Component {
 		*/
 		}
 
-		let networthTable;
-
-		if (this.state.loading) {
-			networthTable = (
-				<div className='networth--loading'>
-					<h1>Hang tight, getting your data from the cloud</h1>
-					<img src='/loading-gifs/loading-three.gif' alt='loading' />
-				</div>
-			);
-		} else {
-			networthTable = (
+		return (
+			<div className='networth'>
 				<NetworthTable
 					networth={this.state.networth}
 					displayNames={this.state.displayNames}
 					accountBalances={this.state.accountBalances}
 				/>
-			);
-		}
-
-		return (
-			<div className='networth'>
-				{networthTable}
 
 				{/*
 				<div className='networth--recurring-payments'>

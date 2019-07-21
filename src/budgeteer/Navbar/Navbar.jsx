@@ -108,7 +108,7 @@ class Navbar extends Component {
 							<Link to='/statistics'>Statistics</Link>
 						</li>
 						<li>
-							<Link to='/networth'>Networth</Link>
+							<Link to='/networth'>Savings</Link>
 						</li>
 						<li>
 							<Link to='/settings'>Settings</Link>

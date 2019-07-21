@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 import './db/models/index';
 
 const User = mongoose.model('User');
-const plaidApiRouter = express.Router({});
+const plaidRouter = express.Router({});
 
 // Initialize the Plaid client
 let client = new plaid.Client(
@@ -22,35 +22,37 @@ let client = new plaid.Client(
 	plaid.environments[process.env.PLAID_ENV]
 );
 
-plaidApiRouter.use(
+plaidRouter.use(
 	bodyParser.urlencoded({
 		extended: false,
 	})
 );
 
-plaidApiRouter.use(bodyParser.json());
+plaidRouter.use(bodyParser.json());
 
 // Log All Requests
-plaidApiRouter.all('*', (req: Request, _res: Response, next: NextFunction) => {
+plaidRouter.all('*', (req: Request, _res: Response, next: NextFunction) => {
 	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
 	next();
 });
 
 // Send back the public key and the environment to plaid
-plaidApiRouter.get('/key-and-env', (_req: any, res: { send: (arg0: { publicKey: string; env: string }) => void }) => {
+plaidRouter.get('/key-and-env', (_req: Request, res: Response) => {
 	res.send({
 		publicKey: process.env.PLAID_PUBLIC_KEY.toString(),
 		env: process.env.PLAID_ENV.toString(),
 	});
 });
 
-plaidApiRouter.post('/rotate-access-tokens', async (req, res) => {
-	if (req.session.user.accessTokens.length === 0 || req.session.user.itemID.length === 0) return;
+plaidRouter.post('/rotate-access-tokens', async (req: Request, res: Response) => {
+	const accessTokens = req.session.user.accessTokens;
+	const itemID = req.session.user.itemID;
+	if (accessTokens.length === 0 || itemID.length === 0) return;
 
 	// Rotate access tokens
 	let newAccessTokens = [];
 
-	for (const token of req.session.user.accessTokens) {
+	for (const token of accessTokens) {
 		try {
 			const result = await client.invalidateAccessToken(token);
 
@@ -78,7 +80,7 @@ plaidApiRouter.post('/rotate-access-tokens', async (req, res) => {
 });
 
 // Get Access Tokens and Item IDs from Plaid
-plaidApiRouter.post('/get-access-token', async (req, res) => {
+plaidRouter.post('/get-access-token', async (req: Request, res: Response) => {
 	const PUBLIC_TOKEN = req.body.public_token;
 	console.log(`public token: ${PUBLIC_TOKEN}`);
 
@@ -117,7 +119,7 @@ plaidApiRouter.post('/get-access-token', async (req, res) => {
 });
 
 // Get Transaction information
-plaidApiRouter.get('/transactions', async (req, res) => {
+plaidRouter.get('/transactions', async (req: Request, res) => {
 	// Default to past 30 days if no specific date is specified
 	const days = req.body.days === undefined ? 30 : req.body.days;
 
@@ -165,33 +167,13 @@ plaidApiRouter.get('/transactions', async (req, res) => {
 	}
 });
 
-async function resolvePlaidTransactions(accessTokensArray: string[], startDate: string, endDate: string) {
-	let allData = [];
-	for (let i = 0; i < accessTokensArray.length; i++) {
-		try {
-			const newData = await client.getTransactions(accessTokensArray[i], startDate, endDate, {
-				count: 250,
-				offset: 0,
-			});
-			allData.push(newData);
-		} catch (err) {
-			console.log(err);
-			return new Error('TRANSACTION Error with token: ' + accessTokensArray[i]);
-		}
-	}
-
-	return allData;
-}
-
 interface networkMap {
 	[key: string]: Number | string;
 }
 
-plaidApiRouter.get('/balance', async (req, res) => {
-	let allData;
-
+plaidRouter.get('/balance', async (req: Request, res) => {
 	try {
-		allData = await resolvePlaidBalance(req.session.user.accessTokens);
+		let allData = await resolvePlaidBalance(req.session.user.accessTokens);
 
 		if (allData instanceof Error) {
 			console.log('We got a bad one...');
@@ -211,7 +193,7 @@ plaidApiRouter.get('/balance', async (req, res) => {
 				}
 			});
 		} else {
-			let banks: any[] | { bankTotal: number; map: {} }[] = [];
+			let banks;
 
 			allData.forEach((bank, index) => {
 				let bankTotal = 0;
@@ -268,17 +250,22 @@ async function resolvePlaidBalance(accessTokensArray: string[]) {
 	return allData;
 }
 
-plaidApiRouter.get('/linked-accounts', async (req, res) => {
+plaidRouter.get('/linked-accounts', async (req, res) => {
 	try {
 		let banks: string[] = [];
 
+		// Get Item ID for each access token
 		const itemInfo = req.session.user.accessTokens.map(
 			(token: string): Promise<plaid.ItemResponse> => client.getItem(token)
-		); // Get Item ID for each access token
+		);
+
 		let itemData = await Promise.all(itemInfo); // Wait for all the promises to resolve
+
+		// Get the associated instituion for the given Item ID
 		const ids = itemData.map((thing: { item: { institution_id: string } }) =>
 			client.getInstitutionById(thing.item.institution_id)
-		); // Get the associated instituion for the given Item ID
+		);
+
 		let data = await Promise.all(ids); // Wait for all the IDs to be processed
 		data.forEach((place) => banks.push(place.institution.name)); // Collate all the institutions into one array
 
@@ -291,7 +278,7 @@ plaidApiRouter.get('/linked-accounts', async (req, res) => {
 	}
 });
 
-plaidApiRouter.post('/remove-account', async (req, res) => {
+plaidRouter.post('/remove-account', async (req, res) => {
 	// Index in the arrays that should be removed
 	const i = req.body.data.bankIndex;
 
@@ -316,7 +303,6 @@ plaidApiRouter.post('/remove-account', async (req, res) => {
 
 		req.session.user.accessTokens = newAccessTokens;
 		req.session.user.itemID = newItemIDs;
-		console.log(chalk.green('Bank Removed'));
 
 		res.json({
 			status: req.body.data.bankName,
@@ -328,4 +314,22 @@ plaidApiRouter.post('/remove-account', async (req, res) => {
 	}
 });
 
-export default plaidApiRouter;
+async function resolvePlaidTransactions(accessTokensArray: string[], startDate: string, endDate: string) {
+	let allData = [];
+	for (let i = 0; i < accessTokensArray.length; i++) {
+		try {
+			const newData = await client.getTransactions(accessTokensArray[i], startDate, endDate, {
+				count: 250,
+				offset: 0,
+			});
+			allData.push(newData);
+		} catch (err) {
+			console.log(err);
+			return new Error('TRANSACTION Error with token: ' + accessTokensArray[i]);
+		}
+	}
+
+	return allData;
+}
+
+export default plaidRouter;
