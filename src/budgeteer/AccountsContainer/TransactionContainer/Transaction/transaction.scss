@@ -3,38 +3,42 @@
 /* Light Theme */
 $default-font-color: black;
 $default-transaction-icon-color: #484848;
-$name-font-size: 24px;
+$name-font-size: 20px;
 
 .transaction {
-	margin: 5px 15px 5px 15px;
-	width: 80%;
-	border-radius: 5px;
+
+	max-width: 700px;
+	width: 45%;
+	border: .5px solid gray;
 	border-left: 2px solid $blue;
 	cursor: pointer;
 	transition: background-color .3s ease;
-	box-shadow: 0 1px 3px black;
 
-	&:hover {
-		background-color: darken($background-color, 4%);
+	@media all and (max-width: 1199px) {
+
+		width: 80%;
+
 	}
 
-	@media all and (max-width: 600px) {
+	@media all and (max-width: 700px) {
+
 		margin: 0;
 		width: 100%;
 		border-left: none;
 		border-bottom: 1px solid #cecece;
 		border-radius: 0;
 		box-shadow: none;
+
 	}
 
-	@media all and (min-width: 1200px) {
-		margin: 15px 15px 15px 15px;
-		max-width: 700px;
-		width: 45%;
-		border-bottom: none;
+	&:hover {
+
+		background-color: darken($background-color, 4%);
+
 	}
 
 	.container {
+
 		padding: 15px;
 		display: flex;
 		justify-content: space-between;
@@ -42,36 +46,46 @@ $name-font-size: 24px;
 		pointer-events: none;
 
 		.icon {
-			margin: 10px 10px 10px 10px;
+
+			margin: 10px;
 			font-size: 1.5em;
 
 			@media all and (max-width: 400px) {
+
 				font-size: 1em;
+
 			}
 
 			path {
+
 				color: $default-transaction-icon-color;
+
 			}
 		}
 
 		.name-info {
+
 			margin-left: 10px;
-			width: 50%;
+			width: 60%;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			align-items: flex-start;
 
 			&--name {
+
 				width: 100%;
 				font-size: $name-font-size;
 				color: $default-transaction-icon-color;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
+				font-weight: 400;
+
 			}
 
 			&--category {
+
 				width: 100%;
 				font-size: calc(#{$name-font-size} - 6px);
 				color: $default-font-color;
@@ -80,25 +94,30 @@ $name-font-size: 24px;
 				overflow: hidden;
 
 				span {
+
 					color: $red;
+
 				}
 			}
 		}
 
 		.amount {
+
+			width: 70px;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			align-items: flex-end;
 
 			&--amt {
+
 				width: 100%;
-				height: 12px;
 				font-size: calc(#{$name-font-size} - 5px);
 				color: hsla(0, 95%, 32%, 1); // Standard red is unreadable with transaction background color
 				text-align: right;
 
 				&__green {
+
 					width: 100%;
 					font-size: calc(#{$name-font-size} - 5px);
 					color: hsla(110, 100%, 20%, 1); // Standard green is unreadable with transaction background color
@@ -107,18 +126,23 @@ $name-font-size: 24px;
 			}
 
 			&--date {
+
 				font-size: calc(#{$name-font-size} - 8px);
 				color: $default-font-color;
 				align-self: flex-end;
 
 				@media all and (max-width: 365px) {
+
 					font-size: .8em;
+
 				}
 			}
 		}
 	}
 
 	* {
+
 		overflow-y: hidden;
+
 	}
 }
