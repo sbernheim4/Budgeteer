@@ -46,12 +46,11 @@ class AccountsContainer extends Component {
 			// Stores how the user is currently sorting their transactions
 			categoryType: '',
 			categoryTotal: 0.0,
-			/*displayNames: {},*/
-			keyWord: '',
-			months: ['Jan.', 'Feb.', 'Mar.', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.']
+			keyWord: ''
 		};
 
-		this.displayNames = new Map();
+		this.displayNames;
+		this.months = ['Jan.', 'Feb.', 'Mar.', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
 		this.getCategoryTransactions = this.getCategoryTransactions.bind(this);
@@ -63,9 +62,9 @@ class AccountsContainer extends Component {
 	}
 
 	async componentDidMount() {
-		this.getAccountTransactions('all');
-
 		await this.getDisplayNames();
+
+		this.getAccountTransactions('all');
 	}
 
 	async getDisplayNames() {
@@ -124,8 +123,8 @@ class AccountsContainer extends Component {
 		});
 
 		const now = new Date();
-		const nowString = this.state.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + now.getFullYear();
-		const prevString = this.state.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + (now.getFullYear() - 1);
+		const nowString = this.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + now.getFullYear();
+		const prevString = this.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + (now.getFullYear() - 1);
 		const categoryType =
 			type === 'All Categories' ? prevString + ' - ' + nowString : this.getAccountDisplayName(account_id, type);
 
@@ -183,7 +182,7 @@ class AccountsContainer extends Component {
 	}
 
 	getAccountDisplayName(accountID, defaultName) {
-		let x = this.state.displayNames;
+		let x = this.displayNames;
 		if (x === undefined) return defaultName;
 
 		return x.get(accountID) || defaultName;
@@ -229,10 +228,10 @@ class AccountsContainer extends Component {
 
 			this.setState({
 				categoryTransactions: releventTransactions,
-				categoryType: `${this.state.months[dateOne.getMonth()]} ${dateOne.getDate()} - ${
-					this.state.months[dateTwo.getMonth()]
-				} ${dateTwo.getDate()}`,
-				categoryTotal: total
+				categoryTotal: total,
+				categoryType: `${this.months[dateOne.getMonth()]} ${dateOne.getDate()} - ${
+					this.months[dateTwo.getMonth()]
+				} ${dateTwo.getDate()}`
 			});
 		} catch (err) {
 			console.error(err);
@@ -314,8 +313,6 @@ class AccountsContainer extends Component {
 	}
 
 	render() {
-		const amtColor = this.state.categoryTotal * -1 > 0 ? 'green' : 'red';
-
 		return (
 			<div className='accounts'>
 				<div className='accounts--search-options'>
@@ -344,7 +341,6 @@ class AccountsContainer extends Component {
 								onMouseLeave={this.closeCategoryViewer}>
 								<div>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -352,11 +348,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faUtensils}
-										/>{' '}
-										<p>Food and Drink</p>{' '}
+										/>
+										<p>Food and Drink</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -364,11 +359,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faPlane}
-										/>{' '}
-										<p>Travel</p>{' '}
+										/>
+										<p>Travel</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -376,11 +370,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faShoppingBag}
-										/>{' '}
-										<p>Shops</p>{' '}
+										/>
+										<p>Shops</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -388,11 +381,10 @@ class AccountsContainer extends Component {
 												this.closeAccountsViewer();
 											}}
 											icon={faTape}
-										/>{' '}
-										<p>Recreation</p>{' '}
+										/>
+										<p>Recreation</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -400,11 +392,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faWrench}
-										/>{' '}
-										<p>Service</p>{' '}
+										/>
+										<p>Service</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -412,11 +403,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faUsers}
-										/>{' '}
-										<p>Community</p>{' '}
+										/>
+										<p>Community</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -424,11 +414,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faMedkit}
-										/>{' '}
-										<p>Healthcare</p>{' '}
+										/>
+										<p>Healthcare</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -436,11 +425,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faQuestion}
-										/>{' '}
-										<p>Bank Fees</p>{' '}
+										/>
+										<p>Bank Fees</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -448,11 +436,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faQuestion}
-										/>{' '}
-										<p>Cash Advance</p>{' '}
+										/>
+										<p>Cash Advance</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -460,11 +447,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faPercent}
-										/>{' '}
-										<p>Interest</p>{' '}
+										/>
+										<p>Interest</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -472,11 +458,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faMoneyBillAlt}
-										/>{' '}
-										<p>Payment</p>{' '}
+										/>
+										<p>Payment</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -484,11 +469,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faQuestion}
-										/>{' '}
-										<p>Tax</p>{' '}
+										/>
+										<p>Tax</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -496,11 +480,10 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faExchangeAlt}
-										/>{' '}
-										<p>Transfer</p>{' '}
+										/>
+										<p>Transfer</p>
 									</section>
 									<section>
-										{' '}
 										<FontAwesomeIcon
 											className='category-icon'
 											onClick={() => {
@@ -508,8 +491,8 @@ class AccountsContainer extends Component {
 												this.closeCategoryViewer();
 											}}
 											icon={faQuestion}
-										/>{' '}
-										<p>Other</p>{' '}
+										/>
+										<p>Other</p>
 									</section>
 								</div>
 							</div>
@@ -526,7 +509,6 @@ class AccountsContainer extends Component {
 								onMouseEnter={this.openAccountsViewer}
 							/>
 
-							{/* display this div when icon above is clicked */}
 							<div
 								className='accounts--search-options--icon-search--accts-search--accts'
 								onMouseLeave={this.closeAccountsViewer}>
@@ -539,7 +521,6 @@ class AccountsContainer extends Component {
 										All Transactions
 									</button>
 
-									{/* Generate a button for each type of account connected */}
 									{this.props.accounts.map((a, index) => (
 										<button
 											key={index}

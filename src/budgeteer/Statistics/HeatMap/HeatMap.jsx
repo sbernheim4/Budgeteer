@@ -10,7 +10,7 @@ class HeatMap extends Component {
 
 		this.state = {
 			map: {},
-			heatmap: {},
+			heatmap: {}
 		};
 	}
 

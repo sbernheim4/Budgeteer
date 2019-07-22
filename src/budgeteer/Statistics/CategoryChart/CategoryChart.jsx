@@ -21,7 +21,7 @@ const COLORS = [
 	'#afc47d',
 	'#558244',
 	'#347759',
-	'#2d7582',
+	'#2d7582'
 ];
 
 class CustomTooltip extends Component {
@@ -32,7 +32,7 @@ class CustomTooltip extends Component {
 			const { payload } = this.props;
 
 			const style = {
-				background: `${payload[0].payload.fill}`,
+				background: `${payload[0].payload.fill}`
 			};
 
 			let value = formatAmount(payload[0].value);
@@ -56,7 +56,7 @@ class CategoryChart extends Component {
 		this.state = {
 			categoryDoughnutData: [],
 			labelText: '',
-			totalSpent: 0,
+			totalSpent: 0
 		};
 	}
 
@@ -84,7 +84,7 @@ class CategoryChart extends Component {
 			{ name: 'Payment', value: 0 }, //eslint-disable-line
 			{ name: 'Tax', value: 0 }, //eslint-disable-line
 			{ name: 'Transfer', value: 0 }, //eslint-disable-line
-			{ name: 'Other', value: 0 }, //eslint-disable-line
+			{ name: 'Other', value: 0 } //eslint-disable-line
 		];
 
 		const now = new Date();
@@ -153,7 +153,7 @@ class CategoryChart extends Component {
 				const roundedValue = Math.round(entry.value * 100) / 100;
 				newAmts.push({
 					name: entry.name,
-					value: roundedValue,
+					value: roundedValue
 				});
 
 				total += roundedValue;
@@ -162,7 +162,7 @@ class CategoryChart extends Component {
 
 		this.setState({
 			categoryDoughnutData: newAmts,
-			totalSpent: numberWithCommas(formatAmount(total)),
+			totalSpent: numberWithCommas(formatAmount(total))
 		});
 	}
 

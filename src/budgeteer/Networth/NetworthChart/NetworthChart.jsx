@@ -8,7 +8,7 @@ function NetworthChart(props) {
 	useEffect(() => {
 		const data = axios({
 			method: 'GET',
-			url: '/plaid-api/balance',
+			url: '/plaid-api/balance'
 		});
 
 		data.then((x) => {
@@ -25,7 +25,7 @@ function NetworthChart(props) {
 			{ name: 'Apr.', value: 5000 },
 			{ name: 'May', value: 6000 },
 			{ name: 'June.', value: 7000 },
-			{ name: 'July', value: 8000 },
+			{ name: 'July', value: 8000 }
 		];
 	}
 

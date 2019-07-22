@@ -11,7 +11,7 @@ class LinkedAccounts extends Component {
 		super(props);
 
 		this.state = {
-			linkedBanks: [],
+			linkedBanks: []
 		};
 
 		this.displayMessage = this.displayMessage.bind(this);
@@ -20,7 +20,7 @@ class LinkedAccounts extends Component {
 	async componentDidMount() {
 		let linkedBanks = await axios.get('/plaid-api/linked-accounts');
 		this.setState({
-			linkedBanks: linkedBanks.data.accounts,
+			linkedBanks: linkedBanks.data.accounts
 		});
 	}
 
@@ -38,12 +38,12 @@ class LinkedAccounts extends Component {
 			const result = await axios.post('/plaid-api/remove-account', {
 				data: {
 					bankIndex: index,
-					bankName: this.state.linkedBanks[index],
-				},
+					bankName: this.state.linkedBanks[index]
+				}
 			});
 
 			this.setState({
-				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)],
+				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
 			});
 
 			window.localStorage.clear();
@@ -57,13 +57,13 @@ class LinkedAccounts extends Component {
 	displayMessage(msg, color) {
 		this.setState({
 			message: msg,
-			display: true,
+			display: true
 		});
 
 		setTimeout(() => {
 			this.setState({
 				display: false,
-				color: color,
+				color: color
 			});
 		}, 5500);
 	}

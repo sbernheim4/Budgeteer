@@ -35,7 +35,7 @@ const sessionInfo = session({
 	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',
 	resave: true,
 	saveUninitialized: true,
-	cookie: { maxAge: 600000 },
+	cookie: { maxAge: 600000 }
 });
 
 if (process.env.DB_URI) {
@@ -48,7 +48,7 @@ app.use(sessionInfo);
 
 const options = {
 	key: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com-key.pem')),
-	cert: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com.pem')),
+	cert: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com.pem'))
 };
 
 /****************** Server Options ******************/

@@ -40,7 +40,7 @@ class AnnualChart extends Component {
 		super(props);
 
 		this.state = {
-			monthlyLineChartData: [],
+			monthlyLineChartData: []
 		};
 	}
 
@@ -91,7 +91,7 @@ class AnnualChart extends Component {
 			'Sept.',
 			'Oct.',
 			'Nov.',
-			'Dec.',
+			'Dec.'
 		];
 		let currMonth = new Date().getMonth(); // 0
 
@@ -111,12 +111,12 @@ class AnnualChart extends Component {
 			data.push({
 				name: orderedLabels[i],
 				Average: parseInt(avg),
-				Month: parseInt(orderedAmounts[i]),
+				Month: parseInt(orderedAmounts[i])
 			});
 		}
 
 		this.setState({
-			monthlyLineChartData: data,
+			monthlyLineChartData: data
 		});
 	}
 

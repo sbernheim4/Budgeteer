@@ -24,7 +24,7 @@ let client = new plaid.Client(
 
 plaidRouter.use(
 	bodyParser.urlencoded({
-		extended: false,
+		extended: false
 	})
 );
 
@@ -40,7 +40,7 @@ plaidRouter.all('*', (req: Request, _res: Response, next: NextFunction) => {
 plaidRouter.get('/key-and-env', (_req: Request, res: Response) => {
 	res.send({
 		publicKey: process.env.PLAID_PUBLIC_KEY.toString(),
-		env: process.env.PLAID_ENV.toString(),
+		env: process.env.PLAID_ENV.toString()
 	});
 });
 
@@ -61,7 +61,7 @@ plaidRouter.post('/rotate-access-tokens', async (req: Request, res: Response) =>
 			console.error(err);
 
 			res.json({
-				result: err,
+				result: err
 			});
 		}
 	}
@@ -74,7 +74,7 @@ plaidRouter.post('/rotate-access-tokens', async (req: Request, res: Response) =>
 	User.update({ _id: req.session.user._id }, { $set: { accessTokens: newAccessTokens } }, () => {
 		console.log(chalk.green('Access Tokens have rotated'));
 		res.json({
-			result: 'New tokens were successfully generated. Please refresh the page to continue.',
+			result: 'New tokens were successfully generated. Please refresh the page to continue.'
 		});
 	});
 });
@@ -113,7 +113,7 @@ plaidRouter.post('/get-access-token', async (req: Request, res: Response) => {
 		console.log(err);
 
 		return res.json({
-			error: err,
+			error: err
 		});
 	}
 });
@@ -151,7 +151,7 @@ plaidRouter.get('/transactions', async (req: Request, res) => {
 
 					return res.json({
 						Error: 'TRANSACTION Reauthentication required',
-						publicToken: result.public_token,
+						publicToken: result.public_token
 					});
 				}
 			});
@@ -190,7 +190,7 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 
 					return res.json({
 						Error: 'BALANCE: Reauthentication Required',
-						publicToken: result.public_token,
+						publicToken: result.public_token
 					});
 				}
 			});
@@ -215,7 +215,7 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 
 				banks[index] = {
 					bankTotal: bankTotal,
-					map: networth,
+					map: networth
 				};
 			});
 
@@ -228,7 +228,7 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 
 			res.json({
 				networth: networth,
-				maps: arrayOfMaps,
+				maps: arrayOfMaps
 			});
 		}
 	} catch (err) {
@@ -273,7 +273,7 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 
 		// Send back the array to the client
 		res.json({
-			accounts: banks,
+			accounts: banks
 		});
 	} catch (err) {
 		console.error(err);
@@ -298,8 +298,8 @@ plaidRouter.post('/remove-account', async (req, res) => {
 			{
 				$set: {
 					accessTokens: newAccessTokens,
-					itemID: newItemIDs,
-				},
+					itemID: newItemIDs
+				}
 			}
 		);
 
@@ -307,11 +307,11 @@ plaidRouter.post('/remove-account', async (req, res) => {
 		req.session.user.itemID = newItemIDs;
 
 		res.json({
-			status: req.body.data.bankName,
+			status: req.body.data.bankName
 		});
 	} catch (err) {
 		res.status(500).json({
-			ERROR: 'An error has occurred, please refresh the page and try again in a few minutes',
+			ERROR: 'An error has occurred, please refresh the page and try again in a few minutes'
 		});
 	}
 });
@@ -322,7 +322,7 @@ async function resolvePlaidTransactions(accessTokensArray: string[], startDate: 
 		try {
 			const newData = await client.getTransactions(accessTokensArray[i], startDate, endDate, {
 				count: 250,
-				offset: 0,
+				offset: 0
 			});
 			allData.push(newData);
 		} catch (err) {

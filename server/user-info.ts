@@ -10,7 +10,7 @@ const User = mongoose.model('User');
 
 userInfoRouter.use(
 	bodyParser.urlencoded({
-		extended: false,
+		extended: false
 	})
 );
 
@@ -66,7 +66,7 @@ userInfoRouter.get('/last-accessed', async (req, res) => {
 	} else {
 		try {
 			const record: IUser = await User.findOne({
-				_id: req.session.user._id,
+				_id: req.session.user._id
 			});
 
 			const date = new Date(record.lastAccessed);
@@ -98,7 +98,7 @@ userInfoRouter.get('/display-names', async (req, res) => {
 	} else {
 		try {
 			const record: IUser = await User.findOne({
-				_id: req.session.user._id,
+				_id: req.session.user._id
 			});
 			const serializedMap = record.displayNames;
 

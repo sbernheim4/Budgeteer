@@ -41,7 +41,7 @@ class BudgetChart extends Component {
 			monthlyBudget: 0,
 			totalSpent: 0,
 			totalRemaining: 0,
-			rechartsData: [{ name: 'Spent', value: 0 }, { name: 'Remaining', value: 1 }],
+			rechartsData: [{ name: 'Spent', value: 0 }, { name: 'Remaining', value: 1 }]
 		};
 
 		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
@@ -103,7 +103,7 @@ class BudgetChart extends Component {
 				totalSpent: totalSpent,
 				totalRemaining: totalRemaining,
 				rechartsData: chartData,
-				overBudget: totalRemaining < 0,
+				overBudget: totalRemaining < 0
 			};
 		}
 	}
@@ -122,15 +122,15 @@ class BudgetChart extends Component {
 
 		this.setState({
 			rechartsData: rechartsData,
-			monthlyBudget: newMonthlyBudget,
+			monthlyBudget: newMonthlyBudget
 		});
 
 		axios({
 			method: 'POST',
 			url: '/user-info/monthly-budget',
 			data: {
-				monthlyBudget: newMonthlyBudget,
-			},
+				monthlyBudget: newMonthlyBudget
+			}
 		});
 
 		const overBudget = newRemaining < 0;
@@ -143,12 +143,12 @@ class BudgetChart extends Component {
 		this.setState({
 			display: true,
 			message: text,
-			color: color,
+			color: color
 		});
 
 		setTimeout(() => {
 			this.setState({
-				display: false,
+				display: false
 			});
 		}, 5500);
 	}

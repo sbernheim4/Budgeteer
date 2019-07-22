@@ -20,7 +20,7 @@ function MonthlyBudget() {
 	const [bannerOptions, setBannerOptions] = useState({
 		message: '',
 		color: 'green',
-		display: false,
+		display: false
 	});
 	useEffect(() => {
 		// Remove the banner after some time
@@ -29,7 +29,7 @@ function MonthlyBudget() {
 				setBannerOptions({
 					message: '',
 					color: 'green',
-					display: false,
+					display: false
 				});
 			}, 5500);
 		}
@@ -44,8 +44,8 @@ function MonthlyBudget() {
 			method: 'POST',
 			url: '/user-info/monthly-budget',
 			data: {
-				monthlyBudget: monthlyBudget,
-			},
+				monthlyBudget: monthlyBudget
+			}
 		});
 
 		// Display a success message optimistically
@@ -77,7 +77,7 @@ function MonthlyBudget() {
 		setBannerOptions({
 			message: text,
 			color: color,
-			display: true,
+			display: true
 		});
 	}
 

@@ -90,7 +90,7 @@ passport.use(
 			callbackURL:
 				process.env.NODE_ENV === 'production'
 					? 'https://www.budgeteer.org/login/facebook/return'
-					: `${process.env.DEV_BASE_URL}/login/facebook/return`,
+					: `${process.env.DEV_BASE_URL}/login/facebook/return`
 		},
 		async function(_accessToken, _refreshToken, profile, done) {
 			// In this example, the user's Facebook profile is supplied as the user
@@ -101,7 +101,7 @@ passport.use(
 
 			try {
 				const user: IUser = await User.findOne({
-					facebookID: profile.id,
+					facebookID: profile.id
 				});
 
 				if (user) {
@@ -109,7 +109,7 @@ passport.use(
 				} else {
 					const newUser = new User({
 						facebookID: profile.id,
-						name: profile.displayName,
+						name: profile.displayName
 					});
 
 					await newUser.save();
@@ -131,12 +131,12 @@ passport.use(
 			callbackURL:
 				process.env.NODE_ENV === 'production'
 					? 'https://www.budgeteer.org/login/google/return'
-					: `${process.env.DEV_BASE_URL}/login/google/return`,
+					: `${process.env.DEV_BASE_URL}/login/google/return`
 		},
 		async function(_accessToken, _refreshToken, profile, done) {
 			try {
 				const user: IUser = await User.findOne({
-					googleID: profile.id,
+					googleID: profile.id
 				});
 
 				if (user) {
@@ -144,7 +144,7 @@ passport.use(
 				} else {
 					const newUser = new User({
 						googleID: profile.id,
-						name: profile.displayName,
+						name: profile.displayName
 					});
 
 					await newUser.save();

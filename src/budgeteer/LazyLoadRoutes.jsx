@@ -11,29 +11,29 @@ import Loadable from 'react-loadable';
 
 export const Navbar = Loadable({
 	loader: () => import('./Navbar/Navbar.jsx'),
-	loading: () => <div>loading...</div>,
+	loading: () => <div>loading...</div>
 });
 
 export const Home = Loadable({
 	loader: () => import('./Home/Home.jsx'),
-	loading: () => <div>loading...</div>,
+	loading: () => <div>loading...</div>
 });
 
 export const Networth = Loadable({
 	loader: () => import('./Networth/Networth.jsx'),
-	loading: () => <div>Loading...</div>,
+	loading: () => <div>Loading...</div>
 });
 
 export const Settings = Loadable({
 	loader: () => import('./Settings/Settings.jsx'),
-	loading: () => <div>Loading...</div>,
+	loading: () => <div>Loading...</div>
 });
 
 export const Statistics = Loadable({
 	loader: () => import('./Statistics/Statistics.jsx'),
-	loading: () => <div>Loading...</div>,
+	loading: () => <div>Loading...</div>
 });
 export const AccountsContainer = Loadable({
 	loader: () => import('./AccountsContainer/AccountsContainer.jsx'),
-	loading: () => <div>Loading...</div>,
+	loading: () => <div>Loading...</div>
 });

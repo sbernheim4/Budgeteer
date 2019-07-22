@@ -41,7 +41,7 @@ class WeekWeekendChart extends Component {
 
 		this.state = {
 			weekVsWeekend: [],
-			transactions: [],
+			transactions: []
 		};
 	}
 
@@ -129,12 +129,12 @@ class WeekWeekendChart extends Component {
 			data.push({
 				name: i,
 				Weekday: weekday[i],
-				Weekend: weekend[i],
+				Weekend: weekend[i]
 			});
 		}
 
 		return {
-			weekVsWeekend: data,
+			weekVsWeekend: data
 		};
 	}
 

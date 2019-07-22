@@ -16,7 +16,7 @@ import {
 	faPercent,
 	faMoneyBillAlt,
 	faExchangeAlt,
-	faQuestion,
+	faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
 import { numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';

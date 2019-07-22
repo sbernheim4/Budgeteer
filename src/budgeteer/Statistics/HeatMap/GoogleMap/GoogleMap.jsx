@@ -8,7 +8,7 @@ const MapWithAFusionTablesLayer = compose(
 			'https://maps.googleapis.com/maps/api/js?key=AIzaSyC4R6AN7SmujjPUIGKdyao2Kqitzr1kiRg&v=3.exp&libraries=geometry,drawing,places',
 		loadingElement: <div style={{ height: `100%` }} />,
 		containerElement: <div style={{ height: `400px` }} />,
-		mapElement: <div style={{ height: `100%` }} />,
+		mapElement: <div style={{ height: `100%` }} />
 	}),
 	withScriptjs,
 	withGoogleMap
@@ -19,8 +19,8 @@ const MapWithAFusionTablesLayer = compose(
 			options={{
 				query: {
 					select: `Geocodable address`,
-					from: `1mZ53Z70NsChnBMm-qEYmSDOvLXgrreLTkQUvvg`,
-				},
+					from: `1mZ53Z70NsChnBMm-qEYmSDOvLXgrreLTkQUvvg`
+				}
 			}}
 		/>
 	</GoogleMap>

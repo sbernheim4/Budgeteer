@@ -42,7 +42,7 @@ class WeekSpendingChart extends Component {
 
 		this.state = {
 			victoryChartsData: [],
-			totalSpent: '...',
+			totalSpent: '...'
 		};
 
 		this.updateDimensions = this.updateDimensions.bind(this);
@@ -110,12 +110,12 @@ class WeekSpendingChart extends Component {
 					label:
 						amt < 0
 							? `Spent: $${numberWithCommas(formatAmount(amt))}`
-							: `Received $${numberWithCommas(formatAmount(amt))}`,
+							: `Received $${numberWithCommas(formatAmount(amt))}`
 				});
 
 				data2.push({
 					name: i === 6 ? 'Today' : week[(today + i) % 7],
-					value: currentWeekAmounts[i] * -1, // Multiple by -1 since spending is viewed as positive and income as negative
+					value: currentWeekAmounts[i] * -1 // Multiple by -1 since spending is viewed as positive and income as negative
 				});
 
 				// Get the total amount spent this week
@@ -133,7 +133,7 @@ class WeekSpendingChart extends Component {
 				victoryChartsData: data,
 				rechartsData: data2,
 				totalSpent: pastWeekTotal * -1,
-				range: range,
+				range: range
 			};
 		}
 	}
@@ -148,7 +148,7 @@ class WeekSpendingChart extends Component {
 
 	updateDimensions(event) {
 		this.setState({
-			chartWidth: event.target.innerWidth,
+			chartWidth: event.target.innerWidth
 		});
 	}
 

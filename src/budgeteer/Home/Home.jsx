@@ -11,7 +11,7 @@ class Home extends Component {
 
 		this.state = {
 			total: window.sessionStorage.getItem('total') || '...',
-			transactions: [],
+			transactions: []
 		};
 	}
 
@@ -23,14 +23,14 @@ class Home extends Component {
 		});
 
 		return {
-			transactions: sortedTransactions.slice(0, 3),
+			transactions: sortedTransactions.slice(0, 3)
 		};
 	}
 
 	async componentDidMount() {
 		let data = await axios({
 			method: 'GET',
-			url: '/plaid-api/balance',
+			url: '/plaid-api/balance'
 		});
 
 		data = data.data;
@@ -53,14 +53,14 @@ class Home extends Component {
 				onExit: function(err, metadata) {
 					console.log('err:', err);
 					console.log('metadata:', metadata);
-				},
+				}
 			});
 
 			plaid.open();
 		} else {
 			data = numberWithCommas(formatAmount(data.networth));
 			this.setState({
-				total: data,
+				total: data
 			});
 
 			window.sessionStorage.setItem('total', data);

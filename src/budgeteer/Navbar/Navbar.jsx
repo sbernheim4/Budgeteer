@@ -13,7 +13,7 @@ import {
 	faChartPie,
 	faMoneyBillAlt,
 	faCogs,
-	faPlus,
+	faPlus
 } from '@fortawesome/free-solid-svg-icons';
 
 import './navbar.scss';
@@ -24,8 +24,8 @@ class Navbar extends Component {
 
 		this.state = {
 			handler: {
-				user: '...',
-			},
+				user: '...'
+			}
 		};
 
 		this.addAccount = this.addAccount.bind(this);
@@ -47,10 +47,10 @@ class Navbar extends Component {
 					data: {
 						public_token: public_token,
 						client_id: `${process.env.PLAID_CLIENT_ID}`,
-						secret: `${process.env.PLAID_SECRET}`,
-					},
+						secret: `${process.env.PLAID_SECRET}`
+					}
 				});
-			},
+			}
 		});
 
 		let name = await axios.get('/user-info/name');
@@ -58,7 +58,7 @@ class Navbar extends Component {
 
 		this.setState({
 			handler: plaid,
-			name: name,
+			name: name
 		});
 	}
 

@@ -11,7 +11,7 @@ class AccountNames extends Component {
 
 		this.state = {
 			accounts: [],
-			mapOfAccountNamesToDisplayNames: new Map(),
+			mapOfAccountNamesToDisplayNames: new Map()
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -35,7 +35,7 @@ class AccountNames extends Component {
 
 			const map = this.jsonToMap(names);
 			this.setState({
-				mapOfAccountNamesToDisplayNames: map,
+				mapOfAccountNamesToDisplayNames: map
 			});
 		} catch (err) {
 			console.log('Error: ');
@@ -45,7 +45,7 @@ class AccountNames extends Component {
 
 	static getDerivedStateFromProps(props, state) {
 		return {
-			accounts: props.accounts,
+			accounts: props.accounts
 		};
 	}
 
@@ -79,8 +79,8 @@ class AccountNames extends Component {
 
 		axios.post('/user-info/display-names', {
 			data: {
-				map: JSON.stringify([...map]),
-			},
+				map: JSON.stringify([...map])
+			}
 		});
 
 		this.displayMessage();
@@ -88,19 +88,19 @@ class AccountNames extends Component {
 
 	displayMessage() {
 		this.setState({
-			displayBannerMessage: true,
+			displayBannerMessage: true
 		});
 
 		setTimeout(() => {
 			this.setState({
-				displayBannerMessage: false,
+				displayBannerMessage: false
 			});
 		}, 5500);
 	}
 
 	handleChange(e, id) {
 		this.setState({
-			[id]: e.target.value,
+			[id]: e.target.value
 		});
 	}
 

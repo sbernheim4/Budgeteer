@@ -19,7 +19,7 @@ class BudgetChart extends Component {
 		this.state = {
 			monthlyBudget: 0,
 			totalSpent: 0, // Total spent this month
-			victoryChartsData: [{ x: 'Spent', y: 0 }, { x: 'Remaining', y: 1 }],
+			victoryChartsData: [{ x: 'Spent', y: 0 }, { x: 'Remaining', y: 1 }]
 		};
 	}
 
@@ -47,7 +47,7 @@ class BudgetChart extends Component {
 			return {
 				totalSpent: totalSpent,
 				monthlyBudget: monthlyBudget,
-				victoryChartsData: victoryChartsData,
+				victoryChartsData: victoryChartsData
 			};
 		}
 	}
@@ -68,7 +68,7 @@ class BudgetChart extends Component {
 					text={'# ' + this.props.text}
 					labels={() => ''}
 					animate={{
-						duration: 2500,
+						duration: 2500
 					}}
 					labelComponent={<CustomLabel />}
 					data={this.state.victoryChartsData}

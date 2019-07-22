@@ -14,21 +14,21 @@ class TransactionContainer extends Component {
 
 		this.state = {
 			num: 10,
-			transactionsToDisplay: transactions,
+			transactionsToDisplay: transactions
 		};
 
-		this.showMoreItems = this.showMoreItems.bind(this);
+		this.displayMoreTransactions = this.displayMoreTransactions.bind(this);
 	}
 
 	componentDidMount() {
 		window.addEventListener('scroll', () => {
 			if (this.state.transactionsToDisplay.length !== this.props.transactions.length) {
-				const num = document.documentElement.scrollTop + document.body.scrollTop;
-				const denom = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-				const percent = (num / denom) * 100;
+				const numerator = document.documentElement.scrollTop + document.body.scrollTop;
+				const denominator = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+				const percent = (numerator / denominator) * 100;
 
 				if (percent > 0.75) {
-					this.showMoreItems();
+					this.displayMoreTransactions();
 				}
 			}
 		});
@@ -41,16 +41,16 @@ class TransactionContainer extends Component {
 	componentWillReceiveProps(nextProps) {
 		this.setState({
 			transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
-			num: 10,
+			num: 10
 		});
 	}
 
-	showMoreItems() {
+	displayMoreTransactions() {
 		if (this.state.num + 20 > this.props.transactions.length) {
 			// if there are fewer than n transactions left --> Don't want to go over limit
 			this.setState({
 				transactionsToDisplay: this.props.transactions.reverse(),
-				num: this.props.transactions.length,
+				num: this.props.transactions.length
 			});
 		} else {
 			// if there are n or more transactions left
@@ -58,7 +58,7 @@ class TransactionContainer extends Component {
 
 			this.setState({
 				transactionsToDisplay: relevent,
-				num: this.state.num + 20,
+				num: this.state.num + 20
 			});
 		}
 	}

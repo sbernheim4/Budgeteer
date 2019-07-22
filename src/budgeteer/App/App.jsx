@@ -23,7 +23,7 @@ class App extends Component {
 			account_ids: x,
 			transaction_ids: y,
 			counter: 0,
-			showErrorMessage: false,
+			showErrorMessage: false
 		};
 
 		this.getTransactions = this.getTransactions.bind(this);
@@ -57,7 +57,7 @@ class App extends Component {
 		const numDaysSinceCacheUpdate = differenceInDays(now, lastAccessed);
 
 		axios.post('/user-info/last-accessed', {
-			date: now.toString(),
+			date: now.toString()
 		});
 
 		return numDaysSinceCacheUpdate;
@@ -75,7 +75,7 @@ class App extends Component {
 			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
 
 			let transactions = await axios.get('/plaid-api/transactions', {
-				days: numDays,
+				days: numDays
 			});
 
 			transactions = transactions.data;
@@ -100,7 +100,7 @@ class App extends Component {
 					onExit: function(err, metadata) {
 						console.log('err:', err);
 						console.log('metadata:', metadata);
-					},
+					}
 				});
 
 				plaid.open();
@@ -116,7 +116,7 @@ class App extends Component {
 			let x = this.state.counter;
 			x++;
 			this.setState({
-				counter: x,
+				counter: x
 			});
 		} catch (err) {
 			console.log('ERROR: ');
@@ -154,7 +154,7 @@ class App extends Component {
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,
-			transactions: currentTransactions,
+			transactions: currentTransactions
 		});
 	}
 

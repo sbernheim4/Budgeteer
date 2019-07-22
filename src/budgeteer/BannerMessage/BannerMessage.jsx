@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import './bannerMessage.scss';
 
 const green = {
-	background: 'rgb(50, 150, 100)',
+	background: 'rgb(50, 150, 100)'
 };
 
 const red = {
-	background: 'rgb(216, 69, 69)',
+	background: 'rgb(216, 69, 69)'
 };
 
 class BannerMessage extends Component {
@@ -15,14 +15,14 @@ class BannerMessage extends Component {
 		super(props);
 
 		this.state = {
-			display: this.props.display,
+			display: this.props.display
 		};
 	}
 
 	static getDerivedStateFromProps(props, state) {
 		return {
 			display: props.display,
-			color: props.color === 'green' ? green : red,
+			color: props.color === 'green' ? green : red
 		};
 	}
 

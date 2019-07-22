@@ -13,7 +13,7 @@ export default class Networth extends Component {
 			networth: 0, // Keep track of total net worth
 			accountBalances: [], // Map of account name to its balance
 			recurringPayments: [], // Keep track of recurring costs like Spotify or Netflix etc
-			loading: true,
+			loading: true
 		};
 
 		this.getDisplayNames = this.getDisplayNames.bind(this);
@@ -50,7 +50,7 @@ export default class Networth extends Component {
 					token: data.publicToken,
 					onSuccess: function(public_token) {
 						console.log('Update of Account successful');
-					},
+					}
 				});
 
 				plaid.open();
@@ -62,7 +62,7 @@ export default class Networth extends Component {
 		this.setState({
 			networth: data.networth,
 			accountBalances: data.maps,
-			loading: false,
+			loading: false
 		});
 	}
 
@@ -78,7 +78,7 @@ export default class Networth extends Component {
 		});
 
 		this.setState({
-			displayNames: displayNames,
+			displayNames: displayNames
 		});
 	}
 
@@ -110,7 +110,7 @@ export default class Networth extends Component {
 		const recurringPayments = Array.from(duplicates);
 
 		this.setState({
-			recurringPayments: recurringPayments,
+			recurringPayments: recurringPayments
 		});
 	}
 
