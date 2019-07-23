@@ -58,12 +58,14 @@ class Home extends Component {
 
 			plaid.open();
 		} else {
-			data = numberWithCommas(formatAmount(data.networth));
+			const { serializedTotalSavings } = data;
+			const totalSavings = new Number(serializedTotalSavings);
+			const savings = numberWithCommas(formatAmount(totalSavings));
 			this.setState({
-				total: data
+				total: savings
 			});
 
-			window.sessionStorage.setItem('total', data);
+			//window.sessionStorage.setItem('total', data);
 		}
 	}
 

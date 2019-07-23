@@ -129,6 +129,7 @@ plaidRouter.get('/transactions', async (req: Request, res) => {
 		: moment()
 				.subtract(days, 'days')
 				.format('YYYY-MM-DD');
+
 	let endDate = req.body.endDate
 		? moment(new Date(req.body.endDate)).format('YYYY-MM-DD')
 		: moment().format('YYYY-MM-DD');
@@ -195,40 +196,14 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 				}
 			});
 		} else {
-			let banks: any[] | { bankTotal: number; map: {} }[] = [];
+			const data = createData(allData);
+			const { arrayOfMaps, totalSavings } = data;
+			const serializedArrayOfMaps = JSON.stringify(arrayOfMaps);
+			const serializedTotalSavings = JSON.stringify(totalSavings);
 
-			allData.forEach((bank, index) => {
-				let bankTotal = 0;
-				let networth: networkMap = {};
-
-				bank.accounts.forEach((acct) => {
-					const id = acct.account_id;
-
-					if (acct.balances.current !== null && acct.type !== 'credit') {
-						const value = acct.balances.current;
-						bankTotal += value;
-						networth[id] = value;
-					} else if (acct.type !== 'credit') {
-						networth[id] = 'N/A';
-					}
-				});
-
-				banks[index] = {
-					bankTotal: bankTotal,
-					map: networth
-				};
-			});
-
-			let networth = 0;
-			let arrayOfMaps: any[] = [];
-			banks.forEach((bank, index) => {
-				networth += bank.bankTotal;
-				arrayOfMaps[index] = bank.map;
-			});
-
-			res.json({
-				networth: networth,
-				maps: arrayOfMaps
+			res.send({
+				serializedArrayOfMaps,
+				serializedTotalSavings
 			});
 		}
 	} catch (err) {
@@ -238,6 +213,54 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 		console.log('----------------------------');
 	}
 });
+
+function generateInstitutionNetworthMap(accountsArray) {
+	let institutionBalance = 0;
+	let institutionBalanceMap = new Map();
+
+	accountsArray.forEach((account) => {
+		const accountBalance = account.balances.current;
+		const accountId = account.account_id;
+
+		if (accountBalance !== null) {
+			institutionBalance += accountBalance;
+		}
+
+		institutionBalanceMap.set(accountId, accountBalance);
+	});
+
+	return {
+		institutionBalance,
+		institutionBalanceMap
+	};
+}
+
+function createData(data) {
+	let arrayOfMaps = [];
+	let totalSavings = 0;
+
+	data.forEach((institutionInfo) => {
+		const institutionId = institutionInfo.item.institution_id;
+		const accountsArray = institutionInfo.accounts;
+
+		const info = generateInstitutionNetworthMap(accountsArray);
+
+		const { institutionBalance, institutionBalanceMap } = info;
+
+		totalSavings += institutionBalance;
+
+		arrayOfMaps.push({
+			institutionId,
+			institutionBalance,
+			institutionBalanceMap
+		});
+	});
+
+	return {
+		arrayOfMaps,
+		totalSavings
+	};
+}
 
 async function resolvePlaidBalance(accessTokensArray: string[]) {
 	let allData = [];
@@ -268,8 +291,12 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 			client.getInstitutionById(thing.item.institution_id)
 		);
 
-		let data = await Promise.all(ids); // Wait for all the IDs to be processed
-		data.forEach((place) => banks.push(place.institution.name)); // Collate all the institutions into one array
+		const data = await Promise.all(ids); // Wait for all the IDs to be processed
+
+		// Collate all the institutions into one array
+		data.forEach((place) => {
+			banks.push(place.institution.name);
+		});
 
 		// Send back the array to the client
 		res.json({

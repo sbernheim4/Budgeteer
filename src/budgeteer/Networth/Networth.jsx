@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 
+import { jsonToMap } from './../helpers.js';
+
 import NetworthTable from './NetworthTable/NetworthTable.jsx';
 
 import './networth.scss';
@@ -27,16 +29,18 @@ export default class Networth extends Component {
 	async componentDidMount() {
 		this.getDisplayNames();
 
-		let data = window.sessionStorage.getItem('balance');
+		let serializedTotalSavings = window.sessionStorage.getItem('serializedTotalSavings');
+		let serializedArrayOfInstitutionInfo = window.sessionStorage.getItem('serializedArrayOfInstitutionInfo');
 
-		if (data && data.networth && data.accountBalances) {
-			data = JSON.parse(data);
-			console.log(data);
+		let totalSavings;
+		let allInstitutionalInfo;
+
+		if (serializedArrayOfInstitutionInfo && serializedTotalSavings) {
+			totalSavings = new Number(serializedTotalSavings);
+			allInstitutionalInfo = this.extractInstitutionInfo(serializedArrayOfInstitutionInfo);
 		} else {
-			console.log('fetching from api');
-			data = await axios.get('/plaid-api/balance');
+			let data = await axios.get('/plaid-api/balance');
 			data = data.data;
-			console.log(data);
 
 			if (data.Error) {
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
@@ -56,14 +60,46 @@ export default class Networth extends Component {
 				plaid.open();
 			}
 
-			window.sessionStorage.setItem('balance', JSON.stringify(data));
+			const { serializedTotalSavings: savings, serializedArrayOfMaps: serializedArrayOfInstitutionInfo } = data;
+			window.sessionStorage.setItem('serializedTotalSavings', savings);
+			window.sessionStorage.setItem('serializedArrayOfInstitutionInfo', serializedArrayOfInstitutionInfo);
+
+			totalSavings = new Number(savings);
+			console.log('serializedArrayOfInstitutionInfo');
+			console.log(serializedArrayOfInstitutionInfo);
+			allInstitutionalInfo = this.extractInstitutionInfo(serializedArrayOfInstitutionInfo);
 		}
 
-		this.setState({
-			networth: data.networth,
-			accountBalances: data.maps,
+		console.log('\n\n\n\n');
+		console.log(totalSavings);
+		console.log(allInstitutionalInfo);
+
+		/*this.setState({
+			networth: totalSavings,
+			accountBalances: allInstitutionalInfo,
 			loading: false
+		});*/
+	}
+
+	extractInstitutionInfo(serializedArrayOfMaps) {
+		const arrayOfMaps = JSON.parse(`${serializedArrayOfMaps}`);
+		console.log(arrayOfMaps);
+
+		const allInstitutionalInfo = arrayOfMaps.map((institutionInfo) => {
+			const { institutionBalanceMap, institutionId, institutionBalance } = institutionInfo;
+
+			console.log(institutionInfo);
+
+			const institutionMap = jsonToMap(institutionBalanceMap);
+
+			return {
+				institutionMap,
+				institutionId,
+				institutionBalance
+			};
 		});
+
+		return allInstitutionalInfo;
 	}
 
 	async getDisplayNames() {

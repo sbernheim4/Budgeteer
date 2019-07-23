@@ -8,7 +8,14 @@ export default function NetworthTable(props) {
 		return props.displayNames.get(name) || '...';
 	}
 
-	if (props.accountBalances.length > 0) {
+	if (props.accountBalances.length === 0) {
+		return (
+			<div className='networth--loading'>
+				<h1>Hang tight, getting your data from the cloud</h1>
+				<img src='/loading-gifs/loading-three.gif' alt='loading' />
+			</div>
+		);
+	} else if (props.accountBalances.length > 0) {
 		return (
 			<table>
 				<thead>
@@ -38,13 +45,6 @@ export default function NetworthTable(props) {
 					</tr>
 				</tbody>
 			</table>
-		);
-	} else {
-		return (
-			<div className='networth--loading'>
-				<h1>Hang tight, getting your data from the cloud</h1>
-				<img src='/loading-gifs/loading-three.gif' alt='loading' />
-			</div>
 		);
 	}
 }
