@@ -26,7 +26,7 @@ export default function NetworthTable(props) {
 				))}
 
 				<div className='container'>
-					<div className='networth--entry'>
+					<div className='networth--entry networth--total'>
 						<p className='acct-name'>Total Savings</p>
 						<p className='acct-value'>${numberWithCommas(formatAmount(props.networth))}</p>
 					</div>

@@ -43,10 +43,11 @@ section {
 			border-bottom: none;
 		}
 
-		.networth-total {
-			background-color: $green;
-			font-size: 26px;
-			color: white;
+		.networth--total {
+
+			p {
+				font-weight: bolder;
+			}
 
 		}
 	}
