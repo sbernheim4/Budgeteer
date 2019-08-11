@@ -8,11 +8,10 @@ section {
 		width: 80%;
 		padding: 30px;
 		background: white;
-		border-radius: 10px;
+		border-radius: 7px;
 		box-shadow: 0 0 10px -4px black;
 		border-collapse: collapse; // needed to show border on the tr element
 		cursor: default;
-		// border: 1px solid $pink;
 
 		thead {
 
@@ -32,7 +31,6 @@ section {
 		tbody {
 
 			tr {
-				// border-bottom: 1px solid rgb(200, 200, 200);
 
 				td {
 					width: 300px;
