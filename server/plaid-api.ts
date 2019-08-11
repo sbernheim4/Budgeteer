@@ -1,5 +1,3 @@
-/* eslint no-undefined: off */
-
 require('dotenv').config();
 
 import express, { Request, Response, NextFunction } from 'express';
@@ -121,7 +119,7 @@ plaidRouter.post('/get-access-token', async (req: Request, res: Response) => {
 // Get Transaction information
 plaidRouter.get('/transactions', async (req: Request, res) => {
 	// Default to past 30 days if no specific date is specified
-	const days = req.body.days === undefined ? 30 : req.body.days;
+	const days = req.body.days === undefined ? 30 : req.body.days; // eslint-disable-line no-undefined
 
 	// Use passed in start and end dates, otherwise default to the last `days` number of days
 	let startDate = req.body.startDate
@@ -173,14 +171,14 @@ interface networkMap {
 }
 
 plaidRouter.get('/balance', async (req: Request, res) => {
-	let allData;
+	let bankData;
 
 	try {
-		allData = await resolvePlaidBalance(req.session.user.accessTokens);
+		bankData = await resolvePlaidBalance(req.session.user.accessTokens);
 
-		if (allData instanceof Error) {
+		if (bankData instanceof Error) {
 			console.log('We got a bad one...');
-			const badAccessToken = allData.message.split(':')[1].trim();
+			const badAccessToken = bankData.message.split(':')[1].trim();
 
 			client.createPublicToken(badAccessToken, (err, result) => {
 				if (err) {
@@ -196,14 +194,12 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 				}
 			});
 		} else {
-			const data = createData(allData);
-			const { arrayOfMaps, totalSavings } = data;
-			const serializedArrayOfMaps = JSON.stringify(arrayOfMaps);
-			const serializedTotalSavings = JSON.stringify(totalSavings);
+			const data = createData(bankData);
+			const { totalSavings, arrayOfObjects } = data;
 
 			res.send({
-				serializedArrayOfMaps,
-				serializedTotalSavings
+				arrayOfObjects,
+				totalSavings
 			});
 		}
 	} catch (err) {
@@ -214,50 +210,52 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 	}
 });
 
-function generateInstitutionNetworthMap(accountsArray) {
+function generateInstitutionMap(arrayOfAccounts) {
 	let institutionBalance = 0;
-	let institutionBalanceMap = new Map();
+	let institutionBalanceObject = {};
 
-	accountsArray.forEach((account) => {
-		const accountBalance = account.balances.current;
+	arrayOfAccounts.forEach((account) => {
 		const accountId = account.account_id;
+		const accountType = account.type;
+		const accountBalance = account.balances.current;
 
 		if (accountBalance !== null) {
 			institutionBalance += accountBalance;
+			institutionBalanceObject[accountId] = {
+				accountBalance,
+				accountType
+			};
 		}
-
-		institutionBalanceMap.set(accountId, accountBalance);
 	});
 
 	return {
 		institutionBalance,
-		institutionBalanceMap
+		institutionBalanceObject
 	};
 }
 
 function createData(data) {
-	let arrayOfMaps = [];
+	let arrayOfObjects = [];
 	let totalSavings = 0;
 
-	data.forEach((institutionInfo) => {
-		const institutionId = institutionInfo.item.institution_id;
-		const accountsArray = institutionInfo.accounts;
+	data.forEach((institution) => {
+		const institutionId = institution.item.institution_id;
+		const accountsArray = institution.accounts;
 
-		const info = generateInstitutionNetworthMap(accountsArray);
-
-		const { institutionBalance, institutionBalanceMap } = info;
+		const info = generateInstitutionMap(accountsArray);
+		const { institutionBalance, institutionBalanceObject } = info;
 
 		totalSavings += institutionBalance;
 
-		arrayOfMaps.push({
+		arrayOfObjects.push({
 			institutionId,
 			institutionBalance,
-			institutionBalanceMap
+			institutionBalanceObject
 		});
 	});
 
 	return {
-		arrayOfMaps,
+		arrayOfObjects,
 		totalSavings
 	};
 }

@@ -27,17 +27,14 @@ export default class Networth extends Component {
 	}
 
 	async componentDidMount() {
-		this.getDisplayNames();
+		await this.getDisplayNames();
 
-		let serializedTotalSavings = window.sessionStorage.getItem('serializedTotalSavings');
-		let serializedArrayOfInstitutionInfo = window.sessionStorage.getItem('serializedArrayOfInstitutionInfo');
+		let totalSavings = window.sessionStorage.getItem('totalSavings');
+		let bankInfo = window.sessionStorage.getItem('arrayOfInstitutionInfo');
 
-		let totalSavings;
-		let allInstitutionalInfo;
-
-		if (serializedArrayOfInstitutionInfo && serializedTotalSavings) {
-			totalSavings = new Number(serializedTotalSavings);
-			allInstitutionalInfo = this.extractInstitutionInfo(serializedArrayOfInstitutionInfo);
+		if (bankInfo && totalSavings) {
+			totalSavings = new Number(totalSavings);
+			bankInfo = JSON.parse(bankInfo);
 		} else {
 			let data = await axios.get('/plaid-api/balance');
 			data = data.data;
@@ -60,46 +57,19 @@ export default class Networth extends Component {
 				plaid.open();
 			}
 
-			const { serializedTotalSavings: savings, serializedArrayOfMaps: serializedArrayOfInstitutionInfo } = data;
-			window.sessionStorage.setItem('serializedTotalSavings', savings);
-			window.sessionStorage.setItem('serializedArrayOfInstitutionInfo', serializedArrayOfInstitutionInfo);
+			totalSavings = data.totalSavings;
+			bankInfo = data.arrayOfObjects;
 
-			totalSavings = new Number(savings);
-			console.log('serializedArrayOfInstitutionInfo');
-			console.log(serializedArrayOfInstitutionInfo);
-			allInstitutionalInfo = this.extractInstitutionInfo(serializedArrayOfInstitutionInfo);
+			const serializedBankInfo = JSON.stringify(bankInfo);
+			window.sessionStorage.setItem('arrayOfInstitutionInfo', serializedBankInfo);
+			window.sessionStorage.setItem('totalSavings', totalSavings);
 		}
 
-		console.log('\n\n\n\n');
-		console.log(totalSavings);
-		console.log(allInstitutionalInfo);
-
-		/*this.setState({
+		this.setState({
 			networth: totalSavings,
-			accountBalances: allInstitutionalInfo,
+			accountBalances: bankInfo,
 			loading: false
-		});*/
-	}
-
-	extractInstitutionInfo(serializedArrayOfMaps) {
-		const arrayOfMaps = JSON.parse(`${serializedArrayOfMaps}`);
-		console.log(arrayOfMaps);
-
-		const allInstitutionalInfo = arrayOfMaps.map((institutionInfo) => {
-			const { institutionBalanceMap, institutionId, institutionBalance } = institutionInfo;
-
-			console.log(institutionInfo);
-
-			const institutionMap = jsonToMap(institutionBalanceMap);
-
-			return {
-				institutionMap,
-				institutionId,
-				institutionBalance
-			};
 		});
-
-		return allInstitutionalInfo;
 	}
 
 	async getDisplayNames() {
