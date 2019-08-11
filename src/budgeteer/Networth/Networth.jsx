@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 
-import { jsonToMap } from './../helpers.js';
-
 import NetworthTable from './NetworthTable/NetworthTable.jsx';
 
 import './networth.scss';
@@ -18,8 +16,12 @@ export default class Networth extends Component {
 			loading: true
 		};
 
+		this.institutionNames = [];
+		this.displayNames = new Map();
+
 		this.getDisplayNames = this.getDisplayNames.bind(this);
 		this.getRecurringPayments = this.getRecurringPayments.bind(this);
+		this.getInstitutionIds = this.getInstitutionIds.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -28,9 +30,10 @@ export default class Networth extends Component {
 
 	async componentDidMount() {
 		await this.getDisplayNames();
+		await this.getInstitutionIds();
 
-		let totalSavings = window.sessionStorage.getItem('totalSavings');
-		let bankInfo = window.sessionStorage.getItem('arrayOfInstitutionInfo');
+		let totalSavings = window.localStorage.getItem('totalSavings');
+		let bankInfo = window.localStorage.getItem('arrayOfInstitutionInfo');
 
 		if (bankInfo && totalSavings) {
 			totalSavings = new Number(totalSavings);
@@ -61,8 +64,8 @@ export default class Networth extends Component {
 			bankInfo = data.arrayOfObjects;
 
 			const serializedBankInfo = JSON.stringify(bankInfo);
-			window.sessionStorage.setItem('arrayOfInstitutionInfo', serializedBankInfo);
-			window.sessionStorage.setItem('totalSavings', totalSavings);
+			window.localStorage.setItem('arrayOfInstitutionInfo', serializedBankInfo);
+			window.localStorage.setItem('totalSavings', totalSavings);
 		}
 
 		this.setState({
@@ -83,9 +86,13 @@ export default class Networth extends Component {
 			displayNames.set(val[0], val[1]);
 		});
 
-		this.setState({
-			displayNames: displayNames
-		});
+		this.displayNames = displayNames;
+	}
+
+	async getInstitutionIds() {
+		const data = await axios.get('/plaid-api/linked-accounts');
+		const institutionNames = data.data.banks;
+		this.institutionNames = institutionNames;
 	}
 
 	getRecurringPayments(transactions = []) {
@@ -137,8 +144,9 @@ export default class Networth extends Component {
 			<div className='networth'>
 				<NetworthTable
 					networth={this.state.networth}
-					displayNames={this.state.displayNames}
+					displayNames={this.displayNames}
 					accountBalances={this.state.accountBalances}
+					institutionNames={this.institutionNames}
 				/>
 
 				{/*

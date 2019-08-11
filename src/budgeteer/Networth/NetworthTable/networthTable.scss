@@ -13,6 +13,9 @@ section {
 		border-collapse: collapse; // needed to show border on the tr element
 		cursor: default;
 
+		h3 {
+			text-align: center;
+		}
 
 		.networth--entry {
 			margin: 0 auto;

@@ -210,7 +210,33 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 	}
 });
 
-function generateInstitutionMap(arrayOfAccounts) {
+function createData(data) {
+	let arrayOfObjects = [];
+	let totalSavings = 0;
+
+	data.forEach(async (institution) => {
+		const institutionId = institution.item.institution_id;
+		const accountsArray = institution.accounts;
+
+		const info = collateInstitutionInfo(accountsArray);
+		const { institutionBalance, institutionBalanceObject } = info;
+
+		totalSavings += institutionBalance;
+
+		arrayOfObjects.push({
+			institutionId,
+			institutionBalance,
+			institutionBalanceObject
+		});
+	});
+
+	return {
+		arrayOfObjects,
+		totalSavings
+	};
+}
+
+function collateInstitutionInfo(arrayOfAccounts) {
 	let institutionBalance = 0;
 	let institutionBalanceObject = {};
 
@@ -234,32 +260,6 @@ function generateInstitutionMap(arrayOfAccounts) {
 	};
 }
 
-function createData(data) {
-	let arrayOfObjects = [];
-	let totalSavings = 0;
-
-	data.forEach((institution) => {
-		const institutionId = institution.item.institution_id;
-		const accountsArray = institution.accounts;
-
-		const info = generateInstitutionMap(accountsArray);
-		const { institutionBalance, institutionBalanceObject } = info;
-
-		totalSavings += institutionBalance;
-
-		arrayOfObjects.push({
-			institutionId,
-			institutionBalance,
-			institutionBalanceObject
-		});
-	});
-
-	return {
-		arrayOfObjects,
-		totalSavings
-	};
-}
-
 async function resolvePlaidBalance(accessTokensArray: string[]) {
 	let allData = [];
 	for (let i = 0; i < accessTokensArray.length; i++) {
@@ -275,7 +275,7 @@ async function resolvePlaidBalance(accessTokensArray: string[]) {
 
 plaidRouter.get('/linked-accounts', async (req, res) => {
 	try {
-		let banks: string[] = [];
+		let banks: object[] = [];
 
 		// Get Item ID for each access token
 		const itemInfo = req.session.user.accessTokens.map(
@@ -293,12 +293,14 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 
 		// Collate all the institutions into one array
 		data.forEach((place) => {
-			banks.push(place.institution.name);
+			banks.push({
+				[place.institution.institution_id]: place.institution.name
+			});
 		});
 
 		// Send back the array to the client
 		res.json({
-			accounts: banks
+			banks
 		});
 	} catch (err) {
 		console.error(err);
