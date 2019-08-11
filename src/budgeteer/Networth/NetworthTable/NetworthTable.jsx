@@ -23,16 +23,14 @@ export default function NetworthTable(props) {
 					/>
 				))}
 
-				<table>
-					<tbody>
-						<tr className='networth-total'>
-							<td className='networth-total acct-name'>Savings</td>
-							<td className='networth-total acct-value'>
-								${numberWithCommas(formatAmount(props.networth))}
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<div className='container'>
+					<div className='networth--entry'>
+						<p className='acct-name'>Total Savings</p>
+						<p className='acct-value'>
+							${numberWithCommas(formatAmount(props.networth))}
+						</p>
+					</div>
+				</div>
 			</section>
 		);
 	}
@@ -46,30 +44,22 @@ function InstitutionInfo(props) {
 	const institutionInfo = props.institutionInfo;
 
 	return (
-		<table>
-			{/* <thead>
-				<tr>
-					<td className=''>{props.institutionId}</td>
-				</tr>
-			</thead> */}
-
-			<tbody>
-				{Object.keys(institutionInfo).map((acctId, i) => (
-					<tr key={i} className='networth--entry'>
-						<td className='acct-name'>{getDisplayName(acctId)}</td>
-						<td className='acct-value'>
-							$
-							{numberWithCommas(
-								formatAmount(
-									institutionInfo[acctId].accountType === 'credit'
-										? institutionInfo[acctId].accountBalance * -1
-										: institutionInfo[acctId].accountBalance
-								)
-							)}
-						</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
+		<div className='container'>
+			{Object.keys(institutionInfo).map((acctId, i) => (
+				<div key={i} className='networth--entry'>
+					<p className='acct-name'>{getDisplayName(acctId)}</p>
+					<p className='acct-value'>
+						$
+						{numberWithCommas(
+							formatAmount(
+								institutionInfo[acctId].accountType === 'credit'
+									? institutionInfo[acctId].accountBalance * -1
+									: institutionInfo[acctId].accountBalance
+							)
+						)}
+					</p>
+				</div>
+			))}
+		</div>
 	);
 }
