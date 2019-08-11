@@ -19,10 +19,10 @@ class LinkedAccounts extends Component {
 
 	async componentDidMount() {
 		let linkedBanks = await axios.get('/plaid-api/linked-accounts');
-		linkedBanks = linkedBanks.data.data.banks;
+		linkedBanks = linkedBanks.data.banks;
 		linkedBanks = Object.values(linkedBanks); // Only pull out the names of the banks, we don't care about the instituion ids
 		this.setState({
-			linkedBanks: linkedBanks.data.accounts
+			linkedBanks: linkedBanks
 		});
 	}
 
@@ -37,7 +37,7 @@ class LinkedAccounts extends Component {
 		});
 
 		try {
-			const result = await axios.post('/plaid-api/remove-account', {
+			await axios.post('/plaid-api/remove-account', {
 				data: {
 					bankIndex: index,
 					bankName: this.state.linkedBanks[index]

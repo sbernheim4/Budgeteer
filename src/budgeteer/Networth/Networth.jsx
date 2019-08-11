@@ -90,9 +90,9 @@ export default class Networth extends Component {
 	}
 
 	async getInstitutionIds() {
-		const data = await axios.get('/plaid-api/linked-accounts');
-		const institutionNames = data.data.banks;
-		this.institutionNames = institutionNames;
+		let linkedBanks = await axios.get('/plaid-api/linked-accounts');
+		linkedBanks = linkedBanks.data.banks;
+		this.institutionNames = linkedBanks;
 	}
 
 	getRecurringPayments(transactions = []) {

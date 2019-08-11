@@ -5,7 +5,6 @@ import { numberWithCommas, formatAmount, isNumber } from '../../helpers.js';
 import './networthTable.scss';
 
 export default function NetworthTable(props) {
-
 	if (props.accountBalances.length === 0) {
 		return (
 			<div className='networth--loading'>
@@ -14,7 +13,6 @@ export default function NetworthTable(props) {
 			</div>
 		);
 	} else {
-
 		return (
 			<section>
 				{props.accountBalances.map((institution, i) => (
@@ -30,9 +28,7 @@ export default function NetworthTable(props) {
 				<div className='container'>
 					<div className='networth--entry'>
 						<p className='acct-name'>Total Savings</p>
-						<p className='acct-value'>
-							${numberWithCommas(formatAmount(props.networth))}
-						</p>
+						<p className='acct-value'>${numberWithCommas(formatAmount(props.networth))}</p>
 					</div>
 				</div>
 			</section>
@@ -41,29 +37,16 @@ export default function NetworthTable(props) {
 }
 
 function InstitutionInfo(props) {
-
 	function getDisplayName(name) {
 		return props.displayNames.get(name) || '...';
 	}
 
 	const institutionInfo = props.institutionInfo;
-	let name = '';
-
-	for (let i = 0; i < props.institutionNames.length; i++) {
-
-		const institutionId = Object.keys(props.institutionNames[i])[0];
-		const bankName = Object.values(props.institutionNames[i])[0];
-
-		if (institutionId === props.institutionId) {
-			name = bankName;
-			break;
-		}
-
-	}
+	const InstitutionName = props.institutionNames[props.institutionId];
 
 	return (
 		<div className='container'>
-			<h3>{name}</h3>
+			<h3>{InstitutionName}</h3>
 			{Object.keys(institutionInfo).map((acctId, i) => (
 				<div key={i} className='networth--entry'>
 					<p className='acct-name'>{getDisplayName(acctId)}</p>

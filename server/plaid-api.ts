@@ -275,7 +275,7 @@ async function resolvePlaidBalance(accessTokensArray: string[]) {
 
 plaidRouter.get('/linked-accounts', async (req, res) => {
 	try {
-		let banks: object[] = [];
+		let banks: object = {};
 
 		// Get Item ID for each access token
 		const itemInfo = req.session.user.accessTokens.map(
@@ -293,9 +293,7 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 
 		// Collate all the institutions into one array
 		data.forEach((place) => {
-			banks.push({
-				[place.institution.institution_id]: place.institution.name
-			});
+			banks[place.institution.institution_id] = place.institution.name;
 		});
 
 		// Send back the array to the client
@@ -318,6 +316,9 @@ plaidRouter.post('/remove-account', async (req, res) => {
 	const newAccessTokens = [...copyOfAccessTokens.slice(0, i), ...copyOfAccessTokens.slice(i + 1)];
 	const newItemIDs = [...copyOfItemIDs.slice(0, i), ...copyOfItemIDs.slice(i + 1)];
 
+	req.session.user.accessTokens = newAccessTokens;
+	req.session.user.itemID = newItemIDs;
+
 	try {
 		// Update the values in the database
 		await User.update(
@@ -329,18 +330,15 @@ plaidRouter.post('/remove-account', async (req, res) => {
 				}
 			}
 		);
-
-		req.session.user.accessTokens = newAccessTokens;
-		req.session.user.itemID = newItemIDs;
-
-		res.json({
-			status: req.body.data.bankName
-		});
 	} catch (err) {
 		res.status(500).json({
 			ERROR: 'An error has occurred, please refresh the page and try again in a few minutes'
 		});
 	}
+
+	res.json({
+		status: req.body.data.bankName
+	});
 });
 
 async function resolvePlaidTransactions(accessTokensArray: string[], startDate: string, endDate: string) {
