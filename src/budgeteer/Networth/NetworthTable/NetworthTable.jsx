@@ -37,8 +37,8 @@ export default function NetworthTable(props) {
 }
 
 function InstitutionInfo(props) {
-	function getDisplayName(name) {
-		return props.displayNames.get(name) || '...';
+	function getDisplayName(acctId) {
+		return props.displayNames.get(acctId) || props.institutionInfo[acctId].accountName;
 	}
 
 	const institutionInfo = props.institutionInfo;

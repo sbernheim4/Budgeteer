@@ -82,9 +82,11 @@ export default class Networth extends Component {
 
 		const displayNames = new Map();
 
-		serializedDisplayNames.forEach((val) => {
-			displayNames.set(val[0], val[1]);
-		});
+		if (Object.keys(serializedDisplayNames).length > 0) {
+			serializedDisplayNames.forEach((val) => {
+				displayNames.set(val[0], val[1]);
+			});
+		}
 
 		this.displayNames = displayNames;
 	}

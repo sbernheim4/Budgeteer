@@ -38,8 +38,9 @@ class AccountNames extends Component {
 				mapOfAccountNamesToDisplayNames: map
 			});
 		} catch (err) {
-			console.log('Error: ');
-			console.log(err);
+			this.setState({
+				mapOfAccountNamesToDisplayNames: new Map()
+			});
 		}
 	}
 
@@ -59,7 +60,7 @@ class AccountNames extends Component {
 		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || '';
 	}
 
-	handleClick(e) {
+	updateDisplayNames() {
 		const map =
 			this.state.mapOfAccountNamesToDisplayNames !== undefined
 				? this.state.mapOfAccountNamesToDisplayNames
@@ -126,7 +127,7 @@ class AccountNames extends Component {
 						/>
 					</div>
 				))}
-				<button onClick={(e) => this.handleClick(e)} className='account-names--submit'>
+				<button onClick={(e) => this.updateDisplayNames(e)} className='account-names--submit'>
 					Update
 				</button>
 			</div>

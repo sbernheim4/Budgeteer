@@ -244,12 +244,14 @@ function collateInstitutionInfo(arrayOfAccounts) {
 		const accountId = account.account_id;
 		const accountType = account.type;
 		const accountBalance = account.balances.current;
+		const accountName = account.name
 
 		if (accountBalance !== null) {
 			institutionBalance += accountBalance;
 			institutionBalanceObject[accountId] = {
+				accountType,
 				accountBalance,
-				accountType
+				accountName
 			};
 		}
 	});
