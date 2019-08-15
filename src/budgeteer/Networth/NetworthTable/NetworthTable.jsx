@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { numberWithCommas, formatAmount, isNumber } from '../../helpers.js';
+import { numberWithCommas, formatAmount } from '../../helpers.js';
 
 import './networthTable.scss';
 
