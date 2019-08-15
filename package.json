@@ -95,7 +95,7 @@
     "lint": "npm run lintServer; npm run lintCSS",
     "lintCSS": "node_modules/.bin/stylelint --fix src/**/*",
     "lintServer": "node_modules/.bin/eslint --fix server/**.ts",
-    "postinstall": "tsc",
+    "postinstall": "tsc && npm run build:prod",
     "cert": "cd ./server/encryption/ && mkcert --install budgeteer-prod.com"
   }
 }
