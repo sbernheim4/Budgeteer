@@ -15,11 +15,11 @@ export const Home = Loadable({
 });
 
 export const Subpage = Loadable({
-	loader: () => import ('./Subpage/Subpage.jsx'),
+	loader: () => import('./Subpage/Subpage.jsx'),
 	loading: () => <div>Loading...</div>
 });
 
 export const ErrorPage = Loadable({
-	loader: () => import ('./404/404.jsx'),
+	loader: () => import('./404/404.jsx'),
 	loading: () => <div>Loading...</div>
 });

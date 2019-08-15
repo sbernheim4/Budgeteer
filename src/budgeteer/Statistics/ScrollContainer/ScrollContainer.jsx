@@ -10,8 +10,8 @@ export default class ScrollContainer extends Component {
 	}
 
 	scroll(e, dir) {
-		const inner = document.querySelector(".scrollable-elements");
-		const totalNumElements = inner.querySelectorAll(".chart").length;
+		const inner = document.querySelector('.scrollable-elements');
+		const totalNumElements = inner.querySelectorAll('.chart').length;
 		const direction = dir === 'left' ? 1 : -1;
 		const newAmount = calculateTranslationAmount(inner, totalNumElements, direction);
 
@@ -21,7 +21,6 @@ export default class ScrollContainer extends Component {
 	render() {
 		return (
 			<div className='container'>
-
 				<div className='scrollable-elements'>
 					{this.props.elements.map((element, index) => {
 						return (
@@ -32,31 +31,30 @@ export default class ScrollContainer extends Component {
 					})}
 				</div>
 
-				<button onClick={(e) => this.scroll(e, 'left')} className='btn btn--left scroll'>Prev</button>
-				<button onClick={(e) => this.scroll(e, 'right')} className='btn btn--right scroll'>Next</button>
-
+				<button onClick={(e) => this.scroll(e, 'left')} className='btn btn--left scroll'>
+					Prev
+				</button>
+				<button onClick={(e) => this.scroll(e, 'right')} className='btn btn--right scroll'>
+					Next
+				</button>
 			</div>
-		)
+		);
 	}
 }
 
 function calculateTranslationAmount(element, totalNumElements, direction) {
 	const margin = 0; // This should be pulled from the elements style property
-	const innerItemWidth = document.querySelector(".chart").offsetWidth + (margin * 2);
+	const innerItemWidth = document.querySelector('.chart').offsetWidth + margin * 2;
 
 	let currentXTranslateAmt;
 
 	try {
-
-		currentXTranslateAmt = parseInt(element.style.transform.split("(")[1].slice(0, -3));
-
+		currentXTranslateAmt = parseInt(element.style.transform.split('(')[1].slice(0, -3));
 	} catch (err) {
-
 		currentXTranslateAmt = 0;
-
 	}
 
-	const minimumBound = ((totalNumElements * innerItemWidth) - window.innerWidth) * -1;
+	const minimumBound = (totalNumElements * innerItemWidth - window.innerWidth) * -1;
 	const maximumBound = 0;
 
 	let newXTranslateAmt = currentXTranslateAmt + innerItemWidth * direction;
@@ -69,4 +67,3 @@ function calculateTranslationAmount(element, totalNumElements, direction) {
 		return newXTranslateAmt;
 	}
 }
-

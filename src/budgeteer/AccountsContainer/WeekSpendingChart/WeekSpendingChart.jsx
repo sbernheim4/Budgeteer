@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { ResponsiveContainer, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
+import React, { Component } from 'react';
+import { ResponsiveContainer, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryTooltip, VictoryLabel } from 'victory';
 
 import subWeeks from 'date-fns/sub_weeks';
@@ -8,10 +8,9 @@ import differenceInDays from 'date-fns/difference_in_days';
 
 import { numberWithCommas, formatAmount, isNumber } from '../../helpers';
 
-import "./weekSpendingChart.scss";
+import './weekSpendingChart.scss';
 
 class CustomTooltip extends Component {
-
 	render() {
 		const { active } = this.props;
 
@@ -19,13 +18,13 @@ class CustomTooltip extends Component {
 			const { payload, label } = this.props;
 
 			if (payload !== null) {
-				const normalizedLabel = typeof label === "string" ? label : label + " day(s) ago";
+				const normalizedLabel = typeof label === 'string' ? label : label + ' day(s) ago';
 				const amount = numberWithCommas(formatAmount(payload[0].value));
 
 				return (
-					<div className="week-spending-chart--custom-tooltip">
-					<p>{normalizedLabel}</p>
-					<p>${amount}</p>
+					<div className='week-spending-chart--custom-tooltip'>
+						<p>{normalizedLabel}</p>
+						<p>${amount}</p>
 					</div>
 				);
 			}
@@ -35,11 +34,11 @@ class CustomTooltip extends Component {
 
 		return null;
 	}
-};
+}
 
 class WeekSpendingChart extends Component {
 	constructor(props) {
-		super(props)
+		super(props);
 
 		this.state = {
 			victoryChartsData: [],
@@ -52,7 +51,7 @@ class WeekSpendingChart extends Component {
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if (nextProps.transactions.length <= 0) {
-			return null
+			return null;
 		} else {
 			const endDate = new Date();
 			const startDate = subWeeks(endDate, 1);
@@ -80,7 +79,7 @@ class WeekSpendingChart extends Component {
 			if (startingIndex !== 0) {
 				const pastWeekTransactions = nextProps.transactions.slice(startingIndex);
 
-				pastWeekTransactions.forEach(t => {
+				pastWeekTransactions.forEach((t) => {
 					let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 					const index = differenceInDays(endDate, transactionDate);
 
@@ -90,7 +89,7 @@ class WeekSpendingChart extends Component {
 				currentWeekAmounts.reverse();
 			}
 
-			const week = ["Mon.", "Tues.", "Wed.", "Thurs.", "Fri.", "Sat.", "Sun."];
+			const week = ['Mon.', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun.'];
 
 			let data = []; // VictoryCharts Data
 			let data2 = []; // Recharts Data
@@ -103,16 +102,19 @@ class WeekSpendingChart extends Component {
 			let rangeMin = 0;
 
 			for (let i = 0; i < 7; i++) {
-				const amt = parseInt(formatAmount(currentWeekAmounts[i] * -1)) // Multiple by -1 since spending is viewed as positive and income as negative
+				const amt = parseInt(formatAmount(currentWeekAmounts[i] * -1)); // Multiple by -1 since spending is viewed as positive and income as negative
 
 				data.push({
-					x: i === 6 ? "Today" : week[(today + i) % 7],
+					x: i === 6 ? 'Today' : week[(today + i) % 7],
 					y: amt,
-					label: amt < 0 ? `Spent: $${numberWithCommas(formatAmount(amt))}` : `Received $${numberWithCommas(formatAmount(amt))}`
+					label:
+						amt < 0
+							? `Spent: $${numberWithCommas(formatAmount(amt))}`
+							: `Received $${numberWithCommas(formatAmount(amt))}`
 				});
 
 				data2.push({
-					name: i === 6 ? "Today" : week[(today + i) % 7],
+					name: i === 6 ? 'Today' : week[(today + i) % 7],
 					value: currentWeekAmounts[i] * -1 // Multiple by -1 since spending is viewed as positive and income as negative
 				});
 
@@ -132,8 +134,7 @@ class WeekSpendingChart extends Component {
 				rechartsData: data2,
 				totalSpent: pastWeekTotal * -1,
 				range: range
-			}
-
+			};
 		}
 	}
 
@@ -148,17 +149,16 @@ class WeekSpendingChart extends Component {
 	updateDimensions(event) {
 		this.setState({
 			chartWidth: event.target.innerWidth
-		})
+		});
 	}
 
 	formatTooltipText(datum) {
 		const amount = datum.y;
 		const formattedAmount = numberWithCommas(formatAmount(Math.abs(amount)));
-		return amount > 0 ? `Received $${formattedAmount}` : `Spent ${formattedAmount}`
+		return amount > 0 ? `Received $${formattedAmount}` : `Spent ${formattedAmount}`;
 	}
 
 	render() {
-
 		const totalSpent = isNumber(this.state.totalSpent) ? this.state.totalSpent.toFixed(2) : 'Loading...';
 		const amtColor = totalSpent <= 0 && isNumber(totalSpent) ? 'red' : 'green';
 
@@ -166,9 +166,11 @@ class WeekSpendingChart extends Component {
 
 		return (
 			<div>
-				<h1 className='total-spent'>Past 7 Days: <span className={amtColor}>${totalSpent}</span></h1>
+				<h1 className='total-spent'>
+					Past 7 Days: <span className={amtColor}>${totalSpent}</span>
+				</h1>
 
-			{/* <div className='victory-chart'>
+				{/* <div className='victory-chart'>
 					<svg viewBox={"0 0 " + width + " 350"} preserveAspectRatio="none" width="100%">
 						<VictoryChart
 							domain={ {y: this.state.range} }
@@ -216,19 +218,15 @@ class WeekSpendingChart extends Component {
 				</div> */}
 
 				<div className='recharts'>
-					<ResponsiveContainer className="week-spending-chart" width="90%" height={200} >
+					<ResponsiveContainer className='week-spending-chart' width='90%' height={200}>
 						<ComposedChart data={this.state.rechartsData}>
 							<CartesianGrid vertical={false} horizontal={true} />
-
-							<XAxis dataKey="name" tick={{ stroke: 'black' }} /> <YAxis tick={{ stroke: 'black' }} />
-
+							<XAxis dataKey='name' tick={{ stroke: 'black' }} /> <YAxis tick={{ stroke: 'black' }} />
 							<Tooltip content={<CustomTooltip />} />
-
-							<Bar barSize={8} dataKey="value" stackId="a" fill="rgb(78,  153, 114)" />
+							<Bar barSize={8} dataKey='value' stackId='a' fill='rgb(78,  153, 114)' />
 						</ComposedChart>
 					</ResponsiveContainer>
 				</div>
-
 			</div>
 		);
 	}

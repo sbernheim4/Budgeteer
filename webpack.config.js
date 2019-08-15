@@ -3,15 +3,15 @@ const path = require('path');
 const webpack = require('webpack');
 
 /* Used to generate html file from template */
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 /* Used to minify the css after it has been written to its output file */
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
-const nano = require("cssnano");
+const nano = require('cssnano');
 
 /* Used to ensure proper order of SCSS/CSS */
-const StyleLintPlugin = require("stylelint-webpack-plugin");
+const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 const WebpackBar = require('webpackbar');
 
@@ -34,7 +34,6 @@ const serverConfig = {
 		publicPath: '/'
 	},
 	module: {
-
 		rules: [
 			{
 				test: /\.ts$/,
@@ -50,24 +49,20 @@ const serverConfig = {
 		extensions: ['.ts', '.js', '.json']
 	},
 
-	plugins: [
-
-		new webpack.DefinePlugin(envKeys)
-
-	]
-}
+	plugins: [new webpack.DefinePlugin(envKeys)]
+};
 
 const clientConfig = {
 	devtool: 'source-map',
 	entry: {
-		budgeteer: "./src/budgeteer/index.jsx", // Entry point of where webpack should start from
-		home: "./src/home/index.jsx", // Entry point of where webpack should start from
+		budgeteer: './src/budgeteer/index.jsx', // Entry point of where webpack should start from
+		home: './src/home/index.jsx' // Entry point of where webpack should start from
 	},
 	output: {
 		// output build file to /public folder and call the file bundle.js
-		path: __dirname + "/public",
-		filename: "[name].js",
-		publicPath: "/"
+		path: __dirname + '/public',
+		filename: '[name].js',
+		publicPath: '/'
 	},
 	module: {
 		rules: [
@@ -75,7 +70,7 @@ const clientConfig = {
 			{
 				test: /\.jsx$/,
 				exclude: /node_modules/,
-				use: ["babel-loader", "eslint-loader"],
+				use: ['babel-loader', 'eslint-loader']
 			},
 
 			// use sass-loader, css-loader, and style-loader for all scss files
@@ -85,12 +80,12 @@ const clientConfig = {
 			// style-loader - injects css into the browser via style tags
 			{
 				test: /\.scss$/,
-				use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
+				use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
 			},
 
 			{
 				test: /\.css$/,
-				use: ["style-loader", "css-loader", "postcss-loader"]
+				use: ['style-loader', 'css-loader', 'postcss-loader']
 			}
 		]
 	},
@@ -112,19 +107,19 @@ const clientConfig = {
 				target: 'https://budgeteer-prod.com:5000',
 				secure: false
 			},
-			"^/user-info/*": {
+			'^/user-info/*': {
 				target: 'https://budgeteer-prod.com:5000',
 				secure: false
 			},
-			"^/login/**/*": {
+			'^/login/**/*': {
 				target: 'https://budgeteer-prod.com:5000',
 				secure: false
-			},
+			}
 		},
 		historyApiFallback: {
 			index: 'home.html',
 			budgeteer: 'budgeteer.html'
-		},
+		}
 	},
 
 	plugins: [
@@ -134,7 +129,7 @@ const clientConfig = {
 			inject: true,
 			title: 'Budgeteer',
 			chunks: ['budgeteer'],
-			message: "budgeteer",
+			message: 'budgeteer',
 			filename: 'budgeteer.html'
 		}),
 
@@ -142,29 +137,29 @@ const clientConfig = {
 			base: './public/',
 			template: 'HTMLTemplate.js',
 			inject: true,
-			title: "Home",
+			title: 'Home',
 			chunks: ['home'],
-			message: "home",
+			message: 'home',
 			filename: 'home.html'
 		}),
 
 		// Optimizes css by minifying it and removing comments
 		new OptimizeCssAssetsPlugin({
 			cssProcessor: nano,
-			cssProcessorOptions: {discardComments: {removeAll: true} },
+			cssProcessorOptions: { discardComments: { removeAll: true } },
 			canPrint: true
 		}),
 
 		// CSS Linter based on rules set in the .stylelintrc file
 		new StyleLintPlugin({
-			configFile: "./.stylelintrc",
-			files: "./src/scss/*.scss"
+			configFile: './.stylelintrc',
+			files: './src/**/*.scss'
 		}),
 
 		new WebpackBar(),
 
 		new webpack.DefinePlugin(envKeys)
 	]
-}
+};
 
-module.exports = [serverConfig, clientConfig]
+module.exports = [serverConfig, clientConfig];

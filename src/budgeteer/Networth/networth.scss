@@ -1,99 +1,68 @@
 @import '../scss/variables';
-@import '../scss/variables.scss';
+@import '../scss/variables';
+
+.navbar--desktop {
+
+	margin-bottom: 0!important;
+	background: white;
+
+}
+
+.navbar--mobile--header{
+
+	margin-bottom: 0!important;
+	background: white;
+
+}
 
 .networth {
-	position: relative;
-	// margin-top: 70px;
 
-	@media all and (min-width: 801px) {
-		margin-top: 0;
+	position: relative;
+	height: calc(100vh - #{$navbar-height});
+	background-color: $blue;
+
+	@media all and (max-width: 801px) {
+
+		height: calc(100vh - #{$mobile-navbar-height});
+
 	}
 
 	&--loading {
-		padding: 30px;
+
+		padding-top: 30px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 
 		h1 {
+
 			text-align: center;
+
 		}
 
 		img {
+
 			margin-top: 20px;
 			border-radius: 20px;
-		}
-	}
 
-	table {
-		margin: 0 auto;
-		padding: 30px;
-		border-collapse: collapse; // needed to show border on the tr element
-
-		thead {
-
-			tr {
-				border-bottom: 1px solid $red;
-
-				th {
-					width: 200px;
-					padding-bottom: 10px;
-					font-size: 30px;
-					text-align: center;
-				}
-			}
 		}
 
-		tbody {
-
-			tr {
-
-				td {
-					width: 300px;
-					height: 40px;
-					padding: 10px;
-					font-size: 30px;
-					text-align: center;
-				}
-
-				.acct-name {
-					text-align: center;
-				}
-
-				.acct-value {
-
-				}
-
-                .networth-total {
-                    color: white;
-                    background-color: $green;
-                }
-
-			}
-
-            .networth-total {
-                margin-top: 30px;
-            }
-
-			tr:nth-child(even) {
-				background: darken($background-color, 5%);
-			}
-
-			tr:hover {
-				background: darken($background-color, 8%);
-			}
-		}
 	}
 
 	&--recurring-payments {
+
 		margin: 30px;
 		width: 260px;
 
 		hr {
+
 			margin-bottom: 30px;
 			height: 1px;
 			background-color: gray;
+
 		}
+
 	}
+
 }

@@ -1,19 +1,18 @@
 /* eslint no-undefined: 0 */
-import React, { Component } from "react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import React, { Component } from 'react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-import startOfWeek from "date-fns/start_of_week";
-import endOfWeek from "date-fns/end_of_week";
-import differenceInWeeks from "date-fns/difference_in_weeks";
-import differenceInCalendarWeeks from "date-fns/difference_in_calendar_weeks";
-import isSameWeek from "date-fns/is_same_week";
-import isWeekend from "date-fns/is_weekend";
+import startOfWeek from 'date-fns/start_of_week';
+import endOfWeek from 'date-fns/end_of_week';
+import differenceInWeeks from 'date-fns/difference_in_weeks';
+import differenceInCalendarWeeks from 'date-fns/difference_in_calendar_weeks';
+import isSameWeek from 'date-fns/is_same_week';
+import isWeekend from 'date-fns/is_weekend';
 
 import { numberWithCommas, formatAmount } from '../../helpers';
-import "./weekweekendchart.scss";
+import './weekweekendchart.scss';
 
 class CustomTooltip extends Component {
-
 	render() {
 		const { active } = this.props;
 
@@ -24,32 +23,29 @@ class CustomTooltip extends Component {
 			const weekendValue = numberWithCommas(formatAmount(payload[1].value));
 
 			return (
-				<div className="week-weekend-tooltip">
-					<p className="time">{`${label} Week(s) Ago`}</p>
-					<p className="weekday-value">{`Weekday: $${weekdayValue}`}</p>
-					<p className="weekend-value">{`Weekend: $${weekendValue}`}</p>
+				<div className='week-weekend-tooltip'>
+					<p className='time'>{`${label} Week(s) Ago`}</p>
+					<p className='weekday-value'>{`Weekday: $${weekdayValue}`}</p>
+					<p className='weekend-value'>{`Weekend: $${weekendValue}`}</p>
 				</div>
 			);
 		}
 
 		return null;
 	}
-};
-
+}
 
 class WeekWeekendChart extends Component {
-
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			weekVsWeekend: [],
 			transactions: []
-		}
+		};
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
-
 		if (nextProps.transactions.length <= 0) {
 			return null;
 		}
@@ -81,12 +77,11 @@ class WeekWeekendChart extends Component {
 		let weekend = new Array(arrSize).fill(0);
 
 		let counter = 0;
-		pastSixMonths.forEach(t => {
+		pastSixMonths.forEach((t) => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 			// if the transaction date is the same week as the current week
 			if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
-
 				// determine if it goes in the weekend or weekday array
 				if (isWeekend(transactionDate)) {
 					weekend[counter] += t.amount;
@@ -135,32 +130,30 @@ class WeekWeekendChart extends Component {
 				name: i,
 				Weekday: weekday[i],
 				Weekend: weekend[i]
-			})
+			});
 		}
 
 		return {
 			weekVsWeekend: data
-		}
-
+		};
 	}
 
 	render() {
-
 		return (
 			<section className='chart'>
 				<h1>Week vs Weekend Spending</h1>
-				<ResponsiveContainer className="week-weekend" width="100%" height={400} >
+				<ResponsiveContainer className='week-weekend' width='100%' height={400}>
 					<BarChart data={this.state.weekVsWeekend}>
-						<CartesianGrid vertical={false} horizontal={true}/>
+						<CartesianGrid vertical={false} horizontal={true} />
 
-						<XAxis reversed tick={{stroke: 'black'}}/>
-						<YAxis tick={{stroke: 'black'}}/>
+						<XAxis reversed tick={{ stroke: 'black' }} />
+						<YAxis tick={{ stroke: 'black' }} />
 
-						<Tooltip content={<CustomTooltip/>}/>
+						<Tooltip content={<CustomTooltip />} />
 						<Legend />
 
-						<Bar dataKey="Weekday" stackId="a" fill="rgb(77,  153, 114)" />
-						<Bar dataKey="Weekend" stackId="a" fill="rgb(52, 108, 161)" />
+						<Bar dataKey='Weekday' stackId='a' fill='rgb(77,  153, 114)' />
+						<Bar dataKey='Weekend' stackId='a' fill='rgb(52, 108, 161)' />
 					</BarChart>
 				</ResponsiveContainer>
 			</section>

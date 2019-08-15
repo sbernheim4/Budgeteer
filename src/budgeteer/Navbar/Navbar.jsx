@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 // Font Awesome base package
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Selective icons from Font Awesome
 import {
@@ -14,26 +14,24 @@ import {
 	faMoneyBillAlt,
 	faCogs,
 	faPlus
-} from '@fortawesome/free-solid-svg-icons'
+} from '@fortawesome/free-solid-svg-icons';
 
-import "./navbar.scss";
+import './navbar.scss';
 
 class Navbar extends Component {
-
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			handler: {
-				user: "..."
+				user: '...'
 			}
-		}
+		};
 
 		this.addAccount = this.addAccount.bind(this);
 	}
 
 	async componentDidMount() {
-
 		const keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
 		const plaid = Plaid.create({
@@ -42,10 +40,10 @@ class Navbar extends Component {
 			env: keyAndEnv.data.env,
 			product: ['transactions'],
 			key: keyAndEnv.data.publicKey,
-			onSuccess: function (public_token) {
+			onSuccess: function(public_token) {
 				axios({
-					method: "POST",
-					url: "/plaid-api/get-access-token",
+					method: 'POST',
+					url: '/plaid-api/get-access-token',
 					data: {
 						public_token: public_token,
 						client_id: `${process.env.PLAID_CLIENT_ID}`,
@@ -55,7 +53,7 @@ class Navbar extends Component {
 			}
 		});
 
-		let name = await axios.get("/user-info/name");
+		let name = await axios.get('/user-info/name');
 		name = name.data;
 
 		this.setState({
@@ -70,28 +68,28 @@ class Navbar extends Component {
 		// Clear out local and session storage --> Storing networth info
 		window.localStorage.clear();
 		window.sessionStorage.clear();
-		console.log("LOCAL AND SESSION STORAGE CLEARED");
+		console.log('LOCAL AND SESSION STORAGE CLEARED');
 	}
 
 	toggleMenu() {
-		const navbarLinks = document.querySelector(".navbar--mobile--links");
+		const navbarLinks = document.querySelector('.navbar--mobile--links');
 
-		navbarLinks.classList.toggle("navbar--mobile--links__active");
+		navbarLinks.classList.toggle('navbar--mobile--links__active');
 
 		// Control the height of the body if the navbar is opened or closed
-		if (navbarLinks.classList.contains("navbar--mobile--links__active")) {
-			document.querySelector("body").style.maxHeight = "100vh";
-			document.querySelector("body").style.overflowY = "hidden";
+		if (navbarLinks.classList.contains('navbar--mobile--links__active')) {
+			document.querySelector('body').style.maxHeight = '100vh';
+			document.querySelector('body').style.overflowY = 'hidden';
 		} else {
-			document.querySelector("body").style.maxHeight = null;
-			document.querySelector("body").style.overflowY = null;
+			document.querySelector('body').style.maxHeight = null;
+			document.querySelector('body').style.overflowY = null;
 		}
 	}
 
 	closeMenu() {
-		const navbarMenu = document.querySelector(".navbar--mobile--links");
-		if (navbarMenu.classList.contains("navbar--mobile--links__active")) {
-			navbarMenu.classList.remove("navbar--mobile--links__active");
+		const navbarMenu = document.querySelector('.navbar--mobile--links');
+		if (navbarMenu.classList.contains('navbar--mobile--links__active')) {
+			navbarMenu.classList.remove('navbar--mobile--links__active');
 		}
 	}
 
@@ -100,11 +98,21 @@ class Navbar extends Component {
 			<nav className='navbar'>
 				<div className='navbar--desktop'>
 					<ul>
-						<li><Link to='/'>Home</Link></li>
-						<li><Link to='/transactions'>Transactions</Link></li>
-						<li><Link to='/statistics'>Statistics</Link></li>
-						<li><Link to='/networth'>Networth</Link></li>
-						<li><Link to='/settings'>Settings</Link></li>
+						<li>
+							<Link to='/'>Home</Link>
+						</li>
+						<li>
+							<Link to='/transactions'>Transactions</Link>
+						</li>
+						<li>
+							<Link to='/statistics'>Statistics</Link>
+						</li>
+						<li>
+							<Link to='/networth'>Savings</Link>
+						</li>
+						<li>
+							<Link to='/settings'>Settings</Link>
+						</li>
 					</ul>
 
 					<div>
@@ -112,26 +120,55 @@ class Navbar extends Component {
 					</div>
 				</div>
 
-				<div className="navbar--mobile">
-					<div className="navbar--mobile--header">
-						<Link to='/' onClick={this.closeMenu}> <FontAwesomeIcon className="icon" icon={faHome}/> </Link>
+				<div className='navbar--mobile'>
+					<div className='navbar--mobile--header'>
+						<Link to='/' onClick={this.closeMenu}>
+							{' '}
+							<FontAwesomeIcon className='icon' icon={faHome} />{' '}
+						</Link>
 						<h2>Budgeteer</h2>
-						<FontAwesomeIcon className="icon" icon={faBars} onClick={this.toggleMenu}/>
+						<FontAwesomeIcon className='icon' icon={faBars} onClick={this.toggleMenu} />
 					</div>
 
 					<div className='navbar--mobile--links'>
-
-						<div className="navbar--mobile--links--profile">
-							<img src="https://via.placeholder.com/50x50" />
+						<div className='navbar--mobile--links--profile'>
+							<img src='https://via.placeholder.com/50x50' />
 							<h3>{this.state.name}</h3>
 						</div>
 
-						<Link to='/transactions' className="first" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faExchangeAlt}/>Your Transactions</div></Link>
-						<Link to='/statistics' className="second" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faChartPie}/>Your Statistics</div></Link>
-						<Link to='/networth' className="third" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faMoneyBillAlt}/>Your Networth</div></Link>
+						<Link to='/transactions' className='first' onClick={this.toggleMenu}>
+							<div className='link-container'>
+								<FontAwesomeIcon icon={faExchangeAlt} />
+								Your Transactions
+							</div>
+						</Link>
+
+						<Link to='/statistics' className='second' onClick={this.toggleMenu}>
+							<div className='link-container'>
+								<FontAwesomeIcon icon={faChartPie} />
+								Your Statistics
+							</div>
+						</Link>
+
+						<Link to='/networth' className='third' onClick={this.toggleMenu}>
+							<div className='link-container'>
+								<FontAwesomeIcon icon={faMoneyBillAlt} />
+								Your Accounts
+							</div>
+						</Link>
 						<hr />
-						<Link to='/settings' className="fourth" onClick={this.toggleMenu}><div className="link-container" ><FontAwesomeIcon icon={faCogs}/>Your Settings</div></Link>
-						<a className="fifth" onClick={this.addAccount}><div className="link-container"><FontAwesomeIcon icon={faPlus}/>Add Account</div></a>
+						<Link to='/settings' className='fourth' onClick={this.toggleMenu}>
+							<div className='link-container'>
+								<FontAwesomeIcon icon={faCogs} />
+								Your Settings
+							</div>
+						</Link>
+						<a className='fifth' onClick={this.addAccount}>
+							<div className='link-container'>
+								<FontAwesomeIcon icon={faPlus} />
+								Link Bank Account
+							</div>
+						</a>
 					</div>
 				</div>
 			</nav>

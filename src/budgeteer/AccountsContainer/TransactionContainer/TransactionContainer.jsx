@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import Transaction from "./Transaction/Transaction.jsx";
+import React, { Component } from 'react';
+import Transaction from './Transaction/Transaction.jsx';
 
 import { numberWithCommas } from '../../helpers';
 
-import "./transactionContainer.scss";
+import './transactionContainer.scss';
 
 class TransactionContainer extends Component {
 	constructor(props) {
-		super(props)
+		super(props);
 
 		// let initialNum = this.props.transactions.length < 10 ? this.props.transactions.length : 10
 		let transactions = this.props.transactions.slice(-10).reverse();
@@ -17,25 +17,25 @@ class TransactionContainer extends Component {
 			transactionsToDisplay: transactions
 		};
 
-		this.showMoreItems = this.showMoreItems.bind(this);
+		this.displayMoreTransactions = this.displayMoreTransactions.bind(this);
 	}
 
 	componentDidMount() {
-		window.addEventListener("scroll", () => {
+		window.addEventListener('scroll', () => {
 			if (this.state.transactionsToDisplay.length !== this.props.transactions.length) {
-				const num = document.documentElement.scrollTop + document.body.scrollTop;
-				const denom = (document.documentElement.scrollHeight - document.documentElement.clientHeight)
-				const percent = num / denom * 100;
+				const numerator = document.documentElement.scrollTop + document.body.scrollTop;
+				const denominator = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+				const percent = (numerator / denominator) * 100;
 
-				if (percent > .75 ) {
-					this.showMoreItems();
+				if (percent > 0.75) {
+					this.displayMoreTransactions();
 				}
 			}
 		});
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener("scroll", () => {});
+		window.removeEventListener('scroll', () => {});
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -45,7 +45,7 @@ class TransactionContainer extends Component {
 		});
 	}
 
-	showMoreItems() {
+	displayMoreTransactions() {
 		if (this.state.num + 20 > this.props.transactions.length) {
 			// if there are fewer than n transactions left --> Don't want to go over limit
 			this.setState({
@@ -65,14 +65,28 @@ class TransactionContainer extends Component {
 
 	render() {
 		const amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
-		const transactionInfo = this.props.categoryType ? <h2 className="transaction--totals">{this.props.categoryType}: <span className={amtColor}>${numberWithCommas(this.props.categoryTotal * -1)}</span></h2> : '';
+		const transactionInfo = this.props.categoryType ? (
+			<h2 className='transaction--totals'>
+				{this.props.categoryType}:{' '}
+				<span className={amtColor}>${numberWithCommas(this.props.categoryTotal * -1)}</span>
+			</h2>
+		) : (
+			''
+		);
 
 		return (
-			<section className="transaction-container">
-				<h1>{this.props.title || ""}</h1>
+			<section className='transaction-container'>
+				<h1>{this.props.title || ''}</h1>
 				{transactionInfo}
-				<div className="transactions">
-					{this.state.transactionsToDisplay.map( (t, index) => <Transaction key={index} accounts={this.props.accounts} transaction={t} displayNames={this.props.displayNames} /> )}
+				<div className='transactions'>
+					{this.state.transactionsToDisplay.map((t, index) => (
+						<Transaction
+							key={index}
+							accounts={this.props.accounts}
+							transaction={t}
+							displayNames={this.props.displayNames}
+						/>
+					))}
 				</div>
 			</section>
 		);

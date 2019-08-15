@@ -20,20 +20,20 @@ export const Home = Loadable({
 });
 
 export const Networth = Loadable({
-	loader: () => import ('./Networth/Networth.jsx'),
+	loader: () => import('./Networth/Networth.jsx'),
 	loading: () => <div>Loading...</div>
 });
 
 export const Settings = Loadable({
-	loader: () => import ('./Settings/Settings.jsx'),
+	loader: () => import('./Settings/Settings.jsx'),
 	loading: () => <div>Loading...</div>
 });
 
 export const Statistics = Loadable({
-	loader: () => import ('./Statistics/Statistics.jsx'),
+	loader: () => import('./Statistics/Statistics.jsx'),
 	loading: () => <div>Loading...</div>
 });
 export const AccountsContainer = Loadable({
-	loader: () => import ('./AccountsContainer/AccountsContainer.jsx'),
+	loader: () => import('./AccountsContainer/AccountsContainer.jsx'),
 	loading: () => <div>Loading...</div>
 });

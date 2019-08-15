@@ -8,9 +8,11 @@ import IUser from './db/interfaces/IUser';
 const userInfoRouter = express.Router();
 const User = mongoose.model('User');
 
-userInfoRouter.use(bodyParser.urlencoded({
-	extended: false
-}));
+userInfoRouter.use(
+	bodyParser.urlencoded({
+		extended: false
+	})
+);
 
 userInfoRouter.use(bodyParser.json());
 
@@ -22,14 +24,14 @@ userInfoRouter.get('/profile', (req, res) => {
 userInfoRouter.get('/monthly-budget', async (req, res) => {
 	// Send back monthly budget from session variable or 0 if it doesn't exist
 	if (req.session.user.monthlyBudget) {
-		res.json({'monthlyBudget': req.session.user.monthlyBudget});
+		res.json({ monthlyBudget: req.session.user.monthlyBudget });
 	} else {
 		try {
 			const userData: IUser = await User.findOne({ _id: req.session.user._id }, () => {});
 			if (userData.monthlyBudget === undefined) {
 				throw new Error('No monthly budget found');
 			} else {
-				res.json({'monthlyBudget': userData.monthlyBudget});
+				res.json({ monthlyBudget: userData.monthlyBudget });
 			}
 		} catch (err) {
 			console.log(err);
@@ -51,7 +53,6 @@ userInfoRouter.post('/monthly-budget', (req, res) => {
 	res.status(204).end();
 });
 
-
 userInfoRouter.get('/name', (req, res) => {
 	// Send back user's name
 	res.send(req.session.user.name);
@@ -59,15 +60,11 @@ userInfoRouter.get('/name', (req, res) => {
 
 userInfoRouter.get('/last-accessed', async (req, res) => {
 	if (req.session.user.lastAccessed !== undefined) {
-
 		const lastAccessed = new Date(req.session.user.lastAccessed);
 
 		res.send(lastAccessed);
-
 	} else {
-
 		try {
-
 			const record: IUser = await User.findOne({
 				_id: req.session.user._id
 			});
@@ -75,8 +72,7 @@ userInfoRouter.get('/last-accessed', async (req, res) => {
 			const date = new Date(record.lastAccessed);
 
 			res.send(date);
-
-		} catch(err) {
+		} catch (err) {
 			console.error(err);
 
 			res.json('ERROR');
@@ -85,7 +81,6 @@ userInfoRouter.get('/last-accessed', async (req, res) => {
 });
 
 userInfoRouter.post('/last-accessed', (req, res) => {
-
 	const date = req.body.date;
 
 	User.updateOne({ _id: req.session.user._id }, { lastAccessed: date.toString() }, () => {});
@@ -94,7 +89,6 @@ userInfoRouter.post('/last-accessed', (req, res) => {
 	req.session.save(() => {});
 
 	res.status(204).end();
-
 });
 
 userInfoRouter.get('/display-names', async (req, res) => {
@@ -116,9 +110,11 @@ userInfoRouter.get('/display-names', async (req, res) => {
 
 			// Send it back to the client
 			res.json(serializedMap);
-		} catch(err) {
+		} catch (err) {
 			// TODO: Send back some kind of error for the front end to parse
-			res.status(404).json('Error in GET /user-info/display-names').end();
+			res.status(404)
+				.json('Error in GET /user-info/display-names')
+				.end();
 			console.error(err);
 		}
 	}

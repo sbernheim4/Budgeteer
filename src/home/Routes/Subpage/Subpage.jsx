@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 class Subpage extends Component {
 	constructor(props) {
@@ -7,7 +7,7 @@ class Subpage extends Component {
 
 	render() {
 		return (
-			<div className="subpage">
+			<div className='subpage'>
 				<h1>Welcome to the subpage</h1>
 			</div>
 		);

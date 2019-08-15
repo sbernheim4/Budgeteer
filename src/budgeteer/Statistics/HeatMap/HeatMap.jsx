@@ -1,9 +1,8 @@
 /* eslint no-undefined: 0 */
-import React, { Component } from "react";
-import GoogleMap from "./GoogleMap/GoogleMap.jsx";
+import React, { Component } from 'react';
+import GoogleMap from './GoogleMap/GoogleMap.jsx';
 
-import "./heatmap.scss";
-
+import './heatmap.scss';
 
 class HeatMap extends Component {
 	constructor(props) {
@@ -12,23 +11,18 @@ class HeatMap extends Component {
 		this.state = {
 			map: {},
 			heatmap: {}
-		}
+		};
 	}
 
-	componentDidMount() {
-
-	}
+	componentDidMount() {}
 
 	render() {
 		return (
-			<div className="heatmap">
-
+			<div className='heatmap'>
 				<GoogleMap />
-
 			</div>
-		)
+		);
 	}
-
 }
 
 export default HeatMap;

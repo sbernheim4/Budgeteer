@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { Component } from "react";
-import Budget from "./BudgetChart/BudgetChart.jsx";
+import React, { Component } from 'react';
+import Budget from './BudgetChart/BudgetChart.jsx';
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
 import { formatAmount, numberWithCommas } from '../helpers';
 import './home.scss';
@@ -10,7 +10,7 @@ class Home extends Component {
 		super(props);
 
 		this.state = {
-			total: window.sessionStorage.getItem("total") || "...",
+			total: window.sessionStorage.getItem('total') || '...',
 			transactions: []
 		};
 	}
@@ -24,12 +24,12 @@ class Home extends Component {
 
 		return {
 			transactions: sortedTransactions.slice(0, 3)
-		}
+		};
 	}
 
 	async componentDidMount() {
 		let data = await axios({
-			method: "GET",
+			method: 'GET',
 			url: '/plaid-api/balance'
 		});
 
@@ -47,45 +47,50 @@ class Home extends Component {
 				clientName: 'Budgeteer',
 				product: ['transactions'],
 				token: data.publicToken,
-				onSuccess: function (public_token, metadata) {
-					console.log("Update of Account successful");
+				onSuccess: function(public_token, metadata) {
+					console.log('Update of Account successful');
 				},
-				onExit: function (err, metadata) {
-					console.log("err:", err);
-					console.log("metadata:", metadata);
+				onExit: function(err, metadata) {
+					console.log('err:', err);
+					console.log('metadata:', metadata);
 				}
 			});
 
 			plaid.open();
 		} else {
-			data = numberWithCommas(formatAmount(data.networth));
+			const { serializedTotalSavings } = data;
+			const totalSavings = new Number(serializedTotalSavings);
+			const savings = numberWithCommas(formatAmount(totalSavings));
 			this.setState({
-				total: data
+				total: savings
 			});
 
-			window.sessionStorage.setItem("total", data);
+			//window.sessionStorage.setItem('total', data);
 		}
 	}
 
 	render() {
-
 		let text;
 
 		if (this.props.loading) {
-			text = <div className="home--loading"><h1>Loading...</h1><img src='./loading-gifs/loading-one.gif' alt='loading' /></div>
+			text = (
+				<div className='home--loading'>
+					<h1>Loading...</h1>
+					<img src='./loading-gifs/loading-one.gif' alt='loading' />
+				</div>
+			);
 		} else {
-			text = "";
+			text = '';
 		}
 
 		return (
-			<div className="home">
+			<div className='home'>
 				{text}
 
 				<h1>Your Snapshot</h1>
 
-				<div className="home--snapshot">
-
-					<div className="home--snapshot--monthly-budget">
+				<div className='home--snapshot'>
+					<div className='home--snapshot--monthly-budget'>
 						<h2>Monthly Budget</h2>
 						<Budget displayInput={false} transactions={this.props.transactions} />
 					</div>
@@ -94,7 +99,6 @@ class Home extends Component {
 						<h2>Recent Transactions</h2>
 						<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
 					</div>
-
 				</div>
 			</div>
 		);
