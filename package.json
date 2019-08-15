@@ -85,9 +85,8 @@
     "node": "8.9.3"
   },
   "scripts": {
-    "start": "concurrently \"npm run wds\" \"npm run server\"",
+    "start": "node server/index.js",
     "wds": "./node_modules/.bin/webpack-dev-server --open --hot",
-    "docker": "docker-compose up",
     "server": "concurrently \"npm run tsc\" \"nodemon --watch server server/index.js\"",
     "tsc": "tsc --watch --p ./tsconfig.json",
     "build:dev": "./node_modules/.bin/webpack",
