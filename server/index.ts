@@ -46,10 +46,14 @@ if (process.env.DB_URI) {
 app.use(sessionInfo);
 /***************** DB Options ******************/
 
-const options = {
-	key: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com-key.pem')),
-	cert: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com.pem'))
-};
+let options = {};
+
+if (process.env.NODE_ENV !== 'production') {
+	options = {
+		key: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com-key.pem')),
+		cert: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com.pem'))
+	};
+}
 
 /****************** Server Options ******************/
 const cacheTime = 172800000; // 2 Days
@@ -144,6 +148,12 @@ if (process.env.DB_URI && process.env.DB_URI !== '') {
 }
 
 function startServer() {
-	https.createServer(options, app).listen(process.env.PORT);
-	console.log(chalk.blue(`App is live on ${process.env.DEV_BASE_URL}`));
+	if (process.env.NODE_ENV !== 'production') {
+		https.createServer(options, app).listen(process.env.PORT);
+		console.log(chalk.blue(`App is live on ${process.env.DEV_BASE_URL}`));
+	} else {
+		app.listen(process.env.PORT, () => {
+			console.log('Started server');
+		});
+	}
 }
