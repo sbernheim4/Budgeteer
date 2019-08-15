@@ -14,7 +14,7 @@ export default function NetworthTable(props) {
 		);
 	} else {
 		return (
-			<section>
+			<section className='networth-table'>
 				{props.accountBalances.map((institution, i) => (
 					<InstitutionInfo
 						key={i}
