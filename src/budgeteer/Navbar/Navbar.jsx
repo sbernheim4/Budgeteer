@@ -126,7 +126,7 @@ class Navbar extends Component {
 							{' '}
 							<FontAwesomeIcon className='icon' icon={faHome} />{' '}
 						</Link>
-						<h2>Budgeteer</h2>
+						<h3>Budgeteer</h3>
 						<FontAwesomeIcon className='icon' icon={faBars} onClick={this.toggleMenu} />
 					</div>
 
