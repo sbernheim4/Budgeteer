@@ -81,11 +81,10 @@ class AccountsContainer extends Component {
 	}
 
 	componentWillReceiveProps() {
-		// On first load show all transactions by default for the user
-		this.getAccountTransactions('all');
+		this.getAccountTransactions();
 	}
 
-	getAccountTransactions(account_id) {
+	getAccountTransactions(account_id = 'all') {
 		let releventTransactions = [];
 		let type;
 		let total = 0;
@@ -125,8 +124,7 @@ class AccountsContainer extends Component {
 		const now = new Date();
 		const nowString = this.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + now.getFullYear();
 		const prevString = this.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + (now.getFullYear() - 1);
-		const categoryType =
-			type === 'All Categories' ? prevString + ' - ' + nowString : this.getAccountDisplayName(account_id, type);
+		const categoryType = type === 'All Categories' ? prevString + ' - ' + nowString : this.getAccountDisplayName(account_id, type);
 
 		this.setState({
 			categoryTransactions: releventTransactions,
@@ -238,12 +236,12 @@ class AccountsContainer extends Component {
 		}
 	}
 
-	searchByKeyword(searchTerm = 'all') {
+	searchByKeyword(searchTerm) {
 
 		const normalizedKeyWord = searchTerm.toLowerCase().trim();
 
-		if (normalizedKeyWord === 'all') {
-			return this.getAccountTransactions('all');
+		if (normalizedKeyWord === '') {
+			return this.getAccountTransactions();
 		}
 
 		const matchingTransactions = this.props.transactions.filter((transaction) => {
@@ -251,11 +249,8 @@ class AccountsContainer extends Component {
 			return normalizedTransactionName.includes(normalizedKeyWord);
 		});
 
-
-		let categoryTotal = matchingTransactions.reduce((accumulator, transaction) => {
-			return accumulator + transaction.amount
-		}, 0);
-		categoryTotal = formatAmount(categoryTotal);
+		const categoryTotal = matchingTransactions.reduce((accumulator, transaction) => accumulator + transaction.amount, 0);
+		const formattedCategoryTotal = formatAmount(categoryTotal);
 
 		const sortedTransactions = matchingTransactions.sort((a, b) => {
 			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
@@ -263,12 +258,12 @@ class AccountsContainer extends Component {
 			return dateOne - dateTwo;
 		});
 
-		//const categoryType = toTitleCase(searchTerm);
+		const categoryType = toTitleCase(searchTerm);
 
 		this.setState({
 			categoryTransactions: sortedTransactions,
-			categoryType: searchTerm,
-			categoryTotal
+			categoryType,
+			categoryTotal: formattedCategoryTotal
 		});
 
 	}
