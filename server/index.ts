@@ -29,7 +29,7 @@ import startDb from './db';
 const app = express();
 
 /****************** DB Options ******************/
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true });
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const sessionInfo = session({
 	secret: 'jfadhsnfijhu]0i32iekn245u280ur32U0JFL2342fdsaANSL',

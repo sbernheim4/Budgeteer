@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import isSameMonth from 'date-fns/is_same_month';
-import isSameYear from 'date-fns/is_same_year';
+import isSameMonth from 'date-fns/isSameMonth';
+import isSameYear from 'date-fns/isSameYear';
 
 import Budget from './BudgetChart/budgetCharts.jsx';
 import WeekWeekendChart from './WeekWeekendChart/WeekWeekendChart.jsx';
