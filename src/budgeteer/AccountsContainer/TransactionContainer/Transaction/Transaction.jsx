@@ -111,7 +111,7 @@ class Transaction extends Component {
 
 		return (
 			<div className='transaction'>
-				<div className='container'>
+				<div className='transaction__inner-container'>
 					<FontAwesomeIcon className='icon' icon={this.getCategoryIcon(normalizedCategory)} />
 
 					<div className='name-info'>
