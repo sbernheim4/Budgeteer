@@ -239,43 +239,42 @@ class AccountsContainer extends Component {
 	}
 
 	searchByKeyword(searchTerm = 'all') {
-		let categoryTotal = 0;
-		let matchingTransactions = [];
-		const normalizedKeyWord = searchTerm.toLowerCase();
+
+		const normalizedKeyWord = searchTerm.toLowerCase().trim();
 
 		if (normalizedKeyWord === 'all') {
-			this.getAccountTransactions('all');
-			return;
-		} else {
-			this.props.transactions.forEach((t) => {
-				let normalizedTransactionName = t.name.toLowerCase();
-				if (normalizedTransactionName.includes(normalizedKeyWord)) {
-					categoryTotal += t.amount;
-					matchingTransactions.push(t);
-				}
-			});
+			return this.getAccountTransactions('all');
 		}
 
+		const matchingTransactions = this.props.transactions.filter((transaction) => {
+			const normalizedTransactionName = transaction.name.toLowerCase().trim();
+			return normalizedTransactionName.includes(normalizedKeyWord);
+		});
+
+
+		let categoryTotal = matchingTransactions.reduce((accumulator, transaction) => {
+			return accumulator + transaction.amount
+		}, 0);
 		categoryTotal = formatAmount(categoryTotal);
 
-		// Sort the transactions newest to oldest
-		matchingTransactions.sort((a, b) => {
+		const sortedTransactions = matchingTransactions.sort((a, b) => {
 			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
 			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateOne - dateTwo;
 		});
 
-		const categoryType = toTitleCase(searchTerm);
+		//const categoryType = toTitleCase(searchTerm);
 
 		this.setState({
-			categoryTransactions: matchingTransactions,
-			categoryType,
+			categoryTransactions: sortedTransactions,
+			categoryType: searchTerm,
 			categoryTotal
 		});
+
 	}
 
 	getKeyword(e) {
-		let searchTerm = e.target.value.trim();
+		let searchTerm = e.target.value;
 
 		this.searchByKeyword(searchTerm);
 
