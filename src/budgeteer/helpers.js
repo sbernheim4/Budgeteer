@@ -6,9 +6,10 @@ export function formatAmount(amt) {
 	return (Math.round(amt * 100) / 100).toFixed(2);
 }
 
-export function toTitleCase(str) {
-	if (str === "" || str === null) return "";
-	return str.toLowerCase().split(' ').map(word => {
+export function toTitleCase(string) {
+	if (string === "" || string === null) return "";
+	const normalizedString = string.trim();
+	return normalizedString.toLowerCase().split(' ').map(word => {
 		return word.replace(word[0], word[0].toUpperCase());
 	}).join(' ');
 }
