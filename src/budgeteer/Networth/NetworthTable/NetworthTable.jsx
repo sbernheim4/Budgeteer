@@ -25,7 +25,7 @@ export default function NetworthTable(props) {
 					/>
 				))}
 
-				<div className='container'>
+				<div className='institution-container'>
 					<div className='networth--entry networth--total'>
 						<p className='acct-name'>Total Savings</p>
 						<p className='acct-value'>${numberWithCommas(formatAmount(props.networth))}</p>
@@ -45,7 +45,7 @@ function InstitutionInfo(props) {
 	const InstitutionName = props.institutionNames[props.institutionId];
 
 	return (
-		<div className='container'>
+		<div className='institution-container'>
 			<h3>{InstitutionName}</h3>
 			{Object.keys(institutionInfo).map((acctId, i) => (
 				<div key={i} className='networth--entry'>

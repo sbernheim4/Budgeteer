@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toTitleCase } from '../../../budgeteer/helpers.js';
 
@@ -11,19 +10,14 @@ class LoginButton extends Component {
 	}
 
 	render() {
-		const hrefURL = process.env.DEV_BASE_URL + '/login/' + this.props.company;
-		const className = 'login-btn login-btn__' + this.props.company;
+		const hrefURL = `${process.env.DEV_BASE_URL}/login/${this.props.company}`;
+		const className = `login-btn login-btn__${this.props.company}`;
 
 		return (
-			<div className={className}>
-				<p>
-					<a href={hrefURL}>
-						{' '}
-						<FontAwesomeIcon className='icon' icon={this.props.logo} />
-						Login with {toTitleCase(this.props.company)}
-					</a>
-				</p>
-			</div>
+			<a className={className} href={hrefURL}>
+				<FontAwesomeIcon className='icon' icon={this.props.logo} />
+				Login with {toTitleCase(this.props.company)}
+			</a>
 		);
 	}
 }
