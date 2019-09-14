@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 import subMonths from 'date-fns/subMonths';
-import isWithinRange from 'date-fns/isWithinRange';
 
 import { formatAmount, numberWithCommas } from '../../helpers';
 

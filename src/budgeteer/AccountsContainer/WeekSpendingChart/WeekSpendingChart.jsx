@@ -3,7 +3,7 @@ import { ResponsiveContainer, ComposedChart, CartesianGrid, XAxis, YAxis, Toolti
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryTooltip, VictoryLabel } from 'victory';
 
 import subWeeks from 'date-fns/subWeeks';
-import isWithinRange from 'date-fns/isWithinRange';
+import isWithinInterval from 'date-fns/isWithinInterval';
 import differenceInDays from 'date-fns/differenceInDays';
 
 import { numberWithCommas, formatAmount, isNumber } from '../../helpers';
@@ -62,7 +62,7 @@ class WeekSpendingChart extends Component {
 				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 				// Get the index of the first transaction to fall inside this week's range
-				if (isWithinRange(transactionDate, startDate, endDate)) {
+				if (isWithinInterval(transactionDate, startDate, endDate)) {
 					startingIndex = index;
 					break;
 				}

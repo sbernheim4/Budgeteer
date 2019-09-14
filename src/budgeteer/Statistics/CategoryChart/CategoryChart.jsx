@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan } from 'recharts';
 import subMonths from 'date-fns/subMonths';
-import isWithinRange from 'date-fns/isWithinRange';
+import isWithinInterval from 'date-fns/isWithinInterval';
 
 import { numberWithCommas, formatAmount } from '../../helpers';
 
@@ -93,7 +93,7 @@ class CategoryChart extends Component {
 		this.props.transactions.forEach((t) => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-			if (isWithinRange(transactionDate, oneMonthAgo, now)) {
+			if (isWithinInterval(transactionDate, oneMonthAgo, now)) {
 				let category = (t.category || [''])[0];
 				let amount = t.amount;
 				// TODO: Try cleaning up the switch statements to something like this
