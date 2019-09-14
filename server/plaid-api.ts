@@ -3,7 +3,6 @@ require('dotenv').config();
 import express, { Request, Response, NextFunction } from 'express';
 import chalk from 'chalk';
 import bodyParser from 'body-parser';
-import moment from 'moment';
 import plaid from 'plaid';
 import mongoose from 'mongoose';
 
@@ -118,23 +117,15 @@ plaidRouter.post('/get-access-token', async (req: Request, res: Response) => {
 
 // Get Transaction information
 plaidRouter.get('/transactions', async (req: Request, res) => {
-	// Default to past 30 days if no specific date is specified
-	const days = req.body.days === undefined ? 30 : req.body.days; // eslint-disable-line no-undefined
 
-	// Use passed in start and end dates, otherwise default to the last `days` number of days
-	let startDate = req.body.startDate
-		? moment(new Date(req.body.startDate)).format('YYYY-MM-DD')
-		: moment()
-				.subtract(days, 'days')
-				.format('YYYY-MM-DD');
-
-	let endDate = req.body.endDate
-		? moment(new Date(req.body.endDate)).format('YYYY-MM-DD')
-		: moment().format('YYYY-MM-DD');
+	const startDate = req.query.startDate;
+	const endDate = req.query.endDate;
 
 	try {
-		// let totalData = await Promise.all(promiseArray);
-		let totalData = await resolvePlaidTransactions(req.session.user.accessTokens, startDate, endDate);
+
+		const accessTokens = req.session.user.accessTokens;
+		const totalData = await resolvePlaidTransactions(accessTokens, startDate, endDate);
+
 		if (totalData instanceof Error) {
 			console.log(chalk.blue('-----------------------------------------'));
 			console.log('TRANSACTIONS We got an error!!!');
@@ -165,10 +156,6 @@ plaidRouter.get('/transactions', async (req: Request, res) => {
 		console.log(chalk.red('--------------------------------------'));
 	}
 });
-
-interface networkMap {
-	[key: string]: Number | string;
-}
 
 plaidRouter.get('/balance', async (req: Request, res) => {
 	let bankData;
