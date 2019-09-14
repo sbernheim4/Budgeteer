@@ -258,7 +258,7 @@ class AccountsContainer extends Component {
 			return dateOne - dateTwo;
 		});
 
-		const categoryType = toTitleCase(searchTerm);
+		//const categoryType = toTitleCase(searchTerm);
 
 		this.setState({
 			categoryTransactions: sortedTransactions,
