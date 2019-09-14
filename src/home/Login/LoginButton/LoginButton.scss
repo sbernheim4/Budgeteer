@@ -3,23 +3,16 @@
 	width: 400px;
 	height: 50px;
 	border-radius: 5px;
+	font-size: 25px;
+	color: white;
 	cursor: pointer;
 
 	display: flex;
 	align-items: center;
+	text-decoration: none;
 
-	p {
-		font-size: 25px;
-		color: white;
-
-		a {
-			text-decoration: none;
-			color: white;
-
-			.icon {
-				margin: 0 15px;
-			}
-		}
+	.icon {
+		margin: 0 15px;
 	}
 
 	&__facebook {
