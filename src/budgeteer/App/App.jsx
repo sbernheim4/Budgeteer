@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import axios from 'axios';
-
 import differenceInDays from 'date-fns/difference_in_days';
-import addMonths from 'date-fns/add_months';
-import startOfMonth from 'date-fns/start_of_month';
 
 import BannerMessage from '../BannerMessage/BannerMessage.jsx';
 import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';
@@ -65,22 +62,29 @@ class App extends Component {
 
 	// Get transactions for the past year and store them in the state
 	async getTransactions() {
+
 		try {
-			let now = new Date(); // Jan. 12th 2018
-			let prev = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()); // Jan. 12th 2017
 
-			prev = addMonths(prev, 1); // Feb. 12th 2017
-			prev = startOfMonth(prev); // Feb 1st 2017
+			const now = new Date(); // Jan. 12th 2018
+			const year = now.getFullYear();
+			let month = (now.getMonth() + 1).toString();
+			let day = now.getDate().toString();
 
-			let numDays = differenceInDays(now, prev); // Get the number of days difference between now and about a year ago
+			month = month.length === 1 ? `0${month}` : month;
+			day = day.length === 1 ? `0${day}` : day;
 
-			let transactions = await axios.get('/plaid-api/transactions', {
-				days: numDays
+			const startDate = `${year - 1}-${month}-${day}`;
+			const endDate = `${year}-${month}-${day}`;
+
+			let transactions = await axios({
+				method: 'get',
+				url: `/plaid-api/transactions?startDate=${startDate}&endDate=${endDate}`,
 			});
 
 			transactions = transactions.data;
 
 			if (transactions.Error) {
+
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 				keyAndEnv = keyAndEnv.data;
 
@@ -104,12 +108,15 @@ class App extends Component {
 				});
 
 				plaid.open();
+
 			} else {
 				// Store transactions in local storage for future use
 				window.localStorage.setItem('allData', JSON.stringify(transactions));
 
 				await this.storeAccounts(transactions); // Store account info in state
 				await this.storeTransactions(transactions); // store transaction info in state
+
+				console.log(transactions);
 			}
 
 			// Counter used to know when components have loaded
@@ -134,12 +141,15 @@ class App extends Component {
 		let currentTransactionIds = this.state.transaction_ids;
 
 		data.forEach((bank) => {
+
 			// Add all the transactions for the new bank the user just selected
 			bank.transactions.forEach((t) => {
+
 				if (!currentTransactionIds.has(t.transaction_id)) {
 					currentTransactionIds.add(t.transaction_id);
 					currentTransactions.push(t);
 				}
+
 			});
 		});
 

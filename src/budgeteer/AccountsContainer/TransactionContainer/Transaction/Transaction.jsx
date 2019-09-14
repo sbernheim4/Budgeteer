@@ -103,7 +103,7 @@ class Transaction extends Component {
 
 		const normalizedDate = formatDate(date);
 		const normalizedName = toTitleCase(name);
-		const normalizedCategory = category && category !== null ? category[0] : (category = 'Null');
+		const normalizedCategory = category && category !== null ? category[0] : 'Null';
 		const amtColor = amount > 0 ? 'amount--amt' : 'amount--amt__green';
 
 		let normalizedAmount = formatAmount(amount * -1);
