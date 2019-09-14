@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan } from 'recharts';
-import subMonths from 'date-fns/sub_months';
-import isWithinRange from 'date-fns/is_within_range';
+import subMonths from 'date-fns/subMonths';
+import isWithinRange from 'date-fns/isWithinRange';
 
 import { numberWithCommas, formatAmount } from '../../helpers';
 

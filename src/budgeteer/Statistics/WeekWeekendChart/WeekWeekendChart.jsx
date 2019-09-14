@@ -2,12 +2,12 @@
 import React, { Component } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-import startOfWeek from 'date-fns/start_of_week';
-import endOfWeek from 'date-fns/end_of_week';
-import differenceInWeeks from 'date-fns/difference_in_weeks';
-import differenceInCalendarWeeks from 'date-fns/difference_in_calendar_weeks';
-import isSameWeek from 'date-fns/is_same_week';
-import isWeekend from 'date-fns/is_weekend';
+import startOfWeek from 'date-fns/startOfWeek';
+import endOfWeek from 'date-fns/endOfWeek';
+import differenceInWeeks from 'date-fns/differenceInWeeks';
+import differenceInCalendarWeeks from 'date-fns/differenceInCalendarWeeks';
+import isSameWeek from 'date-fns/isSameWeek';
+import isWeekend from 'date-fns/isWeekend';
 
 import { numberWithCommas, formatAmount } from '../../helpers';
 import './weekweekendchart.scss';

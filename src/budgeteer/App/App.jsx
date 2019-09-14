@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import axios from 'axios';
-import differenceInDays from 'date-fns/difference_in_days';
+import differenceInDays from 'date-fns/differenceInDays';
 
 import BannerMessage from '../BannerMessage/BannerMessage.jsx';
 import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';

@@ -3,8 +3,8 @@ import axios from 'axios';
 import { ResponsiveContainer, Label, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
 
-import isSameMonth from 'date-fns/is_same_month';
-import isSameYear from 'date-fns/is_same_year';
+import isSameMonth from 'date-fns/isSameMonth';
+import isSameYear from 'date-fns/isSameYear';
 
 import { formatAmount, numberWithCommas } from '../../helpers.js';
 

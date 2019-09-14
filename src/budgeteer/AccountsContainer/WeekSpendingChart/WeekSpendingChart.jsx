@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { ResponsiveContainer, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryTooltip, VictoryLabel } from 'victory';
 
-import subWeeks from 'date-fns/sub_weeks';
-import isWithinRange from 'date-fns/is_within_range';
-import differenceInDays from 'date-fns/difference_in_days';
+import subWeeks from 'date-fns/subWeeks';
+import isWithinRange from 'date-fns/isWithinRange';
+import differenceInDays from 'date-fns/differenceInDays';
 
 import { numberWithCommas, formatAmount, isNumber } from '../../helpers';
 
