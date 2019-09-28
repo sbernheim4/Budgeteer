@@ -93,7 +93,7 @@ class CategoryChart extends Component {
 		this.props.transactions.forEach((t) => {
 			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
-			if (isWithinInterval(transactionDate, oneMonthAgo, now)) {
+			if (isWithinInterval(transactionDate, { start: oneMonthAgo, end: now } )) {
 				let category = (t.category || [''])[0];
 				let amount = t.amount;
 				// TODO: Try cleaning up the switch statements to something like this
