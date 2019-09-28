@@ -12,8 +12,8 @@ export default class Networth extends Component {
 		super(props);
 
 		this.state = {
-			savings: 0, // Keep track of total savings
-			accountBalances: [], // Map of account name to its balance
+			savings: 0,
+			accountBalances: [],
 			loading: true
 		};
 
@@ -147,6 +147,7 @@ export default class Networth extends Component {
 	render() {
 		return (
 			<div className='networth'>
+
 				<NetworthTable
 					savings={this.state.savings}
 					displayNames={this.displayNames}
@@ -154,16 +155,7 @@ export default class Networth extends Component {
 					institutionNames={this.institutionNames}
 				/>
 
-					{/*
-				<div className='networth--recurring-payments'>
-
-					<h2>Recurring Payments</h2>
-					<hr />
-					{recurringPayments}
-
-				</div>
-				*/}
-					</div>
+			</div>
 		);
 	}
 }
