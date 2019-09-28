@@ -116,7 +116,6 @@ class App extends Component {
 				await this.storeAccounts(transactions); // Store account info in state
 				await this.storeTransactions(transactions); // store transaction info in state
 
-				console.log(transactions);
 			}
 
 			// Counter used to know when components have loaded
