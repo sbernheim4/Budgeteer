@@ -38,12 +38,12 @@ export default class Networth extends Component {
 
 	}
 
-	async getSavingsFromServer() {
+	async getSavingsDataFromServer() {
 
-		const request = await axios.get('/plaid-api/balance');
-		const data = request.data;
+		const savingsDataRequest = await axios.get('/plaid-api/balance');
+		const savingsData = savingsDataRequest.data;
 
-		if (data.Error) {
+		if (savingsData.Error) {
 
 			const keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
@@ -53,7 +53,7 @@ export default class Networth extends Component {
 				env: keyAndEnv.data.env,
 				product: ['balance'],
 				key: keyAndEnv.data.publicKey,
-				token: data.publicToken,
+				token: savingsData.publicToken,
 				onSuccess: function(public_token) {
 					console.log('Update of Account successful');
 				}
@@ -62,7 +62,7 @@ export default class Networth extends Component {
 			plaid.open();
 		}
 
-		const { totalSavings, arrayOfObjects } = data;
+		const { totalSavings, arrayOfObjects } = savingsData;
 
 		return {
 			totalSavings,
@@ -71,7 +71,7 @@ export default class Networth extends Component {
 
 	}
 
-	storeSavingsData(totalSavings, bankInfo) {
+	cacheSavingsData(totalSavings, bankInfo) {
 
 		const serializedBankInfo = JSON.stringify(bankInfo);
 
@@ -102,9 +102,9 @@ export default class Networth extends Component {
 
 		} else {
 
-			const data = await this.getSavingsFromServer();
+			const savingsData = await this.getSavingsDataFromServer();
 
-			const { totalSavings, bankInfo } = data;
+			const { totalSavings, bankInfo } = savingsData;
 
 			this.setState({
 				savings: totalSavings,
@@ -112,7 +112,7 @@ export default class Networth extends Component {
 				loading: false
 			});
 
-			this.storeSavingsData(totalSavings, bankInfo);
+			this.cacheSavingsData(totalSavings, bankInfo);
 
 		}
 
