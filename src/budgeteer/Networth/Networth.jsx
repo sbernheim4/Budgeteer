@@ -103,7 +103,6 @@ export default class Networth extends Component {
 		} else {
 
 			const savingsData = await this.getSavingsDataFromServer();
-
 			const { totalSavings, bankInfo } = savingsData;
 
 			this.setState({
@@ -145,7 +144,9 @@ export default class Networth extends Component {
 	}
 
 	render() {
+
 		return (
+
 			<div className='networth'>
 
 				<NetworthTable
@@ -156,6 +157,9 @@ export default class Networth extends Component {
 				/>
 
 			</div>
+
 		);
+
 	}
+
 }
