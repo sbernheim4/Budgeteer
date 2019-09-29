@@ -107,7 +107,8 @@ class AccountNames extends Component {
 
 	render() {
 		return (
-			<div className='accounts'>
+			<div className='account-names-container'>
+
 				<BannerMessage
 					text={'Your account names have been updated'}
 					display={this.state.displayBannerMessage}
@@ -115,6 +116,7 @@ class AccountNames extends Component {
 				/>
 
 				<h1>Account Nicknames</h1>
+
 				{this.state.accounts.map((acct, index) => (
 					<div className='account-names' key={index}>
 						<h3 className='account-names--name'>{acct.name}</h3>
@@ -127,9 +129,11 @@ class AccountNames extends Component {
 						/>
 					</div>
 				))}
+
 				<button onClick={(e) => this.updateDisplayNames(e)} className='account-names--submit'>
 					Update
 				</button>
+
 			</div>
 		);
 	}

@@ -17,9 +17,6 @@ $name-font-size: 20px;
 	@media all and (max-width: 700px) {
 		margin: 0;
 		width: 100%;
-		border-left: none;
-		border-bottom: 1px solid #cecece;
-		border-radius: 0;
 		box-shadow: none;
 	}
 
@@ -85,6 +82,7 @@ $name-font-size: 20px;
 		}
 
 		.amount {
+			margin: 0 10px;
 			width: 70px;
 			display: flex;
 			flex-direction: column;
