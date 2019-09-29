@@ -27,7 +27,7 @@ export function jsonToMap(jsonStr) {
 }
 
 export function formatDate(date) {
-	const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."];
+	const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
 	const stringDate = JSON.stringify(date);
 

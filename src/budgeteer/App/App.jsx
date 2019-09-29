@@ -66,24 +66,25 @@ class App extends Component {
 		try {
 
 			const now = new Date(); // Jan. 12th 2018
-			const year = now.getFullYear();
-			let month = (now.getMonth() + 1).toString();
-			let day = now.getDate().toString();
+			const currentYear = now.getFullYear();
+			let currentMonth = (now.getMonth() + 1).toString();
+			let currentDay = now.getDate().toString();
 
-			month = month.length === 1 ? `0${month}` : month;
-			day = day.length === 1 ? `0${day}` : day;
+			currentMonth = currentMonth.length === 1 ? `0${currentMonth}` : currentMonth;
+			currentDay = currentDay.length === 1 ? `0${currentDay}` : currentDay;
 
-			const startDate = `${year - 1}-${month}-${day}`;
-			const endDate = `${year}-${month}-${day}`;
+			const startDate = `${currentYear - 1}-${currentMonth}-${currentDay}`;
+			const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
-			let transactions = await axios({
+			let transactionsRequest = await axios({
 				method: 'get',
 				url: `/plaid-api/transactions?startDate=${startDate}&endDate=${endDate}`,
 			});
 
-			transactions = transactions.data;
+			const { data } = transactionsRequest;
+			const { Error: plaidError, publicToken } = data;
 
-			if (transactions.Error) {
+			if (plaidError) {
 
 				let keyAndEnv = await axios.get('/plaid-api/key-and-env');
 				keyAndEnv = keyAndEnv.data;
@@ -95,7 +96,7 @@ class App extends Component {
 					apiVersion: 'v2',
 					clientName: 'Budgeteer',
 					product: ['transactions'],
-					token: transactions.publicToken,
+					token: publicToken,
 					onSuccess: function(public_token, metadata) {
 						console.log('Update of Account successful');
 						console.log('public_token:', public_token);
@@ -110,11 +111,11 @@ class App extends Component {
 				plaid.open();
 
 			} else {
-				// Store transactions in local storage for future use
-				window.localStorage.setItem('allData', JSON.stringify(transactions));
 
-				await this.storeAccounts(transactions); // Store account info in state
-				await this.storeTransactions(transactions); // store transaction info in state
+				window.localStorage.setItem('allData', JSON.stringify(data));
+
+				await this.storeAccounts(data);
+				await this.storeTransactions(data);
 
 			}
 
