@@ -25,9 +25,10 @@
 
 		margin: 30px auto;
 		max-width: 1560px;
+		padding: 0 30px;
 		display: flex;
 		flex-direction: row;
-		justify-content: center;
+		justify-content: space-between;
 		flex-wrap: wrap;
 
 		@media all and (max-width: 1199px) {
