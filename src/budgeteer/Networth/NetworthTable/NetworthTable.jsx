@@ -5,16 +5,25 @@ import { numberWithCommas, formatAmount } from '../../helpers.js';
 import './networthTable.scss';
 
 export default function NetworthTable(props) {
-	if (props.accountBalances.length === 0) {
+	const accountBalancesLoaded = props.accountBalances.length > 0;
+
+	if (!accountBalancesLoaded) {
+
 		return (
+
 			<div className='networth--loading'>
 				<h1>Hang tight, getting your data from the cloud</h1>
 				<img src='/loading-gifs/loading-three.gif' alt='loading' />
 			</div>
+
 		);
+
 	} else {
+
 		return (
+
 			<section className='networth-table'>
+
 				{props.accountBalances.map((institution, i) => (
 					<InstitutionInfo
 						key={i}
@@ -31,9 +40,13 @@ export default function NetworthTable(props) {
 						<p className='acct-value'>${numberWithCommas(formatAmount(props.savings))}</p>
 					</div>
 				</div>
+
 			</section>
+
 		);
+
 	}
+
 }
 
 function InstitutionInfo(props) {
@@ -47,7 +60,9 @@ function InstitutionInfo(props) {
 	return (
 		<div className='institution-container'>
 			<h3>{InstitutionName}</h3>
+
 			{Object.keys(institutionInfo).map((acctId, i) => (
+
 				<div key={i} className='networth--entry'>
 					<p className='acct-name'>{getDisplayName(acctId)}</p>
 					<p className='acct-value'>
@@ -61,7 +76,11 @@ function InstitutionInfo(props) {
 						)}
 					</p>
 				</div>
+
 			))}
+
 		</div>
+
 	);
+
 }

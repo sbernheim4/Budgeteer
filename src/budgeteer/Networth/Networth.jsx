@@ -7,6 +7,7 @@ import NetworthTable from './NetworthTable/NetworthTable.jsx';
 import './networth.scss';
 
 export default class Networth extends Component {
+
 	constructor(props) {
 
 		super(props);

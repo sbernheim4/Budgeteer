@@ -196,9 +196,11 @@ class App extends Component {
 		return (
 			<div>
 				<Navbar />
+
 				<BannerMessage display={this.state.showErrorMessage} text={this.state.errorMessage} />
 
 				<div className='main'>
+
 					<Route
 						exact
 						path='/'
