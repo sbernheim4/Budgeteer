@@ -32,10 +32,10 @@ export default class Networth extends Component {
 		const serializedEntryTime = window.localStorage.getItem(`${this.cacheKeyPrefix}--entryTime`);
 		const entryTime = new Date(serializedEntryTime);
 		const now = new Date();
-		const timeElapsed = differenceInDays(entryTime, now);
+		const timeElapsedInDays = differenceInDays(now, entryTime);
 		const thresholdInDays = 4;
 
-		return timeElapsed > thresholdInDays;
+		return timeElapsedInDays > thresholdInDays;
 
 	}
 
