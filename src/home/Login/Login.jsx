@@ -15,7 +15,7 @@ class Login extends Component {
 		return (
 			<div className='login'>
 				<div className='login__buttons'>
-					<LoginButton logo={faFacebook} company={'facebook'} />
+					<LoginButton text={"Continue with Facebook"} logo={faFacebook} company={'facebook'} />
 					<LoginButton logo={faGoogle} company={'google'} />
 				</div>
 			</div>

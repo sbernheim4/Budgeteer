@@ -1,34 +1,25 @@
 @import '../scss/variables';
-@import '../scss/variables';
 
 .navbar--desktop {
-
 	margin-bottom: 0!important;
 	background: white;
-
 }
 
 .navbar--mobile--header{
-
 	margin-bottom: 0!important;
 	background: white;
-
 }
 
 .networth {
-
 	position: relative;
 	height: calc(100vh - #{$navbar-height});
 	background-color: $blue;
 
 	@media all and (max-width: 801px) {
-
 		height: calc(100vh - #{$mobile-navbar-height});
-
 	}
 
 	&--loading {
-
 		padding-top: 30px;
 		display: flex;
 		flex-direction: column;
@@ -36,33 +27,24 @@
 		align-items: center;
 
 		h1 {
-
 			text-align: center;
-
 		}
 
 		img {
-
 			margin-top: 20px;
 			border-radius: 20px;
-
 		}
 
 	}
 
 	&--recurring-payments {
-
 		margin: 30px;
 		width: 260px;
 
 		hr {
-
 			margin-bottom: 30px;
 			height: 1px;
 			background-color: gray;
-
 		}
-
 	}
-
 }

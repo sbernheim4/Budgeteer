@@ -1,5 +1,3 @@
-/* eslint no-undefined: "off" */
-
 import dotenv from 'dotenv';
 dotenv.config();
 

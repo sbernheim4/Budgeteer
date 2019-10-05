@@ -1,18 +1,27 @@
 .login-btn {
 	margin-bottom: 10px;
-	width: 400px;
-	height: 50px;
 	border-radius: 5px;
 	font-size: 25px;
 	color: white;
 	cursor: pointer;
-
+	text-decoration: none;
 	display: flex;
 	align-items: center;
-	text-decoration: none;
+
+	@media all and (max-width: 452px) {
+		font-size: 5vw;
+	}
+
+	@media all and (max-width: 323px) {
+		font-size: 4.8vw;
+	}
 
 	.icon {
 		margin: 0 15px;
+	}
+
+	p {
+		padding: 10px 35px 10px 5px;
 	}
 
 	&__facebook {
