@@ -7,6 +7,7 @@ import axios from 'axios';
 import './linkedAccounts.scss';
 
 class LinkedAccounts extends Component {
+
 	constructor(props) {
 		super(props);
 
@@ -37,12 +38,13 @@ class LinkedAccounts extends Component {
 		});
 
 		try {
-			await axios.post('/plaid-api/remove-account', {
-				data: {
-					bankIndex: index,
-					bankName: this.state.linkedBanks[index]
-				}
-			});
+
+			//await axios.post('/plaid-api/remove-account', {
+				//data: {
+					//bankIndex: index,
+					//bankName: this.state.linkedBanks[index]
+				//}
+			//});
 
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]

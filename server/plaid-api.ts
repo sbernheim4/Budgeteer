@@ -263,7 +263,9 @@ async function resolvePlaidBalance(accessTokensArray: string[]) {
 }
 
 plaidRouter.get('/linked-accounts', async (req, res) => {
+
 	try {
+
 		let banks: object = {};
 
 		// Get Item ID for each access token
@@ -289,9 +291,13 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 		res.json({
 			banks
 		});
+
 	} catch (err) {
+
 		console.error(err);
+
 	}
+
 });
 
 plaidRouter.post('/remove-account', async (req, res) => {

@@ -24,8 +24,8 @@ class Settings extends Component {
 			}
 		});
 
-		let result;
 		try {
+            // let result;
 			// result = await axios.post('/plaid-api/remove-account', {
 			// 	data: {
 			// 		bankIndex: index,
