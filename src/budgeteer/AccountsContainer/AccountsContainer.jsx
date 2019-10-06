@@ -62,57 +62,72 @@ class AccountsContainer extends Component {
 	}
 
 	async componentDidMount() {
+
 		await this.getDisplayNames();
 
 		this.getAccountTransactions('all');
+
 	}
 
 	async getDisplayNames() {
+
 		try {
+
 			let displayNames = await axios.get('/user-info/display-names');
 			displayNames = displayNames.data;
 			displayNames = jsonToMap(displayNames);
 
 			this.displayNames = displayNames;
+
 		} catch (err) {
+
 			console.log('ERROR');
 			console.log(err);
+
 		}
 	}
 
 	componentWillReceiveProps() {
+
 		this.getAccountTransactions();
+
 	}
 
 	getAccountTransactions(account_id = 'all') {
+
 		let releventTransactions = [];
 		let type;
 		let total = 0;
 
 		if (account_id === 'all') {
+
 			releventTransactions = this.props.transactions;
 			type = 'All Categories';
+
 		} else {
+
 			releventTransactions = this.props.transactions.filter((t) => {
 				return t.account_id === account_id;
 			});
+
 		}
 
-		releventTransactions.forEach((transaction) => {
-			total += transaction.amount;
-		});
-
+		total = releventTransactions.reduce((acc, transaction) => transaction.amount + acc, 0);
 		total = formatAmount(total);
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		// Get the account name based on what the ID is ex: Checking Account, Savings Account, Credit Card etc.
 		if (type === undefined) {
+
 			this.props.accounts.forEach((account) => {
+
 				if (account.account_id === account_id) {
 					type = account.name;
 					return;
 				}
+
 			});
+
 		}
 
 		releventTransactions.sort((a, b) => {
@@ -124,13 +139,17 @@ class AccountsContainer extends Component {
 		const now = new Date();
 		const nowString = this.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + now.getFullYear();
 		const prevString = this.months[now.getMonth()] + '  ' + now.getDate() + '.  ' + (now.getFullYear() - 1);
-		const categoryType = type === 'All Categories' ? prevString + ' - ' + nowString : this.getAccountDisplayName(account_id, type);
+
+		const categoryType = type === 'All Categories' ?
+			prevString + ' - ' + nowString :
+			this.getAccountDisplayName(account_id, type);
 
 		this.setState({
 			categoryTransactions: releventTransactions,
 			categoryType: categoryType,
 			categoryTotal: total
 		});
+
 	}
 
 	getCategoryTransactions(categoryString) {
@@ -138,27 +157,30 @@ class AccountsContainer extends Component {
 
 		// Other displays transactions with a category of null
 		if (categoryString === 'Other') {
+
 			releventTransactions = this.props.transactions.filter((t) => {
 				t.category === null ||
 					t.category[0] === 'Bank Fees' ||
 					t.category[0] === 'Cash Advance' ||
 					t.category[0] === 'Tax';
 			});
+
 		} else {
-			releventTransactions = this.props.transactions.filter(
-				(t) => t.category !== null && t.category[0] === categoryString
-			);
+
+			releventTransactions = this.props.transactions.filter((t) => {
+				return t.category !== null && t.category[0] === categoryString
+			});
+
 		}
 
 		// Get the total spent for the current Category
 		let total = 0;
+
 		releventTransactions.forEach((transaction) => {
 			total += transaction.amount;
 		});
 
 		total = formatAmount(total);
-
-		// this.openCategoryViewer();
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
@@ -180,10 +202,8 @@ class AccountsContainer extends Component {
 	}
 
 	getAccountDisplayName(accountID, defaultName) {
-		let x = this.displayNames;
-		if (x === undefined) return defaultName;
 
-		return x.get(accountID) || defaultName;
+		return this.displayNames === undefined ? defaultName : this.displayNames.get(accountID);
 	}
 
 	async searchByDate(e) {
@@ -316,13 +336,14 @@ class AccountsContainer extends Component {
 						<form onSubmit={(e) => e.preventDefault()}>
 							<input
 								type='text'
-								placeholder='Search by transaction name'
+								placeholder='Search transactions'
 								value={this.state.keyWord}
 								onChange={(e) => {
 									this.getKeyword(e);
 								}}
 							/>
 						</form>
+
 					</div>
 
 					<div className='accounts--search-options--icon-search'>
@@ -532,6 +553,7 @@ class AccountsContainer extends Component {
 				</div>
 
 				<WeekSpendingChart transactions={this.state.categoryTransactions} />
+
 				<TransactionContainer
 					categoryType={this.state.categoryType}
 					categoryTotal={this.state.categoryTotal}

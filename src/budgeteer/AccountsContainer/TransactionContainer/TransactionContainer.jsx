@@ -46,29 +46,39 @@ class TransactionContainer extends Component {
 	}
 
 	displayMoreTransactions() {
-		if (this.state.num + 20 > this.props.transactions.length) {
-			// if there are fewer than n transactions left --> Don't want to go over limit
-			this.setState({
-				transactionsToDisplay: this.props.transactions.reverse(),
-				num: this.props.transactions.length
-			});
-		} else {
-			// if there are n or more transactions left
-			let relevent = this.props.transactions.slice(-(this.state.num + 20)).reverse();
 
-			this.setState({
-				transactionsToDisplay: relevent,
-				num: this.state.num + 20
-			});
+		let transactionsToDisplay;
+		let num;
+
+		if (this.state.num + 20 > this.props.transactions.length) {
+
+			transactionsToDisplay = this.props.transactions.reverse();
+			num = this.props.transactions.length;
+
+		} else {
+
+			// if there are n or more transactions left
+			transactionsToDisplay = this.props.transactions.slice(-(this.state.num + 20)).reverse();
+			num = this.state.num + 20;
+
 		}
+
+		this.setState({
+			transactionsToDisplay,
+			num
+		});
+
 	}
 
 	render() {
+
 		const amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
+		const amount = numberWithCommas(this.props.categoryTotal * -1);
+
 		const transactionInfo = this.props.categoryType ? (
 			<h2 className='transaction--totals'>
 				{this.props.categoryType}:{' '}
-				<span className={amtColor}>${numberWithCommas(this.props.categoryTotal * -1)}</span>
+				<span className={amtColor}>${amount}</span>
 			</h2>
 		) : (
 			''
@@ -77,7 +87,9 @@ class TransactionContainer extends Component {
 		return (
 			<section className='transaction-container'>
 				<h1>{this.props.title || ''}</h1>
+
 				{transactionInfo}
+
 				<div className='transactions'>
 					{this.state.transactionsToDisplay.map((t, index) => (
 						<Transaction
