@@ -22,28 +22,23 @@
 	}
 
 	.transactions {
-
 		margin: 30px auto;
 		max-width: 1560px;
 		display: flex;
 		flex-direction: row;
-		justify-content: space-between;
+		justify-content: space-around;
 		flex-wrap: wrap;
 
 		@media all and (max-width: 1199px) {
-
 			margin-top: 15px;
 			border-radius: 5px;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-
 		}
 
 		@media all and (max-width: 600px) {
-
 			border-radius: 0;
-
 		}
 
 		button {
