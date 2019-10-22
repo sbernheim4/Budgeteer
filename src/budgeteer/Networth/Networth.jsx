@@ -90,7 +90,7 @@ export default class Networth extends Component {
 		const serializedTotalSavings = window.localStorage.getItem(`${this.cacheKeyPrefix}--totalSavings`);
 		const serializedBankInfo = window.localStorage.getItem(`${this.cacheKeyPrefix}--arrayOfInstitutionInfo`);
 
-		if (!this.isLocalStorageStale() && serializedBankInfo && serializedTotalSavings) {
+		if (!this.isLocalStorageStale() && serializedBankInfo !== 'undefined' && serializedTotalSavings !== 'undefined') {
 
 			const totalSavings = new Number(serializedTotalSavings);
 			const bankInfo = JSON.parse(serializedBankInfo);

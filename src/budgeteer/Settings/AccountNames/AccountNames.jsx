@@ -1,6 +1,8 @@
 /*eslint no-undefined: 0*/
 import React, { Component } from 'react';
 import axios from 'axios';
+
+import { toTitleCase } from './../../helpers';
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
 import './accountNames.scss';
@@ -57,7 +59,11 @@ class AccountNames extends Component {
 	}
 
 	getDisplayName(account_id) {
-		return this.state.mapOfAccountNamesToDisplayNames.get(account_id) || '';
+
+        const accountName = this.state.mapOfAccountNamesToDisplayNames.get(account_id) || '';
+
+        return toTitleCase(accountName);
+
 	}
 
 	updateDisplayNames() {

@@ -36,9 +36,9 @@ h1 {
 		margin: 0 10px;
 		width: 35%;
 		padding: 10px;
+		border-radius: 10px;
 		font-size: 18px;
 		color: black;
-		outline: 1px solid rgb(50, 50, 50);
 	}
 
 	&--submit {
@@ -63,12 +63,4 @@ h1 {
 			box-shadow: 0 0 darken($green, 10%);
 		}
 	}
-}
-
-.account-names:nth-child(2n+1) {
-	background: lighten($background-color, 5%);
-}
-
-.account-names:nth-child(2n) {
-	background: darken($background-color, 2%);
 }
