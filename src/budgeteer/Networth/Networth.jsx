@@ -33,7 +33,7 @@ export default class Networth extends Component {
 		const entryTime = new Date(serializedEntryTime);
 		const now = new Date();
 		const timeElapsedInDays = differenceInDays(now, entryTime);
-		const thresholdInDays = 4;
+		const thresholdInDays = 1;
 
 		return timeElapsedInDays > thresholdInDays;
 
