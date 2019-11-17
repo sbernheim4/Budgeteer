@@ -234,7 +234,13 @@ function collateInstitutionInfo(arrayOfAccounts) {
 		const accountName = account.name;
 
 		if (accountBalance !== null) {
-			institutionBalance += accountBalance;
+
+			if (accountType === 'credit') {
+				institutionBalance -= accountBalance;
+			} else {
+				institutionBalance += accountBalance;
+			}
+
 			institutionBalanceObject[accountId] = {
 				accountType,
 				accountBalance,
