@@ -50,12 +50,20 @@ export default function NetworthTable(props) {
 }
 
 function InstitutionInfo(props) {
+
 	function getDisplayName(acctId) {
 		return props.displayNames.get(acctId) || props.institutionInfo[acctId].accountName;
 	}
 
 	const institutionInfo = props.institutionInfo;
 	const InstitutionName = props.institutionNames[props.institutionId];
+
+	let total = 0;
+
+	for (const account in props.institutionInfo) {
+		const accountInfo = props.institutionInfo[account];
+		total += accountInfo.accountBalance;
+	}
 
 	return (
 		<div className='institution-container'>
@@ -75,6 +83,7 @@ function InstitutionInfo(props) {
 							)
 						)}
 					</p>
+					<p className='acct-percentage'>{Math.round(institutionInfo[acctId].accountBalance / total * 100, 2)}%</p>
 				</div>
 
 			))}
