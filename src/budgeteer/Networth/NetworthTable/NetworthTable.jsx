@@ -38,6 +38,7 @@ export default function NetworthTable(props) {
 		for (const accountId in a.props.institutionInfo) {
 			totalOne += a.props.institutionInfo[accountId].accountBalance;
 		}
+
 		for (const accountId in b.props.institutionInfo) {
 			totalTwo += b.props.institutionInfo[accountId].accountBalance;
 		}
