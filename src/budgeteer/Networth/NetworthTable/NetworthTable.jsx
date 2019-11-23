@@ -14,36 +14,34 @@ export default function NetworthTable(props) {
 				<h1>Hang tight, getting your data from the cloud</h1>
 				<img src='/loading-gifs/loading-three.gif' alt='loading' />
 			</div>
-		);
+        );
+    }
 
-	} else {
+	const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
 
-		const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
+	return (
+		<section className='networth-table'>
 
-		return (
-			<section className='networth-table'>
+			{props.accountBalances.map((institution, i) => (
+				<InstitutionInfo
+					key={i}
+					displayNames={props.displayNames}
+					institutionId={institution.institutionId}
+					institutionInfo={institution.institutionBalanceObject}
+                    institutionNames={props.institutionNames}
+                    totalSavings={props.savings}
+				/>
+			))}
 
-				{props.accountBalances.map((institution, i) => (
-					<InstitutionInfo
-						key={i}
-						displayNames={props.displayNames}
-						institutionId={institution.institutionId}
-						institutionInfo={institution.institutionBalanceObject}
-                        institutionNames={props.institutionNames}
-                        totalSavings={props.savings}
-					/>
-				))}
-
-				<div className='institution-container'>
-					<div className='networth--entry networth--total'>
-						<p className='acct-name'>Total Savings</p>
-						<p className='acct-value'>${totalSavingsDisplay}</p>
-					</div>
+			<div className='institution-container'>
+				<div className='networth--entry networth--total'>
+					<p className='acct-name'>Total Savings</p>
+					<p className='acct-value'>${totalSavingsDisplay}</p>
 				</div>
+			</div>
 
-			</section>
-		);
-	}
+		</section>
+	);
 }
 
 function InstitutionInfo(props) {
