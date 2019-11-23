@@ -53,8 +53,7 @@ function InstitutionInfo(props) {
 	} = props;
 
 	const institutionName = props.institutionNames[props.institutionId];
-
-	const institutionCard = Object.keys(institutionInfo).map((acctId, i) => {
+	const institutionCards = Object.keys(institutionInfo).map((acctId, i) => {
 		return <InstitutionInfoRow
 			key={i}
 			displayNames={displayNames}
@@ -62,10 +61,9 @@ function InstitutionInfo(props) {
 			totalSavings={totalSavings}
 			acctId={acctId}
 		/>
-
 	});
 
-	institutionCard.sort((a, b) => {
+	institutionCards.sort((a, b) => {
 		const aAccountId = a.props.acctId;
 		const bAccountId = b.props.acctId;
 		const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
@@ -77,7 +75,7 @@ function InstitutionInfo(props) {
 	return (
 		<div className='institution-container'>
 			<h3>{institutionName}</h3>
-			{institutionCard}
+			{institutionCards}
 		</div>
 	);
 }
