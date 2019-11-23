@@ -10,18 +10,17 @@ export default function NetworthTable(props) {
 	if (!accountBalancesLoaded) {
 
 		return (
-
 			<div className='networth--loading'>
 				<h1>Hang tight, getting your data from the cloud</h1>
 				<img src='/loading-gifs/loading-three.gif' alt='loading' />
 			</div>
-
 		);
 
 	} else {
 
-		return (
+		const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
 
+		return (
 			<section className='networth-table'>
 
 				{props.accountBalances.map((institution, i) => (
@@ -30,33 +29,32 @@ export default function NetworthTable(props) {
 						displayNames={props.displayNames}
 						institutionId={institution.institutionId}
 						institutionInfo={institution.institutionBalanceObject}
-						institutionNames={props.institutionNames}
+                        institutionNames={props.institutionNames}
+                        totalSavings={props.savings}
 					/>
 				))}
 
 				<div className='institution-container'>
 					<div className='networth--entry networth--total'>
 						<p className='acct-name'>Total Savings</p>
-						<p className='acct-value'>${numberWithCommas(formatAmount(props.savings))}</p>
+						<p className='acct-value'>${totalSavingsDisplay}</p>
 					</div>
 				</div>
 
 			</section>
-
 		);
-
 	}
-
 }
 
 function InstitutionInfo(props) {
 
-	function getDisplayName(acctId) {
-		return props.displayNames.get(acctId) || props.institutionInfo[acctId].accountName;
-	}
+	const {
+		displayNames,
+		institutionInfo,
+		totalSavings
+	} = props;
 
-	const institutionInfo = props.institutionInfo;
-	const InstitutionName = props.institutionNames[props.institutionId];
+	const institutionName = props.institutionNames[props.institutionId];
 
 	let total = 0;
 
