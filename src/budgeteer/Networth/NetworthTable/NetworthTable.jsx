@@ -92,19 +92,19 @@ function InstitutionInfo(props) {
 	return (
 		<div className='institution-container'>
 			<h3>{institutionName}</h3>
-			{institutionCards}
+			{institutionInfoRows}
 		</div>
 	);
 }
 
 function InstitutionInfoRow(props) {
 
-    const {
+	const {
 		acctId,
 		institutionInfo,
 		totalSavings,
 		displayNames
-    } = props
+	} = props
 
 	function getDisplayName(acctId) {
 		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
@@ -120,10 +120,10 @@ function InstitutionInfoRow(props) {
 	const accountPercentageDisplay = accountPercentage === 0 ? <p className='acct-percentage'>-</p> : <p className='acct-percentage'>{accountPercentage}%</p>;
 
 	return (
-        <div className='networth--entry'>
+		<div className='networth--entry'>
 			<p className='acct-name'>{accountDisplayName}</p>
 			<p className='acct-value'>${accountDisplayAmount}</p>
 			{accountPercentageDisplay}
 		</div>
-    );
+	);
 }
