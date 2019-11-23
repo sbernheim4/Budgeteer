@@ -14,25 +14,42 @@ export default function NetworthTable(props) {
 				<h1>Hang tight, getting your data from the cloud</h1>
 				<img src='/loading-gifs/loading-three.gif' alt='loading' />
 			</div>
-        );
-    }
+		);
+	}
 
 	const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
 
+	const institutionCards = props.accountBalances.map((institution, i) => {
+		return <InstitutionInfo
+			key={i}
+			displayNames={props.displayNames}
+			institutionId={institution.institutionId}
+			institutionInfo={institution.institutionBalanceObject}
+			institutionNames={props.institutionNames}
+			totalSavings={props.savings}
+		/>
+	});
+
+	institutionCards.sort((a, b) => {
+
+		let totalOne = 0;
+		let totalTwo = 0;
+
+		for (const accountId in a.props.institutionInfo) {
+			totalOne += a.props.institutionInfo[accountId].accountBalance;
+		}
+		for (const accountId in b.props.institutionInfo) {
+			totalTwo += b.props.institutionInfo[accountId].accountBalance;
+		}
+
+		return totalTwo - totalOne;
+
+	});
+
 	return (
+
 		<section className='networth-table'>
-
-			{props.accountBalances.map((institution, i) => (
-				<InstitutionInfo
-					key={i}
-					displayNames={props.displayNames}
-					institutionId={institution.institutionId}
-					institutionInfo={institution.institutionBalanceObject}
-                    institutionNames={props.institutionNames}
-                    totalSavings={props.savings}
-				/>
-			))}
-
+			{institutionCards}
 			<div className='institution-container'>
 				<div className='networth--entry networth--total'>
 					<p className='acct-name'>Total Savings</p>
