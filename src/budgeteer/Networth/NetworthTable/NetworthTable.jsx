@@ -84,10 +84,33 @@ function InstitutionInfo(props) {
 					<p className='acct-percentage'>{Math.round(institutionInfo[acctId].accountBalance / total * 100, 2)}%</p>
 				</div>
 
-			))}
+function InstitutionInfoRow(props) {
 
+    const {
+		acctId,
+		institutionInfo,
+		totalSavings,
+		displayNames
+    } = props
+
+	function getDisplayName(acctId) {
+		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
+	}
+
+	const isCreditCardAccount = institutionInfo[acctId].accountType === 'credit';
+	const accountBalance = institutionInfo[acctId].accountBalance;
+	const amountToDisplay = isCreditCardAccount ? accountBalance * -1 : accountBalance;
+
+	const accountDisplayName = getDisplayName(acctId);
+	const accountDisplayAmount = numberWithCommas(formatAmount(amountToDisplay));
+	const accountPercentage = Math.round(accountBalance / totalSavings * 100, 2);
+	const accountPercentageDisplay = accountPercentage === 0 ? <p className='acct-percentage'></p> : <p className='acct-percentage'>{accountPercentage}%</p>;
+
+    return (
+        <div className='networth--entry'>
+			<p className='acct-name'>{accountDisplayName}</p>
+			<p className='acct-value'>${accountDisplayAmount}</p>
+			{accountPercentageDisplay}
 		</div>
-
-	);
-
+    );
 }

@@ -42,12 +42,11 @@
 			width: 95%;
 			padding: 10px;
 			font-size: 17px;
-			flex-direction: row;
-			justify-content: space-between;
-			align-items: center;
 			text-align: center;
 			border-bottom: 1px solid #a9a9a9;
-			display: flex;
+			display: grid;
+			grid-template-columns: 7fr 2fr .5fr;
+			grid-template-rows: 1fr;
 
 			@media all and (max-width: 500px) {
 				font-size: 18px;
@@ -67,7 +66,8 @@
 			}
 
 			.acct-percentage {
-
+				font-size: 13px;
+				align-self: center;
 			}
 		}
 
