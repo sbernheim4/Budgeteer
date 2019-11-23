@@ -106,7 +106,7 @@ function InstitutionInfoRow(props) {
 	const accountPercentage = Math.round(accountBalance / totalSavings * 100, 2);
 	const accountPercentageDisplay = accountPercentage === 0 ? <p className='acct-percentage'></p> : <p className='acct-percentage'>{accountPercentage}%</p>;
 
-    return (
+	return (
         <div className='networth--entry'>
 			<p className='acct-name'>{accountDisplayName}</p>
 			<p className='acct-value'>${accountDisplayAmount}</p>
