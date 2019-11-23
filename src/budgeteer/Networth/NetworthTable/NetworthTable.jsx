@@ -56,33 +56,33 @@ function InstitutionInfo(props) {
 
 	const institutionName = props.institutionNames[props.institutionId];
 
-	let total = 0;
+	const institutionCard = Object.keys(institutionInfo).map((acctId, i) => {
+		return <InstitutionInfoRow
+			key={i}
+			displayNames={displayNames}
+			institutionInfo={institutionInfo}
+			totalSavings={totalSavings}
+			acctId={acctId}
+		/>
 
-	for (const account in props.institutionInfo) {
-		const accountInfo = props.institutionInfo[account];
-		total += accountInfo.accountBalance;
-	}
+	});
+
+	institutionCard.sort((a, b) => {
+		const aAccountId = a.props.acctId;
+		const bAccountId = b.props.acctId;
+		const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
+		const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
+
+		return bTotal - aTotal;
+	});
 
 	return (
 		<div className='institution-container'>
-			<h3>{InstitutionName}</h3>
-
-			{Object.keys(institutionInfo).map((acctId, i) => (
-
-				<div key={i} className='networth--entry'>
-					<p className='acct-name'>{getDisplayName(acctId)}</p>
-					<p className='acct-value'>
-						$
-						{numberWithCommas(
-							formatAmount(
-								institutionInfo[acctId].accountType === 'credit'
-									? institutionInfo[acctId].accountBalance * -1
-									: institutionInfo[acctId].accountBalance
-							)
-						)}
-					</p>
-					<p className='acct-percentage'>{Math.round(institutionInfo[acctId].accountBalance / total * 100, 2)}%</p>
-				</div>
+			<h3>{institutionName}</h3>
+			{institutionCard}
+		</div>
+	);
+}
 
 function InstitutionInfoRow(props) {
 
