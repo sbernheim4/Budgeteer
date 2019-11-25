@@ -18,7 +18,6 @@ export default function NetworthTable(props) {
 	}
 
 	const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
-
 	const institutionCards = props.accountBalances.map((institution, i) => {
 		return <InstitutionInfo
 			key={i}
@@ -67,11 +66,21 @@ function InstitutionInfo(props) {
 	const {
 		displayNames,
 		institutionInfo,
+		institutionNames,
+		institutionId,
 		totalSavings
 	} = props;
 
-	const institutionName = props.institutionNames[props.institutionId];
-	const institutionInfoRows = Object.keys(institutionInfo).map((acctId, i) => {
+	const institutionInfoValues = Object.values(institutionInfo);
+	const institutionInfoKeys = Object.keys(institutionInfo);
+
+	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
+	const institutionName = institutionNames[institutionId];
+	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
+
+	console.log(percent);
+
+	const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
 		return <InstitutionInfoRow
 			key={i}
 			displayNames={displayNames}
@@ -92,7 +101,7 @@ function InstitutionInfo(props) {
 
 	return (
 		<div className='institution-container'>
-			<h3>{institutionName}</h3>
+			<h3>{institutionName} - {percent}%</h3>
 			{institutionInfoRows}
 		</div>
 	);
@@ -111,20 +120,24 @@ function InstitutionInfoRow(props) {
 		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
 	}
 
+	function getPercentageString(numerator, denominator) {
+		const percentage = Math.round(numerator / denominator * 100, 2);
+		return percentage <= 0 ? '-' : `${percentage}%`;
+	}
+
 	const isCreditCardAccount = institutionInfo[acctId].accountType === 'credit';
 	const accountBalance = institutionInfo[acctId].accountBalance;
-	const amountToDisplay = isCreditCardAccount ? accountBalance * -1 : accountBalance;
+	const normalizedBalance = isCreditCardAccount ? accountBalance * -1 : accountBalance;
 
 	const accountDisplayName = getDisplayName(acctId);
-	const accountDisplayAmount = numberWithCommas(formatAmount(amountToDisplay));
-	const accountPercentage = Math.round(accountBalance / totalSavings * 100, 2);
-	const accountPercentageDisplay = accountPercentage === 0 ? <p className='acct-percentage'>-</p> : <p className='acct-percentage'>{accountPercentage}%</p>;
+	const accountDisplayBalance = numberWithCommas(formatAmount(normalizedBalance));
+	const percentage = getPercentageString(normalizedBalance, totalSavings);
 
 	return (
 		<div className='networth--entry'>
 			<p className='acct-name'>{accountDisplayName}</p>
-			<p className='acct-value'>${accountDisplayAmount}</p>
-			{accountPercentageDisplay}
+			<p className='acct-value'>${accountDisplayBalance}</p>
+			<p className='acct-percentage'>{percentage}</p>
 		</div>
 	);
 }
