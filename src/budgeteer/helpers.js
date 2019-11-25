@@ -6,6 +6,10 @@ export function formatAmount(amt) {
 	return (Math.round(amt * 100) / 100).toFixed(2);
 }
 
+export function dollarify(number) {
+	return numberWithCommas(formatAmount(number));
+}
+
 export function toTitleCase(string) {
 	if (string === "" || string === null) return "";
 	const normalizedString = string.trim();
