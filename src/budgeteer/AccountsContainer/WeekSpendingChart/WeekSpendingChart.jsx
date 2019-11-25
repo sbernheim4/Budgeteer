@@ -159,7 +159,7 @@ class WeekSpendingChart extends Component {
 
 	formatTooltipText(datum) {
 		const amount = datum.y;
-		const formattedAmount = dollarify(amount);
+		const formattedAmount = dollarify(Math.abs(amount));
 		return amount > 0 ? `Received $${formattedAmount}` : `Spent ${formattedAmount}`;
 	}
 
