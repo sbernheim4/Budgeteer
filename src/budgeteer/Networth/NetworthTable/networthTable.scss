@@ -76,14 +76,22 @@
 			text-align: center;
 			border-bottom: 1px solid #a9a9a9;
 			display: grid;
+			justify-content: center;
+			align-items: center;
 			grid-template-columns: 7fr 2fr .5fr;
 			grid-template-rows: 1fr;
 
+			@media all and (max-width: 600px) {
+				grid-template-columns: 6fr 3fr 1fr;
+			}
+
 			@media all and (max-width: 500px) {
+				grid-template-columns: 3fr 3fr 1fr;
 				font-size: 18px;
 			}
 
 			@media all and (max-width: 400px) {
+				grid-template-columns: 1fr 1fr 0fr;
 				font-size: 16px;
 			}
 
@@ -99,6 +107,10 @@
 			.acct-percentage {
 				font-size: 13px;
 				align-self: center;
+
+				@media all and (max-width: 400px) {
+					display: none;
+				}
 			}
 		}
 
