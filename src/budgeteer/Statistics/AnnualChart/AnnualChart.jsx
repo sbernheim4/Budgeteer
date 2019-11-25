@@ -3,7 +3,7 @@ import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianG
 
 import subMonths from 'date-fns/subMonths';
 
-import { formatAmount, numberWithCommas } from '../../helpers';
+import { dollarify } from '../../helpers';
 
 import './annualChart.scss';
 
@@ -14,11 +14,11 @@ class CustomTooltip extends Component {
 		if (active) {
 			const { payload, label } = this.props;
 
-			const avg = numberWithCommas(formatAmount(payload[1].value));
+			const avg = dollarify(payload[1].value);
 			const month = payload[0].payload.name.endsWith('.')
 				? payload[0].payload.name.slice(0, -1)
 				: payload[0].payload.name;
-			const monthAmount = numberWithCommas(formatAmount(payload[0].value));
+			const monthAmount = dollarify(payload[0].value);
 
 			return (
 				<div className='year--custom-tooltip'>

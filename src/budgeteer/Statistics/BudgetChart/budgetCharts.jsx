@@ -5,7 +5,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Label } from 'rechar
 import Input from './Input/input.jsx';
 import BannerMessage from './../../BannerMessage/BannerMessage.jsx';
 
-import { formatAmount, numberWithCommas } from '../../helpers.js';
+import { dollarify } from '../../helpers.js';
 
 import './budgetChart.scss';
 
@@ -16,8 +16,8 @@ class CustomTooltip extends Component {
 		const { active, data } = this.props;
 
 		if (active) {
-			const spent = numberWithCommas(formatAmount(data[0].value));
-			const remaining = numberWithCommas(formatAmount(data[1].value));
+			const spent = dollarify(data[0].value);
+			const remaining = dollarify(data[1].value);
 
 			return (
 				<div className='chart budget--tooltip'>
@@ -155,12 +155,10 @@ class BudgetChart extends Component {
 
 	render() {
 		let spent = this.state.totalSpent;
-		spent = formatAmount(spent);
-		spent = numberWithCommas(spent);
+		spent = dollarify(spent);
 
 		let remaining = this.state.totalSpent;
-		remaining = formatAmount(remaining);
-		remaining = numberWithCommas(remaining);
+		remaining = dollarify(remaining);
 
 		return (
 			<section className='chart budget'>
