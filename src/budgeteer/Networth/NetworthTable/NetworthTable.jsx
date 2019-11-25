@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useRef } from 'react';
 
 import { numberWithCommas, formatAmount } from '../../helpers.js';
 
@@ -18,7 +18,6 @@ export default function NetworthTable(props) {
 	}
 
 	const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
-
 	const institutionCards = props.accountBalances.map((institution, i) => {
 		return <InstitutionInfo
 			key={i}
@@ -67,32 +66,68 @@ function InstitutionInfo(props) {
 	const {
 		displayNames,
 		institutionInfo,
+		institutionNames,
+		institutionId,
 		totalSavings
 	} = props;
 
-	const institutionName = props.institutionNames[props.institutionId];
-	const institutionInfoRows = Object.keys(institutionInfo).map((acctId, i) => {
-		return <InstitutionInfoRow
-			key={i}
-			displayNames={displayNames}
-			institutionInfo={institutionInfo}
-			totalSavings={totalSavings}
-			acctId={acctId}
-		/>
-	});
+	const [width, setWidth] = useState(0);
+	const institutionNameRef = useRef(null);
+	useEffect(() => {
+		const width = institutionNameRef.current ? institutionNameRef.current.offsetWidth : 0;
+		setWidth(width);
+	}, [institutionNameRef.current]);
 
-	institutionInfoRows.sort((a, b) => {
-		const aAccountId = a.props.acctId;
-		const bAccountId = b.props.acctId;
-		const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
-		const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
+	function generateInstitutionInfoRows(institutionInfo) {
 
-		return bTotal - aTotal;
-	});
+		const institutionInfoKeys = Object.keys(institutionInfo);
+
+		const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
+			return <InstitutionInfoRow
+				key={i}
+				displayNames={displayNames}
+				institutionInfo={institutionInfo}
+				totalSavings={totalSavings}
+				acctId={acctId}
+			/>
+		});
+
+		institutionInfoRows.sort((a, b) => {
+			const aAccountId = a.props.acctId;
+			const bAccountId = b.props.acctId;
+			const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
+			const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
+
+			return bTotal - aTotal;
+		});
+
+		return institutionInfoRows;
+
+	}
+
+	const institutionBalanceTotal = Object.values(institutionInfo).reduce((acc, currVal) => acc + currVal.accountBalance, 0);
+	const institutionName = institutionNames[institutionId];
+	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
+	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
 
 	return (
 		<div className='institution-container'>
-			<h3>{institutionName}</h3>
+
+			<h3 style={{left: `calc(50% - ${width / 2}px`}}>
+				<span
+					className='institution-container--name'
+					ref={institutionNameRef}
+				>
+				{institutionName}
+				</span>
+
+				<span
+					className='percent'
+				> - {percent}%
+				</span>
+
+			</h3>
+
 			{institutionInfoRows}
 		</div>
 	);
@@ -111,20 +146,24 @@ function InstitutionInfoRow(props) {
 		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
 	}
 
+	function getPercentageString(numerator, denominator) {
+		const percentage = Math.round(numerator / denominator * 100, 2);
+		return percentage <= 0 ? '-' : `${percentage}%`;
+	}
+
 	const isCreditCardAccount = institutionInfo[acctId].accountType === 'credit';
 	const accountBalance = institutionInfo[acctId].accountBalance;
-	const amountToDisplay = isCreditCardAccount ? accountBalance * -1 : accountBalance;
+	const normalizedBalance = isCreditCardAccount ? accountBalance * -1 : accountBalance;
 
 	const accountDisplayName = getDisplayName(acctId);
-	const accountDisplayAmount = numberWithCommas(formatAmount(amountToDisplay));
-	const accountPercentage = Math.round(accountBalance / totalSavings * 100, 2);
-	const accountPercentageDisplay = accountPercentage === 0 ? <p className='acct-percentage'>-</p> : <p className='acct-percentage'>{accountPercentage}%</p>;
+	const accountDisplayBalance = numberWithCommas(formatAmount(normalizedBalance));
+	const percentage = getPercentageString(normalizedBalance, totalSavings);
 
 	return (
 		<div className='networth--entry'>
 			<p className='acct-name'>{accountDisplayName}</p>
-			<p className='acct-value'>${accountDisplayAmount}</p>
-			{accountPercentageDisplay}
+			<p className='acct-value'>${accountDisplayBalance}</p>
+			<p className='acct-percentage'>{percentage}</p>
 		</div>
 	);
 }
