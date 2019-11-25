@@ -17,39 +17,49 @@ export default function NetworthTable(props) {
 		);
 	}
 
-	const totalSavingsDisplay = dollarify(props.savings);
-	const institutionCards = props.accountBalances.map((institution, i) => {
-		return <InstitutionInfo
-			key={i}
-			displayNames={props.displayNames}
-			institutionId={institution.institutionId}
-			institutionInfo={institution.institutionBalanceObject}
-			institutionNames={props.institutionNames}
-			totalSavings={props.savings}
-		/>
-	});
+	const {
+		savings,
+		accountBalances,
+		displayNames,
+		institutionNames
+	} = props;
 
-	institutionCards.sort((a, b) => {
+	function generateInstitutionCards(accountBalances) {
 
-		let totalOne = 0;
-		let totalTwo = 0;
+		const institutionCards = accountBalances.map((institution, i) => {
+			return <InstitutionInfo
+				key={i}
+				displayNames={displayNames}
+				institutionId={institution.institutionId}
+				institutionInfo={institution.institutionBalanceObject}
+				institutionNames={institutionNames}
+				totalSavings={savings}
+			/>
+		});
 
-		for (const accountId in a.props.institutionInfo) {
-			totalOne += a.props.institutionInfo[accountId].accountBalance;
-		}
+		institutionCards.sort((a, b) => {
 
-		for (const accountId in b.props.institutionInfo) {
-			totalTwo += b.props.institutionInfo[accountId].accountBalance;
-		}
+			const aInstitutionInfoValues = Object.values(a.props.institutionInfo);
+			const bInstitutionInfoValues = Object.values(b.props.institutionInfo);
 
-		return totalTwo - totalOne;
+			const institutionBalanceA = aInstitutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
+			const institutionBalanceB = bInstitutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
 
-	});
+			return institutionBalanceB - institutionBalanceA;
+		});
+
+		return institutionCards;
+
+	}
+
+	const institutionCards = generateInstitutionCards(accountBalances);
+	const totalSavingsDisplay = dollarify(savings);
 
 	return (
 
 		<section className='networth-table'>
 			{institutionCards}
+
 			<div className='institution-container'>
 				<div className='networth--entry networth--total'>
 					<p className='acct-name'>Total Savings</p>
@@ -105,7 +115,8 @@ function InstitutionInfo(props) {
 
 	}
 
-	const institutionBalanceTotal = Object.values(institutionInfo).reduce((acc, currVal) => acc + currVal.accountBalance, 0);
+	const institutionInfoValues = Object.values(institutionInfo);
+	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
 	const institutionName = institutionNames[institutionId];
 	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
@@ -113,6 +124,7 @@ function InstitutionInfo(props) {
 	return (
 		<div className='institution-container'>
 
+			// Applying the style directly here since it's based off of the width of the institution name
 			<h3 style={{left: `calc(50% - ${width / 2}px`}}>
 				<span
 					className='institution-container--name'
