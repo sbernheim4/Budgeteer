@@ -4,7 +4,7 @@ import subWeeks from 'date-fns/subWeeks';
 import isWithinInterval from 'date-fns/isWithinInterval';
 import differenceInDays from 'date-fns/differenceInDays';
 
-import { numberWithCommas, formatAmount, isNumber } from '../../helpers';
+import { dollarify, formatAmount, isNumber } from '../../helpers';
 
 import './weekSpendingChart.scss';
 
@@ -19,7 +19,7 @@ class CustomTooltip extends Component {
 
 			if (payload !== null) {
 				const normalizedLabel = typeof label === 'string' ? label : label + ' day(s) ago';
-				const amount = numberWithCommas(formatAmount(payload[0].value));
+				const amount = dollarify(payload[0].value);
 
 				return (
 					<div className='week-spending-chart--custom-tooltip'>
@@ -114,8 +114,8 @@ class WeekSpendingChart extends Component {
 				y: amt,
 				label:
 				amt < 0
-				? `Spent: $${numberWithCommas(formatAmount(amt))}`
-				: `Received $${numberWithCommas(formatAmount(amt))}`
+				? `Spent: $${dollarify(amt)}`
+				: `Received $${dollarify(amt)}`
 			});
 
 			data2.push({
@@ -159,7 +159,7 @@ class WeekSpendingChart extends Component {
 
 	formatTooltipText(datum) {
 		const amount = datum.y;
-		const formattedAmount = numberWithCommas(formatAmount(Math.abs(amount)));
+		const formattedAmount = dollarify(Math.abs(amount));
 		return amount > 0 ? `Received $${formattedAmount}` : `Spent ${formattedAmount}`;
 	}
 

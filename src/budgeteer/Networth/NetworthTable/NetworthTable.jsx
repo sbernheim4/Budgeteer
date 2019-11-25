@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef } from 'react';
 
-import { numberWithCommas, formatAmount } from '../../helpers.js';
+import { dollarify } from '../../helpers.js';
 
 import './networthTable.scss';
 
@@ -17,7 +17,7 @@ export default function NetworthTable(props) {
 		);
 	}
 
-	const totalSavingsDisplay = numberWithCommas(formatAmount(props.savings));
+	const totalSavingsDisplay = dollarify(props.savings);
 	const institutionCards = props.accountBalances.map((institution, i) => {
 		return <InstitutionInfo
 			key={i}
@@ -156,7 +156,7 @@ function InstitutionInfoRow(props) {
 	const normalizedBalance = isCreditCardAccount ? accountBalance * -1 : accountBalance;
 
 	const accountDisplayName = getDisplayName(acctId);
-	const accountDisplayBalance = numberWithCommas(formatAmount(normalizedBalance));
+	const accountDisplayBalance = dollarify(normalizedBalance);
 	const percentage = getPercentageString(normalizedBalance, totalSavings);
 
 	return (

@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import Budget from './BudgetChart/BudgetChart.jsx';
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
-import { formatAmount, numberWithCommas } from '../helpers';
+import { dollarify } from '../helpers';
 import './home.scss';
 
 class Home extends Component {
@@ -60,7 +60,7 @@ class Home extends Component {
 		} else {
 			const { serializedTotalSavings } = data;
 			const totalSavings = new Number(serializedTotalSavings);
-			const savings = numberWithCommas(formatAmount(totalSavings));
+			const savings = dollarify(totalSavings);
 			this.setState({
 				total: savings
 			});

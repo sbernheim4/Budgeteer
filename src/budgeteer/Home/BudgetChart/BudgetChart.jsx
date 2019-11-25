@@ -6,7 +6,7 @@ import { VictoryPie, VictoryLabel, VictoryTooltip } from 'victory';
 import isSameMonth from 'date-fns/isSameMonth';
 import isSameYear from 'date-fns/isSameYear';
 
-import { formatAmount, numberWithCommas } from '../../helpers.js';
+import { dollarify } from '../../helpers.js';
 
 import './budgetChart.scss';
 
@@ -53,12 +53,10 @@ class BudgetChart extends Component {
 	}
 
 	render() {
-		let spent = formatAmount(this.state.totalSpent);
-		spent = numberWithCommas(spent);
+		const spent = dollarify(this.state.totalSpent);
 
 		let remaining = this.state.monthlyBudget - this.state.totalSpent;
-		remaining = formatAmount(remaining);
-		remaining = numberWithCommas(remaining);
+		remaining = dollarify(remaining);
 
 		return (
 			<div className='budget'>
@@ -80,8 +78,8 @@ class BudgetChart extends Component {
 
 class CustomLabel extends React.Component {
 	render() {
-		const spent = numberWithCommas(formatAmount(this.props.data[0].y));
-		const remaining = numberWithCommas(formatAmount(this.props.data[1].y));
+		const spent = dollarify(this.props.data[0].y);
+		const remaining = dollarify(this.props.data[1].y);
 
 		return (
 			<g>

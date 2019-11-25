@@ -9,7 +9,7 @@ import differenceInCalendarWeeks from 'date-fns/differenceInCalendarWeeks';
 import isSameWeek from 'date-fns/isSameWeek';
 import isWeekend from 'date-fns/isWeekend';
 
-import { numberWithCommas, formatAmount } from '../../helpers';
+import { dollarify } from '../../helpers';
 import './weekweekendchart.scss';
 
 class CustomTooltip extends Component {
@@ -19,8 +19,8 @@ class CustomTooltip extends Component {
 		if (active) {
 			const { payload, label } = this.props;
 
-			const weekdayValue = numberWithCommas(formatAmount(payload[0].value));
-			const weekendValue = numberWithCommas(formatAmount(payload[1].value));
+			const weekdayValue = dollarify(payload[0].value);
+			const weekendValue = dollarify(payload[1].value);
 
 			return (
 				<div className='week-weekend-tooltip'>
