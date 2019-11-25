@@ -78,8 +78,6 @@ function InstitutionInfo(props) {
 	const institutionName = institutionNames[institutionId];
 	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 
-	console.log(percent);
-
 	const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
 		return <InstitutionInfoRow
 			key={i}
