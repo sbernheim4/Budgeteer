@@ -8,6 +8,17 @@
 
 }
 
+@keyframes slideRight {
+	0% {
+		left: -5px;
+		opacity: 0;
+	}
+	100% {
+		left: 0px;
+		opacity: 1;
+	}
+}
+
 .networth-table {
 	padding-top: 15px;
 
@@ -31,11 +42,30 @@
 		}
 
 		h3 {
+			position: relative;
 			margin-bottom: 5px;
 			font-size: 17px;
-			font-weight: bolder;
-			text-align: center;
 			color: #343434;
+
+			.institution-container--name {
+				display: inline-block;
+				vertical-align: bottom;
+				font-weight: bolder;
+			}
+
+			.percent {
+				position: relative;
+				display: none;
+				left: -5px;
+			}
+		}
+
+		&:hover {
+			.percent {
+				display: inline;
+				left: 0;
+				animation: slideRight .2s ease-in-out;
+			}
 		}
 
 		.networth--entry {

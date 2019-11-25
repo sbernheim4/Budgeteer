@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useRef } from 'react';
 
 import { numberWithCommas, formatAmount } from '../../helpers.js';
 
@@ -71,35 +71,63 @@ function InstitutionInfo(props) {
 		totalSavings
 	} = props;
 
-	const institutionInfoValues = Object.values(institutionInfo);
-	const institutionInfoKeys = Object.keys(institutionInfo);
+	const [width, setWidth] = useState(0);
+	const institutionNameRef = useRef(null);
+	useEffect(() => {
+		const width = institutionNameRef.current ? institutionNameRef.current.offsetWidth : 0;
+		setWidth(width);
+	}, [institutionNameRef.current]);
 
-	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
+	function generateInstitutionInfoRows(institutionInfo) {
+
+		const institutionInfoKeys = Object.keys(institutionInfo);
+
+		const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
+			return <InstitutionInfoRow
+				key={i}
+				displayNames={displayNames}
+				institutionInfo={institutionInfo}
+				totalSavings={totalSavings}
+				acctId={acctId}
+			/>
+		});
+
+		institutionInfoRows.sort((a, b) => {
+			const aAccountId = a.props.acctId;
+			const bAccountId = b.props.acctId;
+			const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
+			const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
+
+			return bTotal - aTotal;
+		});
+
+		return institutionInfoRows;
+
+	}
+
+	const institutionBalanceTotal = Object.values(institutionInfo).reduce((acc, currVal) => acc + currVal.accountBalance, 0);
 	const institutionName = institutionNames[institutionId];
 	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
-
-	const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
-		return <InstitutionInfoRow
-			key={i}
-			displayNames={displayNames}
-			institutionInfo={institutionInfo}
-			totalSavings={totalSavings}
-			acctId={acctId}
-		/>
-	});
-
-	institutionInfoRows.sort((a, b) => {
-		const aAccountId = a.props.acctId;
-		const bAccountId = b.props.acctId;
-		const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
-		const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
-
-		return bTotal - aTotal;
-	});
+	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
 
 	return (
 		<div className='institution-container'>
-			<h3>{institutionName} - {percent}%</h3>
+
+			<h3 style={{left: `calc(50% - ${width / 2}px`}}>
+				<span
+					className='institution-container--name'
+					ref={institutionNameRef}
+				>
+				{institutionName}
+				</span>
+
+				<span
+					className='percent'
+				> - {percent}%
+				</span>
+
+			</h3>
+
 			{institutionInfoRows}
 		</div>
 	);
