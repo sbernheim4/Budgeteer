@@ -124,7 +124,6 @@ function InstitutionInfo(props) {
 	return (
 		<div className='institution-container'>
 
-			// Applying the style directly here since it's based off of the width of the institution name
 			<h3 style={{left: `calc(50% - ${width / 2}px`}}>
 				<span
 					className='institution-container--name'
