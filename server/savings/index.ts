@@ -20,9 +20,9 @@ savingsRouter.post('/data', async (req) => {
 
 	const data = req.body;
 	const userId = req.session.user._id;
-	const date = new Date();
 	const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
 	const savings = userInfo.savings || [];
+	const date = new Date();
 	const savingsData = {
 		date,
 		savingsData: data
