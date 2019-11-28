@@ -15,7 +15,8 @@ export default class Savings extends Component {
 		this.state = {
 			savings: 0,
 			accountBalances: [],
-			loading: true
+			loading: true,
+			historicalSavings: []
 		};
 
 		this.institutionNames = [];
@@ -96,6 +97,22 @@ export default class Savings extends Component {
 
 	}
 
+	async getSavingsData() {
+
+		const response = await axios({
+			method: 'get',
+			url: '/savings/data',
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		const { data } = response;
+
+		this.setState({
+			historicalSavings: data
+		});
+
+	}
+
 	async componentDidMount() {
 
 		await this.setDisplayNames();
@@ -131,6 +148,8 @@ export default class Savings extends Component {
 			this.storeSavingsData(bankInfo);
 
 		}
+
+		await this.getSavingsData();
 
 	}
 
@@ -171,6 +190,7 @@ export default class Savings extends Component {
 					displayNames={this.displayNames}
 					accountBalances={this.state.accountBalances}
 					institutionNames={this.institutionNames}
+					historicalSavings={this.state.historicalSavings}
 				/>
 
 			</div>
