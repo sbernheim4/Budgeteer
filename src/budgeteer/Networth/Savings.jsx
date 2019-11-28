@@ -82,6 +82,20 @@ export default class Savings extends Component {
 
 	}
 
+	async storeSavingsData(bankInfo) {
+
+		const serializedBankInfo = JSON.stringify(bankInfo);
+
+		// TODO: Try adding some retry logic with exponential back off in case post request fails
+		axios({
+			method: 'post',
+			url: '/savings/data',
+			data: serializedBankInfo,
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+	}
+
 	async componentDidMount() {
 
 		await this.setDisplayNames();
@@ -113,6 +127,8 @@ export default class Savings extends Component {
 			});
 
 			this.cacheSavingsData(totalSavings, bankInfo);
+
+			this.storeSavingsData(bankInfo);
 
 		}
 
