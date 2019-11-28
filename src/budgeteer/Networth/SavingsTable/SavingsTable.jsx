@@ -123,25 +123,33 @@ function InstitutionInfo(props) {
 	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
 
+	function handleClick() {
+		const savingsChart = document.querySelector('.savings-chart');
+		savingsChart.classList.toggle('savings-chart--show');
+	}
+
 	return (
-		<div className='institution-container'>
+		<div className='institution'>
+			<div className='institution-container'
+				onClick={handleClick}
+			>
+				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
+					<span
+						className='institution-container--name'
+						ref={institutionNameRef}
+					>
+					{institutionName}
+					</span>
 
-			<h3 style={{left: `calc(50% - ${width / 2}px`}}>
-				<span
-					className='institution-container--name'
-					ref={institutionNameRef}
-				>
-				{institutionName}
-				</span>
+					<span
+						className='percent'
+					> - {percent}%
+					</span>
 
-				<span
-					className='percent'
-				> - {percent}%
-				</span>
+				</h3>
 
-			</h3>
-
-			{institutionInfoRows}
+				{institutionInfoRows}
+			</div>
 			<SavingsChart />
 		</div>
 	);
