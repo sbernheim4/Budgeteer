@@ -20,7 +20,7 @@ export const Home = Loadable({
 });
 
 export const Networth = Loadable({
-	loader: () => import('./Networth/Networth.jsx'),
+    loader: () => import('./Networth/Savings.jsx'),
 	loading: () => <div>Loading...</div>
 });
 

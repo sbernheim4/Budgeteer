@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useRef } from 'react';
 
+import SavingsChart from './../SavingsChart/SavingsChart.jsx';
+
 import { dollarify } from '../../helpers.js';
 
-import './networthTable.scss';
+import './savingsTable.scss';
 
-export default function NetworthTable(props) {
+export default function SavingsTable(props) {
 	const accountBalancesLoaded = props.accountBalances.length > 0;
 
 	if (!accountBalancesLoaded) {
@@ -140,6 +142,7 @@ function InstitutionInfo(props) {
 			</h3>
 
 			{institutionInfoRows}
+			<SavingsChart />
 		</div>
 	);
 }

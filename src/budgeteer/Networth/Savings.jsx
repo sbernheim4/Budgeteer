@@ -2,11 +2,11 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import differenceInDays from 'date-fns/differenceInDays'
 
-import NetworthTable from './NetworthTable/NetworthTable.jsx';
+import SavingsTable from './SavingsTable/SavingsTable.jsx';
 
-import './networth.scss';
+import './savings.scss';
 
-export default class Networth extends Component {
+export default class Savings extends Component {
 
 	constructor(props) {
 
@@ -150,7 +150,7 @@ export default class Networth extends Component {
 
 			<div className='networth'>
 
-				<NetworthTable
+				<SavingsTable
 					savings={this.state.savings}
 					displayNames={this.displayNames}
 					accountBalances={this.state.accountBalances}
