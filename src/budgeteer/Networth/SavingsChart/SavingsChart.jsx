@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
-import axios from 'axios';
+
+import { dollarify } from './../../helpers';
 
 import './savingsChart.scss';
 
 function SavingsChart(props) {
 
-	const defaultRechartsData = calculateHistoricalNetworth();
-	const [rechartsData, setRechartsData] = useState(defaultRechartsData);
+	const {
+		historicalSavings = [],
+		institutionId
+	} = props;
+
+	const [rechartsData, setRechartsData] = useState([]);
 
 	useEffect(() => {
-		/*const data = axios({
-			method: 'GET',
-			url: '/plaid-api/balance'
+
+		const data = historicalSavings.map((info) => {
+			const { date, savingsData } = info;
+			const dateString = new Date(date).toDateString();
+			const currentInstitutionSavingsData = savingsData.filter(institution => institution.institutionId === institutionId)[0];
+			const balance = dollarify(currentInstitutionSavingsData.institutionBalance);
+
+			return {
+				name: dateString,
+				Balance: balance
+			}
+
 		});
 
-		data.then((x) => {
-			console.log(data);
-			console.log(x);
-		});*/
-	});
+		setRechartsData(data);
 
-	function calculateHistoricalNetworth() {
-		return [
-			{ name: 'Jan.', Balance: 2000 },
-			{ name: 'Feb.', Balance: 2400 },
-			{ name: 'Mar.', Balance: 2200 },
-			{ name: 'Apr.', Balance: 2500 },
-			{ name: 'May', Balance: 2400 },
-			{ name: 'June.', Balance: 2700 },
-			{ name: 'July', Balance: 2900 }
-		];
-	}
+	}, [props.historicalSavings]);
 
 	return (
 		<section className='savings-chart'>
