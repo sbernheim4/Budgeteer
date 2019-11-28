@@ -20,6 +20,7 @@ import chalk from 'chalk';
 import legal from './legal';
 import plaidApi from './plaid-api';
 import userInfo from './user-info';
+import savingsRouter from './savings';
 import auth from './auth';
 
 import startDb from './db';
@@ -82,6 +83,8 @@ app.use('/legal', legal);
 app.use('/plaid-api', checkAuthentication, plaidApi);
 
 app.use('/user-info', checkAuthentication, userInfo);
+
+app.use('/savings', checkAuthentication, savingsRouter);
 
 app.get('/', (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
