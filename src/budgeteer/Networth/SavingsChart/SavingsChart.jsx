@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
+import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
 import axios from 'axios';
+
+import './savingsChart.scss';
 
 function SavingsChart(props) {
 
@@ -22,32 +24,35 @@ function SavingsChart(props) {
 	function calculateHistoricalNetworth() {
 		return [
 			{ name: 'Jan.', Balance: 2000 },
-			{ name: 'Feb.', Balance: 3000 },
-			{ name: 'Mar.', Balance: 4000 },
-			{ name: 'Apr.', Balance: 5000 },
-			{ name: 'May', Balance: 6000 },
-			{ name: 'June.', Balance: 7000 },
-			{ name: 'July', Balance: 8000 }
+			{ name: 'Feb.', Balance: 2400 },
+			{ name: 'Mar.', Balance: 2200 },
+			{ name: 'Apr.', Balance: 2500 },
+			{ name: 'May', Balance: 2400 },
+			{ name: 'June.', Balance: 2700 },
+			{ name: 'July', Balance: 2900 }
 		];
 	}
 
 	return (
 		<section className='savings-chart'>
-			<LineChart
-				height='100%' width='100%'
-				data={rechartsData}
-				margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+			<ResponsiveContainer
+				width='100%'
+				height='100%'
 			>
-				<XAxis dataKey='name' />
-				<YAxis />
-				<Tooltip />
-				<Line
-					type='monotone'
-					dataKey='Balance'
-					stroke='#8884d8'
-					strokeWidth={4}
-				/>
-			</LineChart>
+				<LineChart
+					data={rechartsData}
+					margin={{ top: 20, right: 30, left: 30, bottom: 10 }}
+				>
+					<XAxis dataKey='name' />
+					<Tooltip />
+					<Line
+						type='monotone'
+						dataKey='Balance'
+						stroke='#79c6a3'
+						strokeWidth={4}
+					/>
+				</LineChart>
+			</ResponsiveContainer>
 		</section>
 	);
 }

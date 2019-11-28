@@ -1,6 +1,50 @@
-.savings-chart {
+@import './../../scss/variables.scss';
 
-	width: 400px;
-	height: 300px;
+:root {
+	--top-amount: -60px;
+}
+
+
+@keyframes slideDown {
+
+	0% {
+		height: 20px;
+		top: var(--top-amount);
+	}
+
+	50% {
+		height: 200px;
+	}
+
+	100% {
+		top: 0;
+	}
+}
+
+.recharts-wrapper {
+	overflow: hidden;
+}
+
+.savings-chart {
+	position: relative;
+	margin: 0 auto;
+	max-width: 570px;
+	width: 70%;
+	height: 20px;
+	top: var(--top-amount);
+	padding: 15px;
+	background: white;
+	border-radius: 0px 0px 7px 7px;
+	display: none;
+	animation: slideDown .4s ease-out;
+	visibility: hidden;
+	z-index: 1;
+
+	&--show {
+		display: block;
+		height: 200px;
+		visibility: visible;
+		top: 0;
+	}
 
 }
