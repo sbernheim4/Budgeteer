@@ -10,4 +10,5 @@ export default interface IUser extends Document {
 	itemId?: Array<string>;
 	displayNames?: Array<string>;
 	lastAccessed?: string;
+	savings?: Array<object>
 }

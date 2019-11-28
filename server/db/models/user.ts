@@ -37,6 +37,10 @@ export const UserSchema: Schema = new Schema({
 	lastAccessed: {
 		type: String,
 		required: false
+	},
+	savings: {
+		type: Array,
+		required: false
 	}
 });
 
