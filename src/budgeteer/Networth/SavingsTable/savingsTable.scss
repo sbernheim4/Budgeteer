@@ -22,9 +22,9 @@
 .networth-table {
 	padding-bottom: 15px;
 
-	.institution {
+	.institution-card{
 
-		.institution-container {
+		&--info {
 			position: relative;
 			margin: 30px auto 0 auto;
 			max-width: 600px;
@@ -51,7 +51,7 @@
 				font-size: 17px;
 				color: #343434;
 
-				.institution-container--name {
+				&--name {
 					display: inline-block;
 					vertical-align: bottom;
 					font-weight: bolder;
