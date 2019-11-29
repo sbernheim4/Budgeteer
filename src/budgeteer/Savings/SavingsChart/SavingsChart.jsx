@@ -23,8 +23,8 @@ function SavingsChart(props) {
 			const chartData = data.map(info => {
 				const date = new Date(info.date);
 				const balance = info.savingsData[0].institutionBalance;
-                const balanceString = dollarify(balance);
-				const dateString = date.toLocaleString();
+				const balanceString = dollarify(balance);
+				const dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 
 				return {
 					name: dateString,
