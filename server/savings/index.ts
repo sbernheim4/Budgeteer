@@ -39,16 +39,12 @@ savingsRouter.post('/data', async (req) => {
 	};
 	const updatedHistoricalData = [...savings, savingsData];
 
-	console.log(data);
-
 	try {
 
 		await User.updateOne({ _id: userId }, { savings: updatedHistoricalData });
-		console.log("DB Update Successful");
 
 	} catch (error) {
 
-		console.log("Error Caught");
 		console.log(error);
 
 	}
@@ -57,9 +53,7 @@ savingsRouter.post('/data', async (req) => {
 
 savingsRouter.get('/data', async (req, res) => {
 
-	const institutionId = req.body;
-	console.log(institutionId);
-
+	const institutionId = req.query.id;
 	const userId = req.session.user._id;
 	let savings: IHistoricalData[];
 
@@ -72,8 +66,7 @@ savingsRouter.get('/data', async (req, res) => {
 
 	const institutionHistoricalData = savings.map(data => {
 
-		const date = data.date;
-		const savingsData = data.savingsData;
+		const { date, savingsData } = data;
 		const currAccount = savingsData.filter(institution => {
 			return institution.institutionId === institutionId
 		});
