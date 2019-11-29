@@ -19,11 +19,12 @@ function SavingsChart(props) {
 
 			const { data } = historicalDataRequest;
 			const chartData = data.map(info => {
-				const date = info.date;
+				const date = new Date(info.date);
 				const balance = info.savingsData[0].institutionBalance;
+				const dateString = date.toLocaleString();
 
 				return {
-					name: date,
+					name: dateString,
 					Balance: balance
 				}
 			});

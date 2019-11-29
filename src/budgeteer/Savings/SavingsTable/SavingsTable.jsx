@@ -58,7 +58,6 @@ export default function SavingsTable(props) {
 	const totalSavingsDisplay = dollarify(savings);
 
 	return (
-
 		<section className='networth-table'>
 			{institutionCards}
 
