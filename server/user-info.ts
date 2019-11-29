@@ -3,7 +3,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import IUser from './db/interfaces/IUser';
+
+import { IUser } from './types';
 
 const userInfoRouter = express.Router();
 const User = mongoose.model('User');

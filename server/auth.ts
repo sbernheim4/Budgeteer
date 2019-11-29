@@ -4,7 +4,7 @@ import passport from 'passport';
 import mongoose from 'mongoose';
 import chalk from 'chalk';
 
-import IUser from './db/interfaces/IUser';
+import { IUser } from './types';
 
 const FBStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
