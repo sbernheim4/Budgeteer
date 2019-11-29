@@ -23,13 +23,12 @@ function SavingsChart(props) {
 			const chartData = data.map(info => {
 				const date = new Date(info.date);
 				const balance = info.savingsData[0].institutionBalance;
-
-				const balanceString = dollarify(balance);
+                const balanceString = dollarify(balance);
 				const dateString = date.toLocaleString();
 
 				return {
 					name: dateString,
-					balance: balanceString
+					Balance: balanceString
 				}
 			});
 
@@ -54,7 +53,7 @@ function SavingsChart(props) {
 					<Tooltip />
 					<Line
 						type='monotone'
-						dataKey='balance'
+						dataKey='Balance'
 						stroke='#79c6a3'
 						strokeWidth={4}
 					/>
