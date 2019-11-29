@@ -10,5 +10,17 @@ export default interface IUser extends Document {
 	itemId?: Array<string>;
 	displayNames?: Array<string>;
 	lastAccessed?: string;
-	savings?: Array<object>
+	savings?: IHistoricalData[];
 }
+
+interface IHistoricalData {
+	date: string;
+	savingsData: ISavingsData[];
+}
+
+interface ISavingsData {
+	institutionId: string;
+	institutionBalance: number;
+	institutionBalanceObject: object;
+}
+

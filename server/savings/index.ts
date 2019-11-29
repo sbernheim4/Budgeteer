@@ -1,3 +1,13 @@
+interface ISavingsData {
+	institutionId: string;
+	institutionBalance: number;
+	institutionBalanceObject: object;
+}
+
+interface IHistoricalData {
+	date: string;
+	savingsData: ISavingsData[];
+}
 
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -29,6 +39,8 @@ savingsRouter.post('/data', async (req) => {
 	};
 	const updatedHistoricalData = [...savings, savingsData];
 
+	console.log(data);
+
 	try {
 
 		await User.updateOne({ _id: userId }, { savings: updatedHistoricalData });
@@ -45,21 +57,35 @@ savingsRouter.post('/data', async (req) => {
 
 savingsRouter.get('/data', async (req, res) => {
 
+	const institutionId = req.body;
+	console.log(institutionId);
+
 	const userId = req.session.user._id;
-	let savings: Array<object>;
+	let savings: IHistoricalData[];
 
 	try {
-
 		const userData: IUser = await User.findOne({ _id: userId });
 		savings = userData.savings;
-
 	} catch (error) {
-
 		savings= [];
-
 	}
 
-	res.json(savings);
+	const institutionHistoricalData = savings.map(data => {
+
+		const date = data.date;
+		const savingsData = data.savingsData;
+		const currAccount = savingsData.filter(institution => {
+			return institution.institutionId === institutionId
+		});
+
+		return {
+			date,
+			savingsData: currAccount
+		}
+
+	});
+
+	res.json(institutionHistoricalData);
 
 });
 
