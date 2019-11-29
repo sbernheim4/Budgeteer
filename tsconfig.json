@@ -10,5 +10,6 @@
 		"noImplicitAny": false,
 		"sourceMap": true,
 		"allowSyntheticDefaultImports": true
-	}
+	},
+    "include": ["server/**/*"]
 }
