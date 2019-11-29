@@ -4,7 +4,7 @@ import axios from 'axios';
 import differenceInDays from 'date-fns/differenceInDays';
 
 import BannerMessage from '../BannerMessage/BannerMessage.jsx';
-import { Navbar, Home, Statistics, AccountsContainer, Networth, Settings } from '../LazyLoadRoutes.jsx';
+import { Navbar, Home, Statistics, AccountsContainer, Savings, Settings } from '../LazyLoadRoutes.jsx';
 
 import '../scss/globals.scss';
 
@@ -207,7 +207,7 @@ class App extends Component {
 						)}
 					/>
 
-					<Route path='/networth' render={() => <Networth transactions={this.state.transactions} />} />
+					<Route path='/networth' render={() => <Savings transactions={this.state.transactions} />} />
 
 					<Route path='/settings' render={() => <Settings accounts={this.state.accounts} />} />
 				</div>

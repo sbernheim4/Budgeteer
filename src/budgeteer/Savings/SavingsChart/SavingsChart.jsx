@@ -11,16 +11,24 @@ function SavingsChart(props) {
 	useEffect(() => {
 
 		const getData = async () => {
+
 			const historicalDataRequest = await axios({
 				method: 'get',
-				url: `/savings/data?id=${props.institutionId}`,
-				data: props.institutionId,
-				headers: { 'Content-Type': 'application/json' }
+				url: `/savings/data?id=${props.institutionId}`
 			});
 
 			const { data } = historicalDataRequest;
+			const chartData = data.map(info => {
+				const date = info.date;
+				const balance = info.savingsData[0].institutionBalance;
 
-			setRechartsData(data);
+				return {
+					name: date,
+					Balance: balance
+				}
+			});
+
+			setRechartsData(chartData);
 		}
 
 		getData();
