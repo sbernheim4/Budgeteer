@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
+import { LineChart, ResponsiveContainer, XAxis, Tooltip, Line } from 'recharts';
 import axios from 'axios';
 
 import './savingsChart.scss';
@@ -13,7 +13,7 @@ function SavingsChart(props) {
 		const getData = async () => {
 			const historicalDataRequest = await axios({
 				method: 'get',
-				url: '/savings/data',
+				url: `/savings/data?id=${props.institutionId}`,
 				data: props.institutionId,
 				headers: { 'Content-Type': 'application/json' }
 			});
