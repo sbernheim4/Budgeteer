@@ -1,6 +1,17 @@
 import { Document } from 'mongoose';
 
-export default interface IUser extends Document {
+export interface ISavingsData {
+	institutionId: string;
+	institutionBalance: number;
+	institutionBalanceObject: object;
+}
+
+export interface IHistoricalData {
+	date: string;
+	savingsData: ISavingsData[];
+}
+
+export interface IUser extends Document {
 	name?: string;
 	facebookID?: string;
 	googleID?: string;
@@ -12,15 +23,3 @@ export default interface IUser extends Document {
 	lastAccessed?: string;
 	savings?: IHistoricalData[];
 }
-
-interface IHistoricalData {
-	date: string;
-	savingsData: ISavingsData[];
-}
-
-interface ISavingsData {
-	institutionId: string;
-	institutionBalance: number;
-	institutionBalanceObject: object;
-}
-

@@ -1,19 +1,8 @@
-interface ISavingsData {
-	institutionId: string;
-	institutionBalance: number;
-	institutionBalanceObject: object;
-}
-
-interface IHistoricalData {
-	date: string;
-	savingsData: ISavingsData[];
-}
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import IUser from './../db/interfaces/IUser';
+import { IUser, IHistoricalData } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
