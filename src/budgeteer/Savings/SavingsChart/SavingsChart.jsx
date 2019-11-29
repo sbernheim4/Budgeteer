@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, ResponsiveContainer, XAxis, Tooltip, Line } from 'recharts';
 import axios from 'axios';
 
+import { dollarify } from './../../helpers';
+
 import './savingsChart.scss';
 
 function SavingsChart(props) {
@@ -21,11 +23,13 @@ function SavingsChart(props) {
 			const chartData = data.map(info => {
 				const date = new Date(info.date);
 				const balance = info.savingsData[0].institutionBalance;
+
+				const balanceString = dollarify(balance);
 				const dateString = date.toLocaleString();
 
 				return {
 					name: dateString,
-					Balance: balance
+					balance: balanceString
 				}
 			});
 
@@ -50,7 +54,7 @@ function SavingsChart(props) {
 					<Tooltip />
 					<Line
 						type='monotone'
-						dataKey='Balance'
+						dataKey='balance'
 						stroke='#79c6a3'
 						strokeWidth={4}
 					/>
