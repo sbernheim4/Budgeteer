@@ -2,24 +2,24 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import differenceInDays from 'date-fns/differenceInDays'
 
-import NetworthTable from './NetworthTable/NetworthTable.jsx';
+import SavingsTable from './SavingsTable/SavingsTable.jsx';
 
-import './networth.scss';
+import './savings.scss';
 
-export default class Networth extends Component {
+export default class Savings extends Component {
 
 	constructor(props) {
 
 		super(props);
 
 		this.state = {
-			savings: 0,
 			accountBalances: [],
-			loading: true
+			displayNames: new Map(),
+			institutionNames: [],
+			loading: true,
+			savings: 0
 		};
 
-		this.institutionNames = [];
-		this.displayNames = new Map();
 		this.cacheKeyPrefix = 'budgeteer--savings';
 
 		this.getDisplayNames = this.setDisplayNames.bind(this);
@@ -55,7 +55,7 @@ export default class Networth extends Component {
 				product: ['balance'],
 				key: keyAndEnv.data.publicKey,
 				token: savingsData.publicToken,
-				onSuccess: function(public_token) {
+				onSuccess: function() {
 					console.log('Update of Account successful');
 				}
 			});
@@ -79,6 +79,21 @@ export default class Networth extends Component {
 		window.localStorage.setItem(`${this.cacheKeyPrefix}--totalSavings`, totalSavings);
 		window.localStorage.setItem(`${this.cacheKeyPrefix}--arrayOfInstitutionInfo`, serializedBankInfo);
 		window.localStorage.setItem(`${this.cacheKeyPrefix}--entryTime`, new Date());
+
+	}
+
+	async storeHistoricalSavingsData(bankInfo) {
+
+		const serializedBankInfo = JSON.stringify(bankInfo);
+
+		axios({
+			method: 'post',
+			url: '/savings/data',
+			data: serializedBankInfo,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 
 	}
 
@@ -114,6 +129,8 @@ export default class Networth extends Component {
 
 			this.cacheSavingsData(totalSavings, bankInfo);
 
+			this.storeHistoricalSavingsData(bankInfo);
+
 		}
 
 	}
@@ -131,7 +148,9 @@ export default class Networth extends Component {
 			});
 		}
 
-		this.displayNames = displayNamesMap;
+		this.setState({
+			displayNames: displayNamesMap
+		});
 
 	}
 
@@ -140,8 +159,9 @@ export default class Networth extends Component {
 		const linkedBanksRequest = await axios.get('/plaid-api/linked-accounts');
 		const linkedBanks = linkedBanksRequest.data.banks;
 
-		this.institutionNames = linkedBanks;
-
+		this.setState({
+			institutionNames: linkedBanks
+		});
 	}
 
 	render() {
@@ -149,14 +169,12 @@ export default class Networth extends Component {
 		return (
 
 			<div className='networth'>
-
-				<NetworthTable
+				<SavingsTable
 					savings={this.state.savings}
-					displayNames={this.displayNames}
+					displayNames={this.state.displayNames}
 					accountBalances={this.state.accountBalances}
-					institutionNames={this.institutionNames}
+					institutionNames={this.state.institutionNames}
 				/>
-
 			</div>
 
 		);

@@ -1,10 +1,12 @@
-import React, {useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+import SavingsChart from './../SavingsChart/SavingsChart.jsx';
 
 import { dollarify } from '../../helpers.js';
 
-import './networthTable.scss';
+import './savingsTable.scss';
 
-export default function NetworthTable(props) {
+export default function SavingsTable(props) {
 	const accountBalancesLoaded = props.accountBalances.length > 0;
 
 	if (!accountBalancesLoaded) {
@@ -21,13 +23,13 @@ export default function NetworthTable(props) {
 		savings,
 		accountBalances,
 		displayNames,
-		institutionNames
+		institutionNames,
 	} = props;
 
 	function generateInstitutionCards(accountBalances) {
 
 		const institutionCards = accountBalances.map((institution, i) => {
-			return <InstitutionInfo
+			return <InstitutionCard
 				key={i}
 				displayNames={displayNames}
 				institutionId={institution.institutionId}
@@ -56,14 +58,15 @@ export default function NetworthTable(props) {
 	const totalSavingsDisplay = dollarify(savings);
 
 	return (
-
 		<section className='networth-table'>
 			{institutionCards}
 
-			<div className='institution-container'>
-				<div className='networth--entry networth--total'>
-					<p className='acct-name'>Total Savings</p>
-					<p className='acct-value'>${totalSavingsDisplay}</p>
+			<div className='institution-card'>
+				<div className='institution-card--info'>
+					<div className='networth--entry networth--total'>
+						<p className='acct-name'>Total Savings</p>
+						<p className='acct-value'>${totalSavingsDisplay}</p>
+					</div>
 				</div>
 			</div>
 
@@ -71,14 +74,14 @@ export default function NetworthTable(props) {
 	);
 }
 
-function InstitutionInfo(props) {
+function InstitutionCard(props) {
 
 	const {
 		displayNames,
 		institutionInfo,
 		institutionNames,
 		institutionId,
-		totalSavings
+		totalSavings,
 	} = props;
 
 	const [width, setWidth] = useState(0);
@@ -121,25 +124,38 @@ function InstitutionInfo(props) {
 	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
 
+	function handleClick(e) {
+		const card = e.target.closest(".institution-card").querySelector(".savings-chart");
+		card.classList.toggle('savings-chart--show');
+	}
+
 	return (
-		<div className='institution-container'>
+		<div className='institution-card'>
 
-			<h3 style={{left: `calc(50% - ${width / 2}px`}}>
-				<span
-					className='institution-container--name'
-					ref={institutionNameRef}
-				>
-				{institutionName}
-				</span>
+			<div className='institution-card--info'
+				onClick={(e) => handleClick(e)}
+			>
+				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
+					<span
+						className='institution-card--info--name'
+						ref={institutionNameRef}
+					>
+					{institutionName}
+					</span>
 
-				<span
-					className='percent'
-				> - {percent}%
-				</span>
+					<span
+						className='percent'
+					> - {percent}%
+					</span>
 
-			</h3>
+				</h3>
 
-			{institutionInfoRows}
+				{institutionInfoRows}
+			</div>
+
+			<SavingsChart
+				institutionId={institutionId}
+			/>
 		</div>
 	);
 }

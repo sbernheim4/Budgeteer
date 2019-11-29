@@ -19,8 +19,8 @@ export const Home = Loadable({
 	loading: () => <div>loading...</div>
 });
 
-export const Networth = Loadable({
-	loader: () => import('./Networth/Networth.jsx'),
+export const Savings = Loadable({
+    loader: () => import('./Savings/Savings.jsx'),
 	loading: () => <div>Loading...</div>
 });
 
