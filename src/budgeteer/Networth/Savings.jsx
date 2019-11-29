@@ -15,8 +15,7 @@ export default class Savings extends Component {
 		this.state = {
 			savings: 0,
 			accountBalances: [],
-			loading: true,
-			historicalSavings: []
+			loading: true
 		};
 
 		this.institutionNames = [];
@@ -83,32 +82,17 @@ export default class Savings extends Component {
 
 	}
 
-	async storeSavingsData(bankInfo) {
+	async storeHistoricalSavingsData(bankInfo) {
 
 		const serializedBankInfo = JSON.stringify(bankInfo);
 
-		// TODO: Try adding some retry logic with exponential back off in case post request fails
 		axios({
 			method: 'post',
 			url: '/savings/data',
 			data: serializedBankInfo,
-			headers: { 'Content-Type': 'application/json' }
-		});
-
-	}
-
-	async getSavingsData() {
-
-		const response = await axios({
-			method: 'get',
-			url: '/savings/data',
-			headers: { 'Content-Type': 'application/json' }
-		});
-
-		const { data } = response;
-
-		this.setState({
-			historicalSavings: data
+			headers: {
+				'Content-Type': 'application/json'
+			}
 		});
 
 	}
@@ -145,11 +129,9 @@ export default class Savings extends Component {
 
 			this.cacheSavingsData(totalSavings, bankInfo);
 
-			this.storeSavingsData(bankInfo);
+			this.storeHistoricalSavingsData(bankInfo);
 
 		}
-
-		await this.getSavingsData();
 
 	}
 
@@ -190,7 +172,6 @@ export default class Savings extends Component {
 					displayNames={this.displayNames}
 					accountBalances={this.state.accountBalances}
 					institutionNames={this.institutionNames}
-					historicalSavings={this.state.historicalSavings}
 				/>
 
 			</div>

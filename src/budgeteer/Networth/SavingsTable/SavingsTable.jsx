@@ -24,7 +24,6 @@ export default function SavingsTable(props) {
 		accountBalances,
 		displayNames,
 		institutionNames,
-		historicalSavings
 	} = props;
 
 	function generateInstitutionCards(accountBalances) {
@@ -37,7 +36,6 @@ export default function SavingsTable(props) {
 				institutionInfo={institution.institutionBalanceObject}
 				institutionNames={institutionNames}
 				totalSavings={savings}
-				historicalSavings={historicalSavings}
 			/>
 		});
 
@@ -85,7 +83,6 @@ function InstitutionCard(props) {
 		institutionNames,
 		institutionId,
 		totalSavings,
-		historicalSavings
 	} = props;
 
 	const [width, setWidth] = useState(0);
@@ -158,7 +155,6 @@ function InstitutionCard(props) {
 			</div>
 
 			<SavingsChart
-				historicalSavings={historicalSavings}
 				institutionId={institutionId}
 			/>
 		</div>

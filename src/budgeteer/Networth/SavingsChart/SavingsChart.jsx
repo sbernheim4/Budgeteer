@@ -1,37 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
-
-import { dollarify } from './../../helpers';
+import axios from 'axios';
 
 import './savingsChart.scss';
 
 function SavingsChart(props) {
 
-	const {
-		historicalSavings = [],
-		institutionId
-	} = props;
-
 	const [rechartsData, setRechartsData] = useState([]);
 
 	useEffect(() => {
 
-		const data = historicalSavings.map((info) => {
-			const { date, savingsData } = info;
-			const dateString = new Date(date).toDateString();
-			const currentInstitutionSavingsData = savingsData.filter(institution => institution.institutionId === institutionId)[0];
-			const balance = dollarify(currentInstitutionSavingsData.institutionBalance);
+		const getData = async () => {
+			const historicalDataRequest = await axios({
+				method: 'get',
+				url: '/savings/data',
+				data: props.institutionId,
+				headers: { 'Content-Type': 'application/json' }
+			});
 
-			return {
-				name: dateString,
-				Balance: balance
-			}
+			const { data } = historicalDataRequest;
 
-		});
+			setRechartsData(data);
+		}
 
-		setRechartsData(data);
+		getData();
 
-	}, [props.historicalSavings]);
+	}, [props.institutionId]);
 
 	return (
 		<section className='savings-chart'>
