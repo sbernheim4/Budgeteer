@@ -13,13 +13,13 @@ export default class Savings extends Component {
 		super(props);
 
 		this.state = {
-			savings: 0,
 			accountBalances: [],
-			loading: true
+			displayNames: new Map(),
+			institutionNames: [],
+			loading: true,
+			savings: 0
 		};
 
-		this.institutionNames = [];
-		this.displayNames = new Map();
 		this.cacheKeyPrefix = 'budgeteer--savings';
 
 		this.getDisplayNames = this.setDisplayNames.bind(this);
@@ -55,7 +55,7 @@ export default class Savings extends Component {
 				product: ['balance'],
 				key: keyAndEnv.data.publicKey,
 				token: savingsData.publicToken,
-				onSuccess: function(public_token) {
+				onSuccess: function() {
 					console.log('Update of Account successful');
 				}
 			});
@@ -148,7 +148,9 @@ export default class Savings extends Component {
 			});
 		}
 
-		this.displayNames = displayNamesMap;
+		this.setState({
+			displayNames: displayNamesMap
+		});
 
 	}
 
@@ -157,8 +159,9 @@ export default class Savings extends Component {
 		const linkedBanksRequest = await axios.get('/plaid-api/linked-accounts');
 		const linkedBanks = linkedBanksRequest.data.banks;
 
-		this.institutionNames = linkedBanks;
-
+		this.setState({
+			institutionNames: linkedBanks
+		});
 	}
 
 	render() {
@@ -166,14 +169,12 @@ export default class Savings extends Component {
 		return (
 
 			<div className='networth'>
-
 				<SavingsTable
 					savings={this.state.savings}
-					displayNames={this.displayNames}
+					displayNames={this.state.displayNames}
 					accountBalances={this.state.accountBalances}
-					institutionNames={this.institutionNames}
+					institutionNames={this.state.institutionNames}
 				/>
-
 			</div>
 
 		);
