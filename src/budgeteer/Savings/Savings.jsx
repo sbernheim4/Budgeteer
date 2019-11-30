@@ -82,7 +82,7 @@ export default class Savings extends Component {
 
 	}
 
-	async storeHistoricalSavingsData(bankInfo) {
+	async storeSavingsChartData(bankInfo) {
 
 		const serializedBankInfo = JSON.stringify(bankInfo);
 
@@ -99,8 +99,23 @@ export default class Savings extends Component {
 
 	async componentDidMount() {
 
-		await this.setDisplayNames();
-		await this.setInstitutionIds();
+		const displayNamesMap = await this.setDisplayNames();
+		const linkedBanks = await this.setInstitutionIds();
+        const savingsData = await this.getSavingsData();
+
+		const { savings, accountBalances, loading } = savingsData;
+
+		this.setState({
+			displayNames: displayNamesMap,
+			institutionNames: linkedBanks,
+			savings,
+			accountBalances,
+			loading
+		});
+
+	}
+
+	async getSavingsData() {
 
 		const serializedTotalSavings = window.localStorage.getItem(`${this.cacheKeyPrefix}--totalSavings`);
 		const serializedBankInfo = window.localStorage.getItem(`${this.cacheKeyPrefix}--arrayOfInstitutionInfo`);
@@ -110,30 +125,28 @@ export default class Savings extends Component {
 			const totalSavings = new Number(serializedTotalSavings);
 			const bankInfo = JSON.parse(serializedBankInfo);
 
-			this.setState({
+			return {
 				savings: totalSavings,
 				accountBalances: bankInfo,
 				loading: false
-			});
+			}
 
 		} else {
 
 			const savingsData = await this.getSavingsDataFromServer();
 			const { totalSavings, bankInfo } = savingsData;
 
-			this.setState({
+			this.cacheSavingsData(totalSavings, bankInfo);
+			this.storeSavingsChartData(bankInfo);
+
+			return {
 				savings: totalSavings,
 				accountBalances: bankInfo,
 				loading: false
-			});
-
-			this.cacheSavingsData(totalSavings, bankInfo);
-
-			this.storeHistoricalSavingsData(bankInfo);
+			};
 
 		}
-
-	}
+    }
 
 	async setDisplayNames() {
 
@@ -148,9 +161,7 @@ export default class Savings extends Component {
 			});
 		}
 
-		this.setState({
-			displayNames: displayNamesMap
-		});
+		return displayNamesMap
 
 	}
 
@@ -159,9 +170,8 @@ export default class Savings extends Component {
 		const linkedBanksRequest = await axios.get('/plaid-api/linked-accounts');
 		const linkedBanks = linkedBanksRequest.data.banks;
 
-		this.setState({
-			institutionNames: linkedBanks
-		});
+		return linkedBanks;
+
 	}
 
 	render() {
