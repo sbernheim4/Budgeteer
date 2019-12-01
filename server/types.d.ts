@@ -1,14 +1,14 @@
 import { Document } from 'mongoose';
 
-export interface ISavingsData {
+export interface IInstitutionSavingsInfo {
 	institutionId: string;
-	institutionBalance: number;
-	institutionBalanceObject: object;
+	savingsData: IInstitutionSavingsPoint[];
 }
 
-export interface IHistoricalData {
+export interface IInstitutionSavingsPoint {
 	date: string;
-	savingsData: ISavingsData[];
+	institutionalBalance: number;
+	institutionalBalanceMap: Map<string, number>;
 }
 
 export interface IUser extends Document {
@@ -21,5 +21,11 @@ export interface IUser extends Document {
 	itemId?: Array<string>;
 	displayNames?: Array<string>;
 	lastAccessed?: string;
-	savings?: IHistoricalData[];
+	savings?: IInstitutionSavingsInfo[];
+}
+
+export interface IBankInfo {
+	institutionId: string;
+	institutionBalance: number;
+	institutionBalanceObject: object;
 }
