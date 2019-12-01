@@ -49,7 +49,10 @@ function SavingsChart(props) {
 					data={rechartsData}
 					margin={{ top: 20, right: 30, left: 30, bottom: 10 }}
 				>
-					<XAxis dataKey='name' />
+					<XAxis
+						interval={2}
+						dataKey='name'
+					/>
 					<Tooltip />
 					<Line
 						type='monotone'
