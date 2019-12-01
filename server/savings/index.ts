@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import { IUser, IHistoricalData } from './../types';
+import { IUser, IBankInfo } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -22,20 +22,30 @@ savingsRouter.post('/data', async (req) => {
 	const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
 	const savings = userInfo.savings || [];
 	const date = new Date();
-	const savingsData = {
-		date,
-		savingsData: data
-	};
-	const updatedHistoricalData = [...savings, savingsData];
+
+	const newDataPoints = data.map((institution: IBankInfo) => {
+
+		const { institutionId, institutionBalance, institutionBalanceObject } = institution;
+
+		const savingsData = {
+			date: new Date(),
+			institutionBalance,
+			institutionBalanceMap: institutionBalanceObject
+		};
+
+		return {
+			institutionId,
+			savingsData
+		};
+
+	}).sort((a, b) => {
+		return a.institutionId - b.institutionId
+	});
 
 	try {
-
 		await User.updateOne({ _id: userId }, { savings: updatedHistoricalData });
-
 	} catch (error) {
-
 		console.log(error);
-
 	}
 
 });
@@ -44,13 +54,13 @@ savingsRouter.get('/data', async (req, res) => {
 
 	const institutionId = req.query.id;
 	const userId = req.session.user._id;
-	let savings: IHistoricalData[];
+	let savings;
 
 	try {
 		const userData: IUser = await User.findOne({ _id: userId });
 		savings = userData.savings;
 	} catch (error) {
-		savings= [];
+		savings = [];
 	}
 
 	const institutionHistoricalData = savings.map(data => {
