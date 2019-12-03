@@ -2,7 +2,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import { IUser, IBankInfo, IInstitutionSavingsPoint, IInstitutionSavingsInfo } from './../types';
+import { formatNewDataPoints, createNewInstitutionSavingsInfo } from './helpers';
+
+import { IUser, IInstitutionSavingsPoint } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -17,15 +19,15 @@ savingsRouter.use(bodyParser.json());
 
 savingsRouter.post('/data', async (req, res) => {
 
-	const data = req.body;
-	const userId = req.session.user._id;
-	const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
-	const savings = userInfo.savings;
-
 	try {
 
-		const newDataPoints = formatNewDataPoints(data);
-		const updatedInstitutionSavingsInfo = createNewInstitutionSavingsInfo(newDataPoints, savings);
+		const data = req.body;
+		const userId = req.session.user._id;
+		const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
+		const oldInstitutionSavingsInfo = userInfo.savings;
+
+		const newInstitutionSavingsInfo = formatNewDataPoints(data);
+		const updatedInstitutionSavingsInfo = createNewInstitutionSavingsInfo(newInstitutionSavingsInfo, oldInstitutionSavingsInfo);
 
 		await User.updateOne({ _id: userId }, { savings: updatedInstitutionSavingsInfo });
 
@@ -39,75 +41,15 @@ savingsRouter.post('/data', async (req, res) => {
 
 });
 
-function formatNewDataPoints(data: IBankInfo[]) {
-
-	const dateString = new Date().toString();
-
-	const savingsInfo = data.map(institution => {
-
-		const { institutionId, institutionBalance } = institution;
-
-		const newInfo: IInstitutionSavingsInfo = {
-			institutionId,
-			savingsData: [{
-				date: dateString,
-				institutionalBalance: institutionBalance
-			}]
-		};
-
-		return newInfo;
-
-	});
-
-	return savingsInfo;
-
-}
-
-function createNewInstitutionSavingsInfo(newDataPoints: IInstitutionSavingsInfo[], savings: IInstitutionSavingsInfo[]) {
-
-	const updatedInstitutionInfo = newDataPoints.map(dataPoint => {
-
-		const { institutionId, savingsData } = dataPoint;
-
-		const currInstitution = savings.find(institution => institution.institutionId === institutionId);
-		let newDataPointsArray = [];
-
-		try {
-
-			const oldDataPoints = currInstitution.savingsData;
-
-			oldDataPoints.sort((a, b) => {
-				return new Date(a.date).getTime() - new Date(b.date).getTime();
-			});
-
-			newDataPointsArray = [...savingsData, ...oldDataPoints];
-
-		} catch (error) {
-
-			newDataPointsArray = [...savingsData];
-
-		}
-
-		const updatedInstitutionInfo: IInstitutionSavingsInfo = {
-			institutionId,
-			savingsData: newDataPointsArray
-		}
-
-		return updatedInstitutionInfo;
-
-	});
-
-	return updatedInstitutionInfo;
-
-}
-
 savingsRouter.get('/data', async (req, res) => {
 
 	const institutionId = req.query.id;
 	const userId = req.session.user._id;
+
 	let savings: IInstitutionSavingsPoint[];
 
 	try {
+
 		const userData: IUser = await User.findOne({ _id: userId });
 		const history = userData.savings;
 		const institutionInfo = history.find(institution => institution.institutionId === institutionId);
@@ -117,7 +59,9 @@ savingsRouter.get('/data', async (req, res) => {
 		res.json(savings);
 
 	} catch (error) {
+
 		savings = [];
+
 	}
 
 });
