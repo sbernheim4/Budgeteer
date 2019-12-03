@@ -50,7 +50,7 @@ savingsRouter.get('/data', async (req, res) => {
 		const userData: IUser = await User.findOne({ _id: userId });
 		savings = userData.savings;
 	} catch (error) {
-		savings= [];
+		savings = [];
 	}
 
 	const institutionHistoricalData = savings.map(data => {
