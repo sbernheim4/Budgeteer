@@ -20,15 +20,18 @@ function SavingsChart(props) {
 			});
 
 			const { data } = historicalDataRequest;
-			const chartData = data.map(info => {
-				const date = new Date(info.date);
-				const balance = info.savingsData[0].institutionBalance;
-				const balanceString = dollarify(balance);
-				const dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+			const chartData = data.map(dataPoint => {
+
+				const { date: dateString, institutionalBalance } = dataPoint;
+
+				const date = new Date(dateString);
+
+				const displayBalance = dollarify(institutionalBalance);
+				const displayDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 
 				return {
-					name: dateString,
-					Balance: balanceString
+					name: displayDate,
+					Balance: displayBalance
 				}
 			});
 
@@ -49,7 +52,10 @@ function SavingsChart(props) {
 					data={rechartsData}
 					margin={{ top: 20, right: 30, left: 30, bottom: 10 }}
 				>
-					<XAxis dataKey='name' />
+					<XAxis
+						interval={2}
+						dataKey='name'
+					/>
 					<Tooltip />
 					<Line
 						type='monotone'
