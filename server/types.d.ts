@@ -21,7 +21,6 @@ export interface IInstitutionSavingsInfo {
 export interface IInstitutionSavingsPoint {
 	date: string;
 	institutionalBalance: number;
-	institutionalBalanceMap: Map<string, number>;
 }
 
 interface IInstitutionalBalanceObject {
@@ -34,6 +33,6 @@ interface IInstitutionalBalanceObject {
 
 export interface IBankInfo {
 	institutionId: string;
-	institutionBalance: number;
+	institutionalBalance: number;
     institutionBalanceObject: IInstitutionalBalanceObject;
 }

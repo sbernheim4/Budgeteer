@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import { IUser, IBankInfo, IInstitutionSavingsPoint } from './../types';
+import { IUser, IBankInfo, IInstitutionSavingsPoint, IInstitutionSavingsInfo } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -15,40 +15,92 @@ savingsRouter.use(
 
 savingsRouter.use(bodyParser.json());
 
-savingsRouter.post('/data', async (req) => {
+savingsRouter.post('/data', async (req, res) => {
 
 	const data = req.body;
 	const userId = req.session.user._id;
 	const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
-	const savings = userInfo.savings || [];
-	const date = new Date();
-
-	const newDataPoints = data.map((institution: IBankInfo) => {
-
-		const { institutionId, institutionBalance, institutionBalanceObject } = institution;
-
-		const savingsData = {
-			date: new Date(),
-			institutionBalance,
-			institutionBalanceMap: institutionBalanceObject
-		};
-
-		return {
-			institutionId,
-			savingsData
-		};
-
-	}).sort((a, b) => {
-		return a.institutionId - b.institutionId
-	});
+	const savings = userInfo.savings;
 
 	try {
-		await User.updateOne({ _id: userId }, { savings: updatedHistoricalData });
+
+		const newDataPoints = formatNewDataPoints(data);
+		const updatedInstitutionSavingsInfo = createNewInstitutionSavingsInfo(newDataPoints, savings);
+
+		await User.updateOne({ _id: userId }, { savings: updatedInstitutionSavingsInfo });
+
+		res.status(200);
+
 	} catch (error) {
+
 		console.log(error);
+
 	}
 
 });
+
+function formatNewDataPoints(data: IBankInfo[]) {
+
+	const dateString = new Date().toString();
+
+	const savingsInfo = data.map(institution => {
+
+		const { institutionId, institutionalBalance } = institution;
+
+		console.log(institution);
+
+		const newInfo: IInstitutionSavingsInfo = {
+			institutionId,
+			savingsData: [{
+				date: dateString,
+				institutionalBalance
+			}]
+		};
+
+		return newInfo;
+
+	});
+
+	return savingsInfo;
+
+}
+
+function createNewInstitutionSavingsInfo(newDataPoints: IInstitutionSavingsInfo[], savings: IInstitutionSavingsInfo[]) {
+
+	const updatedInstitutionInfo = newDataPoints.map(dataPoint => {
+
+		const { institutionId, savingsData } = dataPoint;
+
+		const currInstitution = savings.find(institution => institution.institutionId === institutionId);
+		let newDataPointsArray = [];
+
+		if (currInstitution === undefined) {
+
+			newDataPointsArray = [...savingsData];
+
+		} else {
+
+			const oldDataPoints = currInstitution.savingsData || [];
+
+			oldDataPoints.sort((a, b) => {
+				return new Date(a.date).getTime() - new Date(b.date).getTime();
+			});
+
+			newDataPointsArray = [...savingsData, ...oldDataPoints];
+		}
+
+		const updatedInstitutionInfo: IInstitutionSavingsInfo = {
+			institutionId,
+			savingsData: newDataPointsArray
+		}
+
+		return updatedInstitutionInfo;
+
+	});
+
+	return updatedInstitutionInfo;
+
+}
 
 savingsRouter.get('/data', async (req, res) => {
 
@@ -58,12 +110,12 @@ savingsRouter.get('/data', async (req, res) => {
 
 	try {
 		const userData: IUser = await User.findOne({ _id: userId });
-        const history = userData.savings;
-        const institutionInfo = history.find(institution => institution.institutionId === institutionId);
+		const history = userData.savings;
+		const institutionInfo = history.find(institution => institution.institutionId === institutionId);
 
-        savings = institutionInfo.savingsData;
+		savings = institutionInfo.savingsData;
 
-        res.json(savings);
+		res.json(savings);
 
 	} catch (error) {
 		savings = [];
