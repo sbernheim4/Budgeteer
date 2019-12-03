@@ -22,11 +22,11 @@ function SavingsChart(props) {
 			const { data } = historicalDataRequest;
 			const chartData = data.map(dataPoint => {
 
-				const { date: dateString, institutionBalance } = dataPoint;
+				const { date: dateString, institutionalBalance } = dataPoint;
 
 				const date = new Date(dateString);
 
-				const displayBalance = dollarify(institutionBalance);
+				const displayBalance = dollarify(institutionalBalance);
 				const displayDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 
 				return {

@@ -82,11 +82,11 @@ export default class Savings extends Component {
 
 	}
 
-	async storeSavingsChartData(bankInfo) {
+	async storeNewChartData(bankInfo) {
 
 		const serializedBankInfo = JSON.stringify(bankInfo);
 
-		axios({
+		await axios({
 			method: 'post',
 			url: '/savings/data',
 			data: serializedBankInfo,
@@ -137,7 +137,7 @@ export default class Savings extends Component {
 			const { totalSavings, bankInfo } = savingsData;
 
 			this.cacheSavingsData(totalSavings, bankInfo);
-			this.storeSavingsChartData(bankInfo);
+			this.storeNewChartData(bankInfo);
 
 			return {
 				savings: totalSavings,
