@@ -72,7 +72,7 @@ function createNewInstitutionSavingsInfo(newDataPoints: IInstitutionSavingsInfo[
 		const currInstitution = savings.find(institution => institution.institutionId === institutionId);
 		let newDataPointsArray = [];
 
-        try {
+		try {
 
 			const oldDataPoints = currInstitution.savingsData;
 
@@ -82,11 +82,11 @@ function createNewInstitutionSavingsInfo(newDataPoints: IInstitutionSavingsInfo[
 
 			newDataPointsArray = [...savingsData, ...oldDataPoints];
 
-        } catch (error) {
+		} catch (error) {
 
 			newDataPointsArray = [...savingsData];
 
-        }
+		}
 
 		const updatedInstitutionInfo: IInstitutionSavingsInfo = {
 			institutionId,

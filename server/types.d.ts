@@ -24,15 +24,15 @@ export interface IInstitutionSavingsPoint {
 }
 
 interface IInstitutionalBalanceObject {
-    [key: string]: {
-        accountBalance: number;
-        accountName: string;
-        accountType: string;
-    }
+	[key: string]: {
+		accountBalance: number;
+		accountName: string;
+		accountType: string;
+	}
 }
 
 export interface IBankInfo {
 	institutionId: string;
 	institutionBalance: number;
-    institutionBalanceObject: IInstitutionalBalanceObject;
+	institutionBalanceObject: IInstitutionalBalanceObject;
 }

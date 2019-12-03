@@ -101,7 +101,7 @@ export default class Savings extends Component {
 
 		const displayNamesMap = await this.setDisplayNames();
 		const linkedBanks = await this.setInstitutionIds();
-        const savingsData = await this.getSavingsData();
+		const savingsData = await this.getSavingsData();
 
 		const { savings, accountBalances, loading } = savingsData;
 
@@ -146,7 +146,7 @@ export default class Savings extends Component {
 			};
 
 		}
-    }
+	}
 
 	async setDisplayNames() {
 
