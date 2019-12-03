@@ -72,20 +72,21 @@ function createNewInstitutionSavingsInfo(newDataPoints: IInstitutionSavingsInfo[
 		const currInstitution = savings.find(institution => institution.institutionId === institutionId);
 		let newDataPointsArray = [];
 
-		if (currInstitution === undefined) {
+        try {
 
-			newDataPointsArray = [...savingsData];
-
-		} else {
-
-			const oldDataPoints = currInstitution.savingsData || [];
+			const oldDataPoints = currInstitution.savingsData;
 
 			oldDataPoints.sort((a, b) => {
 				return new Date(a.date).getTime() - new Date(b.date).getTime();
 			});
 
 			newDataPointsArray = [...savingsData, ...oldDataPoints];
-		}
+
+        } catch (error) {
+
+			newDataPointsArray = [...savingsData];
+
+        }
 
 		const updatedInstitutionInfo: IInstitutionSavingsInfo = {
 			institutionId,
