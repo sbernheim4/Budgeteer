@@ -45,15 +45,13 @@ function formatNewDataPoints(data: IBankInfo[]) {
 
 	const savingsInfo = data.map(institution => {
 
-		const { institutionId, institutionalBalance } = institution;
-
-		console.log(institution);
+		const { institutionId, institutionBalance } = institution;
 
 		const newInfo: IInstitutionSavingsInfo = {
 			institutionId,
 			savingsData: [{
 				date: dateString,
-				institutionalBalance
+				institutionalBalance: institutionBalance
 			}]
 		};
 

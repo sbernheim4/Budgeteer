@@ -33,6 +33,6 @@ interface IInstitutionalBalanceObject {
 
 export interface IBankInfo {
 	institutionId: string;
-	institutionalBalance: number;
+	institutionBalance: number;
     institutionBalanceObject: IInstitutionalBalanceObject;
 }
