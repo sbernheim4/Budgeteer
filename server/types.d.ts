@@ -1,16 +1,5 @@
 import { Document } from 'mongoose';
 
-export interface IInstitutionSavingsInfo {
-	institutionId: string;
-	savingsData: IInstitutionSavingsPoint[];
-}
-
-export interface IInstitutionSavingsPoint {
-	date: string;
-	institutionalBalance: number;
-	institutionalBalanceMap: Map<string, number>;
-}
-
 export interface IUser extends Document {
 	name?: string;
 	facebookID?: string;
@@ -24,8 +13,27 @@ export interface IUser extends Document {
 	savings?: IInstitutionSavingsInfo[];
 }
 
+export interface IInstitutionSavingsInfo {
+	institutionId: string;
+	savingsData: IInstitutionSavingsPoint[];
+}
+
+export interface IInstitutionSavingsPoint {
+	date: string;
+	institutionalBalance: number;
+	institutionalBalanceMap: Map<string, number>;
+}
+
+interface IInstitutionalBalanceObject {
+    [key: string]: {
+        accountBalance: number;
+        accountName: string;
+        accountType: string;
+    }
+}
+
 export interface IBankInfo {
 	institutionId: string;
 	institutionBalance: number;
-	institutionBalanceObject: object;
+    institutionBalanceObject: IInstitutionalBalanceObject;
 }
