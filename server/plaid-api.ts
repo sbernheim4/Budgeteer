@@ -272,7 +272,7 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 
 	try {
 
-		let banks: object = {};
+		let banks = {};
 
 		// Get Item ID for each access token
 		const itemInfo = req.session.user.accessTokens.map(
