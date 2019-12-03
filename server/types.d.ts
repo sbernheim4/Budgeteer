@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 export interface ISavingsData {
 	institutionId: string;
 	institutionBalance: number;
-	institutionBalanceObject: object;
+	institutionBalanceObject: Object;
 }
 
 export interface IHistoricalData {
