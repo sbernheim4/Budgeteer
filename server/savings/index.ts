@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import { IUser, IBankInfo } from './../types';
+import { IUser, IBankInfo, IInstitutionSavingsPoint } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -54,30 +54,20 @@ savingsRouter.get('/data', async (req, res) => {
 
 	const institutionId = req.query.id;
 	const userId = req.session.user._id;
-	let savings;
+	let savings: IInstitutionSavingsPoint[];
 
 	try {
 		const userData: IUser = await User.findOne({ _id: userId });
-		savings = userData.savings;
+        const history = userData.savings;
+        const institutionInfo = history.find(institution => institution.institutionId === institutionId);
+
+        savings = institutionInfo.savingsData;
+
+        res.json(savings);
+
 	} catch (error) {
 		savings = [];
 	}
-
-	const institutionHistoricalData = savings.map(data => {
-
-		const { date, savingsData } = data;
-		const currAccount = savingsData.filter(institution => {
-			return institution.institutionId === institutionId
-		});
-
-		return {
-			date,
-			savingsData: currAccount
-		}
-
-	});
-
-	res.json(institutionHistoricalData);
 
 });
 
