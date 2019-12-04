@@ -1,4 +1,4 @@
-import Actions from './../actions/todosActions';
+import { Actions } from './../actions/todosActions';
 
 function addTodo(state, action) {
 
