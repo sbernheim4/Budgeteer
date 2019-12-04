@@ -158,7 +158,7 @@ function InstitutionCard(props) {
 
 			<SavingsChart
 				institutionId={institutionId}
-				storeNewChartData={storeNewChartData};
+				storeNewChartData={storeNewChartData}
 			/>
 		</div>
 	);
