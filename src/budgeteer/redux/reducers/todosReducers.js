@@ -1,3 +1,5 @@
+import Actions from './../actions/todosActions';
+
 function addTodo(state, action) {
 
 	const { id, text } = action;
@@ -25,10 +27,9 @@ function toggleTodo(state, action) {
 const todos = (state = [], action) => {
 
 	switch (action.type) {
-
-		case 'ADD_TODO':
+		case Actions.ADD_TODO:
 			return addTodo(state, action);
-		case 'TOGGLE_TODO':
+		case Actions.TOGGLE_TODO:
 			return toggleTodo(state, action);
 		default:
 			return state
