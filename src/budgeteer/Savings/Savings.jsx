@@ -2,11 +2,14 @@ import axios from 'axios';
 import React, { Component } from 'react';
 import differenceInDays from 'date-fns/differenceInDays'
 
+import { connect } from 'react-redux';
+import { addTodo } from './../redux/actions/todosActions';
+
 import SavingsTable from './SavingsTable/SavingsTable.jsx';
 
 import './savings.scss';
 
-export default class Savings extends Component {
+class Savings extends Component {
 
 	constructor(props) {
 
@@ -195,3 +198,17 @@ export default class Savings extends Component {
 	}
 
 }
+
+const mapStateToProps = (state) => {
+    return {
+        todos: state.todos,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addTodo: (todo) => dispatch(addTodo(todo))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Savings);
