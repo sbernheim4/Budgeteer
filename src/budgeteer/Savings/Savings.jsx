@@ -82,9 +82,11 @@ export default class Savings extends Component {
 
 	}
 
-	async storeNewChartData(bankInfo) {
+	async storeNewChartData() {
 
-		const serializedBankInfo = JSON.stringify(bankInfo);
+		if (!this.bankInfo) return;
+
+		const serializedBankInfo = JSON.stringify(this.bankInfo);
 
 		await axios({
 			method: 'post',
@@ -137,7 +139,7 @@ export default class Savings extends Component {
 			const { totalSavings, bankInfo } = savingsData;
 
 			this.cacheSavingsData(totalSavings, bankInfo);
-			this.storeNewChartData(bankInfo);
+			this.bankInfo = bankInfo;
 
 			return {
 				savings: totalSavings,
@@ -184,6 +186,7 @@ export default class Savings extends Component {
 					displayNames={this.state.displayNames}
 					accountBalances={this.state.accountBalances}
 					institutionNames={this.state.institutionNames}
+					storeNewChartData={this.storeNewChartData}
 				/>
 			</div>
 

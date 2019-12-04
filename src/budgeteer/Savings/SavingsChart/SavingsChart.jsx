@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, ResponsiveContainer, XAxis, Tooltip, Line } from 'recharts';
 import axios from 'axios';
+import { isSameDay } from 'date-fns';
 
 import { dollarify } from './../../helpers';
 
@@ -34,6 +35,14 @@ function SavingsChart(props) {
 					Balance: displayBalance
 				}
 			});
+
+			const today = new Date();
+			const mostRecentDataPoint = chartData[0].name;
+			const mostRecentDataPointDate = new Date(mostRecentDataPoint);
+
+			if (!isSameDay(mostRecentDataPointDate, today)) {
+				props.storeNewChartData();
+			}
 
 			setRechartsData(chartData);
 		}
