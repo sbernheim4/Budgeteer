@@ -15,7 +15,9 @@ const savings = (state, action) => {
 		case SavingsActions.UPDATE_BANK_INFO:
 			return UPDATE_BANK_INFO(state, action);
 		default:
-			return 'initial state';
+			return {
+				bankInfo: []
+			}
 	}
 }
 

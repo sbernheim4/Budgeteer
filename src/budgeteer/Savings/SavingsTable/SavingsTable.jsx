@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
 
 import SavingsChart from './../SavingsChart/SavingsChart.jsx';
 
@@ -6,7 +7,7 @@ import { dollarify } from '../../helpers.js';
 
 import './savingsTable.scss';
 
-export default function SavingsTable(props) {
+function SavingsTable(props) {
 	const accountBalancesLoaded = props.accountBalances.length > 0;
 
 	if (!accountBalancesLoaded) {
@@ -75,6 +76,18 @@ export default function SavingsTable(props) {
 		</section>
 	);
 }
+
+const mapStateToProps = (state) => {
+    return {
+        accountBalances: state.savings.bankInfo
+    }
+};
+
+const mapDispatchToProps = () => {
+    return {}
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SavingsTable);
 
 function InstitutionCard(props) {
 

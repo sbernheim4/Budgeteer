@@ -189,7 +189,6 @@ class Savings extends Component {
 				<SavingsTable
 					savings={this.state.savings}
 					displayNames={this.state.displayNames}
-					accountBalances={this.state.accountBalances}
 					institutionNames={this.state.institutionNames}
 					storeNewChartData={this.storeNewChartData}
 				/>
