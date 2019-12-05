@@ -17,6 +17,31 @@ savingsRouter.use(
 
 savingsRouter.use(bodyParser.json());
 
+savingsRouter.get('/data', async (req, res) => {
+
+	const institutionId = req.query.id;
+	const userId = req.session.user._id;
+
+	let savings: IInstitutionSavingsPoint[];
+
+	try {
+
+		const userData: IUser = await User.findOne({ _id: userId });
+		const history = userData.savings;
+		const institutionInfo = history.find(institution => institution.institutionId === institutionId);
+
+		savings = institutionInfo.savingsData;
+
+	} catch (error) {
+
+		savings = [];
+
+	}
+
+	res.json(savings);
+
+});
+
 savingsRouter.post('/data', async (req, res) => {
 
 	try {
@@ -36,31 +61,6 @@ savingsRouter.post('/data', async (req, res) => {
 	} catch (error) {
 
 		res.status(500);
-
-	}
-
-});
-
-savingsRouter.get('/data', async (req, res) => {
-
-	const institutionId = req.query.id;
-	const userId = req.session.user._id;
-
-	let savings: IInstitutionSavingsPoint[];
-
-	try {
-
-		const userData: IUser = await User.findOne({ _id: userId });
-		const history = userData.savings;
-		const institutionInfo = history.find(institution => institution.institutionId === institutionId);
-
-		savings = institutionInfo.savingsData;
-
-		res.json(savings);
-
-	} catch (error) {
-
-		savings = [];
 
 	}
 
