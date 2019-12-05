@@ -114,7 +114,6 @@ class Savings extends Component {
 			displayNames: displayNamesMap,
 			institutionNames: linkedBanks,
 			savings,
-			accountBalances,
 			loading
 		});
 

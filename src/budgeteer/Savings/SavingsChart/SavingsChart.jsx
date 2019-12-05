@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from "react-redux";
 import { LineChart, ResponsiveContainer, XAxis, Tooltip, Line } from 'recharts';
 import axios from 'axios';
 import { isSameDay } from 'date-fns';
@@ -8,6 +9,8 @@ import { dollarify } from './../../helpers';
 import './savingsChart.scss';
 
 function SavingsChart(props) {
+
+	const bankInfo = useSelector(state => state.savings.bankInfo);
 
 	const [rechartsData, setRechartsData] = useState([]);
 
@@ -40,8 +43,8 @@ function SavingsChart(props) {
 			const mostRecentDataPoint = chartData[0].name;
 			const mostRecentDataPointDate = new Date(mostRecentDataPoint);
 
-			if (!isSameDay(mostRecentDataPointDate, today)) {
-				props.storeNewChartData();
+			if (!isSameDay(mostRecentDataPointDate, today) && bankInfo) {
+				await storeNewChartData(bankInfo);
 			}
 
 			setRechartsData(chartData);
@@ -50,6 +53,20 @@ function SavingsChart(props) {
 		getData();
 
 	}, [props.institutionId]);
+
+	async function storeNewChartData(bankInfo) {
+		const serializedBankInfo = JSON.stringify(bankInfo);
+
+		await axios({
+			method: 'post',
+			url: '/savings/data',
+			data: serializedBankInfo,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+
+	}
 
 	return (
 		<section className='savings-chart'>
