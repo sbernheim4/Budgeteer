@@ -59,6 +59,13 @@ function SavingsChart(props) {
 	}, [props.institutionId]);
 
 	async function storeNewChartData(bankInfo) {
+
+		// TODO: This function should only update an institution's savings history and not the object for all institutions
+		//
+		// Filter bankInfo looking for where id === props.id and update that --> Will require a server update as well
+		// const institutionSavingsHistory = bankInfo.filter(obj => obj.institutionId === props.id);
+		// const serializedInstitutionSavingsHistory = JSON.stringify(institutionSavingsHistory);
+
 		const serializedBankInfo = JSON.stringify(bankInfo);
 
 		await axios({
