@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import differenceInDays from 'date-fns/differenceInDays'
 
-import { connect } from 'react-redux';
-import { addTodo } from './../redux/actions/todosActions';
+import { updateBankInfo } from './../redux/actions/savings';
 
 import SavingsTable from './SavingsTable/SavingsTable.jsx';
 
@@ -118,6 +118,8 @@ class Savings extends Component {
 			loading
 		});
 
+		this.props.updateBankInfo(accountBalances);
+
 	}
 
 	async getSavingsData() {
@@ -200,15 +202,15 @@ class Savings extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        todos: state.todos,
-    };
+	return {
+		bankInfo: state.bankInfo
+	};
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return {
-        addTodo: (todo) => dispatch(addTodo(todo))
-    };
+	return {
+		updateBankInfo: (newBankInfo) => dispatch(updateBankInfo(newBankInfo)),
+	};
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Savings);

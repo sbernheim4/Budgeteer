@@ -1,6 +1,5 @@
-import { combineReducers } from 'redux'
-import todos from './todosReducers'
+import savingsReducer from './savings'
 
-export default combineReducers({
-	todos
-});
+export default {
+	bankInfo: savingsReducer
+}
