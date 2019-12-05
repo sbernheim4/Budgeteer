@@ -39,6 +39,10 @@ function SavingsChart(props) {
 				}
 			});
 
+			if (chartData.length === 0) {
+				return await storeNewChartData(bankInfo);
+			}
+
 			const today = new Date();
 			const mostRecentDataPoint = chartData[0].name;
 			const mostRecentDataPointDate = new Date(mostRecentDataPoint);
