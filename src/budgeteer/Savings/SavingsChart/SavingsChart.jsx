@@ -87,7 +87,7 @@ function SavingsChart(props) {
 			>
 				<LineChart
 					data={rechartsData}
-					margin={{ top: 20, right: 30, left: 30, bottom: 10 }}
+					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
 					<XAxis
 						interval={2}
