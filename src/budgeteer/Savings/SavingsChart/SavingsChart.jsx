@@ -39,19 +39,19 @@ function SavingsChart(props) {
 				}
 			});
 
-			if (chartData.length === 0) {
-				return await storeNewChartData(bankInfo);
-			}
-
 			const today = new Date();
 			const mostRecentDataPoint = chartData[0].name;
 			const mostRecentDataPointDate = new Date(mostRecentDataPoint);
 
-			if (!isSameDay(mostRecentDataPointDate, today) && bankInfo) {
-				await storeNewChartData(bankInfo);
+			if (chartData.length === 0 || !isSameDay(mostRecentDataPointDate, today) && bankInfo ) {
+				return await storeNewChartData(bankInfo);
 			}
 
-			setRechartsData(chartData);
+			const sortedChartData = chartData.sort((a, b) => {
+				return new Date(a.name) - new Date(b.name);
+			});
+
+			setRechartsData(sortedChartData);
 		}
 
 		getData();
