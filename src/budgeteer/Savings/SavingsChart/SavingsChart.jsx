@@ -11,54 +11,67 @@ import './savingsChart.scss';
 function SavingsChart(props) {
 
 	const bankInfo = useSelector(state => state.savings.bankInfo);
-
 	const [rechartsData, setRechartsData] = useState([]);
 
 	useEffect(() => {
 
-		const getData = async () => {
+		const rawData = getData();
+		const parsedData = generateChartDataPoints(rawData);
 
-			const historicalDataRequest = await axios({
-				method: 'get',
-				url: `/savings/data?id=${props.institutionId}`
-			});
-
-			const { data } = historicalDataRequest;
-			const chartData = data.map(dataPoint => {
-
-				const { date: dateString, institutionalBalance } = dataPoint;
-
-				const date = new Date(dateString);
-
-				const displayBalance = dollarify(institutionalBalance);
-				const displayDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-
-				return {
-					name: displayDate,
-					Balance: displayBalance
-				}
-			});
-
-			const today = new Date();
-			const mostRecentDataPoint = chartData[0].name;
-			const mostRecentDataPointDate = new Date(mostRecentDataPoint);
-
-			if (chartData.length === 0 || !isSameDay(mostRecentDataPointDate, today) && bankInfo ) {
-				return await storeNewChartData(bankInfo);
-			}
-
-			const sortedChartData = chartData.sort((a, b) => {
-				return new Date(a.name) - new Date(b.name);
-			});
-
-			setRechartsData(sortedChartData);
-		}
-
-		getData();
+		conditionallyUploadNewData(parsedData);
+		setRechartsData(parsedData);
 
 	}, [props.institutionId]);
 
-	async function storeNewChartData(bankInfo) {
+	async function getData () {
+
+		const historicalDataRequest = await axios({
+			method: 'get',
+			url: `/savings/data?id=${props.institutionId}`
+		});
+
+		return historicalDataRequest.data;
+
+    }
+
+	function generateChartDataPoints(data) {
+
+		const chartData = data.map(dataPoint => {
+
+			const { date: dateString, institutionalBalance } = dataPoint;
+
+			const date = new Date(dateString);
+			const displayBalance = dollarify(institutionalBalance);
+			const displayDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+
+			return {
+				name: displayDate,
+				Balance: displayBalance
+			}
+
+		});
+
+		const sortedChartData = chartData.sort((a, b) => {
+			return new Date(a.name) - new Date(b.name);
+		});
+
+		return sortedChartData;
+
+	}
+
+	async function conditionallyUploadNewData(chartData) {
+
+		const today = new Date();
+		const mostRecentDataPoint = chartData[0].name;
+		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
+
+		if (chartData.length === 0 || !isSameDay(mostRecentDataPointDate, today) && bankInfo ) {
+			return await uploadData(bankInfo);
+		}
+
+	}
+
+	async function uploadData(bankInfo) {
 
 		// TODO: This function should only update an institution's savings history and not the object for all institutions
 		//
