@@ -69,7 +69,7 @@ function SavingsChart(props) {
 	async function conditionallyUploadNewData(chartData) {
 
 		const today = new Date();
-		const mostRecentDataPoint = chartData[0].name;
+		const mostRecentDataPoint = chartData[chartData.length - 1].name;
 		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
 
 		if (chartData.length === 0 || !isSameDay(mostRecentDataPointDate, today) && bankInfo ) {
