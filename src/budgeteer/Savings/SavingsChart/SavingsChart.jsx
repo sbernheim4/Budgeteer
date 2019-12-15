@@ -15,11 +15,18 @@ function SavingsChart(props) {
 
 	useEffect(() => {
 
-		const rawData = getData();
-		const parsedData = generateChartDataPoints(rawData);
+		async function orchestrate() {
 
-		conditionallyUploadNewData(parsedData);
-		setRechartsData(parsedData);
+			const data = await getData();
+			const chartData = generateChartDataPoints(data);
+
+			setRechartsData(chartData);
+
+			await conditionallyUploadNewData(chartData);
+
+		}
+
+		orchestrate();
 
 	}, [props.institutionId]);
 
