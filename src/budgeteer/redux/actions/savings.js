@@ -1,5 +1,5 @@
 export const SavingsActions = {
-	UPDATE_BANK_INFO: 'UPDATE_BANK_INFO'
+	UPDATE_BANK_INFO: 'bankInfo'
 };
 
 export const updateBankInfo = (newBankInfo) => {
