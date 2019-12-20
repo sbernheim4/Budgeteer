@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 import axios from 'axios';
 import differenceInDays from 'date-fns/differenceInDays';
 
+import { storeTransactionsInRedux } from './../redux/actions/app';
 import BannerMessage from '../BannerMessage/BannerMessage.jsx';
 import { Navbar, Home, Statistics, AccountsContainer, Savings, Settings } from '../LazyLoadRoutes.jsx';
 
@@ -145,11 +147,14 @@ class App extends Component {
 			return dateB - dateA;
 		});
 
+		this.props.storeTransactionsInRedux(currentTransactions);
+
 		// Update state variable
 		this.setState({
 			transaction_ids: currentTransactionIds,
 			transactions: currentTransactions
 		});
+
 	}
 
 	async storeAccounts(data) {
@@ -192,22 +197,22 @@ class App extends Component {
 						render={() => (
 							<Home
 								loading={loading}
-								transactions={this.state.transactions}
+								transactions={this.props.transactions}
 								accounts={this.state.accounts}
 							/>
 						)}
 					/>
 
-					<Route path='/statistics' render={() => <Statistics transactions={this.state.transactions} />} />
+					<Route path='/statistics' render={() => <Statistics transactions={this.props.transactions} />} />
 
 					<Route
 						path='/transactions'
 						render={() => (
-							<AccountsContainer transactions={this.state.transactions} accounts={this.state.accounts} />
+							<AccountsContainer transactions={this.props.transactions} accounts={this.state.accounts} />
 						)}
 					/>
 
-					<Route path='/networth' render={() => <Savings transactions={this.state.transactions} />} />
+					<Route path='/networth' render={() => <Savings transactions={this.props.transactions} />} />
 
 					<Route path='/settings' render={() => <Settings accounts={this.state.accounts} />} />
 				</div>
@@ -218,4 +223,16 @@ class App extends Component {
 	}
 }
 
-export default App;
+const mapStateToProps = (state) => {
+	return {
+		transactions: state.app.transactions || []
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		storeTransactionsInRedux: (transactions) => dispatch(storeTransactionsInRedux(transactions)),
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
