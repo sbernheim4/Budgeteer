@@ -169,7 +169,6 @@ class Savings extends Component {
 			<div className='networth'>
 				<SavingsTable
 					savings={this.state.savings}
-					displayNames={this.props.displayNames}
 					institutionNames={this.state.institutionNames}
 					storeNewChartData={this.storeNewChartData}
 				/>
@@ -183,11 +182,8 @@ class Savings extends Component {
 
 const mapStateToProps = (state) => {
 
-	const map = state.app.displayNames ? new Map(state.app.displayNames) : new Map();
-
 	return {
 		bankInfo: state.bankInfo,
-		displayNames: map
 	};
 };
 

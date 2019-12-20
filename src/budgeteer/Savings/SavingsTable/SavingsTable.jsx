@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
-import SavingsChart from './../SavingsChart/SavingsChart.jsx';
+import InstitutionCard from './InstitutionCard.jsx';
 
 import { dollarify } from '../../helpers.js';
 
@@ -23,7 +23,6 @@ function SavingsTable(props) {
 	const {
 		savings,
 		accountBalances,
-		displayNames,
 		institutionNames,
 		storeNewChartData
 	} = props;
@@ -33,7 +32,6 @@ function SavingsTable(props) {
 		const institutionCards = accountBalances.map((institution, i) => {
 			return <InstitutionCard
 				key={i}
-				displayNames={displayNames}
 				institutionId={institution.institutionId}
 				institutionInfo={institution.institutionBalanceObject}
 				institutionNames={institutionNames}
@@ -83,134 +81,8 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
     return {}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SavingsTable);
-
-function InstitutionCard(props) {
-
-	const {
-		displayNames,
-		institutionInfo,
-		institutionNames,
-		institutionId,
-		totalSavings,
-		storeNewChartData
-	} = props;
-
-	const [width, setWidth] = useState(0);
-	const institutionNameRef = useRef(null);
-
-	useEffect(() => {
-
-		const width = institutionNameRef.current ? institutionNameRef.current.offsetWidth : 0;
-		setWidth(width);
-
-	}, [institutionNameRef.current]);
-
-	function generateInstitutionInfoRows(institutionInfo) {
-
-		const institutionInfoKeys = Object.keys(institutionInfo);
-
-		const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
-			return <InstitutionInfoRow
-				key={i}
-				displayNames={displayNames}
-				institutionInfo={institutionInfo}
-				totalSavings={totalSavings}
-				acctId={acctId}
-			/>
-		});
-
-		institutionInfoRows.sort((a, b) => {
-			const aAccountId = a.props.acctId;
-			const bAccountId = b.props.acctId;
-			const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
-			const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
-
-			return bTotal - aTotal;
-		});
-
-		return institutionInfoRows;
-
-	}
-
-	const institutionInfoValues = Object.values(institutionInfo);
-	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
-	const institutionName = institutionNames[institutionId];
-	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
-	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
-
-	function handleClick(e) {
-		const card = e.target.closest(".institution-card").querySelector(".savings-chart");
-		card.classList.toggle('savings-chart--show');
-	}
-
-	return (
-		<div className='institution-card'>
-
-			<div className='institution-card--info'
-				onClick={(e) => handleClick(e)}
-			>
-				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
-					<span
-						className='institution-card--info--name'
-						ref={institutionNameRef}
-					>
-					{institutionName}
-					</span>
-
-					<span
-						className='percent'
-					> - {percent}%
-					</span>
-
-				</h3>
-
-				{institutionInfoRows}
-			</div>
-
-			<SavingsChart
-				institutionId={institutionId}
-				storeNewChartData={storeNewChartData}
-			/>
-		</div>
-	);
-}
-
-function InstitutionInfoRow(props) {
-
-	const {
-		acctId,
-		institutionInfo,
-		totalSavings,
-		displayNames
-	} = props
-
-	function getDisplayName(acctId) {
-		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
-	}
-
-	function getPercentageString(numerator, denominator) {
-		const percentage = Math.round(numerator / denominator * 100, 2);
-		return percentage <= 0 ? '-' : `${percentage}%`;
-	}
-
-	const isCreditCardAccount = institutionInfo[acctId].accountType === 'credit';
-	const accountBalance = institutionInfo[acctId].accountBalance;
-	const normalizedBalance = isCreditCardAccount ? accountBalance * -1 : accountBalance;
-
-	const accountDisplayName = getDisplayName(acctId);
-	const accountDisplayBalance = dollarify(normalizedBalance);
-	const percentage = getPercentageString(normalizedBalance, totalSavings);
-
-	return (
-		<div className='networth--entry'>
-			<p className='acct-name'>{accountDisplayName}</p>
-			<p className='acct-value'>${accountDisplayBalance}</p>
-			<p className='acct-percentage'>{percentage}</p>
-		</div>
-	);
-}
