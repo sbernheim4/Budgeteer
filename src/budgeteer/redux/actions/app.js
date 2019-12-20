@@ -1,5 +1,6 @@
 export const AppActions = {
-	STORE_TRANSACTIONS: 'transactions'
+    STORE_TRANSACTIONS: 'transactions',
+    STORE_ACCOUNTS: 'accounts'
 };
 
 export function storeTransactionsInRedux(transactions) {
@@ -10,3 +11,12 @@ export function storeTransactionsInRedux(transactions) {
 	};
 
 };
+
+export function storeAccountsInRedux(accounts) {
+
+	return {
+		type: AppActions.STORE_ACCOUNTS,
+		payload: accounts
+	}
+
+}
