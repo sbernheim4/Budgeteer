@@ -44,7 +44,7 @@ function Home(props) {
 			</div>
 		</div>
 
-    );
+	);
 }
 
 const mapStateToProps = (state) => {

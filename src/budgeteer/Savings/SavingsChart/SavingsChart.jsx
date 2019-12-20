@@ -39,7 +39,7 @@ function SavingsChart(props) {
 
 		return historicalDataRequest.data;
 
-    }
+	}
 
 	function generateChartDataPoints(data) {
 
