@@ -1,25 +1,12 @@
 import { SavingsActions } from './../actions/savings';
+import generalizedReducer from './generalizedReducer';
 
 export default function savingsReducer(state, action) {
 
 	switch (action.type) {
 		case SavingsActions.UPDATE_BANK_INFO:
-			return updateBankInfo(state, action);
+			return generalizedReducer(state, action, SavingsActions.UPDATE_BANK_INFO);
 		default:
 			return state ? state : null;
 	}
 }
-
-function updateBankInfo(state, action) {
-
-	const { payload } = action;
-
-	const localState = {
-		bankInfo: payload
-	}
-
-	const newState = Object.assign({}, state, localState);
-
-	return newState;
-
-};

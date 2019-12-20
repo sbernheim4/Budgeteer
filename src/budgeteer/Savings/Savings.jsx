@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import differenceInDays from 'date-fns/differenceInDays'
 
 import { updateBankInfo } from './../redux/actions/savings';
+import { storeDisplayNames } from './../redux/actions/app';
 
 import SavingsTable from './SavingsTable/SavingsTable.jsx';
 
@@ -17,7 +18,6 @@ class Savings extends Component {
 
 		this.state = {
 			accountBalances: [],
-			displayNames: new Map(),
 			institutionNames: [],
 			loading: true,
 			savings: 0
@@ -25,7 +25,6 @@ class Savings extends Component {
 
 		this.cacheKeyPrefix = 'budgeteer--savings';
 
-		this.getDisplayNames = this.setDisplayNames.bind(this);
 		this.getInstitutionIds = this.setInstitutionIds.bind(this);
 
 	}
@@ -104,14 +103,14 @@ class Savings extends Component {
 
 	async componentDidMount() {
 
-		const displayNamesMap = await this.setDisplayNames();
+		this.props.getDisplayNames();
+
 		const linkedBanks = await this.setInstitutionIds();
 		const savingsData = await this.getSavingsData();
 
 		const { savings, accountBalances, loading } = savingsData;
 
 		this.setState({
-			displayNames: displayNamesMap,
 			institutionNames: linkedBanks,
 			savings,
 			loading
@@ -154,23 +153,6 @@ class Savings extends Component {
 		}
 	}
 
-	async setDisplayNames() {
-
-		const serializedDisplayNamesRequest = await axios.get('/user-info/display-names');
-		const serializedDisplayNames = serializedDisplayNamesRequest.data;
-		const displayNames = JSON.parse(serializedDisplayNames);
-		const displayNamesMap = new Map();
-
-		if (Object.keys(displayNames).length > 0) {
-			displayNames.forEach((val) => {
-				displayNamesMap.set(val[0], val[1]);
-			});
-		}
-
-		return displayNamesMap
-
-	}
-
 	async setInstitutionIds() {
 
 		const linkedBanksRequest = await axios.get('/plaid-api/linked-accounts');
@@ -187,7 +169,7 @@ class Savings extends Component {
 			<div className='networth'>
 				<SavingsTable
 					savings={this.state.savings}
-					displayNames={this.state.displayNames}
+					displayNames={this.props.displayNames}
 					institutionNames={this.state.institutionNames}
 					storeNewChartData={this.storeNewChartData}
 				/>
@@ -200,14 +182,19 @@ class Savings extends Component {
 }
 
 const mapStateToProps = (state) => {
+
+	const map = state.app.displayNames ? new Map(state.app.displayNames) : new Map();
+
 	return {
-		bankInfo: state.bankInfo
+		bankInfo: state.bankInfo,
+		displayNames: map
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
 		updateBankInfo: (newBankInfo) => dispatch(updateBankInfo(newBankInfo)),
+		getDisplayNames: () => dispatch(storeDisplayNames())
 	};
 };
 

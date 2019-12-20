@@ -83,7 +83,7 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = () => {
+const mapDispatchToProps = (dispatch) => {
     return {}
 };
 
@@ -102,9 +102,12 @@ function InstitutionCard(props) {
 
 	const [width, setWidth] = useState(0);
 	const institutionNameRef = useRef(null);
+
 	useEffect(() => {
+
 		const width = institutionNameRef.current ? institutionNameRef.current.offsetWidth : 0;
 		setWidth(width);
+
 	}, [institutionNameRef.current]);
 
 	function generateInstitutionInfoRows(institutionInfo) {
