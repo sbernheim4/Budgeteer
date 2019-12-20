@@ -1,7 +1,9 @@
 import { combineReducers } from "redux";
-import reducers from './reducers';
+import savingsReducer from './reducers/savings'
+import appReducer from './reducers/app';
 
-export default combineReducers(
-	reducers
-);
+export default combineReducers({
+	app: appReducer,
+	savings: savingsReducer
+});
 

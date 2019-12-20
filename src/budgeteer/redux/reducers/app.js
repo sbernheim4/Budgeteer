@@ -6,7 +6,9 @@ export default function appReducer (state, action) {
 		case AppActions.STORE_TRANSACTIONS:
 			return storeData(state, action, AppActions.STORE_TRANSACTIONS);
 		default:
-			return {}
+			return {
+				transactions: []
+			}
 	}
 }
 
@@ -14,9 +16,11 @@ function storeData (state, action, name) {
 
 	const { payload } = action;
 
-	return {
+	const localState = {
 		[name]: payload
 	};
 
-}
+	const newState = Object.assign({}, state, localState);
 
+	return newState;
+}
