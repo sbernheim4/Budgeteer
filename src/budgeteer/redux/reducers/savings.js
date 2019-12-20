@@ -1,15 +1,5 @@
 import { SavingsActions } from './../actions/savings';
 
-function updateBankInfo(state, action) {
-
-	const { payload } = action;
-
-	return {
-		bankInfo: payload
-	};
-
-}
-
 export default function savingsReducer(state, action) {
 
 	switch (action.type) {
@@ -21,3 +11,17 @@ export default function savingsReducer(state, action) {
 			}
 	}
 }
+
+function updateBankInfo(state, action) {
+
+	const { payload } = action;
+
+	const localState = {
+		bankInfo: payload
+	}
+
+	const newState = Object.assign({}, state, localState);
+
+	return newState;
+
+};
