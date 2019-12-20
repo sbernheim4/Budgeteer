@@ -212,7 +212,7 @@ class App extends Component {
 						)}
 					/>
 
-					<Route path='/networth' render={() => <Savings transactions={this.props.transactions} />} />
+					<Route path='/networth' render={() => <Savings />} />
 
 					<Route path='/settings' render={() => <Settings accounts={this.state.accounts} />} />
 				</div>
