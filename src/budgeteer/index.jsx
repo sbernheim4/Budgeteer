@@ -10,12 +10,14 @@ import './scss/reset.scss';
 import App from './App/App.jsx';
 
 const initialState = {
-    app: {
-        transactions: []
-    },
-    savings: {
-        bankInfo: []
-    }
+	app: {
+		transactions: [],
+		displayNames: [],
+		accounts: []
+	},
+	savings: {
+		bankInfo: []
+	}
 };
 
 const store = configureStore(initialState);
