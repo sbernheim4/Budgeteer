@@ -76,13 +76,13 @@ function SavingsTable(props) {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        accountBalances: state.savings.bankInfo
-    }
+	return {
+		accountBalances: state.savings.bankInfo
+	}
 };
 
 const mapDispatchToProps = () => {
-    return {}
+	return {}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SavingsTable);

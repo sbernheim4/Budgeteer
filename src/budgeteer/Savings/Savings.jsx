@@ -185,6 +185,7 @@ const mapStateToProps = (state) => {
 	return {
 		bankInfo: state.bankInfo,
 	};
+
 };
 
 const mapDispatchToProps = (dispatch) => {
