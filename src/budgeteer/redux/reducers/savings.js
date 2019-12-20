@@ -6,9 +6,7 @@ export default function savingsReducer(state, action) {
 		case SavingsActions.UPDATE_BANK_INFO:
 			return updateBankInfo(state, action);
 		default:
-			return {
-				bankInfo: []
-			}
+			return state ? state : null;
 	}
 }
 
