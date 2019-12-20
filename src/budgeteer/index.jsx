@@ -9,7 +9,16 @@ import './scss/reset.scss';
 
 import App from './App/App.jsx';
 
-const store = configureStore();
+const initialState = {
+    app: {
+        transactions: []
+    },
+    savings: {
+        bankInfo: []
+    }
+};
+
+const store = configureStore(initialState);
 
 ReactDOM.render(
 	<Provider store={store}>
