@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom';
 import axios from 'axios';
 import differenceInDays from 'date-fns/differenceInDays';
 
-import { storeTransactionsInRedux } from './../redux/actions/app';
+import { storeTransactionsInRedux, storeAccountsInRedux } from './../redux/actions/app';
 import BannerMessage from '../BannerMessage/BannerMessage.jsx';
 import { Navbar, Home, Statistics, AccountsContainer, Savings, Settings } from '../LazyLoadRoutes.jsx';
 
@@ -17,8 +17,6 @@ class App extends Component {
 		let y = new Set();
 
 		this.state = {
-			transactions: [],
-			accounts: [],
 			account_ids: x,
 			transaction_ids: y,
 			counter: 0,
@@ -123,7 +121,7 @@ class App extends Component {
 	}
 
 	async storeTransactions(data) {
-		let currentTransactions = this.state.transactions;
+		const currentTransactions = this.props.transactions;
 		let currentTransactionIds = this.state.transaction_ids;
 
 		data.forEach((bank) => {
@@ -140,26 +138,25 @@ class App extends Component {
 		});
 
 		// Sort the transactions based on account_id
-		currentTransactions = currentTransactions.sort((a, b) => {
+		const sortedCurrentTransactions = currentTransactions.sort((a, b) => {
 			const dateA = this.getDateFromTransaction(a.date);
 			const dateB = this.getDateFromTransaction(b.date);
 
 			return dateB - dateA;
 		});
 
-		this.props.storeTransactionsInRedux(currentTransactions);
+		this.props.storeTransactionsInRedux(sortedCurrentTransactions);
 
 		// Update state variable
 		this.setState({
-			transaction_ids: currentTransactionIds,
-			transactions: currentTransactions
+			transaction_ids: currentTransactionIds
 		});
 
 	}
 
 	async storeAccounts(data) {
 		// Get all the connected accounts so far
-		let currentAccounts = this.state.accounts;
+		let currentAccounts = this.props.accounts;
 
 		data.forEach((val) => {
 			// Add all the accounts for the new bank the user just selected
@@ -176,8 +173,7 @@ class App extends Component {
 			});
 		});
 
-		// Update accounts state variable
-		this.setState({ accounts: currentAccounts });
+		this.props.storeAccountsInRedux(currentAccounts);
 	}
 
 	render() {
@@ -198,7 +194,7 @@ class App extends Component {
 							<Home
 								loading={loading}
 								transactions={this.props.transactions}
-								accounts={this.state.accounts}
+								accounts={this.props.accounts}
 							/>
 						)}
 					/>
@@ -208,13 +204,13 @@ class App extends Component {
 					<Route
 						path='/transactions'
 						render={() => (
-							<AccountsContainer transactions={this.props.transactions} accounts={this.state.accounts} />
+							<AccountsContainer transactions={this.props.transactions} accounts={this.props.accounts} />
 						)}
 					/>
 
 					<Route path='/networth' render={() => <Savings />} />
 
-					<Route path='/settings' render={() => <Settings accounts={this.state.accounts} />} />
+					<Route path='/settings' render={() => <Settings accounts={this.props.accounts} />} />
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
@@ -225,13 +221,15 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		transactions: state.app.transactions || []
+		transactions: state.app.transactions || [],
+		accounts: state.app.accounts || []
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
 		storeTransactionsInRedux: (transactions) => dispatch(storeTransactionsInRedux(transactions)),
+		storeAccountsInRedux: (accounts) => dispatch(storeAccountsInRedux(accounts)),
 	};
 };
 
