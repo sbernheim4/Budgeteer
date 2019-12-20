@@ -38,7 +38,7 @@ const serverConfig = {
 			{
 				test: /\.ts$/,
 				exclude: /node_modules/,
-				use: ['babel-loader', 'awesome-typescript-loader']
+				use: ['babel-loader', 'ts-loader']
 			}
 		]
 	},
