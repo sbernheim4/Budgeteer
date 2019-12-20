@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Budget from './BudgetChart/BudgetChart.jsx';
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
 import { dollarify } from '../helpers';
@@ -11,19 +12,6 @@ class Home extends Component {
 
 		this.state = {
 			total: window.sessionStorage.getItem('total') || '...',
-			transactions: []
-		};
-	}
-
-	static getDerivedStateFromProps(props, state) {
-		const sortedTransactions = props.transactions.sort((a, b) => {
-			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
-			return dateTwo - dateOne;
-		});
-
-		return {
-			transactions: sortedTransactions.slice(0, 3)
 		};
 	}
 
@@ -97,7 +85,7 @@ class Home extends Component {
 
 					<div className='home--snapshot--transactions'>
 						<h2>Recent Transactions</h2>
-						<TransactionContainer transactions={this.state.transactions} accounts={this.props.accounts} />
+						<TransactionContainer transactions={this.props.recentTransactions} accounts={this.props.accounts} />
 					</div>
 				</div>
 			</div>
@@ -105,4 +93,18 @@ class Home extends Component {
 	}
 }
 
-export default Home;
+const mapStateToProps = (state) => {
+
+	const recentTransactions = state.app.transactions.length > 0 ? state.app.transactions.slice(0, 3) : [];
+
+	return {
+		recentTransactions: recentTransactions,
+		accounts: state.app.accounts || []
+	};
+
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {};
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
