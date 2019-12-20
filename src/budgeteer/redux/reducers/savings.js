@@ -1,6 +1,6 @@
 import { SavingsActions } from './../actions/savings';
 
-function UPDATE_BANK_INFO(state, action) {
+function updateBankInfo(state, action) {
 
 	const { payload } = action;
 
@@ -9,16 +9,15 @@ function UPDATE_BANK_INFO(state, action) {
 	};
 
 }
-const savings = (state, action) => {
+
+export default function savingsReducer(state, action) {
 
 	switch (action.type) {
 		case SavingsActions.UPDATE_BANK_INFO:
-			return UPDATE_BANK_INFO(state, action);
+			return updateBankInfo(state, action);
 		default:
 			return {
 				bankInfo: []
 			}
 	}
 }
-
-export default savings;
