@@ -13,11 +13,10 @@ class AccountNames extends Component {
 		super(props);
 
 		this.state = {
-			accounts: [],
 			mapOfAccountNamesToDisplayNames: new Map()
 		};
 
-		this.handleChange = this.handleChange.bind(this);
+		this.handleChange = this.updateAccountDisplayName.bind(this);
 		this.getDisplayName = this.getDisplayName.bind(this);
 		this.jsonToMap = this.jsonToMap.bind(this);
 		this.displayMessage = this.displayMessage.bind(this);
@@ -55,7 +54,9 @@ class AccountNames extends Component {
 
 	getAccountIDFromAccountName(accountName) {
 		for (const account of this.props.accounts) {
-			if (account.name === accountName) return account.account_id;
+			if (account.name === accountName) {
+				return account.account_id;
+			}
 		}
 	}
 
@@ -67,22 +68,25 @@ class AccountNames extends Component {
 
 	}
 
-	updateDisplayNames() {
-		const map =
-			this.state.mapOfAccountNamesToDisplayNames !== undefined
-				? this.state.mapOfAccountNamesToDisplayNames
-				: new Map();
-		const vals = document.querySelectorAll('.account-names--input');
+	saveUpdateDisplayNames() {
 
-		vals.forEach((val) => {
-			const displayName = val.value || val.placeholder;
+		const displayNameElements = document.querySelectorAll('.account-names--input');
+		const map = this.state.mapOfAccountNamesToDisplayNames !== undefined ?
+				this.state.mapOfAccountNamesToDisplayNames :
+				new Map();
+
+		displayNameElements.forEach((element) => {
+
+			const displayName = element.value || element.placeholder;
 
 			// Skip the entry if there is no value
 			if (displayName === '' || displayName === null || displayName === undefined) return;
 
-			const accountName = val.parentNode.querySelector('.account-names--name').innerText;
+			const accountName = element.parentNode.querySelector('.account-names--name').innerText;
 			const accountID = this.getAccountIDFromAccountName(accountName);
+
 			map.set(accountID, displayName);
+
 		});
 
 		axios.post('/user-info/display-names', {
@@ -95,6 +99,7 @@ class AccountNames extends Component {
 	}
 
 	displayMessage() {
+
 		this.setState({
 			displayBannerMessage: true
 		});
@@ -104,12 +109,15 @@ class AccountNames extends Component {
 				displayBannerMessage: false
 			});
 		}, 5500);
+
 	}
 
-	handleChange(e, id) {
+	updateAccountDisplayName(e, id) {
+
 		this.setState({
 			[id]: e.target.value
 		});
+
 	}
 
 	render() {
@@ -131,13 +139,13 @@ class AccountNames extends Component {
 							className='account-names--input'
 							id={index}
 							placeholder={this.getDisplayName(acct.account_id)}
-							onChange={(e) => this.handleChange(e, acct.account_id)}
+							onChange={(e) => this.updateAccountDisplayName(e, acct.account_id)}
 							type='text'
 						/>
 					</div>
 				))}
 
-				<button onClick={(e) => this.updateDisplayNames(e)} className='account-names--submit'>
+				<button onClick={(e) => this.saveUpdateDisplayNames(e)} className='account-names--submit'>
 					Update
 				</button>
 
@@ -152,7 +160,7 @@ const mapStateToProps = (state) => {
 	};
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
 	return {
 	};
 };
