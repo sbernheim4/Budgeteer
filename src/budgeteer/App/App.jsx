@@ -203,14 +203,12 @@ class App extends Component {
 
 					<Route
 						path='/transactions'
-						render={() => (
-							<AccountsContainer transactions={this.props.transactions} accounts={this.props.accounts} />
-						)}
+						render={<AccountsContainer />}
 					/>
 
-					<Route path='/networth' render={() => <Savings />} />
+					<Route path='/networth' render={<Savings />} />
 
-					<Route path='/settings' render={() => <Settings />} />
+					<Route path='/settings' render={<Settings />} />
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}

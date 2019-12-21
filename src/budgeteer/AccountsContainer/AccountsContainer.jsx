@@ -2,6 +2,7 @@
 /* eslint no-multi-spaces: 0 */
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import axios from 'axios';
 
 import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
@@ -42,7 +43,7 @@ class AccountsContainer extends Component {
 		this.state = {
 			// this state variable is used to keep track of transactions the
 			// user wants to see
-			categoryTransactions: [],
+			filteredTransactions: [],
 			// Stores how the user is currently sorting their transactions
 			categoryType: '',
 			categoryTotal: 0.0,
@@ -552,12 +553,12 @@ class AccountsContainer extends Component {
 					</div>
 				</div>
 
-				<WeekSpendingChart transactions={this.state.categoryTransactions} />
+				<WeekSpendingChart transactions={this.state.filteredTransactions} />
 
 				<TransactionContainer
 					categoryType={this.state.categoryType}
 					categoryTotal={this.state.categoryTotal}
-					transactions={this.state.categoryTransactions}
+					transactions={this.state.filteredTransactions}
 					accounts={this.props.accounts}
 					displayNames={this.displayNames}
 				/>
@@ -566,4 +567,16 @@ class AccountsContainer extends Component {
 	}
 }
 
-export default AccountsContainer;
+const mapStateToProps = (state) => {
+	return {
+		transactions: state.app.transactions || [],
+		accounts: state.app.accounts || []
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AccountsContainer);
