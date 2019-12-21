@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
+import { storeDisplayNames } from './../redux/actions/app';
+
 import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
 import TransactionContainer from './TransactionContainer/TransactionContainer.jsx';
 
@@ -50,7 +52,6 @@ class AccountsContainer extends Component {
 			keyWord: ''
 		};
 
-		this.displayNames;
 		this.months = ['Jan.', 'Feb.', 'Mar.', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
 
 		this.getAccountTransactions = this.getAccountTransactions.bind(this);
@@ -64,28 +65,9 @@ class AccountsContainer extends Component {
 
 	async componentDidMount() {
 
-		await this.getDisplayNames();
-
+		this.props.getDisplayNames();
 		this.getAccountTransactions('all');
 
-	}
-
-	async getDisplayNames() {
-
-		try {
-
-			let displayNames = await axios.get('/user-info/display-names');
-			displayNames = displayNames.data;
-			displayNames = jsonToMap(displayNames);
-
-			this.displayNames = displayNames;
-
-		} catch (err) {
-
-			console.log('ERROR');
-			console.log(err);
-
-		}
 	}
 
 	componentWillReceiveProps() {
@@ -204,7 +186,7 @@ class AccountsContainer extends Component {
 
 	getAccountDisplayName(accountID, defaultName) {
 
-		return this.displayNames === undefined ? defaultName : this.displayNames.get(accountID);
+		return this.props.displayNames === undefined ? defaultName : this.props.displayNames.get(accountID);
 	}
 
 	async searchByDate(e) {
@@ -560,7 +542,7 @@ class AccountsContainer extends Component {
 					categoryTotal={this.state.categoryTotal}
 					transactions={this.state.filteredTransactions}
 					accounts={this.props.accounts}
-					displayNames={this.displayNames}
+					displayNames={this.props.displayNames}
 				/>
 			</div>
 		);
@@ -568,14 +550,19 @@ class AccountsContainer extends Component {
 }
 
 const mapStateToProps = (state) => {
+
+	const displayNamesMap = state.app.displayNames ? new Map(state.app.displayNames) : new Map();
+
 	return {
 		transactions: state.app.transactions || [],
-		accounts: state.app.accounts || []
+		accounts: state.app.accounts || [],
+		displayNames: displayNamesMap
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		getDisplayNames: () => dispatch(storeDisplayNames())
 	};
 };
 
