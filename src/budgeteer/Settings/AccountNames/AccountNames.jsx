@@ -1,5 +1,6 @@
 /*eslint no-undefined: 0*/
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import axios from 'axios';
 
 import { toTitleCase } from './../../helpers';
@@ -123,7 +124,7 @@ class AccountNames extends Component {
 
 				<h1>Account Nicknames</h1>
 
-				{this.state.accounts.map((acct, index) => (
+				{this.props.accounts.map((acct, index) => (
 					<div className='account-names' key={index}>
 						<h3 className='account-names--name'>{acct.name}</h3>
 						<input
@@ -145,4 +146,15 @@ class AccountNames extends Component {
 	}
 }
 
-export default AccountNames;
+const mapStateToProps = (state) => {
+	return {
+		accounts: state.app.accounts || []
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AccountNames);

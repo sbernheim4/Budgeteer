@@ -59,7 +59,7 @@ class Settings extends Component {
 			<section className='settings'>
 				<LinkedAccounts />
 				<MonthlyBudget />
-				<AccountNames accounts={this.props.accounts} />
+				<AccountNames />
 
 				<div className='settings--rotate-tokens'>
 					<p>
