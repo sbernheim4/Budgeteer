@@ -21,8 +21,11 @@ class TransactionContainer extends Component {
 	}
 
 	componentDidMount() {
+
 		window.addEventListener('scroll', () => {
+
 			if (this.state.transactionsToDisplay.length !== this.props.transactions.length) {
+
 				const numerator = document.documentElement.scrollTop + document.body.scrollTop;
 				const denominator = document.documentElement.scrollHeight - document.documentElement.clientHeight;
 				const percent = (numerator / denominator) * 100;
@@ -30,8 +33,11 @@ class TransactionContainer extends Component {
 				if (percent > 0.75) {
 					this.displayMoreTransactions();
 				}
+
 			}
+
 		});
+
 	}
 
 	componentWillUnmount() {

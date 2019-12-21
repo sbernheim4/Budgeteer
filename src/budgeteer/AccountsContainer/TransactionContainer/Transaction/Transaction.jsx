@@ -20,7 +20,7 @@ import {
 	faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
-import storeDisplayNames from './../../../redux/actions/app';
+import { storeDisplayNames } from './../../../redux/actions/app';
 
 import { numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';
 
