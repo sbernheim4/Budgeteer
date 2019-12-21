@@ -4,20 +4,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-
-import { storeDisplayNames } from './../redux/actions/app';
-
-import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
-import TransactionContainer from './TransactionContainer/TransactionContainer.jsx';
-
-import './accountsContainer.scss';
-
-import { formatAmount, toTitleCase } from '../helpers';
-
-// Font Awesome base package
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-// Selective icons from Font Awesome
 import {
 	faTape,
 	faSearch,
@@ -36,19 +23,23 @@ import {
 	faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
-import { jsonToMap } from '../helpers.js';
+import { storeDisplayNames } from './../redux/actions/app';
+
+import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
+import TransactionContainer from './TransactionContainer/TransactionContainer.jsx';
+
+import './accountsContainer.scss';
+
+import { formatAmount, toTitleCase } from '../helpers';
 
 class AccountsContainer extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			// this state variable is used to keep track of transactions the
-			// user wants to see
 			filteredTransactions: [],
-			// Stores how the user is currently sorting their transactions
-			categoryType: '',
-			categoryTotal: 0.0,
+			filterType: '',
+			filteredTotal: 0.0,
 			keyWord: ''
 		};
 
@@ -538,8 +529,8 @@ class AccountsContainer extends Component {
 				<WeekSpendingChart transactions={this.state.filteredTransactions} />
 
 				<TransactionContainer
-					categoryType={this.state.categoryType}
-					categoryTotal={this.state.categoryTotal}
+					categoryType={this.state.filterType}
+					categoryTotal={this.state.filteredTotal}
 					transactions={this.state.filteredTransactions}
 					accounts={this.props.accounts}
 					displayNames={this.props.displayNames}
