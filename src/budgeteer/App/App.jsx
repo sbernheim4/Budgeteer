@@ -190,25 +190,28 @@ class App extends Component {
 					<Route
 						exact
 						path='/'
-						render={() => (
-							<Home
-								loading={loading}
-								transactions={this.props.transactions}
-								accounts={this.props.accounts}
-							/>
-						)}
+						render={() => <Home loading={loading} />}
 					/>
 
-					<Route path='/statistics' render={() => <Statistics transactions={this.props.transactions} />} />
+					<Route
+						path='/statistics'
+						render={() => <Statistics transactions={this.props.transactions} />} />
 
 					<Route
 						path='/transactions'
 						render={<AccountsContainer />}
 					/>
 
-					<Route path='/networth' render={<Savings />} />
+					<Route
+						path='/networth'
+						render={<Savings />}
+					/>
 
-					<Route path='/settings' render={<Settings />} />
+					<Route
+						path='/settings'
+						render={<Settings />}
+					/>
+
 				</div>
 
 				{/* <Link /> elements are in Navbar.jsx */}
