@@ -1,6 +1,7 @@
 /*eslint no-undefined: 0*/
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faTape,
@@ -19,15 +20,23 @@ import {
 	faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
+import storeDisplayNames from './../../../redux/actions/app';
+
 import { numberWithCommas, formatAmount, toTitleCase, formatDate } from '../../../helpers';
 
 import './transaction.scss';
 
 class Transaction extends Component {
 	constructor(props) {
+
 		super(props);
 
 		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
+
+	}
+
+	componentDidMount() {
+		this.props.getDisplayNames();
 	}
 
 	getAccountNameFromID(accountID) {
@@ -132,4 +141,23 @@ class Transaction extends Component {
 	}
 }
 
-export default Transaction;
+const mapStateToProps = (state) => {
+
+	const displayNamesMap = state.app.displayNames ? new Map(state.app.displayNames) : new Map();
+
+	return {
+		accounts: state.app.accounts || [],
+		displayNames: displayNamesMap
+	};
+
+};
+
+const mapDispatchToProps = (dispatch) => {
+
+	return {
+		getDisplayNames: () => dispatch(storeDisplayNames())
+	};
+
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Transaction);

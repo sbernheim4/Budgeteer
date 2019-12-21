@@ -532,8 +532,6 @@ class AccountsContainer extends Component {
 					categoryType={this.state.filterType}
 					categoryTotal={this.state.filteredTotal}
 					transactions={this.state.filteredTransactions}
-					accounts={this.props.accounts}
-					displayNames={this.props.displayNames}
 				/>
 			</div>
 		);

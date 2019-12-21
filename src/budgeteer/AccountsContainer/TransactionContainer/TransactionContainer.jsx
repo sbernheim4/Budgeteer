@@ -94,9 +94,7 @@ class TransactionContainer extends Component {
 					{this.state.transactionsToDisplay.map((t, index) => (
 						<Transaction
 							key={index}
-							accounts={this.props.accounts}
 							transaction={t}
-							displayNames={this.props.displayNames}
 						/>
 					))}
 				</div>
