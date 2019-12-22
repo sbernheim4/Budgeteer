@@ -199,17 +199,17 @@ class App extends Component {
 
 					<Route
 						path='/transactions'
-						render={<AccountsContainer />}
+						component={AccountsContainer}
 					/>
 
 					<Route
 						path='/networth'
-						render={<Savings />}
+						component={Savings}
 					/>
 
 					<Route
 						path='/settings'
-						render={<Settings />}
+						componnent={Settings}
 					/>
 
 				</div>

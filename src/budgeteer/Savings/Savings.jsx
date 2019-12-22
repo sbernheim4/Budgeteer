@@ -189,10 +189,12 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
+
 	return {
 		updateBankInfo: (newBankInfo) => dispatch(updateBankInfo(newBankInfo)),
 		getDisplayNames: () => dispatch(storeDisplayNames())
 	};
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Savings);
