@@ -8,6 +8,27 @@ import { dollarify } from './../../helpers';
 
 import './savingsChart.scss';
 
+function CustomToolTip(props) {
+
+	if (props.active) {
+
+		const { payload, label } = props;
+
+		const balance = payload[0].value;
+		const displayableBalance = dollarify(balance);
+
+		return (
+			<div className="custom-tooltip">
+				<p className="label">{`${label} : ${displayableBalance}`} </p>
+			</div>
+		);
+
+	}
+
+	return null;
+
+}
+
 function SavingsChart(props) {
 
 	const bankInfo = useSelector(state => state.savings.bankInfo);
@@ -48,12 +69,11 @@ function SavingsChart(props) {
 			const { date: dateString, institutionalBalance } = dataPoint;
 
 			const date = new Date(dateString);
-			const displayBalance = dollarify(institutionalBalance);
 			const displayDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 
 			return {
 				name: displayDate,
-				Balance: displayBalance
+				Balance: institutionalBalance
 			}
 
 		});
@@ -113,7 +133,7 @@ function SavingsChart(props) {
 						interval={2}
 						dataKey='name'
 					/>
-					<Tooltip />
+					<Tooltip content={CustomToolTip} />
 					<Line
 						type='monotone'
 						dataKey='Balance'
