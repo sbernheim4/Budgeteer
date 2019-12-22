@@ -25,7 +25,7 @@ class Savings extends Component {
 
 		this.cacheKeyPrefix = 'budgeteer--savings';
 
-		this.getInstitutionIds = this.setInstitutionIds.bind(this);
+		this.getInstitutionIds = this.getInstitutionIds.bind(this);
 
 	}
 
@@ -105,7 +105,7 @@ class Savings extends Component {
 
 		this.props.getDisplayNames();
 
-		const linkedBanks = await this.setInstitutionIds();
+		const linkedBanks = await this.getInstitutionIds();
 		const savingsData = await this.getSavingsData();
 
 		const { savings, accountBalances, loading } = savingsData;
@@ -153,12 +153,20 @@ class Savings extends Component {
 		}
 	}
 
-	async setInstitutionIds() {
+	async getInstitutionIds() {
 
-		const linkedBanksRequest = await axios.get('/plaid-api/linked-accounts');
-		const linkedBanks = linkedBanksRequest.data.banks;
+		try {
 
-		return linkedBanks;
+			const linkedBanksRequest = await axios.get('/plaid-api/linked-accounts');
+			const linkedBanks = linkedBanksRequest.data.banks;
+
+			return linkedBanks;
+
+		} catch (error) {
+
+			return [];
+
+		}
 
 	}
 

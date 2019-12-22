@@ -119,9 +119,9 @@ class AccountsContainer extends Component {
 			this.getAccountDisplayName(account_id, type);
 
 		this.setState({
-			categoryTransactions: releventTransactions,
+			filteredTransactions: releventTransactions,
 			categoryType: categoryType,
-			categoryTotal: total
+			filteredTotal: total
 		});
 
 	}
@@ -165,9 +165,9 @@ class AccountsContainer extends Component {
 
 		// Update the state with the relevent transactions and how the user is sorting them
 		this.setState({
-			categoryTransactions: releventTransactions,
+			filteredTransactions: releventTransactions,
 			categoryType: categoryString,
-			categoryTotal: total
+			filteredTotal: total
 		});
 	}
 
@@ -219,8 +219,8 @@ class AccountsContainer extends Component {
 			});
 
 			this.setState({
-				categoryTransactions: releventTransactions,
-				categoryTotal: total,
+				filteredTransactions: releventTransactions,
+				filteredTotal: total,
 				categoryType: `${this.months[dateOne.getMonth()]} ${dateOne.getDate()} - ${
 					this.months[dateTwo.getMonth()]
 				} ${dateTwo.getDate()}`
@@ -243,8 +243,8 @@ class AccountsContainer extends Component {
 			return normalizedTransactionName.includes(normalizedKeyWord);
 		});
 
-		const categoryTotal = matchingTransactions.reduce((accumulator, transaction) => accumulator + transaction.amount, 0);
-		const formattedCategoryTotal = formatAmount(categoryTotal);
+		const filteredTotal = matchingTransactions.reduce((accumulator, transaction) => accumulator + transaction.amount, 0);
+		const formattedCategoryTotal = formatAmount(filteredTotal);
 
 		const sortedTransactions = matchingTransactions.sort((a, b) => {
 			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
@@ -255,9 +255,9 @@ class AccountsContainer extends Component {
 		const categoryType = toTitleCase(searchTerm);
 
 		this.setState({
-			categoryTransactions: sortedTransactions,
+			filteredTransactions: sortedTransactions,
 			categoryType,
-			categoryTotal: formattedCategoryTotal
+			filteredTotal: formattedCategoryTotal
 		});
 
 	}
@@ -547,12 +547,15 @@ const mapStateToProps = (state) => {
 		accounts: state.app.accounts || [],
 		displayNames: displayNamesMap
 	};
+
 };
 
 const mapDispatchToProps = (dispatch) => {
+
 	return {
 		getDisplayNames: () => dispatch(storeDisplayNames())
 	};
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountsContainer);
