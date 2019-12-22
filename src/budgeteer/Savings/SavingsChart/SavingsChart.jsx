@@ -15,7 +15,7 @@ function CustomToolTip(props) {
 		const { payload, label } = props;
 
 		const balance = payload[0].value;
-		const displayableBalance = dollarify(balance);
+		const displayableBalance = `$${dollarify(balance)}`;
 
 		return (
 			<div className="custom-tooltip">
