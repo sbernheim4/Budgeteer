@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
-import { LineChart, ResponsiveContainer, XAxis, Tooltip, Line } from 'recharts';
+import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
 import axios from 'axios';
 import { isSameDay } from 'date-fns';
 
-import { dollarify } from './../../helpers';
+import { dollarify, formatAmount } from './../../helpers';
 
 import './savingsChart.scss';
 
@@ -12,7 +12,8 @@ function CustomToolTip(props) {
 
 	if (props.active) {
 
-		const { payload, label } = props;
+		// TODO: This default value for payload is a bit of a code smell
+		const { payload = [{ value: 0 }], label } = props;
 
 		const balance = payload[0].value;
 		const displayableBalance = `$${dollarify(balance)}`;
@@ -129,11 +130,23 @@ function SavingsChart(props) {
 					data={rechartsData}
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
+					<YAxis
+						type="number"
+						domain={[
+							dataMin => (formatAmount(.9 * dataMin)),
+							dataMax => formatAmount(dataMax * 1.1)
+						]}
+					/>
+
 					<XAxis
 						interval={2}
 						dataKey='name'
 					/>
-					<Tooltip content={CustomToolTip} />
+
+					<Tooltip
+						content={CustomToolTip}
+					/>
+
 					<Line
 						type='monotone'
 						dataKey='Balance'
