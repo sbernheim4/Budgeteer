@@ -52,6 +52,7 @@ const mapStateToProps = (state) => {
 	const recentTransactions = state.app.transactions.length > 0 ? state.app.transactions.slice(0, 3) : [];
 
 	return {
+		transactions: state.app.transactions,
 		recentTransactions: recentTransactions,
 		accounts: state.app.accounts || []
 	};
