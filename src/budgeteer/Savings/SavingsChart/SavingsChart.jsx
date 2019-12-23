@@ -12,8 +12,7 @@ function CustomToolTip(props) {
 
 	if (props.active) {
 
-		// TODO: This default value for payload is a bit of a code smell
-		const { payload = [{ value: 0 }], label } = props;
+		const { payload, label } = props;
 
 		const balance = payload[0].value;
 		const displayableBalance = `$${dollarify(balance)}`;
@@ -34,6 +33,7 @@ function SavingsChart(props) {
 
 	const bankInfo = useSelector(state => state.savings.bankInfo);
 	const [rechartsData, setRechartsData] = useState([]);
+	const [minMax, setMinMax] = useState({min: 0, max: 10});
 
 	useEffect(() => {
 
@@ -43,6 +43,9 @@ function SavingsChart(props) {
 			const chartData = generateChartDataPoints(data);
 
 			setRechartsData(chartData);
+
+			const bounds = getChartBounds(chartData);
+			setMinMax(bounds);
 
 			await conditionallyUploadNewData(chartData);
 
@@ -120,6 +123,31 @@ function SavingsChart(props) {
 
 	}
 
+	function getChartBounds(data) {
+
+		const multiplier = .05;
+		const normalizer = 100;
+
+		const balances = data.map(dataPoint => dataPoint.Balance);
+
+		const min = Math.min(...balances);
+		const max = Math.max(...balances);
+
+		// Add some space above and below the min and max values
+		const paddedMin = parseFloat(formatAmount((1 - multiplier) * min));
+		const paddedMax = parseFloat(formatAmount((1 + multiplier) * max));
+
+		// Display multiples of 100 on the y axis
+		const normalizedMin = paddedMin + (normalizer - (paddedMin % normalizer));
+		const normalizedMax = paddedMax + (normalizer - (paddedMax % normalizer));
+
+		return {
+			min: normalizedMin,
+			max: normalizedMax
+		}
+
+	}
+
 	return (
 		<section className='savings-chart'>
 			<ResponsiveContainer
@@ -131,10 +159,10 @@ function SavingsChart(props) {
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
 					<YAxis
-						type="number"
+						hide='true'
 						domain={[
-							dataMin => (formatAmount(.9 * dataMin)),
-							dataMax => formatAmount(dataMax * 1.1)
+							minMax.min,
+							minMax.max
 						]}
 					/>
 
