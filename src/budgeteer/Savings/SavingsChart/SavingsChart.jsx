@@ -34,6 +34,7 @@ function SavingsChart(props) {
 	const bankInfo = useSelector(state => state.savings.bankInfo);
 	const [rechartsData, setRechartsData] = useState([]);
 	const [minMax, setMinMax] = useState({min: 0, max: 10});
+	const [chartColor, setChartColor] = useState('#79c6a3');
 
 	useEffect(() => {
 
@@ -41,11 +42,11 @@ function SavingsChart(props) {
 
 			const data = await getData();
 			const chartData = generateChartDataPoints(data);
-
-			setRechartsData(chartData);
-
 			const bounds = getChartBounds(chartData);
+
 			setMinMax(bounds);
+			setRechartsData(chartData);
+			determineChartColor(chartData);
 
 			await conditionallyUploadNewData(chartData);
 
@@ -148,6 +149,17 @@ function SavingsChart(props) {
 
 	}
 
+	function determineChartColor(chartData) {
+
+		const balances = chartData.map(dataPoint => dataPoint.Balance);
+		const positiveValues = balances.filter(balance => balance >= 0);
+
+		if (positiveValues.length === 0) {
+			setChartColor('#c67d79');
+		}
+
+	}
+
 	return (
 		<section className='savings-chart'>
 			<ResponsiveContainer
@@ -159,7 +171,7 @@ function SavingsChart(props) {
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
 					<YAxis
-						hide='true'
+						hide={true}
 						domain={[
 							minMax.min,
 							minMax.max
@@ -178,8 +190,8 @@ function SavingsChart(props) {
 					<Area
 						type='monotone'
 						dataKey='Balance'
-						stroke='#79c6a3'
-						fill='#79c6a3'
+						stroke={chartColor}
+						fill={chartColor}
 						strokeWidth={4}
 					/>
 				</AreaChart>
