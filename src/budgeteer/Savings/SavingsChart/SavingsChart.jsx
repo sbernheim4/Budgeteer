@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
-import { LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import axios from 'axios';
 import { isSameDay } from 'date-fns';
 
@@ -154,7 +154,7 @@ function SavingsChart(props) {
 				width='100%'
 				height='100%'
 			>
-				<LineChart
+				<AreaChart
 					data={rechartsData}
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
@@ -175,13 +175,14 @@ function SavingsChart(props) {
 						content={CustomToolTip}
 					/>
 
-					<Line
+					<Area
 						type='monotone'
 						dataKey='Balance'
 						stroke='#79c6a3'
+						fill='#79c6a3'
 						strokeWidth={4}
 					/>
-				</LineChart>
+				</AreaChart>
 			</ResponsiveContainer>
 		</section>
 	);
