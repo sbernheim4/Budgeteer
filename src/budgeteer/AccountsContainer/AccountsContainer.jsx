@@ -7,7 +7,6 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faTape,
-	faSearch,
 	faTags,
 	faCalendar,
 	faUtensils,
