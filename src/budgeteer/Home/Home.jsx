@@ -7,28 +7,14 @@ import TransactionContainer from '../AccountsContainer/TransactionContainer/Tran
 import './home.scss';
 
 function Home(props) {
-	let text;
 
 	if (props.loading) {
-
-		text = (
-			<div className='home--loading'>
-				<h1>Loading...</h1>
-				<img src='./loading-gifs/loading-one.gif' alt='loading' />
-			</div>
-		);
-
+		return <div className='home--loading'>
+			<h1>Loading...</h1>
+			<img src='./loading-gifs/loading-one.gif' alt='loading' />
+		</div>
 	} else {
-
-		text = '';
-
-	}
-
-	return (
-
-		<div className='home'>
-			{text}
-
+		return <div className='home'>
 			<h1>Your Snapshot</h1>
 
 			<div className='home--snapshot'>
@@ -43,8 +29,8 @@ function Home(props) {
 				</div>
 			</div>
 		</div>
+	}
 
-	);
 }
 
 const mapStateToProps = (state) => {
@@ -53,7 +39,7 @@ const mapStateToProps = (state) => {
 
 	return {
 		transactions: state.app.transactions,
-		recentTransactions: recentTransactions,
+		recentTransactions,
 		accounts: state.app.accounts || []
 	};
 
