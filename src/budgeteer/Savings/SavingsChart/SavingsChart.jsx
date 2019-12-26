@@ -126,7 +126,7 @@ function SavingsChart(props) {
 
 	function getChartBounds(data) {
 
-		const multiplier = .05;
+		const multiplier = .03;
 		const normalizer = 100;
 
 		const balances = data.map(dataPoint => dataPoint.Balance);
@@ -134,9 +134,8 @@ function SavingsChart(props) {
 		const min = Math.min(...balances);
 		const max = Math.max(...balances);
 
-		// Add some space above and below the min and max values
 		const paddedMin = parseFloat(formatAmount((1 - multiplier) * min));
-		const paddedMax = parseFloat(formatAmount((1 + multiplier) * max));
+		const paddedMax = (normalizer - (max % normalizer)) + max
 
 		// Display multiples of 100 on the y axis
 		const normalizedMin = paddedMin + (normalizer - (paddedMin % normalizer));
