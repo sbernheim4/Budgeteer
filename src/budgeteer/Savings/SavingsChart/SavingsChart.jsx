@@ -159,6 +159,24 @@ function SavingsChart(props) {
 
 	}
 
+	function determineInterval() {
+
+		const { length } = rechartsData;
+
+		if (length <= 4) {
+			return 1;
+		} else if (length > 4 && length <= 6) {
+			return 2;
+		} else if (length > 6 && length <= 10) {
+			return 4;
+		} else if (/Mobi|Android/i.test(navigator.userAgent)) {
+			return Math.floor(length / 3);
+		} else {
+			return Math.floor(length / 5);
+		}
+
+	}
+
 	return (
 		<section className='savings-chart'>
 			<ResponsiveContainer
@@ -178,7 +196,7 @@ function SavingsChart(props) {
 					/>
 
 					<XAxis
-						interval={2}
+						interval={determineInterval()}
 						dataKey='name'
 					/>
 
