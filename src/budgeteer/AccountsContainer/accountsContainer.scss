@@ -230,13 +230,13 @@
 
 						&::-webkit-scrollbar {
 							width: 7px;
-							background-color: rgba(100,100,100,.7);
+							background-color: rgba(100, 100, 100, 0.7);
 							outline: 1px solid slategrey;
 							-webkit-appearance: none;
 						}
 
 						&::-webkit-scrollbar-thumb {
-							background-color: rgba(100,100,100,.7);
+							background-color: rgba(100, 100, 100, 0.7);
 							border-radius: 4px;
 							outline: 1px solid slategrey;
 							box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
@@ -318,7 +318,7 @@
 					transition: all .2s ease-in;
 
 					&:focus {
-						border: 1px solid $red;
+						border: 1px solid $blue;
 					}
 				}
 			}

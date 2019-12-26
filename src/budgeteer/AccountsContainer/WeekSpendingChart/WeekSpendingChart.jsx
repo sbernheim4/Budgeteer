@@ -164,7 +164,7 @@ class WeekSpendingChart extends Component {
 	}
 
 	render() {
-		const totalSpent = isNumber(this.state.totalSpent) ? this.state.totalSpent.toFixed(2) : 'Loading...';
+		const totalSpent = isNumber(this.state.totalSpent) ? `$${dollarify(this.state.totalSpent)}` : 'Loading...';
 		const amtColor = totalSpent <= 0 && isNumber(totalSpent) ? 'red' : 'green';
 
 		const width = this.state.chartWidth || window.innerWidth;
@@ -172,7 +172,7 @@ class WeekSpendingChart extends Component {
 		return (
 			<div>
 				<h1 className='total-spent'>
-					Past 7 Days: <span className={amtColor}>${totalSpent}</span>
+					Past 7 Days: <span className={amtColor}>{totalSpent}</span>
 				</h1>
 
 				{/* <div className='victory-chart'>
