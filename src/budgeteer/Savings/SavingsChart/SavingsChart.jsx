@@ -175,7 +175,7 @@ function SavingsChart(props) {
 		} else if (length > 4 && length <= 6) {
 			return 2;
 		} else if (length > 6 && length <= 10) {
-			return 4;
+			return 3;
 		} else if (/Mobi|Android/i.test(navigator.userAgent)) {
 			return Math.floor(length / 3);
 		} else {
