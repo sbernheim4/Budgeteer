@@ -17,12 +17,9 @@ function InstitutionInfoRow(props) {
 		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
 	}
 
-	function getAngle(numerator, denominator) {
-		const degrees = 360;
+	function getPercentage(numerator, denominator) {
 		const percentage = Math.round(numerator / denominator * 100, 2);
-		const angle = degrees * percentage / 100;
-
-		return angle;
+        return percentage;
 	}
 
 	const isCreditCardAccount = institutionInfo[acctId].accountType === 'credit';
@@ -31,11 +28,12 @@ function InstitutionInfoRow(props) {
 
 	const accountDisplayName = getDisplayName(acctId);
 	const accountDisplayBalance = dollarify(normalizedBalance);
-	const angle = getAngle(normalizedBalance, totalSavings);
+	const percentage = getPercentage(normalizedBalance, totalSavings);
 
-	const COLORS = ['#79c6a3', 'white'];
+	const COLORS = ['#79c6a3', '#e4f3ec'];
 	const pieChartData = [
-		{ name: 'Comprises', value: 100 }
+		{ name: 'Comprises', value: percentage },
+		{ name: 'Outstanding', value: 100 - percentage }
 	];
 
 	return (
@@ -48,12 +46,11 @@ function InstitutionInfoRow(props) {
 						<Pie
 							dataKey="value"
 							startAngle={0}
-							endAngle={angle}
+							endAngle={360}
 							data={pieChartData}
-							cy={25}
 						>
 							{
-								pieChartData.map((entry, index) => {
+								pieChartData.map((_entry, index) => {
 									return <Cell
 										key={`cell-${index}`}
 										fill={COLORS[index % COLORS.length]}
