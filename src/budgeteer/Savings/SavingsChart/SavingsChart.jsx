@@ -16,10 +16,17 @@ function CustomToolTip(props) {
 
 		const balance = payload[0].value;
 		const displayableBalance = `$${dollarify(balance)}`;
+		const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+		const date = label.split('/');
+		const [month, day, year] = date;
+		const writtenMonth = months[month - 1];
+		const writtenYear = year.slice(2);
 
 		return (
-			<div className="custom-tooltip">
-				<p className="label">{`${label} : ${displayableBalance}`} </p>
+			<div className="savings-chart-tooltip">
+				<p>{writtenMonth}. {day} '{writtenYear}</p>
+				<p>{displayableBalance}</p>
 			</div>
 		);
 
