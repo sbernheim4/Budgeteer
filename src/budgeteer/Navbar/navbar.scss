@@ -3,9 +3,6 @@
 $mobile-navbar-width: 80vw;
 $mobile-navbar-width-plus-one: 86vw;
 
-/* Dark Theme */
-//$navbar-background-color: $background-color;
-
 /* Light Theme */
 $navbar-background-color: white;
 
@@ -66,18 +63,12 @@ $navbar-background-color: white;
 			button {
 				margin-right: 15px;
 				padding: 10px;
-				/*background-color: #346ca1;*/
-				border: 3px solid $red;
+				background-color: white;
+				border: 2px solid $blue;
 				border-radius: 5px;
 				font-size: 20px;
 				color: $default-font-color;
 				cursor: pointer;
-				transition: background-color .1s ease-in, color .1s ease-in;
-
-				&:hover {
-					background-color: $red;
-					color: $default-font-contrast-color;
-				}
 			}
 		}
 	}
@@ -170,10 +161,6 @@ $navbar-background-color: white;
 
 					svg {
 						padding: 0 15px;
-
-						path {
-
-						}
 					}
 				}
 			}

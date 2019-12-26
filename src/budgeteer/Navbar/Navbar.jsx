@@ -152,28 +152,28 @@ class Navbar extends Component {
 						<Link to='/transactions' className='first' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faExchangeAlt} />
-								Your Transactions
+								Transactions
 							</div>
 						</Link>
 
 						<Link to='/statistics' className='second' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faChartPie} />
-								Your Statistics
+								Statistics
 							</div>
 						</Link>
 
 						<Link to='/networth' className='third' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faMoneyBillAlt} />
-								Your Accounts
+								Savings
 							</div>
 						</Link>
 						<hr />
 						<Link to='/settings' className='fourth' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faCogs} />
-								Your Settings
+								Settings
 							</div>
 						</Link>
 						<a className='fifth' onClick={this.addAccount}>
@@ -182,6 +182,9 @@ class Navbar extends Component {
 								Link Bank Account
 							</div>
 						</a>
+						<div className='sixth'>
+							<button onClick={this.logout}>Logout</button>
+						</div>
 					</div>
 				</div>
 			</nav>
