@@ -75,7 +75,6 @@
 			.networth--entry {
 				margin: 0 auto;
 				width: 95%;
-				padding: 10px;
 				font-size: 17px;
 				text-align: center;
 				border-bottom: 1px solid #a9a9a9;
@@ -109,8 +108,11 @@
 				}
 
 				.acct-percentage {
-					font-size: 13px;
-					align-self: center;
+					width: 100%;
+					min-width: 50px;
+					height: 100%;
+					min-height: 50px;
+					place-self: center;
 
 					@media all and (max-width: 400px) {
 						display: none;
