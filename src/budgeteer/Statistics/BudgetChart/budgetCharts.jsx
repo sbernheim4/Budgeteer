@@ -88,16 +88,28 @@ class BudgetChart extends Component {
 		const transactions = nextProps.transactions;
 
 		if (transactions.length <= 0) {
-			return null;
+
+			const monthlyBudget = BudgetChart.getMonthlyBudget();
+
+			return {
+				monthlyBudget: monthlyBudget,
+				totalSpent: 0,
+				totalRemaining: 1,
+				rechartsData: [],
+				overBudget: false
+			}
+
 		} else {
+
 			const monthlyBudget = BudgetChart.getMonthlyBudget();
 			const totalSpent = BudgetChart.calculateTotalSpent(nextProps.transactions);
 			const totalRemaining = monthlyBudget - totalSpent;
-			//
-			// Create chart data set
-			const chartData = [{ name: 'Spent', value: totalSpent }, { name: 'Remaining', value: totalRemaining }];
 
-			// Set the state
+			const chartData = [
+				{ name: 'Spent', value: totalSpent },
+				{ name: 'Remaining', value: totalRemaining }
+			];
+
 			return {
 				monthlyBudget: monthlyBudget,
 				totalSpent: totalSpent,
@@ -105,6 +117,7 @@ class BudgetChart extends Component {
 				rechartsData: chartData,
 				overBudget: totalRemaining < 0
 			};
+
 		}
 	}
 
@@ -117,8 +130,10 @@ class BudgetChart extends Component {
 		const totalSpent = this.state.totalSpent;
 		const newRemaining = newMonthlyBudget - totalSpent;
 
-		// Update the chart
-		let rechartsData = [{ name: 'Spent', value: totalSpent }, { name: 'Remaining', value: newRemaining }];
+		let rechartsData = [
+			{ name: 'Spent', value: totalSpent },
+			{ name: 'Remaining', value: newRemaining }
+		];
 
 		this.setState({
 			rechartsData: rechartsData,

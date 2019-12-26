@@ -44,3 +44,12 @@ export function formatDate(date) {
 
 	return `${month}. ${day} '${year}`
 }
+
+export function convertTransactionDate(transactionDate) {
+	const year = transactionDate.slice(0, 4);
+	const month = transactionDate.slice(5, 7) - 1;
+	const day = transactionDate.slice(8, 10);
+	const dateObj = new Date(year, month, day);
+
+	return dateObj;
+}
