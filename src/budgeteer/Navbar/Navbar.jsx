@@ -29,6 +29,7 @@ class Navbar extends Component {
 		};
 
 		this.addAccount = this.addAccount.bind(this);
+		this.logout = this.logout.bind(this);
 	}
 
 	async componentDidMount() {
@@ -69,6 +70,17 @@ class Navbar extends Component {
 		window.localStorage.clear();
 		window.sessionStorage.clear();
 		console.log('LOCAL AND SESSION STORAGE CLEARED');
+	}
+
+    async logout() {
+
+		try {
+			await axios.get('/login/logout');
+			window.location.href = '/';
+		} catch(error) {
+			throw error;
+		}
+
 	}
 
 	toggleMenu() {
@@ -117,6 +129,7 @@ class Navbar extends Component {
 
 					<div>
 						<button onClick={this.addAccount}>Add Account</button>
+						<button onClick={this.logout}>Logout</button>
 					</div>
 				</div>
 
