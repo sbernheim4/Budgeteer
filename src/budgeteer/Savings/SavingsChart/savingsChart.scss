@@ -24,6 +24,14 @@
 	overflow: hidden;
 }
 
+@media all and (max-width: 600px) {
+
+	.recharts-text.recharts-cartesian-axis-tick-value {
+		font-size: 0.85em;
+	}
+
+}
+
 .savings-chart {
 	position: relative;
 	margin: 0 auto;
