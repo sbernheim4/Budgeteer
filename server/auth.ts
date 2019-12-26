@@ -24,6 +24,15 @@ authRouter.get('/', (_req: Request, res: Response) => {
 	res.sendFile(path.join(__dirname, '../public/home.html'));
 });
 
+authRouter.get('/logout', (req, res) => {
+
+	req.logout();
+	req.logOut();
+	req.session.destroy(() => {});
+	res.redirect('/');
+
+});
+
 authRouter.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (_req, _res) => {
 	console.log('Logging in via Google');
 });
