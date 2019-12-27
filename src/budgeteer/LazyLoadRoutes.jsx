@@ -20,7 +20,7 @@ export const Home = Loadable({
 });
 
 export const Savings = Loadable({
-    loader: () => import('./Savings/Savings.jsx'),
+	loader: () => import('./Savings/Savings.jsx'),
 	loading: () => <div>Loading...</div>
 });
 
