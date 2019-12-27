@@ -200,7 +200,6 @@ class BudgetChart extends Component {
 							{this.state.rechartsData.map((entry, index) => (
 								<Cell key={index} fill={COLORS[index % COLORS.length]} />
 							))}
-							{/* <Label className="center-label" fill={"black"} value={label} position="center" /> */}
 						</Pie>
 						<Tooltip content={<CustomTooltip data={this.state.rechartsData} />} />
 					</PieChart>

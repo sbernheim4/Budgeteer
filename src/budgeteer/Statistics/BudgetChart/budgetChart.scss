@@ -8,14 +8,6 @@
 	justify-content: space-around;
 	align-items: center;
 
-	&--doughnut-chart {
-
-		@media all and (min-width: 930px) {
-			width: 33% !important; // Needed to override width set in the component
-		}
-	}
-
-
 	%color-block {
 		content: "";
 		margin-right: 5px;
