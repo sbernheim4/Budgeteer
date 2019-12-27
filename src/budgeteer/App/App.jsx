@@ -209,7 +209,7 @@ class App extends Component {
 
 					<Route
 						path='/settings'
-						componnent={Settings}
+						component={Settings}
 					/>
 
 				</div>
