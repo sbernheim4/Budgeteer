@@ -13,7 +13,8 @@ import {
 	faChartPie,
 	faMoneyBillAlt,
 	faCogs,
-	faPlus
+	faPlus,
+	faSignOutAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 import './navbar.scss';
@@ -169,22 +170,28 @@ class Navbar extends Component {
 								Savings
 							</div>
 						</Link>
-						<hr />
+
 						<Link to='/settings' className='fourth' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faCogs} />
 								Settings
 							</div>
 						</Link>
+
+						<hr />
+
 						<a className='fifth' onClick={this.addAccount}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faPlus} />
 								Link Bank Account
 							</div>
 						</a>
-						<div className='sixth'>
-							<button onClick={this.logout}>Logout</button>
-						</div>
+						<a className='sixth' onClick={this.logout}>
+							<div className='link-container'>
+								<FontAwesomeIcon icon={faSignOutAlt} />
+								Logout
+							</div>
+						</a>
 					</div>
 				</div>
 			</nav>
