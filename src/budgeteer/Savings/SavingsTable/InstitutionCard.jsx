@@ -86,7 +86,6 @@ export default function InstitutionCard(props) {
 
 			<SavingsChart
 				institutionId={institutionId}
-				storeNewChartData={storeNewChartData}
 			/>
 		</div>
 	);

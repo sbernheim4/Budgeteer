@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Label } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 import Input from './Input/input.jsx';
 import BannerMessage from './../../BannerMessage/BannerMessage.jsx';
@@ -16,6 +16,7 @@ class CustomTooltip extends Component {
 		const { active, data } = this.props;
 
 		if (active) {
+
 			const spent = dollarify(data[0].value);
 			const remaining = dollarify(data[1].value);
 
@@ -25,9 +26,11 @@ class CustomTooltip extends Component {
 					<p className='budget--tooltip--remaining'>Remaining: ${remaining}</p>
 				</div>
 			);
-		} else {
-			return null;
+
 		}
+
+		return null;
+
 	}
 }
 
@@ -45,6 +48,19 @@ class BudgetChart extends Component {
 		};
 
 		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
+	}
+
+	componentDidMount() {
+
+		if (this.state.overBudget && updated === false) {
+			// Wait 500ms before displaying the banner
+			setTimeout(() => {
+				this.displayMessage('You are over budget!', 'red');
+			}, 500);
+
+			updated = true;
+		}
+
 	}
 
 	componentDidUpdate() {
@@ -68,20 +84,17 @@ class BudgetChart extends Component {
 	}
 
 	static calculateTotalSpent(transactions) {
-		let totalSpent = 0;
 
-		// Filter out any income from the transactions --> Should be accounted for in the monthly budget
-		const spendingTransactions = transactions.filter((transaction) => {
-			return transaction.amount > 0;
-		});
+		const totalSpent = transactions.reduce((acc, curr) => {
 
-		spendingTransactions.forEach((transaction) => {
-			totalSpent += transaction.amount;
-		});
+			// Multiply by -1 since spending is returned as a positive number and income
+			// as a negative number (spending should really be considered negative and
+			// income as positive)
+			return (curr.amount * -1) + acc;
 
-		const roundedTotalSpent = Number.parseFloat(totalSpent.toFixed(2));
+		}, 0);
 
-		return roundedTotalSpent;
+		return totalSpent;
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
@@ -94,7 +107,7 @@ class BudgetChart extends Component {
 			return {
 				monthlyBudget: monthlyBudget,
 				totalSpent: 0,
-				totalRemaining: 1,
+				totalRemaining: 0,
 				rechartsData: [],
 				overBudget: false
 			}
@@ -148,13 +161,22 @@ class BudgetChart extends Component {
 			}
 		});
 
-		const overBudget = newRemaining < 0;
-		if (overBudget) {
-			this.displayMessage('You are over budget!', 'red');
-		}
+		this.setState({
+			rechartsData: rechartsData,
+			monthlyBudget: newMonthlyBudget,
+			overBudget: newRemaining < 0
+		}, () => {
+
+			if (this.state.overBudget) {
+				this.displayMessage('You are over budget!', 'red');
+			}
+
+		});
+
 	}
 
 	displayMessage(text, color) {
+
 		this.setState({
 			display: true,
 			message: text,
@@ -166,19 +188,19 @@ class BudgetChart extends Component {
 				display: false
 			});
 		}, 5500);
+
 	}
 
 	render() {
-		let spent = this.state.totalSpent;
-		spent = dollarify(spent);
-
-		let remaining = this.state.totalSpent;
-		remaining = dollarify(remaining);
 
 		return (
 			<section className='budget'>
 
-				<BannerMessage color={this.state.color} display={this.state.display} text={this.state.message} />
+				<BannerMessage
+					color={this.state.color}
+					display={this.state.display}
+					text={this.state.message}
+				/>
 
 				<h1>Monthly Budget</h1>
 
@@ -188,7 +210,12 @@ class BudgetChart extends Component {
 					monthlyBudget={this.state.monthlyBudget}
 				/>
 
-				<ResponsiveContainer className='budget--doughnut-chart' width='100%' min-height={400} height={400}>
+				<ResponsiveContainer
+					className='budget--doughnut-chart'
+					width='100%'
+					min-height={400}
+					height={400}
+				>
 					<PieChart>
 						<Pie
 							dataKey='value'
@@ -197,13 +224,14 @@ class BudgetChart extends Component {
 							outerRadius='90%'
 							fill='#8884d8'
 							paddingAngle={0}>
-							{this.state.rechartsData.map((entry, index) => (
+							{this.state.rechartsData.map((_entry, index) => (
 								<Cell key={index} fill={COLORS[index % COLORS.length]} />
 							))}
 						</Pie>
 						<Tooltip content={<CustomTooltip data={this.state.rechartsData} />} />
 					</PieChart>
 				</ResponsiveContainer>
+
 			</section>
 		);
 	}

@@ -8,7 +8,7 @@ import { dollarify } from '../../helpers.js';
 import './savingsTable.scss';
 
 function SavingsTable(props) {
-	const accountBalancesLoaded = props.accountBalances.length > 0;
+	const accountBalancesLoaded = props.accountBalances && props.accountBalances.length > 0;
 
 	if (!accountBalancesLoaded) {
 

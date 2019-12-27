@@ -161,6 +161,7 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 	let bankData;
 
 	try {
+
 		bankData = await resolvePlaidBalance(req.session.user.accessTokens);
 
 		if (bankData instanceof Error) {
@@ -180,7 +181,9 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 					});
 				}
 			});
+
 		} else {
+
 			const data = createData(bankData);
 			const { totalSavings, arrayOfObjects } = data;
 
@@ -189,6 +192,7 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 				totalSavings
 			});
 		}
+
 	} catch (err) {
 		console.log('----------------------------');
 		console.log(chalk.red('Error from /balance'));
@@ -198,10 +202,12 @@ plaidRouter.get('/balance', async (req: Request, res) => {
 });
 
 function createData(data) {
+
 	let arrayOfObjects = [];
 	let totalSavings = 0;
 
-	data.forEach(async (institution) => {
+	data.forEach(institution => {
+
 		const institutionId = institution.item.institution_id;
 		const accountsArray = institution.accounts;
 
@@ -210,11 +216,14 @@ function createData(data) {
 
 		totalSavings += institutionBalance;
 
-		arrayOfObjects.push({
+		const institutionInfo = {
 			institutionId,
 			institutionBalance,
 			institutionBalanceObject
-		});
+		}
+
+		arrayOfObjects.push(institutionInfo);
+
 	});
 
 	return {
