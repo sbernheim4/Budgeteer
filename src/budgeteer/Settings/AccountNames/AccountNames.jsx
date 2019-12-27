@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
+import { storeDisplayNames } from './../../redux/actions/app';
 import { toTitleCase } from './../../helpers';
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
@@ -22,37 +23,16 @@ class AccountNames extends Component {
 		this.displayMessage = this.displayMessage.bind(this);
 	}
 
-	mapToJson(map) {
-		return JSON.stringify([...map]);
-	}
-
 	jsonToMap(jsonStr) {
 		return new Map(JSON.parse(jsonStr));
 	}
 
 	async componentDidMount() {
-		try {
-			let names = await axios.get('/user-info/display-names');
-			names = names.data;
 
-			const map = this.jsonToMap(names);
-			this.setState({
-				mapOfAccountNamesToDisplayNames: map
-			});
-		} catch (err) {
-			this.setState({
-				mapOfAccountNamesToDisplayNames: new Map()
-			});
-		}
+		this.props.getDisplayNames();
 	}
 
-	static getDerivedStateFromProps(props, state) {
-		return {
-			accounts: props.accounts
-		};
-	}
-
-	getAccountIDFromAccountName(accountName) {
+	getAccountIdFromAccountName(accountName) {
 		for (const account of this.props.accounts) {
 			if (account.name === accountName) {
 				return account.account_id;
@@ -62,7 +42,7 @@ class AccountNames extends Component {
 
 	getDisplayName(account_id) {
 
-        const accountName = this.state.mapOfAccountNamesToDisplayNames.get(account_id) || '';
+        const accountName = this.props.displayNames.get(account_id) || '';
 
         return toTitleCase(accountName);
 
@@ -71,8 +51,8 @@ class AccountNames extends Component {
 	saveUpdateDisplayNames() {
 
 		const displayNameElements = document.querySelectorAll('.account-names--input');
-		const map = this.state.mapOfAccountNamesToDisplayNames !== undefined ?
-				this.state.mapOfAccountNamesToDisplayNames :
+		const map = this.props.displayNames !== undefined ?
+				this.props.displayNames :
 				new Map();
 
 		displayNameElements.forEach((element) => {
@@ -83,7 +63,7 @@ class AccountNames extends Component {
 			if (displayName === '' || displayName === null || displayName === undefined) return;
 
 			const accountName = element.parentNode.querySelector('.account-names--name').innerText;
-			const accountID = this.getAccountIDFromAccountName(accountName);
+			const accountID = this.getAccountIdFromAccountName(accountName);
 
 			map.set(accountID, displayName);
 
@@ -155,14 +135,22 @@ class AccountNames extends Component {
 }
 
 const mapStateToProps = (state) => {
+
+	const displayNames = new Map(state.app.displayNames);
+
 	return {
-		accounts: state.app.accounts || []
+		accounts: state.app.accounts || [],
+		displayNames
 	};
+
 };
 
-const mapDispatchToProps = () => {
+const mapDispatchToProps = (dispatch) => {
+
 	return {
+		getDisplayNames: () => dispatch(storeDisplayNames())
 	};
+
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountNames);
