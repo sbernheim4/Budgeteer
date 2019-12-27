@@ -75,21 +75,15 @@ function SavingsChart(props) {
 		const mostRecentDataPoint = chartData[chartData.length - 1].name;
 		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
 
-		if (chartData.length === 0 || !isSameDay(mostRecentDataPointDate, today) && bankInfo ) {
-			return await uploadData(bankInfo);
+		if (chartData.length === 0 || !isSameDay(mostRecentDataPointDate, today) && props.bankInfo ) {
+			return await uploadData();
 		}
 
 	}
 
-	async function uploadData(bankInfo) {
+	async function uploadData() {
 
-		// TODO: This function should only update an institution's savings history and not the object for all institutions
-		//
-		// Filter bankInfo looking for where id === props.id and update that --> Will require a server update as well
-		// const institutionSavingsHistory = bankInfo.filter(obj => obj.institutionId === props.id);
-		// const serializedInstitutionSavingsHistory = JSON.stringify(institutionSavingsHistory);
-
-		const serializedBankInfo = JSON.stringify(bankInfo);
+		const serializedBankInfo = JSON.stringify(props.bankInfo);
 
 		await axios({
 			method: 'post',

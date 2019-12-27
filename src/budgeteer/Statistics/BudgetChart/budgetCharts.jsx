@@ -148,11 +148,6 @@ class BudgetChart extends Component {
 			{ name: 'Remaining', value: newRemaining }
 		];
 
-		this.setState({
-			rechartsData: rechartsData,
-			monthlyBudget: newMonthlyBudget
-		});
-
 		axios({
 			method: 'POST',
 			url: '/user-info/monthly-budget',

@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import { formatNewDataPoints, createNewInstitutionSavingsInfo } from './helpers';
+import { formatNewDataPoints, createNewInstitutionData } from './helpers';
 
 import { IUser, IInstitutionSavingsPoint } from './../types';
 
@@ -52,9 +52,30 @@ savingsRouter.post('/data', async (req, res) => {
 		const oldInstitutionSavingsInfo = userInfo.savings;
 
 		const newInstitutionSavingsInfo = formatNewDataPoints(data);
-		const updatedInstitutionSavingsInfo = createNewInstitutionSavingsInfo(newInstitutionSavingsInfo, oldInstitutionSavingsInfo);
+		const updatedInstitutionData = createNewInstitutionData(newInstitutionSavingsInfo, oldInstitutionSavingsInfo);
 
-		await User.updateOne({ _id: userId }, { savings: updatedInstitutionSavingsInfo });
+		let index: number;
+		let found = false;
+
+		for (let i = 0; i < oldInstitutionSavingsInfo.length; i++) {
+			if (oldInstitutionSavingsInfo[i].institutionId === req.body.institutionId) {
+				index = i;
+				found = true;
+				break;
+			}
+		}
+
+		if (found) {
+
+			const updatedSavings = [
+				...oldInstitutionSavingsInfo.slice(0, index),
+				updatedInstitutionData,
+				...oldInstitutionSavingsInfo.slice(index + 1)
+			];
+
+			await User.updateOne({ _id: userId }, { savings: updatedSavings });
+
+		}
 
 		res.status(200);
 
