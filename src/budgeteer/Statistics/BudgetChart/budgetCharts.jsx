@@ -176,7 +176,8 @@ class BudgetChart extends Component {
 		remaining = dollarify(remaining);
 
 		return (
-			<section className='chart budget'>
+			<section className='budget'>
+
 				<BannerMessage color={this.state.color} display={this.state.display} text={this.state.message} />
 
 				<h1>Monthly Budget</h1>
