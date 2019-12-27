@@ -14,7 +14,7 @@ function Home(props) {
 
 		return <div className='home--loading'>
 			<h1>Loading...</h1>
-			<img src='./loading-gifs/loading-one.gif' alt='loading' />
+			<img src='/loading-gifs/loading-one.gif' alt='loading' />
 		</div>
 
 	} else {
