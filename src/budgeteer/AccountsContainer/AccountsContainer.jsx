@@ -22,7 +22,7 @@ import {
 	faQuestion
 } from '@fortawesome/free-solid-svg-icons';
 
-import { storeDisplayNames } from './../redux/actions/app';
+import { getDisplayNames } from './../redux/actions/app';
 
 import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
 import TransactionContainer from './TransactionContainer/TransactionContainer.jsx';
@@ -552,7 +552,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 
 	return {
-		getDisplayNames: () => dispatch(storeDisplayNames())
+		getDisplayNames: () => dispatch(getDisplayNames())
 	};
 
 };

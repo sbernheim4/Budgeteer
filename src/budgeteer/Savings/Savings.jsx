@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import differenceInDays from 'date-fns/differenceInDays'
 
 import { updateBankInfo } from './../redux/actions/savings';
-import { storeDisplayNames } from './../redux/actions/app';
+import { getDisplayNames } from './../redux/actions/app';
 
 import SavingsTable from './SavingsTable/SavingsTable.jsx';
 
@@ -200,7 +200,7 @@ const mapDispatchToProps = (dispatch) => {
 
 	return {
 		updateBankInfo: (newBankInfo) => dispatch(updateBankInfo(newBankInfo)),
-		getDisplayNames: () => dispatch(storeDisplayNames())
+		getDisplayNames: () => dispatch(getDisplayNames())
 	};
 
 };

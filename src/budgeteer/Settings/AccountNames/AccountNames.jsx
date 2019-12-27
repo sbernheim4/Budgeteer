@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-import { storeDisplayNames } from './../../redux/actions/app';
+import { getDisplayNames } from './../../redux/actions/app';
 import { toTitleCase } from './../../helpers';
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
@@ -148,7 +148,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 
 	return {
-		getDisplayNames: () => dispatch(storeDisplayNames())
+		getDisplayNames: () => dispatch(getDisplayNames())
 	};
 
 };

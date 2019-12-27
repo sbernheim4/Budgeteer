@@ -24,7 +24,7 @@ export function storeAccountsInRedux(accounts) {
 
 }
 
-export function storeDisplayNames() {
+export function getDisplayNames() {
 
 	return async (dispatch, getState) => {
 
