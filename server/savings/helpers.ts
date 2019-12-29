@@ -10,7 +10,7 @@ export function formatNewDataPoints(data: IBankInfo): IInstitutionSavingsInfo {
 	const dateString = new Date().toString();
 
 
-	const { institutionId, institutionBalance } = institution;
+	const { institutionId, institutionBalance } = data;
 
 	const newInfo: IInstitutionSavingsInfo = {
 		institutionId,

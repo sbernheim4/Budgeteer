@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 import { formatNewDataPoints, createNewInstitutionData } from './helpers';
 
-import { IUser, IInstitutionSavingsPoint } from './../types';
+import { IUser, IInstitutionSavingsPoint, IInstitutionSavingsInfo } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -22,19 +22,32 @@ savingsRouter.get('/data', async (req, res) => {
 	const institutionId = req.query.id;
 	const userId = req.session.user._id;
 
+	let history: IInstitutionSavingsInfo[];
 	let savings: IInstitutionSavingsPoint[];
 
 	try {
 
 		const userData: IUser = await User.findOne({ _id: userId });
-		const history = userData.savings;
+		history = userData.savings;
 		const institutionInfo = history.find(institution => institution.institutionId === institutionId);
 
 		savings = institutionInfo.savingsData;
 
 	} catch (error) {
 
-		savings = [];
+		const inititalInstitutionSavingsData: IInstitutionSavingsInfo = {
+			institutionId,
+			savingsData: []
+		};
+
+		const updatedSavings = [
+			...history,
+			inititalInstitutionSavingsData
+		];
+
+		await User.updateOne({ _id: userId }, { savings: updatedSavings });
+
+		savings = inititalInstitutionSavingsData.savingsData;
 
 	}
 
