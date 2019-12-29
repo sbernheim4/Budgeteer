@@ -89,15 +89,22 @@ function SavingsChart(props) {
 
 		const serializedBankInfo = JSON.stringify(props.bankInfo);
 
-		await axios({
-			method: 'post',
-			url: '/savings/data',
-			data: serializedBankInfo,
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
+		try {
 
+			await axios({
+				method: 'post',
+				url: '/savings/data',
+				data: serializedBankInfo,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+		} catch (error) {
+
+			console.log(error);
+
+		}
 	}
 
 	function getChartBounds(data) {
