@@ -27,12 +27,6 @@ plaidRouter.use(
 
 plaidRouter.use(bodyParser.json());
 
-// Log All Requests
-plaidRouter.all('*', (req: Request, _res: Response, next: NextFunction) => {
-	console.log(chalk.yellow(`--PLAID-API-- ${req.method} request for ${req.path}`));
-	next();
-});
-
 // Send back the public key and the environment to plaid
 plaidRouter.get('/key-and-env', (_req: Request, res: Response) => {
 	res.send({
