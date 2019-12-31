@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { isSameMonth, isSameYear } from 'date-fns';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
@@ -35,7 +35,6 @@ function CustomTooltip(props) {
 	return null;
 
 }
-
 
 function MonthlyBudgetChart(props) {
 
@@ -173,4 +172,5 @@ const mapDispatchToProps = (dispatch) => {
 		updateMonthlyBudget: (newMonthlyBudget) => dispatch(updateMonthlyBudget(newMonthlyBudget))
 	};
 }
+
 export default connect(mapStateToProps, mapDispatchToProps)(MonthlyBudgetChart);

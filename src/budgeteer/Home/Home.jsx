@@ -1,7 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { isSameMonth } from 'date-fns';
-import { convertTransactionDate } from './../helpers';
 
 import BudgetChart from './../Statistics/BudgetChart/BudgetChart.jsx';
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
@@ -25,7 +23,7 @@ function Home(props) {
 
 			<div className='home--snapshot'>
 				<div className='home--snapshot--monthly-budget'>
-					<BudgetChart displayInput={false} transactions={props.monthsTransactions} />
+					<BudgetChart displayInput={false} />
 				</div>
 
 				<div className='home--snapshot--transactions'>
@@ -42,14 +40,8 @@ function Home(props) {
 const mapStateToProps = (state) => {
 
 	const recentTransactions = state.app.transactions.slice(0, 3);
-	const today = new Date();
-	const monthsTransactions = state.app.transactions.filter(transaction => {
-		const transactionDate = convertTransactionDate(transaction.date);
-		return isSameMonth(transactionDate, today)
-	});
 
 	return {
-		monthsTransactions,
 		transactions: state.app.transactions,
 		recentTransactions,
 		accounts: state.app.accounts || []
