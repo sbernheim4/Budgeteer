@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { Component, useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { isSameMonth, isSameYear } from 'date-fns';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 import Input from './Input/input.jsx';
 import BannerMessage from './../../BannerMessage/BannerMessage.jsx';
 
-import { dollarify } from '../../helpers.js';
+import { getMonthlyBudget, updateMonthlyBudget } from './../../redux/actions/statistics';
+
+import { convertTransactionDate, dollarify } from '../../helpers.js';
 
 import './budgetChart.scss';
 
@@ -34,202 +37,138 @@ class CustomTooltip extends Component {
 	}
 }
 
-let updated = false;
+function MonthlyBudgetChart(props) {
 
-class BudgetChart extends Component {
-	constructor(props) {
-		super(props);
+	const [display, setDisplay] = useState(false);
+	const [message, setMessage] = useState('');
+	const [color, setColor] = useState('red');
+	const [rechartsData, setRechartsData] = useState([
+		{ name: 'Spent', value: 0 },
+		{ name: 'Remaining', value: 1 }
+	]);
 
-		this.state = {
-			monthlyBudget: 0,
-			totalSpent: 0,
-			totalRemaining: 0,
-			rechartsData: [{ name: 'Spent', value: 0 }, { name: 'Remaining', value: 1 }]
-		};
+	useEffect(() => {
 
-		this.updateMonthlyBudget = this.updateMonthlyBudget.bind(this);
-	}
+		props.getMonthlyBudget();
 
-	componentDidMount() {
+	}, []);
 
-		if (this.state.overBudget && updated === false) {
-			// Wait 500ms before displaying the banner
-			setTimeout(() => {
-				this.displayMessage('You are over budget!', 'red');
-			}, 500);
+	useEffect(() => {
 
-			updated = true;
-		}
+		const totalSpent = props.transactions.reduce((acc, curr) => acc + (curr.amount * -1), 0);
+		const rechartsData = updateMonthlyBudgetChart(totalSpent, props.monthlyBudget);
+		setRechartsData(rechartsData);
 
-	}
-
-	componentDidUpdate() {
-		// Note: Use `updated` here to prevent an infinite loop as calling
-		// this.displayMessage updates state which causes cDU to be called again etc
-		if (this.state.overBudget && updated === false) {
-			// Wait 500ms before displaying the banner
-			setTimeout(() => {
-				this.displayMessage('You are over budget!', 'red');
-			}, 500);
-
-			updated = true;
-		}
-	}
-
-	static getMonthlyBudget() {
-		const rawMonthlyBudget = localStorage.getItem('monthlyBudget');
-		const monthlyBudget = Number.parseFloat(rawMonthlyBudget);
-
-		return monthlyBudget;
-	}
-
-	static calculateTotalSpent(transactions) {
-
-		const totalSpent = transactions.reduce((acc, curr) => {
-
-			// Multiply by -1 since spending is returned as a positive number and income
-			// as a negative number (spending should really be considered negative and
-			// income as positive)
-			return (curr.amount * -1) + acc;
-
-		}, 0);
-
-		return totalSpent;
-	}
-
-	static getDerivedStateFromProps(nextProps, prevState) {
-		const transactions = nextProps.transactions;
-
-		if (transactions.length <= 0) {
-
-			const monthlyBudget = BudgetChart.getMonthlyBudget();
-
-			return {
-				monthlyBudget: monthlyBudget,
-				totalSpent: 0,
-				totalRemaining: 0,
-				rechartsData: [],
-				overBudget: false
-			}
-
+		const remaining = rechartsData[1].value;
+		const overBudget = remaining === 0;
+		let timeoutId = -1;
+		if (overBudget) {
+			timeoutId = displayMessage('You are over budget!', 'red');
 		} else {
-
-			const monthlyBudget = BudgetChart.getMonthlyBudget();
-			const totalSpent = BudgetChart.calculateTotalSpent(nextProps.transactions);
-			const totalRemaining = monthlyBudget - totalSpent;
-
-			const chartData = [
-				{ name: 'Spent', value: totalSpent },
-				{ name: 'Remaining', value: totalRemaining }
-			];
-
-			return {
-				monthlyBudget: monthlyBudget,
-				totalSpent: totalSpent,
-				totalRemaining: totalRemaining,
-				rechartsData: chartData,
-				overBudget: totalRemaining < 0
-			};
-
+			clearTimeout(timeoutId);
+			setDisplay(false);
 		}
-	}
 
-	updateMonthlyBudget(event) {
-		const newMonthlyBudget = event.target.value.trim();
+		return () => {
+			clearTimeout(timeoutId);
+			setDisplay(false);
+		}
 
-		// Save data to the current local store
-		localStorage.setItem('monthlyBudget', newMonthlyBudget);
+	}, [props.transactions, props.monthlyBudget]);
 
-		const totalSpent = this.state.totalSpent;
-		const newRemaining = newMonthlyBudget - totalSpent;
+	function updateMonthlyBudgetChart(totalSpent, newMonthlyBudget) {
 
-		let rechartsData = [
+		let newRemaining = newMonthlyBudget - totalSpent;
+
+		if (newRemaining < 0) {
+			newRemaining = 0;
+		}
+
+		const rechartsData = [
 			{ name: 'Spent', value: totalSpent },
 			{ name: 'Remaining', value: newRemaining }
 		];
 
-		axios({
-			method: 'POST',
-			url: '/user-info/monthly-budget',
-			data: {
-				monthlyBudget: newMonthlyBudget
-			}
-		});
-
-		this.setState({
-			rechartsData: rechartsData,
-			monthlyBudget: newMonthlyBudget,
-			overBudget: newRemaining < 0
-		}, () => {
-
-			if (this.state.overBudget) {
-				this.displayMessage('You are over budget!', 'red');
-			}
-
-		});
+		return rechartsData;
 
 	}
 
-	displayMessage(text, color) {
+	function displayMessage(text, color) {
 
-		this.setState({
-			display: true,
-			message: text,
-			color: color
-		});
+		setDisplay(true);
+		setMessage(text);
+		setColor(color);
 
-		setTimeout(() => {
-			this.setState({
-				display: false
-			});
+		return setTimeout(() => {
+			setDisplay(false);
 		}, 5500);
 
 	}
 
-	render() {
+	return (
+		<section className='budget'>
 
-		return (
-			<section className='budget'>
+			<BannerMessage
+				color={color}
+				display={display}
+				text={message}
+			/>
 
-				<BannerMessage
-					color={this.state.color}
-					display={this.state.display}
-					text={this.state.message}
-				/>
+			<h1>Monthly Budget</h1>
 
-				<h1>Monthly Budget</h1>
+			<Input
+				display={props.displayInput}
+                updateMonthlyBudget={(e) => props.updateMonthlyBudget(e.target.value.trim())}
+				monthlyBudget={props.monthlyBudget}
+			/>
 
-				<Input
-					display={this.props.displayInput}
-					updateMonthlyBudget={this.updateMonthlyBudget}
-					monthlyBudget={this.state.monthlyBudget}
-				/>
+			<ResponsiveContainer
+				className='budget--doughnut-chart'
+				width='100%'
+				min-height={400}
+				height={400}
+			>
+				<PieChart>
+					<Pie
+						dataKey='value'
+						data={rechartsData}
+						innerRadius='50%'
+						outerRadius='90%'
+						fill='#8884d8'
+						paddingAngle={0}
+					>
+						{rechartsData.map((_entry, index) => (
+							<Cell key={index} fill={COLORS[index % COLORS.length]} />
+						))}
+					</Pie>
+					<Tooltip content={<CustomTooltip data={rechartsData} />} />
+				</PieChart>
+			</ResponsiveContainer>
 
-				<ResponsiveContainer
-					className='budget--doughnut-chart'
-					width='100%'
-					min-height={400}
-					height={400}
-				>
-					<PieChart>
-						<Pie
-							dataKey='value'
-							data={this.state.rechartsData}
-							innerRadius='50%'
-							outerRadius='90%'
-							fill='#8884d8'
-							paddingAngle={0}>
-							{this.state.rechartsData.map((_entry, index) => (
-								<Cell key={index} fill={COLORS[index % COLORS.length]} />
-							))}
-						</Pie>
-						<Tooltip content={<CustomTooltip data={this.state.rechartsData} />} />
-					</PieChart>
-				</ResponsiveContainer>
+		</section>
+	);
 
-			</section>
-		);
-	}
 }
 
-export default BudgetChart;
+const mapStateToProps = (state) => {
+
+	const today = new Date();
+	const transactions = state.app.transactions.filter((transaction) => {
+		const transactionDate = convertTransactionDate(transaction.date);
+		return isSameMonth(transactionDate, today) && isSameYear(transactionDate, today);
+	});
+
+	return {
+		transactions,
+		monthlyBudget: state.statistics.monthlyBudget
+	}
+
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		getMonthlyBudget: () => dispatch(getMonthlyBudget()),
+		updateMonthlyBudget: (newMonthlyBudget) => dispatch(updateMonthlyBudget(newMonthlyBudget))
+	};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MonthlyBudgetChart);
