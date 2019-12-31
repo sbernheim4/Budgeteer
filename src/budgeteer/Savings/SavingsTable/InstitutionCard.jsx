@@ -10,7 +10,6 @@ export default function InstitutionCard(props) {
 		institutionNames,
 		institutionId,
 		totalSavings,
-		storeNewChartData
 	} = props;
 
 	const [width, setWidth] = useState(0);
