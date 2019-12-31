@@ -15,30 +15,12 @@ class Statistics extends Component {
 	constructor(props) {
 		super(props);
 
-		this.getThisMonthsTransactions = this.getThisMonthsTransactions.bind(this);
-	}
-
-	getThisMonthsTransactions() {
-		const today = new Date();
-
-		const thisMonthsTransactions = this.props.transactions.filter((transaction) => {
-			const rawTransactionDate = transaction.date;
-			const year = rawTransactionDate.slice(0, 4);
-			const month = rawTransactionDate.slice(5, 7) - 1;
-			const day = rawTransactionDate.slice(8, 10);
-
-			const normalizedTransactionDate = new Date(year, month, day);
-
-			return isSameMonth(normalizedTransactionDate, today) && isSameYear(normalizedTransactionDate, today);
-		});
-
-		return thisMonthsTransactions;
 	}
 
 	render() {
 		const elements = [];
 		elements.push(
-			<Budget transactions={this.getThisMonthsTransactions()} />,
+			<Budget />,
 			<CategoryChart transactions={this.props.transactions} />,
 			<AnnualChart transactions={this.props.transactions} />,
 			<WeekWeekendChart transactions={this.props.transactions} />
