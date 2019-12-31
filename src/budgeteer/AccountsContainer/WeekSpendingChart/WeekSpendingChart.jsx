@@ -41,7 +41,6 @@ class WeekSpendingChart extends Component {
 		super(props);
 
 		this.state = {
-			victoryChartsData: [],
 			totalSpent: '...'
 		};
 
@@ -93,9 +92,7 @@ class WeekSpendingChart extends Component {
 		}
 
 		const week = ['Mon.', 'Tues.', 'Wed.', 'Thurs.', 'Fri.', 'Sat.', 'Sun.'];
-
-		let data = []; // VictoryCharts Data
-		let data2 = []; // Recharts Data
+		const rechartsData = []; // Recharts Data
 
 		const today = new Date().getDay();
 		let pastWeekTotal = 0;
@@ -109,16 +106,7 @@ class WeekSpendingChart extends Component {
 			// Multiple by -1 since spending is viewed as positive and income as negative
 			const amt = parseInt(formatAmount(currentWeekAmounts[i] * -1));
 
-			data.push({
-				x: i === 6 ? 'Today' : week[(today + i) % 7],
-				y: amt,
-				label:
-				amt < 0
-				? `Spent: $${dollarify(amt)}`
-				: `Received $${dollarify(amt)}`
-			});
-
-			data2.push({
+			rechartsData.push({
 				name: i === 6 ? 'Today' : week[(today + i) % 7],
 				// Multiple by -1 since spending is viewed as positive and income as negative
 				value: currentWeekAmounts[i] * -1
@@ -136,8 +124,7 @@ class WeekSpendingChart extends Component {
 		const range = [rangeMin, rangeMax];
 
 		return {
-			victoryChartsData: data,
-			rechartsData: data2,
+			rechartsData: rechartsData,
 			totalSpent: pastWeekTotal * -1,
 			range: range
 		};
@@ -167,60 +154,11 @@ class WeekSpendingChart extends Component {
 		const totalSpent = isNumber(this.state.totalSpent) ? `$${dollarify(this.state.totalSpent)}` : 'Loading...';
 		const amtColor = totalSpent <= 0 && isNumber(totalSpent) ? 'red' : 'green';
 
-		const width = this.state.chartWidth || window.innerWidth;
-
 		return (
 			<div>
 				<h1 className='total-spent'>
 					Past 7 Days: <span className={amtColor}>{totalSpent}</span>
 				</h1>
-
-				{/* <div className='victory-chart'>
-					<svg viewBox={"0 0 " + width + " 350"} preserveAspectRatio="none" width="100%">
-						<VictoryChart
-							domain={ {y: this.state.range} }
-							domainPadding={{ x: 50 }}
-							standalone={false}
-							width={this.state.chartWidth}
-							height={350}
-							standalone={false}
-						>
-
-							<VictoryBar
-								data={this.state.victoryChartsData}
-								style={{ data: { fill: "rgb(78,  153, 114)" } }}
-								barWidth={10}
-								labelComponent={<VictoryTooltip
-									renderInPortal={true}
-									text={(datum) => this.formatTooltipText(datum)}
-									style={{ fontSize: 25 }}
-								/>}
-							/>
-
-							<VictoryAxis
-								crossAxis
-								tickCount={3}
-								orientation="bottom"
-								tickLabelComponent={<VictoryLabel />}
-								fixLabelOverlap={true}
-								style={{
-									axis: { stroke: "black" },
-									tickLabels: { fontSize: 30 },
-								}}
-							/>
-
-							<VictoryAxis
-								dependentAxis
-								fixLabelOverlap={true}
-								style={{
-									axis: { stroke: "black" },
-									grid: { stroke: "rgb(222, 222, 222)" },
-									tickLabels: { fontSize: 20 },
-								}}
-							/>
-						</VictoryChart>
-					</svg>
-				</div> */}
 
 				<div className='recharts'>
 					<ResponsiveContainer className='week-spending-chart' width='90%' height={200}>
