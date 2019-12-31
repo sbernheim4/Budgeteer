@@ -14,28 +14,28 @@ import './budgetChart.scss';
 
 const COLORS = ['#D46363', '#007255'];
 
-class CustomTooltip extends Component {
-	render() {
-		const { active, data } = this.props;
+function CustomTooltip(props) {
 
-		if (active) {
+	const { active } = props;
 
-			const spent = dollarify(data[0].value);
-			const remaining = dollarify(data[1].value);
+	if (active) {
 
-			return (
-				<div className='chart budget--tooltip'>
-					<p className='budget--tooltip--spent'>Spent: ${spent}</p>
-					<p className='budget--tooltip--remaining'>Remaining: ${remaining}</p>
-				</div>
-			);
+		const { data } = props;
+		const spent = dollarify(data[0].value);
+		const remaining = dollarify(data[1].value);
 
-		}
-
-		return null;
-
+		return (
+			<div className='chart budget--tooltip'>
+				<p className='budget--tooltip--spent'>Spent: ${spent}</p>
+				<p className='budget--tooltip--remaining'>Remaining: ${remaining}</p>
+			</div>
+		);
 	}
+
+	return null;
+
 }
+
 
 function MonthlyBudgetChart(props) {
 
@@ -57,11 +57,13 @@ function MonthlyBudgetChart(props) {
 
 		const totalSpent = props.transactions.reduce((acc, curr) => acc + (curr.amount * -1), 0);
 		const rechartsData = updateMonthlyBudgetChart(totalSpent, props.monthlyBudget);
+
 		setRechartsData(rechartsData);
 
 		const remaining = rechartsData[1].value;
 		const overBudget = remaining === 0;
 		let timeoutId = -1;
+
 		if (overBudget) {
 			timeoutId = displayMessage('You are over budget!', 'red');
 		} else {
