@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import isSameMonth from 'date-fns/isSameMonth';
-import isSameYear from 'date-fns/isSameYear';
 
-import Budget from './BudgetChart/budgetCharts.jsx';
+import BudgetChart from './BudgetChart/BudgetChart.jsx';
 import WeekWeekendChart from './WeekWeekendChart/WeekWeekendChart.jsx';
 import CategoryChart from './CategoryChart/CategoryChart.jsx';
 import AnnualChart from './AnnualChart/AnnualChart.jsx';
@@ -20,7 +18,7 @@ class Statistics extends Component {
 	render() {
 		const elements = [];
 		elements.push(
-			<Budget />,
+			<BudgetChart />,
 			<CategoryChart transactions={this.props.transactions} />,
 			<AnnualChart transactions={this.props.transactions} />,
 			<WeekWeekendChart transactions={this.props.transactions} />

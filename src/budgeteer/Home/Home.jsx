@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { isSameMonth } from 'date-fns';
 import { convertTransactionDate } from './../helpers';
 
-import BudgetChart from './../Statistics/BudgetChart/budgetCharts.jsx';
+import BudgetChart from './../Statistics/BudgetChart/BudgetChart.jsx';
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
 
 import './home.scss';
