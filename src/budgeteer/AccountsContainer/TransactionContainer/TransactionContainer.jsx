@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Transaction from './Transaction/Transaction.jsx';
 
-import { numberWithCommas } from '../../helpers';
+import { dollarify } from '../../helpers';
 
 import './transactionContainer.scss';
 
@@ -78,17 +78,14 @@ class TransactionContainer extends Component {
 
 	render() {
 
+		const amount = dollarify(this.props.categoryTotal * -1);
 		const amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
-		const amount = numberWithCommas(this.props.categoryTotal * -1);
-
-		const transactionInfo = this.props.categoryType ? (
-			<h2 className='transaction--totals'>
+		const transactionInfo = this.props.categoryType ?
+			(<h2 className='transaction--totals'>
 				{this.props.categoryType}:{' '}
 				<span className={amtColor}>${amount}</span>
-			</h2>
-		) : (
-			''
-		);
+			</h2>) :
+			'';
 
 		return (
 			<section className='transaction-container'>

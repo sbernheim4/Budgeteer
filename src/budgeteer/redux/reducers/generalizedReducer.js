@@ -2,11 +2,11 @@ export default function storeData(state, action, name) {
 
 	const { payload } = action;
 
-	const updatedState = {
+	const updatedValue = {
 		[name]: payload
 	};
 
-	const newState = Object.assign({}, state, updatedState);
+	const newState = Object.assign({}, state, updatedValue);
 
 	return newState;
 

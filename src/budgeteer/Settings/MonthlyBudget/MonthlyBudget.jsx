@@ -7,7 +7,9 @@ import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 import './monthlyBudget.scss';
 
 function MonthlyBudget() {
+
 	const [monthlyBudget, setMonthlyBudget] = useState('Loading...');
+
 	useEffect(() => {
 		const fetchData = async () => {
 			const budget = await getDefaultBudget();
@@ -22,8 +24,9 @@ function MonthlyBudget() {
 		color: 'green',
 		display: false
 	});
+
 	useEffect(() => {
-		// Remove the banner after some time
+
 		if (bannerOptions.display) {
 			setTimeout(() => {
 				setBannerOptions({
@@ -33,6 +36,7 @@ function MonthlyBudget() {
 				});
 			}, 5500);
 		}
+
 	});
 
 	function updateMonthlyBudget() {
