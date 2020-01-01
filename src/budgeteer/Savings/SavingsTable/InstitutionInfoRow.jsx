@@ -19,7 +19,7 @@ function InstitutionInfoRow(props) {
 
 	function getPercentage(numerator, denominator) {
 		const percentage = Math.round(numerator / denominator * 100, 2);
-        return percentage;
+		return percentage;
 	}
 
 	function getPieChart(percentage) {

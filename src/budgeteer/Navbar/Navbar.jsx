@@ -73,7 +73,7 @@ class Navbar extends Component {
 		console.log('LOCAL AND SESSION STORAGE CLEARED');
 	}
 
-    async logout() {
+	async logout() {
 
 		try {
 			await axios.get('/login/logout');

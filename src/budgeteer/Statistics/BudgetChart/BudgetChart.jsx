@@ -119,7 +119,7 @@ function MonthlyBudgetChart(props) {
 
 			<Input
 				display={props.displayInput}
-                updateMonthlyBudget={(e) => props.updateMonthlyBudget(e.target.value.trim())}
+				updateMonthlyBudget={(e) => props.updateMonthlyBudget(e.target.value.trim())}
 				monthlyBudget={props.monthlyBudget}
 			/>
 

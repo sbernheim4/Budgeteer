@@ -1,10 +1,8 @@
 /*eslint no-undefined: 0*/
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
 import { getDisplayNames, setDisplayNames } from './../../redux/actions/app';
-import { toTitleCase } from './../../helpers';
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
 import './accountNames.scss';
@@ -42,9 +40,9 @@ class AccountNames extends Component {
 
 	getDisplayName(account_id) {
 
-        const accountName = this.props.displayNames.get(account_id) || '';
+		const accountName = this.props.displayNames.get(account_id) || '';
 
-        return toTitleCase(accountName);
+		return accountName;
 
 	}
 
@@ -67,7 +65,7 @@ class AccountNames extends Component {
 
 		});
 
-        this.props.setDisplayNames(map);
+		this.props.setDisplayNames(map);
 		this.displayMessage();
 
 	}
@@ -143,7 +141,7 @@ const mapDispatchToProps = (dispatch) => {
 
 	return {
 		getDisplayNames: () => dispatch(getDisplayNames()),
-        setDisplayNames: (newDisplayNames) => dispatch(setDisplayNames(newDisplayNames))
+		setDisplayNames: (newDisplayNames) => dispatch(setDisplayNames(newDisplayNames))
 	};
 
 };
