@@ -3,7 +3,7 @@ import axios from 'axios';
 export const AppActions = {
 	STORE_TRANSACTIONS: 'transactions',
 	STORE_ACCOUNTS: 'accounts',
-	STORE_DISPLAY_NAMES: 'displayNames'
+	STORE_DISPLAY_NAMES: 'displayNames',
 };
 
 export function storeTransactionsInRedux(transactions) {
@@ -47,9 +47,38 @@ export function getDisplayNames() {
 
 		return dispatch({
 			type: AppActions.STORE_DISPLAY_NAMES,
-			payload: displayNames
+			payload: [...displayNamesMap]
 		});
 
 	};
+
+}
+
+export function setDisplayNames(newDisplayNames) {
+
+	return async (dispatch) => {
+
+		try {
+
+			await axios.post('/user-info/display-names', {
+				data: {
+					map: JSON.stringify([...newDisplayNames])
+				}
+			});
+
+		} catch (error) {
+
+			throw error;
+
+		}
+
+		const obj = {
+			type: AppActions.STORE_DISPLAY_NAMES,
+			payload: [...newDisplayNames]
+		};
+
+		return dispatch(obj);
+
+	}
 
 }

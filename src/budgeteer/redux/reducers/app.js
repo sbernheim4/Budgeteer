@@ -9,4 +9,5 @@ export default function appReducer(state, action) {
 	} else {
 		return state ? state : null;
 	}
+
 }

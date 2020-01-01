@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-import { getDisplayNames } from './../../redux/actions/app';
+import { getDisplayNames, setDisplayNames } from './../../redux/actions/app';
 import { toTitleCase } from './../../helpers';
 import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 
@@ -51,9 +51,7 @@ class AccountNames extends Component {
 	saveUpdateDisplayNames() {
 
 		const displayNameElements = document.querySelectorAll('.account-names--input');
-		const map = this.props.displayNames !== undefined ?
-				this.props.displayNames :
-				new Map();
+		const map = this.props.displayNames;
 
 		displayNameElements.forEach((element) => {
 
@@ -69,13 +67,9 @@ class AccountNames extends Component {
 
 		});
 
-		axios.post('/user-info/display-names', {
-			data: {
-				map: JSON.stringify([...map])
-			}
-		});
-
+        this.props.setDisplayNames(map);
 		this.displayMessage();
+
 	}
 
 	displayMessage() {
@@ -148,7 +142,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 
 	return {
-		getDisplayNames: () => dispatch(getDisplayNames())
+		getDisplayNames: () => dispatch(getDisplayNames()),
+        setDisplayNames: (newDisplayNames) => dispatch(setDisplayNames(newDisplayNames))
 	};
 
 };
