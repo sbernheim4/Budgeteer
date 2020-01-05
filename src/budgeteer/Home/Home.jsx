@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import BudgetChart from './../Statistics/BudgetChart/BudgetChart.jsx';
 import TransactionContainer from '../AccountsContainer/TransactionContainer/TransactionContainer.jsx';
 
+import { convertTransactionDate } from '../helpers.js';
+
 import './home.scss';
 
 function Home(props) {
@@ -39,10 +41,15 @@ function Home(props) {
 
 const mapStateToProps = (state) => {
 
-	const recentTransactions = state.app.transactions.slice(0, 3);
+	const recentTransactions =
+		state.app.transactions
+		.sort((a, b) => {
+			const dateA = convertTransactionDate(a.date);
+			const dateB = convertTransactionDate(b.date);
+			return dateB - dateA;
+		}).slice(0, 3);
 
 	return {
-		transactions: state.app.transactions,
 		recentTransactions,
 		accounts: state.app.accounts || []
 	};
