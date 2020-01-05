@@ -48,9 +48,13 @@ app.use(sessionInfo);
 let options = {};
 
 if (process.env.NODE_ENV !== 'production') {
+
+	const keyPath = path.join(__dirname, './encryption/budgeteer-prod.com-key.pem');
+	const certPath = path.join(__dirname, './encryption/budgeteer-prod.com.pem');
+
 	options = {
-		key: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com-key.pem')),
-		cert: fs.readFileSync(path.join(__dirname, './encryption/budgeteer-prod.com.pem'))
+		key: fs.readFileSync(keyPath),
+		cert: fs.readFileSync(certPath)
 	};
 }
 
@@ -112,7 +116,7 @@ app.get('*', (_req, res) => {
 function checkAuthentication(req: Request, res: Response, next: () => void) {
 	// Check if the user variable on the session is set. If not redirect to /login
 	// otherwise carry on (https://www.youtube.com/watch?v=2X_2IdybTV0)
-	if (req.session.user !== undefined) {
+	if (req.session.user !== undefined) { // eslint-disable-line no-undefined
 		// User is authenticated :)
 		next();
 	} else {
