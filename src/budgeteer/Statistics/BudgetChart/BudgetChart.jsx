@@ -54,7 +54,7 @@ function MonthlyBudgetChart(props) {
 
 	useEffect(() => {
 
-		const totalSpent = props.transactions.reduce((acc, curr) => acc + (curr.amount * -1), 0);
+		const totalSpent = props.transactions.reduce((acc, curr) => acc + curr.amount, 0);
 		const rechartsData = updateMonthlyBudgetChart(totalSpent, props.monthlyBudget);
 
 		setRechartsData(rechartsData);
@@ -156,7 +156,7 @@ const mapStateToProps = (state) => {
 	const today = new Date();
 	const transactions = state.app.transactions.filter((transaction) => {
 		const transactionDate = convertTransactionDate(transaction.date);
-		return isSameMonth(transactionDate, today) && isSameYear(transactionDate, today);
+		return isSameMonth(transactionDate, today) && isSameYear(transactionDate, today) && transaction.amount > 0;
 	});
 
 	return {
