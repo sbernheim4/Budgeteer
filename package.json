@@ -87,17 +87,12 @@
     "node": "8.9.3"
   },
   "scripts": {
-    "start": "node server/index.js",
-    "wds": "./node_modules/.bin/webpack-dev-server --open --hot",
-    "server": "concurrently \"npm run tsc\" \"nodemon --watch server server/index.js\"",
-    "tsc": "tsc --watch --p ./tsconfig.json",
-    "build:dev": "./node_modules/.bin/webpack",
-    "build:prod": "./node_modules/.bin/webpack --mode=production",
-    "build:watch": "./node_modules/.bin/webpack -w",
-    "lint": "npm run lintServer; npm run lintCSS",
-    "lintCSS": "node_modules/.bin/stylelint --fix src/**/*",
-    "lintServer": "node_modules/.bin/eslint --fix server/**.ts",
-    "postinstall": "tsc && npm run build:prod",
+    "start": "node server-dist/index.js",
+    "start:dev": "nodemon --watch server-dist server-dist/index.js",
+    "build": "tsc && ./node_modules/.bin/webpack --mode=production",
+    "build:dev": "cp -r server/encryption/ server-dist/encryption/ tsc && ./node_modules/.bin/webpack",
+    "build:watch": "concurrently \"tsc -w\" \"./node_modules/.bin/webpack -w\"",
+    "postinstall": "npm run build",
     "cert": "cd ./server/encryption/ && mkcert --install budgeteer-prod.com"
   }
 }
