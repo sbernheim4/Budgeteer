@@ -105,8 +105,13 @@ class Savings extends Component {
 
 		this.props.getDisplayNames();
 
-		const linkedBanks = await this.getInstitutionIds();
-		const savingsData = await this.getSavingsData();
+		const [
+			linkedBanks,
+			savingsData
+		] = await Promise.all([
+			this.getInstitutionIds(),
+			this.getSavingsData()
+		]);
 
 		const { savings, accountBalances, loading } = savingsData;
 

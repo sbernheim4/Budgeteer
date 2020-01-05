@@ -1,7 +1,6 @@
 /* eslint no-undefined: "off" */
 
 import React, { Component } from 'react';
-import BannerMessage from '../../BannerMessage/BannerMessage.jsx';
 import axios from 'axios';
 
 import './linkedAccounts.scss';
