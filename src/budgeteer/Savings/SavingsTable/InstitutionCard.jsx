@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import InstitutionInfoRow from './InstitutionInfoRow.jsx';
 import SavingsChart from './../SavingsChart/SavingsChart.jsx';
 
+import './institutionCard.scss';
+
 export default function InstitutionCard(props) {
 
 	const {
@@ -50,9 +52,14 @@ export default function InstitutionCard(props) {
 
 	const institutionInfoValues = Object.values(institutionInfo);
 	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
-	const institutionName = institutionNames[institutionId];
-	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2);
+	const institutionName = institutionNames[institutionId] || 'loading';
+    const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
+		'...' :
+		Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
+	const instituitionClassName = institutionName === 'loading' ?
+		'institution-card--info--name institution-card--info--name--loading' :
+		'institution-card--info--name';
 
 	function handleClick(e) {
 		const card = e.target.closest(".institution-card").querySelector(".savings-chart");
@@ -67,14 +74,14 @@ export default function InstitutionCard(props) {
 			>
 				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
 					<span
-						className='institution-card--info--name'
+						className={instituitionClassName}
 						ref={institutionNameRef}
 					>
 					{institutionName}
 					</span>
 
 					<span
-						className='percent'
+						className='institution-card--info--percent'
 					> - {percent}%
 					</span>
 
