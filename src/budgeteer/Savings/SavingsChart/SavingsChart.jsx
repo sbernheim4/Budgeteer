@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
-import axios from 'axios';
-import { isSameDay } from 'date-fns';
 
 import { getSavingsChartData } from './../../redux/actions/savings';
 
@@ -12,8 +10,6 @@ import './savingsChart.scss';
 
 function SavingsChart(props) {
 
-	const chartData = useSelector(state => state.savings[props.institutionId]) || [];
-	const [rechartsData, setRechartsData] = useState(chartData);
 	const [minMax, setMinMax] = useState({min: 0, max: 10});
 	const [chartColor, setChartColor] = useState('#79c6a3');
 
@@ -23,57 +19,12 @@ function SavingsChart(props) {
 
 		dispatch(getSavingsChartData(props.institutionId));
 
-		const bounds = getChartBounds(rechartsData);
+		const bounds = getChartBounds(props.rechartsData);
 
 		setMinMax(bounds);
-		setRechartsData(rechartsData);
-		determineChartColor(rechartsData);
+		determineChartColor(props.rechartsData);
 
-		async function uploadNewDataPoints() {
-			await conditionallyUploadNewData(chartData);
-		}
-
-		uploadNewDataPoints();
-
-	}, [props.institutionId]);
-
-	async function conditionallyUploadNewData(chartData) {
-
-		if (chartData.length === 0) {
-			return await uploadData();
-		}
-
-		const today = new Date();
-		const mostRecentDataPoint = chartData[chartData.length - 1].name;
-		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
-
-		if (!isSameDay(mostRecentDataPointDate, today) && props.bankInfo ) {
-			return await uploadData();
-		}
-
-	}
-
-	async function uploadData() {
-
-		const serializedBankInfo = JSON.stringify(props.bankInfo);
-
-		try {
-
-			await axios({
-				method: 'post',
-				url: '/savings/data',
-				data: serializedBankInfo,
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			});
-
-		} catch (error) {
-
-			console.log(error);
-
-		}
-	}
+	}, [props.institutionId, props.rechartsData]);
 
 	function getChartBounds(data) {
 
@@ -101,18 +52,20 @@ function SavingsChart(props) {
 
 	function determineChartColor(chartData) {
 
-		const balances = chartData.map(dataPoint => dataPoint.Balance);
-		const positiveValues = balances.filter(balance => balance >= 0);
+		const positiveValues = chartData
+			.map(dataPoint => dataPoint.Balance)
+			.filter(balance => balance >= 0);
 
 		if (positiveValues.length === 0) {
-			setChartColor('#c67d79');
+			// TODO: This is currently always true and red is used for all charts
+			//setChartColor('#c67d79');
 		}
 
 	}
 
 	function determineInterval() {
 
-		const { length } = rechartsData;
+		const { length } = props.rechartsData;
 
 		if (length <= 4) {
 			return 1;
@@ -135,7 +88,7 @@ function SavingsChart(props) {
 				height='100%'
 			>
 				<AreaChart
-					data={rechartsData}
+					data={props.rechartsData}
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
 					<YAxis
@@ -174,8 +127,11 @@ const mapStateToProps = (state, ownProps) => {
 		return institution.institutionId === ownProps.institutionId
 	});
 
+	const rechartsData = state.savings[ownProps.institutionId] || [];
+
 	return {
-		bankInfo: institutionInfo
+		bankInfo: institutionInfo,
+		rechartsData
 	}
 
 };
