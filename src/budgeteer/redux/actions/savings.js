@@ -3,7 +3,7 @@ import { isSameDay } from 'date-fns';
 
 export const SavingsActions = {
 	UPDATE_BANK_INFO: 'bankInfo',
-	STORE_SAVINGS_CHART_DATA: 'chartData'
+	STORE_SAVINGS_CHART_DATA: 'STORE_SAVINGS_CHART_DATA'
 };
 
 export const updateBankInfo = (newBankInfo) => {
