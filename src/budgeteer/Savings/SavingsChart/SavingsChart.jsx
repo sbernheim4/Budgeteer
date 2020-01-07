@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 import axios from 'axios';
 import { isSameDay } from 'date-fns';
+
+import { getSavingsChartData } from './../../redux/actions/savings';
 
 import { dollarify, formatAmount } from './../../helpers';
 
@@ -10,64 +12,30 @@ import './savingsChart.scss';
 
 function SavingsChart(props) {
 
-	const [rechartsData, setRechartsData] = useState([]);
+	const chartData = useSelector(state => state.savings[props.institutionId]) || [];
+	const [rechartsData, setRechartsData] = useState(chartData);
 	const [minMax, setMinMax] = useState({min: 0, max: 10});
 	const [chartColor, setChartColor] = useState('#79c6a3');
 
+	const dispatch = useDispatch();
+
 	useEffect(() => {
 
-		async function orchestrate() {
+		dispatch(getSavingsChartData(props.institutionId));
 
-			const data = await getData();
-			const chartData = generateChartDataPoints(data);
-			const bounds = getChartBounds(chartData);
+		const bounds = getChartBounds(rechartsData);
 
-			setMinMax(bounds);
-			setRechartsData(chartData);
-			determineChartColor(chartData);
+		setMinMax(bounds);
+		setRechartsData(rechartsData);
+		determineChartColor(rechartsData);
 
+		async function uploadNewDataPoints() {
 			await conditionallyUploadNewData(chartData);
-
 		}
 
-		orchestrate();
+		uploadNewDataPoints();
 
 	}, [props.institutionId]);
-
-	async function getData () {
-
-		const historicalDataRequest = await axios({
-			method: 'get',
-			url: `/savings/data?id=${props.institutionId}`
-		});
-
-		return historicalDataRequest.data;
-
-	}
-
-	function generateChartDataPoints(data) {
-
-		const chartData = data.map(dataPoint => {
-
-			const { date: dateString, institutionalBalance } = dataPoint;
-
-			const date = new Date(dateString);
-			const displayDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-
-			return {
-				name: displayDate,
-				Balance: institutionalBalance
-			}
-
-		});
-
-		const sortedChartData = chartData.sort((a, b) => {
-			return new Date(a.name) - new Date(b.name);
-		});
-
-		return sortedChartData;
-
-	}
 
 	async function conditionallyUploadNewData(chartData) {
 

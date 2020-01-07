@@ -16,7 +16,8 @@ const initialState = {
 		accounts: []
 	},
 	savings: {
-		bankInfo: []
+		bankInfo: [],
+		chartData: []
 	},
 	statistics: {
 		monthlyBudget: 0
