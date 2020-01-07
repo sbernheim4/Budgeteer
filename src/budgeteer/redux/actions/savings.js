@@ -25,7 +25,7 @@ export const getSavingsChartData = (institutionId) => {
 			return;
 		}
 
-		const historicalSavingsData = downloadHistoricalData(institutionId);
+		const historicalSavingsData = await downloadHistoricalData(institutionId);
 
 		dispatch({
 			type: SavingsActions.STORE_SAVINGS_CHART_DATA,
