@@ -270,7 +270,7 @@ async function resolvePlaidBalance(accessTokensArray: string[]) {
 	try {
 		return await Promise.all(allDataPromises);
 	} catch (err) {
-		return new Error('BALANCE Error with token: ' + accessTokensArray[i]);
+		return new Error('BALANCE Error with token: ' + err);
 	}
 
 }

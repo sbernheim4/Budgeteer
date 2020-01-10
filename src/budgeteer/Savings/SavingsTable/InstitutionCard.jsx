@@ -22,7 +22,7 @@ export default function InstitutionCard(props) {
 		const width = institutionNameRef.current ? institutionNameRef.current.offsetWidth : 0;
 		setWidth(width);
 
-	}, [institutionNameRef.current]);
+	}, [props.institutionNames]);
 
 	function generateInstitutionInfoRows(institutionInfo) {
 
