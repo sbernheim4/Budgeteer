@@ -1,14 +1,13 @@
-import { IBankInfo, IInstitutionSavingsInfo } from './../types';
+import { IBankInfo, IInstitutionSavingsPoint, IInstitutionSavingsInfo } from './../types';
 
 /**
  * @description Converts IBankInfo[] to an of IInstitutionSavingsInfo[]
- * @param {IBankInfo[]} data The array to be converted
- * @returns {IInstitutionSavingsInfo[]} The converted arrray
+ * @param {IBankInfo} data The new data point to be converted
+ * @returns {IInstitutionSavingsInfo} The normalized data
  */
 export function formatNewDataPoints(data: IBankInfo): IInstitutionSavingsInfo {
 
 	const dateString = new Date().toString();
-
 
 	const { institutionId, institutionBalance } = data;
 
@@ -26,30 +25,29 @@ export function formatNewDataPoints(data: IBankInfo): IInstitutionSavingsInfo {
 
 /**
  * @description Merges the existing data points with the new data points
- * @param {IInstitutionSavingsInfo[]} newDataPoints An array of new data points to be merged
  * @param {IInstitutionSavingsInfo[]} oldDataPoints An arrray containing the existing data points
+ * @param {IInstitutionSavingsInfo[]} newDataPoints An array of new data points to be merged
  * @returns {IInstitutionSavingsInfo[]} The merged array of newDataPoints and savings
  */
-export function createNewInstitutionData(newDataPoints: IInstitutionSavingsInfo, oldDataPoints: IInstitutionSavingsInfo[]): IInstitutionSavingsInfo {
+export function createNewInstitutionData(oldDataPoints: IInstitutionSavingsInfo, newDataPoints: IInstitutionSavingsInfo): IInstitutionSavingsInfo {
 
 	const { institutionId, savingsData } = newDataPoints;
 
-	const currInstitution = oldDataPoints.find(institution => institution.institutionId === institutionId);
-	let newDataPointsArray = [];
+	let newDataPointsArray: IInstitutionSavingsPoint[] = [];
 
 	try {
 
-		const oldDataPoints = currInstitution.savingsData;
+		const oldInstitutionSavingsData = oldDataPoints.savingsData;
 
-		oldDataPoints.sort((a, b) => {
+		oldInstitutionSavingsData.sort((a, b) => {
 			return new Date(a.date).getTime() - new Date(b.date).getTime();
 		});
 
-		newDataPointsArray = [...oldDataPoints, ...savingsData];
+		newDataPointsArray = [...oldInstitutionSavingsData, ...savingsData];
 
 	} catch (error) {
 
-		newDataPointsArray = [...savingsData];
+		newDataPointsArray = savingsData;
 
 	}
 

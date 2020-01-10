@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 import { formatNewDataPoints, createNewInstitutionData } from './helpers';
 
-import { IUser, IInstitutionSavingsPoint, IInstitutionSavingsInfo } from './../types';
+import { IUser, IInstitutionSavingsPoint, IInstitutionSavingsInfo, IBankInfo } from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -59,19 +59,20 @@ savingsRouter.post('/data', async (req, res) => {
 
 	try {
 
-		const data = req.body;
+		const data: IBankInfo = req.body;
 		const userId = req.session.user._id;
 		const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
-		const oldInstitutionSavingsInfo = userInfo.savings;
+		const savingsArray = userInfo.savings;
+		const oldInstitutionSavingsInfo = savingsArray.find(institutionSavingsInfo => institutionSavingsInfo.institutionId === data.institutionId);
 
 		const newInstitutionSavingsInfo = formatNewDataPoints(data);
-		const updatedInstitutionData = createNewInstitutionData(newInstitutionSavingsInfo, oldInstitutionSavingsInfo);
+		const updatedInstitutionData = createNewInstitutionData(oldInstitutionSavingsInfo, newInstitutionSavingsInfo);
 
 		let index: number;
 		let found = false;
 
-		for (let i = 0; i < oldInstitutionSavingsInfo.length; i++) {
-			if (oldInstitutionSavingsInfo[i].institutionId === req.body.institutionId) {
+		for (let i = 0; i < savingsArray.length; i++) {
+			if (savingsArray[i].institutionId === req.body.institutionId) {
 				index = i;
 				found = true;
 				break;
@@ -81,9 +82,9 @@ savingsRouter.post('/data', async (req, res) => {
 		if (found) {
 
 			const updatedSavings = [
-				...oldInstitutionSavingsInfo.slice(0, index),
+				...savingsArray.slice(0, index),
 				updatedInstitutionData,
-				...oldInstitutionSavingsInfo.slice(index + 1)
+				...savingsArray.slice(index + 1)
 			];
 
 			await User.updateOne({ _id: userId }, { savings: updatedSavings });

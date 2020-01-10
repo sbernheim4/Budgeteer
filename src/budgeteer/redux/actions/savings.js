@@ -25,7 +25,7 @@ export const getSavingsChartData = (institutionId) => {
 			return;
 		}
 
-		const historicalSavingsData = await downloadHistoricalData(institutionId);
+		const historicalSavingsData = await downloadHistoricalData();
 
 		dispatch({
 			type: SavingsActions.STORE_SAVINGS_CHART_DATA,
@@ -34,13 +34,15 @@ export const getSavingsChartData = (institutionId) => {
 			}
 		});
 
-		const bankInfo = state.savings.bankInfo;
+		const institutionInfo = state.savings.bankInfo.find(institutionInfo => {
+			return institutionInfo.institutionId === institutionId;
+		});
 
-		conditionallyUploadNewData(historicalSavingsData, bankInfo);
+		await conditionallyUploadNewData(historicalSavingsData, institutionInfo);
 
 	};
 
-	async function downloadHistoricalData(institutionId) {
+	async function downloadHistoricalData() {
 
 		const historicalDataRequest = await axios({
 			method: 'get',
@@ -49,7 +51,7 @@ export const getSavingsChartData = (institutionId) => {
 
 		const { data } = historicalDataRequest;
 
-		const sortedChartData = data.map(dataPoint => {
+		const chartData = data.map(dataPoint => {
 
 			const { date: dateString, institutionalBalance } = dataPoint;
 
@@ -67,29 +69,29 @@ export const getSavingsChartData = (institutionId) => {
 			return new Date(a.name) - new Date(b.name);
 		});
 
-		return sortedChartData;
+		return chartData;
 
 	}
 
-	async function conditionallyUploadNewData(historicalSavingsData, bankInfo) {
+	async function conditionallyUploadNewData(historicalSavingsData, newSavingsData) {
 
 		if (historicalSavingsData.length === 0) {
-			return await uploadData(bankInfo);
+			return await uploadData(newSavingsData);
 		}
 
 		const today = new Date();
 		const mostRecentDataPoint = historicalSavingsData[historicalSavingsData.length - 1].name;
 		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
 
-		if (!isSameDay(mostRecentDataPointDate, today) && bankInfo ) {
-			return await uploadData(bankInfo);
+		if (!isSameDay(mostRecentDataPointDate, today) && newSavingsData ) {
+			return await uploadData(newSavingsData);
 		}
 
 	}
 
-	async function uploadData(bankInfo) {
+	async function uploadData(newDataPoint) {
 
-		const serializedBankInfo = JSON.stringify(bankInfo);
+		const serializedBankInfo = JSON.stringify(newDataPoint);
 
 		try {
 

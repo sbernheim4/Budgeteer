@@ -19,12 +19,16 @@ function SavingsChart(props) {
 
 		dispatch(getSavingsChartData(props.institutionId));
 
+	}, [props.institutionId]);
+
+	useEffect(() => {
+
 		const bounds = getChartBounds(props.rechartsData);
 
 		setMinMax(bounds);
 		determineChartColor(props.rechartsData);
 
-	}, [props.institutionId, props.rechartsData]);
+	}, [props.rechartsData])
 
 	function getChartBounds(data) {
 

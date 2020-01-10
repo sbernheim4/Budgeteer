@@ -259,16 +259,20 @@ function collateInstitutionInfo(arrayOfAccounts) {
 }
 
 async function resolvePlaidBalance(accessTokensArray: string[]) {
-	let allData = [];
+
+	let allDataPromises = [];
+
 	for (let i = 0; i < accessTokensArray.length; i++) {
-		try {
-			const newData = await client.getBalance(accessTokensArray[i]);
-			allData.push(newData);
-		} catch (err) {
-			return new Error('BALANCE Error with token: ' + accessTokensArray[i]);
-		}
+		const newDataPromise = client.getBalance(accessTokensArray[i]);
+		allDataPromises.push(newDataPromise);
 	}
-	return allData;
+
+	try {
+		return await Promise.all(allDataPromises);
+	} catch (err) {
+		return new Error('BALANCE Error with token: ' + accessTokensArray[i]);
+	}
+
 }
 
 plaidRouter.get('/linked-accounts', async (req, res) => {
