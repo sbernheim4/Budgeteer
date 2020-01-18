@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import InstitutionCard from './InstitutionCard.jsx';
+import InstitutionCard from './InstitutionCard/InstitutionCard.jsx';
 
 import { dollarify } from '../../helpers.js';
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-import { dollarify } from '../../helpers.js';
+import { dollarify } from '../../helpers';
 
 function InstitutionInfoRow(props) {
 
@@ -10,8 +10,12 @@ function InstitutionInfoRow(props) {
 		acctId,
 		institutionInfo,
 		totalSavings,
-		displayNames
 	} = props
+
+	const displayNames = useSelector((state) => state.app.displayNames ?
+		new Map(state.app.displayNames) :
+		new Map()
+	);
 
 	function getDisplayName(acctId) {
 		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
@@ -74,17 +78,4 @@ function InstitutionInfoRow(props) {
 	);
 }
 
-const mapStateToProps = (state) => {
-
-	const map = state.app.displayNames ? new Map(state.app.displayNames) : new Map();
-
-	return {
-		displayNames: map
-	}
-};
-
-const mapDispatchToProps = () => {
-	return {}
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(InstitutionInfoRow);
+export default InstitutionInfoRow;
