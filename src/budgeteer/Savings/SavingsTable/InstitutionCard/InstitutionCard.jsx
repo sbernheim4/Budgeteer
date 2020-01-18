@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-
-import InstitutionInfoRow from './InstitutionInfoRow.jsx';
-import SavingsChart from './../SavingsChart/SavingsChart.jsx';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import InstitutionInfoRow from './../InstitutionInfoRow.jsx';
+import SavingsChart from './../../SavingsChart/SavingsChart.jsx';
+import { determineNewWidth } from './helpers';
 
 import './institutionCard.scss';
 
@@ -16,15 +16,16 @@ export default function InstitutionCard(props) {
 
 	const [width, setWidth] = useState(0);
 	const institutionNameRef = useRef(null);
+	const positionBankName = useCallback(() => determineNewWidth(institutionNameRef), [props.institutionNames]);
 
 	useEffect(() => {
 
-		const width = institutionNameRef.current ? institutionNameRef.current.offsetWidth : 0;
-		setWidth(width);
+		const newWidth = positionBankName(institutionNameRef);
+		setWidth(newWidth);
 
 	}, [props.institutionNames]);
 
-	function generateInstitutionInfoRows(institutionInfo) {
+	function generateInstitutionInfoRows(institutionInfo, totalSavings) {
 
 		const institutionInfoKeys = Object.keys(institutionInfo);
 
@@ -50,19 +51,21 @@ export default function InstitutionCard(props) {
 
 	}
 
+
 	const institutionInfoValues = Object.values(institutionInfo);
 	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
 	const institutionName = institutionNames[institutionId] || 'loading';
     const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
 		'...' :
 		Math.round(institutionBalanceTotal / totalSavings * 100, 2);
-	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo);
+	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo, totalSavings);
 	const instituitionClassName = institutionName === 'loading' ?
 		'institution-card--info--name institution-card--info--name--loading' :
 		'institution-card--info--name';
 
-	function handleClick(e) {
-		const card = e.target.closest(".institution-card").querySelector(".savings-chart");
+	function handleClick() {
+		const chart = institutionNameRef.current.closest('.institution-card');
+		const card = chart.querySelector(".savings-chart");
 		card.classList.toggle('savings-chart--show');
 	}
 
@@ -70,7 +73,7 @@ export default function InstitutionCard(props) {
 		<div className='institution-card'>
 
 			<div className='institution-card--info'
-				onClick={(e) => handleClick(e)}
+				onClick={handleClick}
 			>
 				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
 					<span
