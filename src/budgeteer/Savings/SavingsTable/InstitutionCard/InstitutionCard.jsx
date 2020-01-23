@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import axios from 'axios';
+
 import InstitutionInfoRow from './../InstitutionInfoRow.jsx';
 import SavingsChart from './../../SavingsChart/SavingsChart.jsx';
 import { determineNewWidth } from './helpers';
@@ -15,8 +17,29 @@ export default function InstitutionCard(props) {
 	} = props;
 
 	const [width, setWidth] = useState(0);
+	const [institutionSavings, setInstitutionSavings] = useState(0);
+	const [madeCall, setMadeCall] = useState(false);
+
 	const institutionNameRef = useRef(null);
 	const positionBankName = useCallback(() => determineNewWidth(institutionNameRef), [props.institutionNames]);
+
+	useEffect(() => {
+
+		async function getInstitutionData() {
+
+			if (madeCall && institutionId && institutionId.length && institutionId.length > 0) {
+
+				const institutionRequest = await axios.get(`/plaid-api/balance?institutionId=${institutionId}`);
+				const institutionData = institutionRequest.data;
+
+				setMadeCall(true);
+				setInstitutionSavings(institutionData);
+
+			}
+
+		}
+
+	}, [props.institutionId]);
 
 	useEffect(() => {
 
@@ -25,6 +48,7 @@ export default function InstitutionCard(props) {
 
 	}, [props.institutionNames]);
 
+	// TODO: totalSavings should really be state var institutionSavings
 	function generateInstitutionInfoRows(institutionInfo, totalSavings) {
 
 		const institutionInfoKeys = Object.keys(institutionInfo);
@@ -58,6 +82,7 @@ export default function InstitutionCard(props) {
     const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
 		'...' :
 		Math.round(institutionBalanceTotal / totalSavings * 100, 2);
+	// TODO: Pass in the state variable institutionSavings instead of total savings
 	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo, totalSavings);
 	const instituitionClassName = institutionName === 'loading' ?
 		'institution-card--info--name institution-card--info--name--loading' :
