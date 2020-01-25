@@ -11,17 +11,18 @@
 }
 
 .institution-card {
+	padding: 20px;
 
 	&--info {
 		position: relative;
-		margin: 30px auto 0 auto;
+		margin: 0 auto;
 		max-width: 600px;
 		width: 80%;
 		padding: 20px 30px;
 		background: white;
 		border-radius: 7px;
 		cursor: default;
-		box-shadow: 0px 0px 30px 0px darken($blue, 20%);
+		box-shadow: 0px 0px 20px 0px darken($blue, 20%);
 		border-collapse: collapse; // needed to show border on the tr element
 		z-index: 5;
 
