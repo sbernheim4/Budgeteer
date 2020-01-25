@@ -31,7 +31,7 @@ class Transaction extends Component {
 
 		super(props);
 
-		this.getAccountNameFromID = this.getAccountNameFromID.bind(this);
+		this.getAccountNameFromId = this.getAccountNameFromId.bind(this);
 
 	}
 
@@ -39,22 +39,25 @@ class Transaction extends Component {
 		this.props.getDisplayNames();
 	}
 
-	getAccountNameFromID(accountID) {
-		try {
-			const defaultName = this.props.displayNames.get(accountID);
+	getAccountNameFromId(accountID) {
 
-			return defaultName;
+		try {
+			const accountNickName = this.props.displayNames.get(accountID);
+
+			return accountNickName;
+
 		} catch (err) {
+
 			for (let acct of this.props.accounts) {
 				if (acct.account_id === accountID) {
 					return acct.name;
 				}
 			}
+
 		}
 	}
 
 	getCategoryIcon(categoryName) {
-		// Determine what icon to show on the left side
 
 		let categoryIcon;
 
@@ -103,17 +106,18 @@ class Transaction extends Component {
 		}
 
 		return categoryIcon;
+
 	}
 
 	render() {
 		const transaction = this.props.transaction;
-
 		const { date, name, amount, category } = transaction;
 
 		const normalizedDate = formatDate(date);
 		const normalizedName = toTitleCase(name);
 		const normalizedCategory = category && category !== null ? category[0] : 'Null';
 		const amtColor = amount > 0 ? 'amount--amt' : 'amount--amt__green';
+        const accountName = this.getAccountNameFromId(transaction.account_id) + ' ';
 
 		let normalizedAmount = formatAmount(amount * -1);
 		normalizedAmount = '$' + numberWithCommas(normalizedAmount);
@@ -126,7 +130,7 @@ class Transaction extends Component {
 					<div className='name-info'>
 						<p className='name-info--name'>{normalizedName}</p>
 						<p className='name-info--category'>
-							{this.getAccountNameFromID(transaction.account_id)}{' '}
+							{accountName}
 							<span>{transaction.pending === true ? '- Pending' : ''}</span>
 						</p>
 					</div>

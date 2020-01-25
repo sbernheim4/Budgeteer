@@ -58,7 +58,7 @@ export const getSavingsChartData = (institutionId) => {
 			const date = new Date(dateString);
 			const displayDate = date.getMonth() + 1 +
 				"/" + date.getDate() +
-				"/" + date.getFullYear();
+				"/" + `'${date.getFullYear()}`.slice(0,3);
 
 			return {
 				name: displayDate,

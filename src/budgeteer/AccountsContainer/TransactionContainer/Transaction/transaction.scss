@@ -5,11 +5,10 @@ $default-transaction-icon-color: #484848;
 $name-font-size: 20px;
 
 .transaction {
-	margin-bottom: 10px;
 	max-width: 700px;
 	width: 45%;
 	cursor: pointer;
-	transition: background-color .3s ease;
+	transition: background-color .15s ease;
 	border-left: 2px solid rgb(19, 100, 134);
 
 	@media all and (max-width: 600px) {
@@ -28,6 +27,13 @@ $name-font-size: 20px;
 	&:hover {
 		background-color: darken($background-color, 4%);
 
+		.name-info--category {
+			opacity: 1;
+		}
+
+		.amount--date {
+			opacity: 1;
+		}
 	}
 
 	&__inner-container {
@@ -72,16 +78,17 @@ $name-font-size: 20px;
 			}
 
 			&--category {
+				opacity: 0;
 				width: 100%;
-				font-size: calc(#{$name-font-size} - 6px);
+				font-size: calc(#{$name-font-size} - 8px);
 				color: $default-font-color;
+				transition: opacity .15s ease-in;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				overflow: hidden;
 
 				span {
 					color: $red;
-
 				}
 			}
 		}
@@ -111,6 +118,8 @@ $name-font-size: 20px;
 			&--date {
 				font-size: calc(#{$name-font-size} - 8px);
 				color: $default-font-color;
+				transition: .15s ease-in;
+				opacity: 0;
 				align-self: flex-end;
 
 				@media all and (max-width: 365px) {
