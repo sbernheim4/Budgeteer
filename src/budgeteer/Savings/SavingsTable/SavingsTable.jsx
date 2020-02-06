@@ -24,7 +24,6 @@ function SavingsTable(props) {
 		savings,
 		accountBalances,
 		institutionNames,
-		storeNewChartData
 	} = props;
 
 	function generateInstitutionCards(accountBalances) {
@@ -36,7 +35,6 @@ function SavingsTable(props) {
 				institutionInfo={institution.institutionBalanceObject}
 				institutionNames={institutionNames}
 				totalSavings={savings}
-				storeNewChartData={storeNewChartData}
 			/>
 		});
 

@@ -84,23 +84,6 @@ class Savings extends Component {
 
 	}
 
-	async storeNewChartData() {
-
-		if (!this.bankInfo) return;
-
-		const serializedBankInfo = JSON.stringify(this.bankInfo);
-
-		await axios({
-			method: 'post',
-			url: '/savings/data',
-			data: serializedBankInfo,
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-
-	}
-
 	async componentDidMount() {
 
 		this.props.getDisplayNames();
