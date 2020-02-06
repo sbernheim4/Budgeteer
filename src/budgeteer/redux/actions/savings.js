@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { isSameDay } from 'date-fns';
+import { isSameDay, isAfter } from 'date-fns';
 
 export const SavingsActions = {
 	UPDATE_BANK_INFO: 'bankInfo',
@@ -81,7 +81,18 @@ export const getSavingsChartData = (institutionId) => {
 		}
 
 		const today = new Date();
-		const mostRecentDataPoint = historicalSavingsData[historicalSavingsData.length - 1].name;
+		let mostRecentDataPoint = historicalSavingsData[0];
+
+		for (let i = 0; 1 < historicalSavingsData.length; i++) {
+
+			const currentVal = historicalSavingsData[i];
+
+			if (isAfter(currentVal.date, mostRecentDataPoint.date)) {
+				currentVal = mostRecentDataPoint;
+			}
+
+		}
+
 		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
 
 		if (!isSameDay(mostRecentDataPointDate, today) && newSavingsData ) {
