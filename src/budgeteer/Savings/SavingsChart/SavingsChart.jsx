@@ -7,13 +7,37 @@ import { getSavingsChartData } from './../../redux/actions/savings';
 import { dollarify, formatAmount } from './../../helpers';
 
 import './savingsChart.scss';
+import { subYears } from 'date-fns/fp';
+import {isAfter, isBefore, isWithinInterval} from 'date-fns';
 
 function SavingsChart(props) {
 
+    const today = new Date();
+    const minusOneYear = subYears(1);
+    const oneYearAgo = minusOneYear(today);
+
+	const [displayableChartData, setDisplayableChartData] = useState([]);
+    const [startDate, setStartDate] = useState(oneYearAgo);
+    const [endDate, setEndDate] = useState(today);
 	const [minMax, setMinMax] = useState({min: 0, max: 10});
 	const [chartColor, setChartColor] = useState('#79c6a3');
 
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+
+		const interval = {
+			start: startDate,
+			end: endDate
+		};
+
+		const updatedDataToDisplay = props.rechartsData.filter(curr => {
+			return isWithinInterval(curr.date, interval)
+		});
+
+		setDisplayableChartData(updatedDataToDisplay);
+
+	}, [startDate, endDate])
 
 	useEffect(() => {
 
@@ -23,14 +47,15 @@ function SavingsChart(props) {
 
 	useEffect(() => {
 
-		const bounds = getChartBounds(props.rechartsData);
+		const bounds = getChartRange(props.rechartsData);
 
 		setMinMax(bounds);
 		determineChartColor(props.rechartsData);
+		setDisplayableChartData(props.rechartsData)
 
 	}, [props.rechartsData])
 
-	function getChartBounds(data) {
+	function getChartRange(data) {
 
 		const multiplier = .03;
 		const normalizer = 100;
@@ -51,6 +76,37 @@ function SavingsChart(props) {
 			min: normalizedMin,
 			max: normalizedMax
 		}
+
+	}
+
+	// This is the function handler when changing the bounds of the chart
+	function getChartDomain(e) {
+		console.log('e:', e);
+
+		//	const newValue = e.target.value; // NOTE: This must be a date string or convertible to a date object
+		//	const updatedDateValue = new Date(newValue);
+		//	const type = e.target.dataset['type']; // include in controls date-type='FROM' or data-type='TO';
+		//
+		//	if (type === 'FROM') {
+		//
+		//		if (isBefore(updatedDateValue, endDate)) {
+		//			setStartDate(updatedDateValue);
+		//		} else {
+		//			setStartDate(endDate);
+		//			setEndDate(updatedDateValue);
+		//		}
+		//
+		//	} else if (type = 'TO') {
+		//
+		//		if (isAfter(updatedDateValue, endDate)) {
+		//			setEndDate(updatedDateValue);
+		//		} else {
+		//			setEndDate(startDate);
+		//			setStartDate(updatedDateValue);
+		//		}
+		//
+		//	}
+		//
 
 	}
 
@@ -92,7 +148,7 @@ function SavingsChart(props) {
 				height='100%'
 			>
 				<AreaChart
-					data={props.rechartsData}
+					data={displayableChartData}
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
 					<YAxis
@@ -121,6 +177,15 @@ function SavingsChart(props) {
 					/>
 				</AreaChart>
 			</ResponsiveContainer>
+
+				{ /* TODO: Use a react component from npm here that supports dual input*/ }
+			<input
+				draggable="true"
+				onChange={getChartDomain}
+				type='range'
+				min='5'
+				max='10'
+			/>
 		</section>
 	);
 }
