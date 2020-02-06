@@ -35,7 +35,7 @@ function SavingsChart(props) {
 		const multiplier = .03;
 		const normalizer = 100;
 
-		const balances = data.map(dataPoint => dataPoint.Balance);
+		const balances = data.map(dataPoint => dataPoint.balance);
 
 		const min = Math.min(...balances);
 		const max = Math.max(...balances);
@@ -57,7 +57,7 @@ function SavingsChart(props) {
 	function determineChartColor(chartData) {
 
 		const positiveValues = chartData
-			.map(dataPoint => dataPoint.Balance)
+			.map(dataPoint => dataPoint.balance)
 			.filter(balance => balance >= 0);
 
 		if (positiveValues.length === 0) {
@@ -114,7 +114,7 @@ function SavingsChart(props) {
 
 					<Area
 						type='monotone'
-						dataKey='Balance'
+						dataKey='balance'
 						stroke={chartColor}
 						fill={chartColor}
 						strokeWidth={4}
@@ -140,11 +140,7 @@ const mapStateToProps = (state, ownProps) => {
 
 };
 
-const mapDispatchToProps = () => {
-	return {};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SavingsChart);
+export default connect(mapStateToProps, null)(SavingsChart);
 
 function CustomToolTip(props) {
 

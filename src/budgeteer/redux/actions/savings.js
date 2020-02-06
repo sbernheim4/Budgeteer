@@ -61,12 +61,13 @@ export const getSavingsChartData = (institutionId) => {
 				"/" + `'${date.getFullYear()}`.slice(0,3);
 
 			return {
-				name: displayDate,
-				Balance: institutionalBalance
+				balance: institutionalBalance,
+				date,
+				name: displayDate
 			}
 
 		}).sort((a, b) => {
-			return new Date(a.name) - new Date(b.name);
+			return a.date - b.date;
 		});
 
 		return chartData;
