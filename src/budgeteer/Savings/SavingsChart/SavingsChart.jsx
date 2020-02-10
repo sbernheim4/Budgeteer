@@ -183,8 +183,8 @@ function SavingsChart(props) {
 				draggable="true"
 				onChange={getChartDomain}
 				type='range'
-				min='5'
-				max='10'
+				min='1'
+				max={displayableChartData.length}
 			/>
 		</section>
 	);
