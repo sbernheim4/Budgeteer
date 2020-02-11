@@ -93,7 +93,7 @@ export const getSavingsChartData = (institutionId) => {
 
 		}
 
-		const mostRecentDataPointDate = new Date(mostRecentDataPoint);
+		const mostRecentDataPointDate = new Date(mostRecentDataPoint.date);
 
 		if (!isSameDay(mostRecentDataPointDate, today) && newSavingsData ) {
 			return await uploadData(newSavingsData);
