@@ -220,11 +220,10 @@ function CustomToolTip(props) {
 		const date = label.split('/');
 		const [month, day, year] = date;
 		const writtenMonth = months[month - 1];
-		const writtenYear = year.slice(2);
 
 		return (
 			<div className="savings-chart-tooltip">
-				<p>{writtenMonth}. {day} '{writtenYear}</p>
+				<p>{writtenMonth}. {day} {year}</p>
 				<p>{displayableBalance}</p>
 			</div>
 		);
