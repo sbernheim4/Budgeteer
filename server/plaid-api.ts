@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Response } from 'express';
 import chalk from 'chalk';
 import bodyParser from 'body-parser';
 import plaid from 'plaid';
@@ -28,14 +28,14 @@ plaidRouter.use(
 plaidRouter.use(bodyParser.json());
 
 // Send back the public key and the environment to plaid
-plaidRouter.get('/key-and-env', (_req: Request, res: Response) => {
+plaidRouter.get('/key-and-env', (_req, res) => {
 	res.send({
 		publicKey: process.env.PLAID_PUBLIC_KEY.toString(),
 		env: process.env.PLAID_ENV.toString()
 	});
 });
 
-plaidRouter.post('/rotate-access-tokens', async (req: Request, res: Response) => {
+plaidRouter.post('/rotate-access-tokens', async (req, res) => {
 	const accessTokens = req.session.user.accessTokens;
 	const itemID = req.session.user.itemID;
 	if (accessTokens.length === 0 || itemID.length === 0) return;
@@ -71,7 +71,7 @@ plaidRouter.post('/rotate-access-tokens', async (req: Request, res: Response) =>
 });
 
 // Get Access Tokens and Item IDs from Plaid
-plaidRouter.post('/get-access-token', async (req: Request, res: Response) => {
+plaidRouter.post('/get-access-token', async (req, res) => {
 	const PUBLIC_TOKEN = req.body.public_token;
 	console.log(`public token: ${PUBLIC_TOKEN}`);
 
@@ -110,7 +110,7 @@ plaidRouter.post('/get-access-token', async (req: Request, res: Response) => {
 });
 
 // Get Transaction information
-plaidRouter.get('/transactions', async (req: Request, res) => {
+plaidRouter.get('/transactions', async (req, res) => {
 
 	const startDate = req.query.startDate;
 	const endDate = req.query.endDate;
@@ -121,9 +121,10 @@ plaidRouter.get('/transactions', async (req: Request, res) => {
 		const totalData = await resolvePlaidTransactions(accessTokens, startDate, endDate);
 
 		if (totalData instanceof Error) {
+			const badAccessToken = totalData.message.split(':')[1].trim();
+
 			console.log(chalk.blue('-----------------------------------------'));
 			console.log('TRANSACTIONS We got an error!!!');
-			const badAccessToken = totalData.message.split(':')[1].trim();
 			console.log('badAccessToken:', badAccessToken);
 
 			client.createPublicToken(badAccessToken, (err, result) => {
@@ -151,53 +152,23 @@ plaidRouter.get('/transactions', async (req: Request, res) => {
 	}
 });
 
-plaidRouter.get('/balance', async (req: Request, res) => {
-	let bankData;
+plaidRouter.get('/balance', async (req, res) => {
 
-	try {
+	const bankData = await resolvePlaidBalance(req.session.user.accessTokens, res);
+	const data = createData(bankData);
 
-		bankData = await resolvePlaidBalance(req.session.user.accessTokens);
+	const { totalSavings, arrayOfObjects } = data;
 
-		if (bankData instanceof Error) {
-			console.log('We got a bad one...');
-			const badAccessToken = bankData.message.split(':')[1].trim();
+	res.send({
+		arrayOfObjects,
+		totalSavings
+	});
 
-			client.createPublicToken(badAccessToken, (err, result) => {
-				if (err) {
-					console.log('Error in making new public token...');
-					console.log(err);
-				} else {
-					console.log('Public token made succssfully. Is:\n', result);
-
-					return res.json({
-						Error: 'BALANCE: Reauthentication Required',
-						publicToken: result.public_token
-					});
-				}
-			});
-
-		} else {
-
-			const data = createData(bankData);
-			const { totalSavings, arrayOfObjects } = data;
-
-			res.send({
-				arrayOfObjects,
-				totalSavings
-			});
-		}
-
-	} catch (err) {
-		console.log('----------------------------');
-		console.log(chalk.red('Error from /balance'));
-		console.log(err);
-		console.log('----------------------------');
-	}
 });
 
-function createData(data) {
+function createData(data: plaid.AccountsResponse[]) {
 
-	let arrayOfObjects = [];
+	let allInstitutionInformation: {institutionId: string; institutionBalance: number; institutionBalanceObject: object}[] = [];
 	let totalSavings = 0;
 
 	data.forEach(institution => {
@@ -210,44 +181,42 @@ function createData(data) {
 
 		totalSavings += institutionBalance;
 
-		const institutionInfo = {
+		const institutionInformation = {
 			institutionId,
 			institutionBalance,
 			institutionBalanceObject
 		}
 
-		arrayOfObjects.push(institutionInfo);
+		allInstitutionInformation.push(institutionInformation);
 
 	});
 
 	return {
-		arrayOfObjects,
+		arrayOfObjects: allInstitutionInformation,
 		totalSavings
 	};
 }
 
-function collateInstitutionInfo(arrayOfAccounts) {
+function collateInstitutionInfo(accounts: plaid.Account[]) {
 	let institutionBalance = 0;
-	let institutionBalanceObject = {};
+	let institutionBalanceObject: { [key: string]: { accountType: string; accountBalance: number; accountName: string} };
 
-	arrayOfAccounts.forEach((account) => {
-		const accountId = account.account_id;
-		const accountType = account.type;
+	accounts.forEach((account) => {
 		const accountBalance = account.balances.current;
-		const accountName = account.name;
+		const { account_id, type, name } = account;
 
 		if (accountBalance !== null) {
 
-			if (accountType === 'credit') {
+			if (type === 'credit') {
 				institutionBalance -= accountBalance;
 			} else {
 				institutionBalance += accountBalance;
 			}
 
-			institutionBalanceObject[accountId] = {
-				accountType,
+			institutionBalanceObject[account_id] = {
+				accountType: type,
 				accountBalance,
-				accountName
+				accountName: name
 			};
 		}
 	});
@@ -258,9 +227,9 @@ function collateInstitutionInfo(arrayOfAccounts) {
 	};
 }
 
-async function resolvePlaidBalance(accessTokensArray: string[]) {
+async function resolvePlaidBalance(accessTokensArray: string[], res: Response) {
 
-	let allDataPromises = [];
+	let allDataPromises: Promise<plaid.AccountsResponse>[] = [];
 
 	for (let i = 0; i < accessTokensArray.length; i++) {
 		const newDataPromise = client.getBalance(accessTokensArray[i]);
@@ -268,9 +237,42 @@ async function resolvePlaidBalance(accessTokensArray: string[]) {
 	}
 
 	try {
-		return await Promise.all(allDataPromises);
+
+		const resolvedData = await Promise.all(allDataPromises);
+
+		return resolvedData;
+
 	} catch (err) {
-		return new Error('BALANCE Error with token: ' + err);
+
+		console.log('We got a bad one...');
+
+		const badAccessToken = err.message.split(':')[1].trim();
+
+		client.createPublicToken(badAccessToken, (err, result) => {
+
+			if (err) {
+
+				console.log('Error in making new public token...');
+				console.log(err);
+
+			} else {
+
+				console.log('Public token made succssfully. Is:\n', result);
+
+				return res.json({
+					Error: 'BALANCE: Reauthentication Required',
+					publicToken: result.public_token
+				});
+
+			}
+
+			console.log('----------------------------');
+			console.log(chalk.red('Error from /balance'));
+			console.log(err);
+			console.log('----------------------------');
+
+		});
+
 	}
 
 }
