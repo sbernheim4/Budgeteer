@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import path from 'path';
 import passport from 'passport';
 import mongoose from 'mongoose';
@@ -24,11 +24,9 @@ authRouter.get('/logout', (req, res) => {
 
 });
 
-authRouter.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }), (_req, _res) => {
-	console.log('Logging in via Google');
-});
+authRouter.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }), () => {});
 
-authRouter.get('/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req: Request, res: Response) => {
+authRouter.get('/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
 		// Passportjs sends back the user attached to the request object, I set it as part of the session
 		req.session.user = req.user;
 		// Redirect to budgeteer or url they entered after the session has been set
@@ -37,11 +35,9 @@ authRouter.get('/google/return', passport.authenticate('google', { scope: ['emai
 	}
 );
 
-authRouter.get('/facebook', passport.authenticate('facebook'), (_req, _res) => {
-	console.log('Logging in via FB');
-});
+authRouter.get('/facebook', passport.authenticate('facebook'), () => {});
 
-authRouter.get('/facebook/return', passport.authenticate('facebook'), (req: Request, res: Response) => {
+authRouter.get('/facebook/return', passport.authenticate('facebook'), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session
 	req.session.user = req.user;
 	// Redirect to budgeteer or url they entered after the session has been set
