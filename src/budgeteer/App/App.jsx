@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { format, subYears } from 'date-fns';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 import axios from 'axios';
@@ -49,20 +50,14 @@ class App extends Component {
 
 		try {
 
-			const now = new Date(); // Jan. 12th 2018
-			const currentYear = now.getFullYear();
-			let currentMonth = (now.getMonth() + 1).toString();
-			let currentDay = now.getDate().toString();
-
-			currentMonth = currentMonth.length === 1 ? `0${currentMonth}` : currentMonth;
-			currentDay = currentDay.length === 1 ? `0${currentDay}` : currentDay;
-
-			const startDate = `${currentYear - 1}-${currentMonth}-${currentDay}`;
-			const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
+			const endDate = new Date();
+			const startDate = subYears(endDate, 1);
+			const startDateString = format(startDate, "yyyy-MM-dd");
+			const endDateString = format(endDate, "yyyy-MM-dd");
 
 			let transactionsRequest = await axios({
 				method: 'get',
-				url: `/plaid-api/transactions?startDate=${startDate}&endDate=${endDate}`,
+				url: `/plaid-api/transactions?startDate=${startDateString}&endDate=${endDateString}`,
 			});
 
 			const { data } = transactionsRequest;
