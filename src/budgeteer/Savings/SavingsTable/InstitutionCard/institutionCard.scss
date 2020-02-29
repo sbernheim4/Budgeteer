@@ -27,11 +27,7 @@
 		z-index: 5;
 
 		@media all and (max-width: 500px) {
-			width: 70%;
-		}
-
-		@media all and (max-width: 350px) {
-			width: 65%;
+			padding: 20px 30px;
 		}
 
 		h3 {
@@ -67,31 +63,31 @@
 		.networth--entry {
 			margin: 0 auto;
 			width: 95%;
+			height: 50px;
 			font-size: 17px;
 			text-align: center;
 			border-bottom: 1px solid #a9a9a9;
 			display: grid;
 			justify-content: center;
 			align-items: center;
-			grid-template-columns: 7fr 2fr .5fr;
+			grid-template-columns: 4fr 130px .5fr;
 			grid-template-rows: 1fr;
 
 			@media all and (max-width: 600px) {
-				grid-template-columns: 6fr 3fr 1fr;
+				grid-template-columns: 6fr 130px 1fr;
 			}
 
 			@media all and (max-width: 500px) {
-				grid-template-columns: 3fr 3fr 1fr;
+				grid-template-columns: 1fr 100px 0fr;
 				font-size: 18px;
 			}
 
 			@media all and (max-width: 400px) {
-				grid-template-columns: 1fr 1fr 0fr;
+				grid-template-columns: 1fr 90px 0fr;
 				font-size: 16px;
 			}
 
 			.acct-name {
-				max-width: 60%;
 				text-align: left;
 			}
 
@@ -106,7 +102,7 @@
 				min-height: 50px;
 				place-self: center;
 
-				@media all and (max-width: 400px) {
+				@media all and (max-width: 500px) {
 					display: none;
 				}
 			}
@@ -123,5 +119,7 @@
 			}
 
 		}
+
 	}
+
 }
