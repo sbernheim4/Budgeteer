@@ -5,25 +5,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-	faTape,
-	faTags,
-	faCalendar,
-	faUtensils,
-	faPlane,
-	faShoppingBag,
-	faWrench,
-	faUsers,
-	faMedkit,
-	faPercent,
-	faMoneyBillAlt,
-	faExchangeAlt,
-	faUniversity,
-	faQuestion
-} from '@fortawesome/free-solid-svg-icons';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 
 import { getDisplayNames } from './../redux/actions/app';
 
+import CategoryAccountGenerator from './CategoryAccountGenerator.jsx';
+import CategoryListGenerator from './CategoryListGenerator.jsx';
 import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
 import TransactionContainer from './TransactionContainer/TransactionContainer.jsx';
 
@@ -303,229 +290,46 @@ class AccountsContainer extends Component {
 		return (
 			<div className='accounts'>
 				<div className='accounts--search-options'>
-					<div className='accounts--search-options--keyword-search'>
-						{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
-
-						<form onSubmit={(e) => e.preventDefault()}>
-							<input
-								type='text'
-								placeholder='Search transactions'
-								value={this.state.keyWord}
-								onChange={(e) => {
-									this.getKeyword(e);
-								}}
-							/>
-						</form>
-
-					</div>
 
 					<div className='accounts--search-options--icon-search'>
-						<div className='accounts--search-options--icon-search--categorical-search'>
-							<FontAwesomeIcon className='icon' icon={faTags} onMouseEnter={this.openCategoryViewer} />
 
-							{/* display this div when icon above is clicked */}
-							<div
-								className='accounts--search-options--icon-search--categorical-search--categories'
-								onMouseLeave={this.closeCategoryViewer}>
-								<div>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Food and Drink');
-												this.closeCategoryViewer();
-											}}
-											icon={faUtensils}
-										/>
-										<p>Food and Drink</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Travel');
-												this.closeCategoryViewer();
-											}}
-											icon={faPlane}
-										/>
-										<p>Travel</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Shops');
-												this.closeCategoryViewer();
-											}}
-											icon={faShoppingBag}
-										/>
-										<p>Shops</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Recreation');
-												this.closeAccountsViewer();
-											}}
-											icon={faTape}
-										/>
-										<p>Recreation</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Service');
-												this.closeCategoryViewer();
-											}}
-											icon={faWrench}
-										/>
-										<p>Service</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Community');
-												this.closeCategoryViewer();
-											}}
-											icon={faUsers}
-										/>
-										<p>Community</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Healthcare');
-												this.closeCategoryViewer();
-											}}
-											icon={faMedkit}
-										/>
-										<p>Healthcare</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Bank Fees');
-												this.closeCategoryViewer();
-											}}
-											icon={faQuestion}
-										/>
-										<p>Bank Fees</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Cash Advance');
-												this.closeCategoryViewer();
-											}}
-											icon={faQuestion}
-										/>
-										<p>Cash Advance</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Interest');
-												this.closeCategoryViewer();
-											}}
-											icon={faPercent}
-										/>
-										<p>Interest</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Payment');
-												this.closeCategoryViewer();
-											}}
-											icon={faMoneyBillAlt}
-										/>
-										<p>Payment</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Tax');
-												this.closeCategoryViewer();
-											}}
-											icon={faQuestion}
-										/>
-										<p>Tax</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Transfer');
-												this.closeCategoryViewer();
-											}}
-											icon={faExchangeAlt}
-										/>
-										<p>Transfer</p>
-									</section>
-									<section>
-										<FontAwesomeIcon
-											className='category-icon'
-											onClick={() => {
-												this.getCategoryTransactions('Other');
-												this.closeCategoryViewer();
-											}}
-											icon={faQuestion}
-										/>
-										<p>Other</p>
-									</section>
-								</div>
-							</div>
-						</div>
+						<CategoryListGenerator
+							closeCategoryViewer={this.closeCategoryViewer}
+							getCategoryTransactions={this.getCategoryTransactions}
+							openCategoryViewer={this.openCategoryViewer}
+							closeCategoryViewer={this.closeCategoryViewer}
+						/>
 
 						<div className='accounts--search-options--icon-search--date-search'>
 							<FontAwesomeIcon className='icon' icon={faCalendar} />
 						</div>
 
-						<div className='accounts--search-options--icon-search--accts-search'>
-							<FontAwesomeIcon
-								className='icon'
-								icon={faUniversity}
-								onMouseEnter={this.openAccountsViewer}
-							/>
-
-							<div
-								className='accounts--search-options--icon-search--accts-search--accts'
-								onMouseLeave={this.closeAccountsViewer}>
-								<div>
-									<button
-										onClick={() => {
-											this.getAccountTransactions('all');
-											this.closeAccountsViewer();
-										}}>
-										All Transactions
-									</button>
-
-									{this.props.accounts.map((a, index) => (
-										<button
-											key={index}
-											onClick={() => {
-												this.getAccountTransactions(a.account_id);
-												this.closeAccountsViewer();
-											}}>
-											{this.getAccountDisplayName(a.account_id, a.name)}
-										</button>
-									))}
-								</div>
-							</div>
-						</div>
+						<CategoryAccountGenerator
+							getAccountTransactions={this.getAccountTransactions}
+							getAccountDisplayName={this.getAccountDisplayName}
+							closeAccountsViewer={this.closeAccountsViewer}
+							openAccountsViewer={this.openAccountsViewer}
+							accounts={this.props.accounts}
+						/>
 					</div>
 				</div>
 
 				<WeekSpendingChart transactions={this.state.filteredTransactions} />
+
+				<div className='accounts--search-options--keyword-search'>
+					{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
+
+					<form onSubmit={(e) => e.preventDefault()}>
+						<input
+							type='text'
+							placeholder='Search transactions'
+							value={this.state.keyWord}
+							onChange={(e) => {
+								this.getKeyword(e);
+							}}
+						/>
+					</form>
+				</div>
 
 				<TransactionContainer
 					categoryType={this.state.filterType}

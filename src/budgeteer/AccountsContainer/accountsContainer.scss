@@ -285,7 +285,9 @@
 		}
 
 		&--keyword-search {
-			width: 90%;
+			margin: 0 auto;
+			width: 100%;
+			background-color: white;
 			font-size: 15px;
 
 			@media  all and (max-width: 600px) {
@@ -299,9 +301,7 @@
 			}
 
 			form {
-				width: 100%;
-				display: flex;
-				justify-content: center;
+				margin-bottom: 10px;
 
 				input {
 
