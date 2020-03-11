@@ -168,7 +168,7 @@ plaidRouter.get('/balance', async (req, res) => {
 
 function createData(data: plaid.AccountsResponse[]) {
 
-	let allInstitutionInformation: {institutionId: string; institutionBalance: number; institutionBalanceObject: object}[] = [];
+	let allInstitutionInformation: {institutionId: string; institutionBalance: number; institutionBalanceObject: Object}[] = [];
 	let totalSavings = 0;
 
 	data.forEach(institution => {
@@ -199,11 +199,18 @@ function createData(data: plaid.AccountsResponse[]) {
 
 function collateInstitutionInfo(accounts: plaid.Account[]) {
 	let institutionBalance = 0;
-	let institutionBalanceObject: { [key: string]: { accountType: string; accountBalance: number; accountName: string} };
+	let institutionBalanceObject = {};
 
 	accounts.forEach((account) => {
-		const accountBalance = account.balances.current;
-		const { account_id, type, name } = account;
+
+		const {
+			account_id,
+			type,
+			name,
+			balances: {
+				current: accountBalance
+			}
+		} = account;
 
 		if (accountBalance !== null) {
 
