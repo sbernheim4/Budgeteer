@@ -27,10 +27,12 @@
 
 .accounts {
 	position: relative;
-	margin-top: 30px;
+	height: calc(100vh - #{$navbar-height});
 
-	@media all and (max-width: #{$navbar-media-query-width - 1px}) {
-		margin-top: 25px;
+	@media all and (max-width: $navbar-media-query-width) {
+
+		height: calc(100vh - #{$mobile-navbar-height})
+
 	}
 
 	.red {
@@ -44,7 +46,7 @@
 	}
 
 	&--search-options {
-		margin: 0 20px 20px 20px;
+		background-color: white;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
@@ -285,14 +287,13 @@
 		}
 
 		&--keyword-search {
-			padding-top: 30px;
 			margin: 0 auto;
 			width: 100%;
+			padding-top: 30px;
 			background-color: white;
 			font-size: 15px;
 
 			@media  all and (max-width: 600px) {
-				margin-top: 15px;
 				width: 100%;
 			}
 
@@ -306,12 +307,11 @@
 				input {
 
 					display: block;
-					margin: 0 auto;
+					margin: 0 auto 20px auto;
 					width: 85%;
 					height: 61px;
 					padding: 0 15px;
-					border: 1px solid #909090;
-					border-radius: 6px;
+					border-bottom: 2px solid #909090;
 					font-size: 20px;
 					color: $default-font-color;
 					transition: all .2s ease-in;

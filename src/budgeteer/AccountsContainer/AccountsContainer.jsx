@@ -289,6 +289,23 @@ class AccountsContainer extends Component {
 	render() {
 		return (
 			<div className='accounts'>
+				{ /* <WeekSpendingChart transactions={this.state.filteredTransactions} /> */}
+
+				<div className='accounts--search-options--keyword-search'>
+					{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
+
+					<form onSubmit={(e) => e.preventDefault()}>
+						<input
+							type='text'
+							placeholder='Search transactions'
+							value={this.state.keyWord}
+							onChange={(e) => {
+								this.getKeyword(e);
+							}}
+						/>
+					</form>
+				</div>
+
 				<div className='accounts--search-options'>
 
 					<div className='accounts--search-options--icon-search'>
@@ -312,23 +329,6 @@ class AccountsContainer extends Component {
 							accounts={this.props.accounts}
 						/>
 					</div>
-				</div>
-
-				<WeekSpendingChart transactions={this.state.filteredTransactions} />
-
-				<div className='accounts--search-options--keyword-search'>
-					{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}
-
-					<form onSubmit={(e) => e.preventDefault()}>
-						<input
-							type='text'
-							placeholder='Search transactions'
-							value={this.state.keyWord}
-							onChange={(e) => {
-								this.getKeyword(e);
-							}}
-						/>
-					</form>
 				</div>
 
 				<TransactionContainer

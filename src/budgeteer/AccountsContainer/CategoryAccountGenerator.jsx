@@ -30,7 +30,7 @@ export default function CategoryAccountGenerator(props) {
 					<button
 						onClick={() => {
 							props.getAccountTransactions('all');
-							this.closeAccountsViewer();
+							props.closeAccountsViewer();
 						}}>
 						All Transactions
 					</button>
