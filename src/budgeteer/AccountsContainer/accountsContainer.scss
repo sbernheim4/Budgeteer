@@ -27,11 +27,11 @@
 
 .accounts {
 	position: relative;
-	height: calc(100vh - #{$navbar-height});
+	min-height: calc(100vh - #{$navbar-height});
 
 	@media all and (max-width: $navbar-media-query-width) {
 
-		height: calc(100vh - #{$mobile-navbar-height})
+		min-height: calc(100vh - #{$mobile-navbar-height})
 
 	}
 

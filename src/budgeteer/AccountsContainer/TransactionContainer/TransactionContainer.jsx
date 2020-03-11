@@ -13,7 +13,7 @@ class TransactionContainer extends Component {
 		let transactions = this.props.transactions.slice(-10).reverse();
 
 		this.state = {
-			num: 10,
+			num: 25,
 			transactionsToDisplay: transactions
 		};
 
@@ -46,8 +46,8 @@ class TransactionContainer extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			transactionsToDisplay: nextProps.transactions.slice(-10).reverse(),
-			num: 10
+			transactionsToDisplay: nextProps.transactions.slice(-25).reverse(),
+			num: 25
 		});
 	}
 
