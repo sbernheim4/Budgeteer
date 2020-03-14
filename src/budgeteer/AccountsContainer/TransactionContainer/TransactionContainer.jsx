@@ -81,11 +81,11 @@ class TransactionContainer extends Component {
 		const amount = dollarify(this.props.categoryTotal * -1);
 		const amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
 		const transactionInfo = this.props.categoryType ?
-			(<h2 className='transaction--totals'>
+			<h2 className='transaction--totals'>
 				{this.props.categoryType}:{' '}
 				<span className={amtColor}>${amount}</span>
-			</h2>) :
-			'';
+			</h2> :
+			null;
 
 		return (
 			<section className='transaction-container'>
