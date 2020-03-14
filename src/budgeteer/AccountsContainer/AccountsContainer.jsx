@@ -11,7 +11,6 @@ import { getDisplayNames } from './../redux/actions/app';
 
 import CategoryAccountGenerator from './CategoryAccountGenerator.jsx';
 import CategoryListGenerator from './CategoryListGenerator.jsx';
-import WeekSpendingChart from './WeekSpendingChart/WeekSpendingChart.jsx';
 import TransactionContainer from './TransactionContainer/TransactionContainer.jsx';
 
 import './accountsContainer.scss';

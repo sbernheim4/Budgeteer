@@ -18,6 +18,9 @@ class TransactionContainer extends Component {
 		};
 
 		this.displayMoreTransactions = this.displayMoreTransactions.bind(this);
+		this.amount = dollarify(this.props.categoryTotal * -1);
+		this.amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
+
 	}
 
 	componentDidMount() {
@@ -78,20 +81,15 @@ class TransactionContainer extends Component {
 
 	render() {
 
-		const amount = dollarify(this.props.categoryTotal * -1);
-		const amtColor = this.props.categoryTotal * -1 > 0 ? 'green' : 'red';
-		const transactionInfo = this.props.categoryType ?
-			(<h2 className='transaction--totals'>
-				{this.props.categoryType}:{' '}
-				<span className={amtColor}>${amount}</span>
-			</h2>) :
-			'';
-
 		return (
 			<section className='transaction-container'>
 				<h1>{this.props.title || ''}</h1>
 
-				{transactionInfo}
+				{ this.props.categoryType &&
+					<h2 className='transaction--totals'>
+						{this.props.categoryType}:{' '}<span className={this.amtColor}>${this.amount}</span>
+					</h2>
+				}
 
 				<div className='transactions'>
 					{this.state.transactionsToDisplay.map((t, index) => (
