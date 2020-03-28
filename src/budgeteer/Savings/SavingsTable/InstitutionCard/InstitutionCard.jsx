@@ -15,7 +15,7 @@ export default function InstitutionCard(props) {
 	} = props;
 
 	const [width, setWidth] = useState(0);
-    const [displayChart, setDisplayChart] = useState(false);
+	const [displayChart, setDisplayChart] = useState(false);
 
 	const institutionNameRef = useRef(null);
 	const positionBankName = useCallback(() => determineNewWidth(institutionNameRef), [props.institutionNames]);
@@ -57,7 +57,7 @@ export default function InstitutionCard(props) {
 	const institutionInfoValues = Object.values(institutionInfo);
 	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
 
-    const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
+	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
 		'...' :
 		Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 
@@ -93,7 +93,7 @@ export default function InstitutionCard(props) {
 			</div>
 
 			<SavingsChart
-                displayChart={displayChart}
+				displayChart={displayChart}
 				institutionId={institutionId}
 			/>
 		</div>
