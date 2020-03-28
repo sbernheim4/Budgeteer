@@ -288,7 +288,6 @@ class AccountsContainer extends Component {
 	render() {
 		return (
 			<div className='accounts'>
-				{ /* <WeekSpendingChart transactions={this.state.filteredTransactions} /> */}
 
 				<div className='accounts--search-options--keyword-search'>
 					{/*<FontAwesomeIcon className="icon" icon={faSearch}/>*/}

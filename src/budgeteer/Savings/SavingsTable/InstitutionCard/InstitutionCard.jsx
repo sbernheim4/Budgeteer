@@ -15,6 +15,8 @@ export default function InstitutionCard(props) {
 	} = props;
 
 	const [width, setWidth] = useState(0);
+    const [displayChart, setDisplayChart] = useState(false);
+
 	const institutionNameRef = useRef(null);
 	const positionBankName = useCallback(() => determineNewWidth(institutionNameRef), [props.institutionNames]);
 
@@ -54,26 +56,23 @@ export default function InstitutionCard(props) {
 
 	const institutionInfoValues = Object.values(institutionInfo);
 	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
-	const institutionName = institutionNames[institutionId] || 'loading';
+
     const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
 		'...' :
 		Math.round(institutionBalanceTotal / totalSavings * 100, 2);
+
 	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo, totalSavings);
+	const institutionName = institutionNames[institutionId] || 'loading';
+
 	const instituitionClassName = institutionName === 'loading' ?
 		'institution-card--info--name institution-card--info--name--loading' :
 		'institution-card--info--name';
-
-	function handleClick() {
-		const chart = institutionNameRef.current.closest('.institution-card');
-		const card = chart.querySelector(".savings-chart");
-		card.classList.toggle('savings-chart--show');
-	}
 
 	return (
 		<div className='institution-card'>
 
 			<div className='institution-card--info'
-				onClick={handleClick}
+				onClick={() => { setDisplayChart(!displayChart); }}
 			>
 				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
 					<span
@@ -94,6 +93,7 @@ export default function InstitutionCard(props) {
 			</div>
 
 			<SavingsChart
+                displayChart={displayChart}
 				institutionId={institutionId}
 			/>
 		</div>

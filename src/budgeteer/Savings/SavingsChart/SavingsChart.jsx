@@ -85,6 +85,10 @@ function SavingsChart(props) {
 
 	}
 
+	if (!props.displayChart) {
+		return null;
+	}
+
 	return (
 		<section className='savings-chart'>
 			<ResponsiveContainer
@@ -117,6 +121,7 @@ function SavingsChart(props) {
 						dataKey='balance'
 						stroke={chartColor}
 						fill={chartColor}
+						isAnimationActive={false}
 						strokeWidth={4}
 					/>
 				</AreaChart>
@@ -124,23 +129,6 @@ function SavingsChart(props) {
 		</section>
 	);
 }
-
-const mapStateToProps = (state, ownProps) => {
-
-	const institutionInfo = state.savings.bankInfo.find(institution => {
-		return institution.institutionId === ownProps.institutionId
-	});
-
-	const rechartsData = state.savings[ownProps.institutionId] || [];
-
-	return {
-		bankInfo: institutionInfo,
-		rechartsData
-	}
-
-};
-
-export default connect(mapStateToProps, null)(SavingsChart);
 
 function CustomToolTip(props) {
 
@@ -168,3 +156,22 @@ function CustomToolTip(props) {
 	return null;
 
 }
+
+const mapStateToProps = (state, ownProps) => {
+
+	const institutionInfo = state.savings.bankInfo.find(institution => {
+		return institution.institutionId === ownProps.institutionId
+	});
+
+	const rechartsData = state.savings[ownProps.institutionId] || [];
+
+	return {
+		bankInfo: institutionInfo,
+		rechartsData
+	}
+
+};
+
+const connectedSavingsChart = connect(mapStateToProps, null)(SavingsChart);
+
+export default connectedSavingsChart;
