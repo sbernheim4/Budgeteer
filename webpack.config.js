@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 /* Used to generate html file from template */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -31,6 +32,7 @@ const serverConfig = {
         path: __dirname + '/server-dist',
         filename: '[name].js'
 	},
+    externals: [ nodeExternals() ],
 	mode: process.env.NODE_ENV || 'development',
     target: 'node',
 	module: {
