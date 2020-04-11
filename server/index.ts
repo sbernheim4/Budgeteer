@@ -49,8 +49,8 @@ let options = {};
 
 if (process.env.NODE_ENV !== 'production') {
 
-	const keyPath = path.join(__dirname, './encryption/budgeteer-prod.com-key.pem');
-	const certPath = path.join(__dirname, './encryption/budgeteer-prod.com.pem');
+	const keyPath = path.resolve('server-dist/encryption/budgeteer-prod.com-key.pem');
+	const certPath = path.resolve('server-dist/encryption/budgeteer-prod.com.pem');
 
 	options = {
 		key: fs.readFileSync(keyPath),
@@ -69,8 +69,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 /****************** Serve Static Files --> JS, CSS, Images  ******************/
-app.use(express.static(path.join(__dirname, '../static-assets'), { maxAge: cacheTime }));
-app.use(express.static(path.join(__dirname, '../public'), { maxAge: cacheTime }));
+app.use(express.static(path.resolve('static-assets'), { maxAge: cacheTime }));
+app.use(express.static(path.resolve('public'), { maxAge: cacheTime }));
 
 /****************** Log Requests ******************/
 app.all('*', (req, _res, next) => {
@@ -91,22 +91,22 @@ app.use('/user-info', checkAuthentication, userInfo);
 app.use('/savings', checkAuthentication, savingsRouter);
 
 app.get('/', (_req, res) => {
-	res.sendFile(path.join(__dirname, '../public/home.html'));
+	res.sendFile(path.resolve('public/home.html'));
 });
 
 app.use('/login', auth);
 
 // TODO: For some reason this is needed. Visiting budgeteer.org makes a request for /budgeteer/budgeteer.js instead of just /budgeteer.js
 app.get('/budgeteer/*.js', checkAuthentication, (_req, res) => {
-	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
+	res.sendFile(path.resolve('public/budgeteer.html'));
 });
 
 app.get('/budgeteer', checkAuthentication, (_req, res) => {
-	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
+	res.sendFile(path.resolve('public/budgeteer.html'));
 });
 
 app.get('/budgeteer/*', checkAuthentication, (_req, res) => {
-	res.sendFile(path.join(__dirname, '../public/budgeteer.html'));
+	res.sendFile(path.resolve('public/budgeteer.html'));
 });
 
 app.get('*', (_req, res) => {

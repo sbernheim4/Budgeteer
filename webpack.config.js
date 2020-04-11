@@ -22,12 +22,41 @@ const envKeys = Object.keys(env).reduce((prev, next) => {
 	return prev;
 }, {});
 
+const serverConfig = {
+	devtool: 'source-map',
+	entry: {
+		server: './server/index.ts'
+	},
+	output: {
+        path: __dirname + '/server-dist',
+        filename: '[name].js'
+	},
+	mode: process.env.NODE_ENV || 'development',
+    target: 'node',
+	module: {
+		rules: [
+			{
+				test: /\.ts$/,
+				exclude: /node_modules/,
+				use: ['ts-loader']
+            }
+		]
+	},
+    plugins: [
+		new WebpackBar(),
+    ],
+	resolve: {
+		extensions: ['.js', '.ts']
+	}
+}
+
 const clientConfig = {
 	devtool: 'source-map',
 	entry: {
 		budgeteer: './src/budgeteer/index.jsx', // Entry point of where webpack should start from
 		home: './src/home/index.jsx' // Entry point of where webpack should start from
 	},
+    target: "web",
 	output: {
 		// output build file to /public folder and call the file bundle.js
 		path: __dirname + '/public',
@@ -152,4 +181,4 @@ const clientConfig = {
 	},
 };
 
-module.exports = [clientConfig];
+module.exports = [clientConfig, serverConfig];
