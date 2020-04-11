@@ -23,7 +23,7 @@ import userInfo from './user-info';
 import savingsRouter from './savings';
 import auth from './auth';
 
-import startDb from './db';
+import startDB from './db';
 
 const app = express();
 
@@ -132,26 +132,6 @@ function checkAuthentication(req: Request, res: Response, next: () => void) {
 	}
 }
 
-/****************** Start the DB and Server ******************/
-if (process.env.DB_URI && process.env.DB_URI !== '') {
-	startDb
-		.then(() => {
-			startServer();
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-} else {
-	console.log(
-		chalk.red(`
-		process.env.DB_URI is undefined (this should be set in your .env file).
-		Not connecting to MongoDB.
-		Sessions are being stored in memory`)
-	);
-
-	startServer();
-}
-
 function startServer() {
 	if (process.env.NODE_ENV !== 'production') {
 		https.createServer(options, app).listen(process.env.PORT);
@@ -162,3 +142,22 @@ function startServer() {
 		});
 	}
 }
+
+async function bootup() {
+	try {
+
+		await startDB();
+
+	} catch (error) {
+
+		console.log(chalk.red(`process.env.DB_URI is undefined (this should be set in your .env file).`));
+		console.log(chalk.red(`Not connecting to MongoDB. Sessions are being stored in memory`));
+		console.log(error);
+
+	}
+
+	startServer();
+}
+
+bootup();
+

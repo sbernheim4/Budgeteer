@@ -3,13 +3,23 @@ import chalk from 'chalk';
 
 import './models';
 
-const startDb = mongoose
-	.connect(process.env.DB_URI, { useNewUrlParser: true })
-	.then(() => {
-		console.log(chalk.blue('MongoDB connection opened!'));
-	})
-	.catch((err) => {
-		return Promise.reject(err);
-	});
+async function startDB() {
 
-export default startDb;
+	try {
+
+		await mongoose.connect(
+			process.env.DB_URI,
+			{ useNewUrlParser: true }
+		);
+
+		console.log(chalk.blue('MongoDB connection opened!'));
+
+	} catch (error) {
+
+		return error;
+
+	}
+
+}
+
+export default startDB;
