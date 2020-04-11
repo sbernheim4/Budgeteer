@@ -2,10 +2,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es6",
-    "jsx": "react",
     "noImplicitAny": false,
     "esModuleInterop": true,
     "noUnusedParameters": true
-  },
-  "include": ["server/**/*"]
+  }
 }
