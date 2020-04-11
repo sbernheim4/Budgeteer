@@ -101,7 +101,7 @@ function MonthlyBudget() {
 				/>
 				<button className='submit' onClick={updateMonthlyBudget}>
 					{' '}
-					Update Budget{' '}
+					Update Budget
 				</button>
 			</div>
 		</section>

@@ -15,7 +15,13 @@ export function getMonthlyBudget() {
 			return;
 		}
 
-		const monthlyBudgetFromStorage = JSON.parse(localStorage.getItem('monthlyBudget'));
+		let monthlyBudgetFromStorage;
+
+		try {
+			monthlyBudgetFromStorage = JSON.parse(localStorage.getItem('monthlyBudget'));
+		} catch (error) {
+			// Swallow the error if it doesn't exist in localStorage
+		}
 
 		if (monthlyBudgetFromStorage) {
 

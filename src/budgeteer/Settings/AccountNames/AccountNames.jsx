@@ -17,12 +17,7 @@ class AccountNames extends Component {
 
 		this.handleChange = this.updateAccountDisplayName.bind(this);
 		this.getDisplayName = this.getDisplayName.bind(this);
-		this.jsonToMap = this.jsonToMap.bind(this);
 		this.displayMessage = this.displayMessage.bind(this);
-	}
-
-	jsonToMap(jsonStr) {
-		return new Map(JSON.parse(jsonStr));
 	}
 
 	async componentDidMount() {
