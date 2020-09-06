@@ -8,6 +8,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		overflow-y: hidden;
 
 		a {
 			margin: 10px;
@@ -20,6 +21,10 @@
 		&--links {
 			display: flex;
 			align-items: center;
+
+			a {
+				overflow-y: hidden;
+			}
 
 			#sign-in {
 				display: inline-block;
