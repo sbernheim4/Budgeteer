@@ -117,9 +117,13 @@ class Navbar extends Component {
 						<li>
 							<Link to='/transactions'>Transactions</Link>
 						</li>
+
+						{ /*
 						<li>
 							<Link to='/statistics'>Statistics</Link>
 						</li>
+						*/ }
+
 						<li>
 							<Link to='/networth'>Savings</Link>
 						</li>
@@ -157,12 +161,14 @@ class Navbar extends Component {
 							</div>
 						</Link>
 
+						{ /*
 						<Link to='/statistics' className='second' onClick={this.toggleMenu}>
 							<div className='link-container'>
 								<FontAwesomeIcon icon={faChartPie} />
 								Statistics
 							</div>
 						</Link>
+						*/ }
 
 						<Link to='/networth' className='third' onClick={this.toggleMenu}>
 							<div className='link-container'>

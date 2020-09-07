@@ -35,7 +35,7 @@ export function getMonthlyBudget() {
 		try {
 
 			const monthlyBudgetRequest = await axios.get('/user-info/monthly-budget');
-			const monthlyBudget = monthlyBudgetRequest.data.monthlyBudget;
+			const { monthlyBudget } = monthlyBudgetRequest.data;
 
 			localStorage.setItem('monthlyBudget', monthlyBudget);
 

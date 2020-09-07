@@ -9,7 +9,7 @@ export default class ScrollContainer extends Component {
 		this.scroll = this.scroll.bind(this);
 	}
 
-	scroll(e, dir) {
+	scroll(_, dir) {
 		const inner = document.querySelector('.scrollable-elements');
 		const totalNumElements = inner.querySelectorAll('.chart').length;
 		const direction = dir === 'left' ? 1 : -1;

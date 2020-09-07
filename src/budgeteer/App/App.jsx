@@ -7,7 +7,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 
 import { storeTransactionsInRedux, storeAccountsInRedux } from './../redux/actions/app';
 import BannerMessage from '../BannerMessage/BannerMessage.jsx';
-import { Navbar, Home, Statistics, AccountsContainer, Savings, Settings } from '../LazyLoadRoutes.jsx';
+import { Navbar, Home, /* Statistics, */ AccountsContainer, Savings, Settings } from '../LazyLoadRoutes.jsx';
 
 import '../scss/globals.scss';
 
@@ -188,9 +188,11 @@ class App extends Component {
 						render={() => <Home loading={loading} />}
 					/>
 
+					{ /*
 					<Route
 						path='/statistics'
 						render={() => <Statistics transactions={this.props.transactions} />} />
+					*/ }
 
 					<Route
 						path='/transactions'

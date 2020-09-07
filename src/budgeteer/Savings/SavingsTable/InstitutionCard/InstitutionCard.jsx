@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import InstitutionInfoRow from './../InstitutionInfoRow.jsx';
+import AccountInformation from '../AccountInformation.jsx';
 import SavingsChart from './../../SavingsChart/SavingsChart.jsx';
 import { determineNewWidth } from './helpers';
 
-import './institutionCard.scss';
+import './accountInformation.scss';
 
 export default function InstitutionCard(props) {
 
@@ -27,41 +27,45 @@ export default function InstitutionCard(props) {
 
 	}, [props.institutionNames]);
 
-	function generateInstitutionInfoRows(institutionInfo, totalSavings) {
+	function displayInstitutionAccounts(institutionInfo, totalSavings) {
 
-		const institutionInfoKeys = Object.keys(institutionInfo);
+		const accountIds = Object.keys(institutionInfo);
 
-		const institutionInfoRows = institutionInfoKeys.map((acctId, i) => {
-			return <InstitutionInfoRow
+		const institutionAccounts = accountIds.map((accountId, i) => {
+
+			return <AccountInformation
 				key={i}
 				institutionInfo={institutionInfo}
 				totalSavings={totalSavings}
-				acctId={acctId}
+				acctId={accountId}
 			/>
-		});
 
-		institutionInfoRows.sort((a, b) => {
+		}).sort((a, b) => {
+
 			const aAccountId = a.props.acctId;
 			const bAccountId = b.props.acctId;
+
 			const aTotal = a.props.institutionInfo[aAccountId].accountBalance;
 			const bTotal = b.props.institutionInfo[bAccountId].accountBalance;
 
 			return bTotal - aTotal;
+
 		});
 
-		return institutionInfoRows;
+		return institutionAccounts;
 
 	}
 
-
 	const institutionInfoValues = Object.values(institutionInfo);
-	const institutionBalanceTotal = institutionInfoValues.reduce((acc, currVal) => acc + currVal.accountBalance, 0);
+	const institutionBalanceTotal = institutionInfoValues.reduce(
+		(acc, currVal) => acc + currVal.accountBalance,
+		0
+	);
 
 	const percent = Math.round(institutionBalanceTotal / totalSavings * 100, 2) === Infinity ?
 		'...' :
 		Math.round(institutionBalanceTotal / totalSavings * 100, 2);
 
-	const institutionInfoRows = generateInstitutionInfoRows(institutionInfo, totalSavings);
 	const institutionName = institutionNames[institutionId] || 'loading';
 
 	const instituitionClassName = institutionName === 'loading' ?
@@ -75,11 +79,12 @@ export default function InstitutionCard(props) {
 				onClick={() => { setDisplayChart(!displayChart); }}
 			>
 				<h3 style={{left: `calc(50% - ${width / 2}px`}}>
+
 					<span
 						className={instituitionClassName}
 						ref={institutionNameRef}
 					>
-					{institutionName}
+					    {institutionName}
 					</span>
 
 					<span
@@ -89,7 +94,8 @@ export default function InstitutionCard(props) {
 
 				</h3>
 
-				{institutionInfoRows}
+				{displayInstitutionAccounts(institutionInfo, totalSavings)}
+
 			</div>
 
 			<SavingsChart

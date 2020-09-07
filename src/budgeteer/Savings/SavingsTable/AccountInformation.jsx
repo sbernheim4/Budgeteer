@@ -4,7 +4,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { dollarify } from '../../helpers';
 
-function InstitutionInfoRow(props) {
+function AccountInformation(props) {
 
 	const {
 		acctId,
@@ -17,22 +17,23 @@ function InstitutionInfoRow(props) {
 		new Map()
 	);
 
-	function getDisplayName(acctId) {
-		return displayNames.get(acctId) || institutionInfo[acctId].accountName;
+	function getDisplayName(accountId) {
+		return displayNames.get(accountId) || institutionInfo[accountId].accountName;
 	}
 
-	function getPercentage(numerator, denominator) {
+	function calculatePercentage(numerator, denominator) {
 		const percentage = Math.round(numerator / denominator * 100, 2);
 		return percentage;
 	}
 
-	function getPieChart(percentage) {
+	function generatePieChart(percentage) {
 
 		if (percentage <= 0) {
 			return;
 		}
 
 		const COLORS = ['#79c6a3', '#e4f3ec'];
+
 		const pieChartData = [
 			{ name: 'Comprises', value: percentage },
 			{ name: 'Outstanding', value: 100 - percentage }
@@ -61,21 +62,24 @@ function InstitutionInfoRow(props) {
 		);
 	}
 
-	const isCreditCardAccount = institutionInfo[acctId].accountType === 'credit';
-	const accountBalance = institutionInfo[acctId].accountBalance;
-	const normalizedBalance = isCreditCardAccount ? accountBalance * -1 : accountBalance;
+	const accountInformation = institutionInfo[acctId];
+	const isCreditCardAccount = accountInformation.accountType === 'credit';
+	const { accountBalance } = accountInformation
+	const normalizedBalance = isCreditCardAccount ?
+		accountBalance * -1 :
+		accountBalance;
 
 	const accountDisplayName = getDisplayName(acctId);
 	const accountDisplayBalance = dollarify(normalizedBalance);
-	const percentage = getPercentage(normalizedBalance, totalSavings);
+	const percentage = calculatePercentage(normalizedBalance, totalSavings);
 
 	return (
 		<div className='networth--entry'>
 			<p className='acct-name'>{accountDisplayName}</p>
 			<p className='acct-value'>${accountDisplayBalance}</p>
-			<div className='acct-percentage'>{getPieChart(percentage)}</div>
+			<div className='acct-percentage'>{generatePieChart(percentage)}</div>
 		</div>
 	);
 }
 
-export default InstitutionInfoRow;
+export default AccountInformation;
