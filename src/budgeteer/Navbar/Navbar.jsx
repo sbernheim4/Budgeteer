@@ -33,7 +33,7 @@ class Navbar extends Component {
 		this.logout = this.logout.bind(this);
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		const keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
 		const plaid = Plaid.create({
@@ -55,13 +55,17 @@ class Navbar extends Component {
 			}
 		});
 
-		let name = await axios.get('/user-info/name');
-		name = name.data;
+		axios.get('/user-info/name').then(name => {
+			return name.data;
+		}).then(name => {
 
-		this.setState({
-			handler: plaid,
-			name: name
+			this.setState({
+				handler: plaid,
+				name: name
+			});
+
 		});
+
 	}
 
 	addAccount() {
@@ -75,12 +79,8 @@ class Navbar extends Component {
 
 	async logout() {
 
-		try {
-			await axios.get('/login/logout');
-			window.location.href = '/';
-		} catch(error) {
-			throw error;
-		}
+		await axios.get('/login/logout');
+		window.location.href = '/';
 
 	}
 

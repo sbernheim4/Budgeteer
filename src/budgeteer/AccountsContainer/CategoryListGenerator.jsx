@@ -57,7 +57,7 @@ export default function CategoryListGenerator(props) {
 					})}
 				</div>
 			</div>
-	    </div>
+		</div>
     );
 
 }

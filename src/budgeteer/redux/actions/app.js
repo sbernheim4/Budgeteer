@@ -13,7 +13,7 @@ export function storeTransactionsInRedux(transactions) {
 		payload: transactions
 	};
 
-};
+}
 
 export function storeAccountsInRedux(accounts) {
 

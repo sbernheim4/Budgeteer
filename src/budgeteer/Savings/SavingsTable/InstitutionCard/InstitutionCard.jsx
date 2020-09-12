@@ -84,7 +84,7 @@ export default function InstitutionCard(props) {
 						className={instituitionClassName}
 						ref={institutionNameRef}
 					>
-					    {institutionName}
+						{institutionName}
 					</span>
 
 					<span
