@@ -58,28 +58,20 @@ export function updateMonthlyBudget(newMonthlyBudget) {
 
 	return async (dispatch) => {
 
-		try {
+		await axios({
+			method: 'POST',
+			url: '/user-info/monthly-budget',
+			data: {
+				monthlyBudget: newMonthlyBudget
+			}
+		});
 
-			await axios({
-				method: 'POST',
-				url: '/user-info/monthly-budget',
-				data: {
-					monthlyBudget: newMonthlyBudget
-				}
-			});
+		localStorage.setItem('monthlyBudget', newMonthlyBudget);
 
-			localStorage.setItem('monthlyBudget', newMonthlyBudget);
-
-			return dispatch({
-				type: StatisticsActions.UPDATE_MONTHLY_BUDGET,
-				payload: newMonthlyBudget
-			});
-
-		} catch (error) {
-
-			throw error;
-
-		}
+		return dispatch({
+			type: StatisticsActions.UPDATE_MONTHLY_BUDGET,
+			payload: newMonthlyBudget
+		});
 
 	}
 

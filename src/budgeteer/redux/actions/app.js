@@ -58,26 +58,16 @@ export function setDisplayNames(newDisplayNames) {
 
 	return async (dispatch) => {
 
-		try {
+		await axios.post('/user-info/display-names', {
+			data: {
+				map: JSON.stringify([...newDisplayNames])
+			}
+		});
 
-			await axios.post('/user-info/display-names', {
-				data: {
-					map: JSON.stringify([...newDisplayNames])
-				}
-			});
-
-		} catch (error) {
-
-			throw error;
-
-		}
-
-		const obj = {
+		return dispatch({
 			type: AppActions.STORE_DISPLAY_NAMES,
 			payload: [...newDisplayNames]
-		};
-
-		return dispatch(obj);
+		});
 
 	}
 

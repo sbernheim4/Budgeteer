@@ -1,3 +1,5 @@
+/* eslint-disable no-case-declarations */
+
 import { SavingsActions } from './../actions/savings';
 import generalizedReducer from './generalizedReducer';
 
