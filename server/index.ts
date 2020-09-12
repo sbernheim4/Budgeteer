@@ -49,8 +49,8 @@ let options = {};
 
 if (process.env.NODE_ENV !== 'production') {
 
-	const keyPath = path.resolve('server-dist/encryption/budgeteer-prod.com-key.pem');
-	const certPath = path.resolve('server-dist/encryption/budgeteer-prod.com.pem');
+	const keyPath = path.resolve('server/encryption/budgeteer-prod.com-key.pem');
+	const certPath = path.resolve('server/encryption/budgeteer-prod.com.pem');
 
 	options = {
 		key: fs.readFileSync(keyPath),

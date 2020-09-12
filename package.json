@@ -95,11 +95,11 @@
     "node": "8.9.3"
   },
   "scripts": {
-    "start": "node server-dist/server.js",
+    "start": "ts-node server/index.ts",
     "build": "webpack --mode=production",
     "test": "jest",
     "postinstall": "npm run build",
-    "start:watch": "nodemon --watch server-dist server-dist/server.js",
+    "start:watch": "nodemon --watch server server/index.ts",
     "build:dev": "cp -r server/encryption/ server-dist/encryption/ && webpack",
     "build:watch": "webpack -w",
     "test:watch": "jest --watch",
