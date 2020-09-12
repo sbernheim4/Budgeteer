@@ -1,12 +1,10 @@
 {
 	"root": true,
 	"parser": "@typescript-eslint/parser",
-	"plugins": [ "@typescript-eslint" ],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended"
 	],
-	"parser": "babel-eslint",
 	"env": {
 		"es6": true,
 		"browser": true
@@ -19,7 +17,6 @@
 		"ecmaVersion": 2017,
 		"sourceType": "module"
 	},
-
 	"globals": {
 		"module": true,
 		"process": true,
@@ -29,7 +26,6 @@
 		"__dirname": true,
 		"Chart": true
 	},
-
 	"rules": {
 		"@typescript-eslint/explicit-function-return-type": 0,
 		"react/jsx-uses-vars": 2,
@@ -60,7 +56,7 @@
 		"no-var": 2
 	},
 	"plugins": [
+		"@typescript-eslint",
 		"react"
 	]
 }
-
