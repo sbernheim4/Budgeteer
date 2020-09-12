@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-import subMonths from 'date-fns/subMonths';
-
 import { dollarify } from '../../helpers';
 
 import './annualChart.scss';
@@ -12,7 +10,7 @@ class CustomTooltip extends Component {
 		const { active } = this.props;
 
 		if (active) {
-			const { payload, label } = this.props;
+			const { payload } = this.props;
 
 			const avg = dollarify(payload[1].value);
 			const month = payload[0].payload.name.endsWith('.')

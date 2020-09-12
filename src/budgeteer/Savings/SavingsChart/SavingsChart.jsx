@@ -11,7 +11,7 @@ import './savingsChart.scss';
 function SavingsChart(props) {
 
 	const [minMax, setMinMax] = useState({min: 0, max: 10});
-	const [chartColor, setChartColor] = useState('#79c6a3');
+	const [chartColor] = useState('#79c6a3');
 
 	const dispatch = useDispatch();
 

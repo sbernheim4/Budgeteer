@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import LoginButton from './LoginButton/LoginButton.jsx';
 
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';

@@ -10,8 +10,6 @@ class Navbar extends Component {
 		this.state = {};
 	}
 
-	async componentDidMount() {}
-
 	render() {
 		return (
 			<nav className='navbar'>

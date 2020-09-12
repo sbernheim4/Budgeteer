@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faTape,
-	faSearch,
-	faTags,
-	faCalendar,
+	// faSearch,
+	// faTags,
+	// faCalendar,
 	faUtensils,
 	faPlane,
 	faShoppingBag,

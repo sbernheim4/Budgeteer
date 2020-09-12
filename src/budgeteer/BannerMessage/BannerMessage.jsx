@@ -19,7 +19,7 @@ class BannerMessage extends Component {
 		};
 	}
 
-	static getDerivedStateFromProps(props, state) {
+	static getDerivedStateFromProps(props) {
 		return {
 			display: props.display,
 			color: props.color === 'green' ? green : red

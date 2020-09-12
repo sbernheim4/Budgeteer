@@ -45,7 +45,7 @@ class WeekWeekendChart extends Component {
 		};
 	}
 
-	static getDerivedStateFromProps(nextProps, prevState) {
+	static getDerivedStateFromProps(nextProps) {
 		if (nextProps.transactions.length <= 0) {
 			return null;
 		}

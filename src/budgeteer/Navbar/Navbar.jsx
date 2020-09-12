@@ -10,7 +10,7 @@ import {
 	faBars,
 	faHome,
 	faExchangeAlt,
-	faChartPie,
+	// faChartPie,
 	faMoneyBillAlt,
 	faCogs,
 	faPlus,
@@ -33,7 +33,7 @@ class Navbar extends Component {
 		this.logout = this.logout.bind(this);
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
 		const plaid = Plaid.create({
@@ -55,15 +55,11 @@ class Navbar extends Component {
 			}
 		});
 
-		axios.get('/user-info/name').then(name => {
-			return name.data;
-		}).then(name => {
+		let name = await axios.get('/user-info/name');
 
-			this.setState({
-				handler: plaid,
-				name: name
-			});
-
+		this.setState({
+			handler: plaid,
+			name: name
 		});
 
 	}

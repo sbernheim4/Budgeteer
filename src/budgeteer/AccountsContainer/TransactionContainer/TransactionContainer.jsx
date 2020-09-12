@@ -44,7 +44,7 @@ class TransactionContainer extends Component {
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener('scroll', () => {});
+		window.removeEventListener('scroll');
 	}
 
 	componentWillReceiveProps(nextProps) {

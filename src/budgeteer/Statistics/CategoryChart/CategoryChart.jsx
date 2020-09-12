@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import { ResponsiveContainer, PieChart, Pie, Sector, Cell, Legend, Label, Tooltip, text, tspan } from 'recharts';
+import {
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    // Sector,
+    Cell,
+    Legend,
+    Label,
+    Tooltip,
+    // text,
+    // tspan
+} from 'recharts';
 import subMonths from 'date-fns/subMonths';
 import isWithinInterval from 'date-fns/isWithinInterval';
 
@@ -147,7 +158,7 @@ class CategoryChart extends Component {
 		let newAmts = [];
 		let total = 0;
 
-		amts.forEach((entry, index) => {
+		amts.forEach((entry) => {
 			if (entry.value > 0) {
 				const roundedValue = Math.round(entry.value * 100) / 100;
 				newAmts.push({
@@ -189,7 +200,7 @@ class CategoryChart extends Component {
 							{/*onMouseOver={(a) => this.changeCenterText(a)}>*/}
 							{/*{label={(name) =>`$${helpers.formatAmount(name.value)}`}}*/}
 
-							{this.state.categoryDoughnutData.map((entry, index) => (
+							{this.state.categoryDoughnutData.map((_entry, index) => (
 								<Cell key={index} fill={COLORS[index % COLORS.length]} />
 							))}
 							<Label
