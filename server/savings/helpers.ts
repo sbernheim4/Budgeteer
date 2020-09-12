@@ -1,17 +1,17 @@
-import { IBankInfo, IInstitutionSavingsPoint, IInstitutionSavingsInfo } from './../types';
+import { BankInfo, InstitutionSavingsPoint, InstitutionSavingsInfo } from './../types';
 
 /**
  * @description Converts IBankInfo[] to an of IInstitutionSavingsInfo[]
- * @param {IBankInfo} data The new data point to be converted
- * @returns {IInstitutionSavingsInfo} The normalized data
+ * @param {BankInfo} data The new data point to be converted
+ * @returns {InstitutionSavingsInfo} The normalized data
  */
-export function formatNewDataPoints(data: IBankInfo): IInstitutionSavingsInfo {
+export function formatNewDataPoints(data: BankInfo): InstitutionSavingsInfo {
 
 	const dateString = new Date().toString();
 
 	const { institutionId, institutionBalance } = data;
 
-	const newInfo: IInstitutionSavingsInfo = {
+	const newInfo: InstitutionSavingsInfo = {
 		institutionId,
 		savingsData: [{
 			date: dateString,
@@ -25,15 +25,15 @@ export function formatNewDataPoints(data: IBankInfo): IInstitutionSavingsInfo {
 
 /**
  * @description Merges the existing data points with the new data points
- * @param {IInstitutionSavingsInfo[]} oldDataPoints An arrray containing the existing data points
- * @param {IInstitutionSavingsInfo[]} newDataPoints An array of new data points to be merged
- * @returns {IInstitutionSavingsInfo[]} The merged array of newDataPoints and savings
+ * @param {InstitutionSavingsInfo[]} oldDataPoints An arrray containing the existing data points
+ * @param {InstitutionSavingsInfo[]} newDataPoints An array of new data points to be merged
+ * @returns {InstitutionSavingsInfo[]} The merged array of newDataPoints and savings
  */
-export function createNewInstitutionData(oldDataPoints: IInstitutionSavingsInfo, newDataPoints: IInstitutionSavingsInfo): IInstitutionSavingsInfo {
+export function createNewInstitutionData(oldDataPoints: InstitutionSavingsInfo, newDataPoints: InstitutionSavingsInfo): InstitutionSavingsInfo {
 
 	const { institutionId, savingsData } = newDataPoints;
 
-	let newDataPointsArray: IInstitutionSavingsPoint[] = [];
+	let newDataPointsArray: InstitutionSavingsPoint[] = [];
 
 	try {
 
@@ -51,7 +51,7 @@ export function createNewInstitutionData(oldDataPoints: IInstitutionSavingsInfo,
 
 	}
 
-	const updatedInstitutionInfo: IInstitutionSavingsInfo = {
+	const updatedInstitutionInfo: InstitutionSavingsInfo = {
 		institutionId,
 		savingsData: newDataPointsArray
 	}

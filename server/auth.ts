@@ -3,7 +3,7 @@ import path from 'path';
 import passport from 'passport';
 import mongoose from 'mongoose';
 
-import { IUser } from './types';
+import { User } from './types';
 
 const FBStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
@@ -69,7 +69,7 @@ passport.use(new FBStrategy(
 		// providers.
 
 		try {
-			const user: IUser = await User.findOne({
+			const user: User = await User.findOne({
 				facebookID: profile.id
 			});
 
@@ -103,7 +103,7 @@ passport.use(new GoogleStrategy(
 	},
 	async function(_accessToken, _refreshToken, profile, done) {
 		try {
-			const user: IUser = await User.findOne({
+			const user: User = await User.findOne({
 				googleID: profile.id
 			});
 
@@ -135,7 +135,7 @@ passport.use(new GoogleStrategy(
 // from the database when deserializing.  However, due to the fact that this
 // example does not have a database, the complete Facebook profile is serialized
 // and deserialized.
-passport.serializeUser(function(user: IUser, done) {
+passport.serializeUser(function(user: User, done) {
 	done(null, user.id);
 });
 

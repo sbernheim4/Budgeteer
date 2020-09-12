@@ -4,7 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import { IUser } from './types';
+import { User } from './types';
 
 const userInfoRouter = express.Router();
 const User = mongoose.model('User');
@@ -28,7 +28,7 @@ userInfoRouter.get('/monthly-budget', async (req, res) => {
 		res.json({ monthlyBudget: req.session.user.monthlyBudget });
 	} else {
 		try {
-			const userData: IUser = await User.findOne({ _id: req.session.user._id }, () => {});
+			const userData: User = await User.findOne({ _id: req.session.user._id }, () => {});
 			if (userData.monthlyBudget === undefined) {
 				throw new Error('No monthly budget found');
 			} else {
@@ -66,7 +66,7 @@ userInfoRouter.get('/last-accessed', async (req, res) => {
 		res.send(lastAccessed);
 	} else {
 		try {
-			const record: IUser = await User.findOne({
+			const record: User = await User.findOne({
 				_id: req.session.user._id
 			});
 
@@ -98,7 +98,7 @@ userInfoRouter.get('/display-names', async (req, res) => {
 		res.json(serializedMap);
 	} else {
 		try {
-			const record: IUser = await User.findOne({
+			const record: User = await User.findOne({
 				_id: req.session.user._id
 			});
 			const serializedMap = record.displayNames;

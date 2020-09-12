@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface IUser extends Document {
+export type User = {
 	name?: string;
 	facebookID?: string;
 	googleID?: string;
@@ -10,29 +10,29 @@ export interface IUser extends Document {
 	itemId?: Array<string>;
 	displayNames?: Array<string>;
 	lastAccessed?: string;
-	savings?: IInstitutionSavingsInfo[];
-}
+	savings?: InstitutionSavingsInfo[];
+} & Document;
 
-export interface IInstitutionSavingsInfo {
+export type InstitutionSavingsInfo = {
 	institutionId: string;
-	savingsData: IInstitutionSavingsPoint[];
+	savingsData: InstitutionSavingsPoint[];
 }
 
-export interface IInstitutionSavingsPoint {
+export type InstitutionSavingsPoint = {
 	date: string;
 	institutionalBalance: number;
 }
 
-interface IInstitutionalBalanceObject {
-	[key: string]: {
+type InstitutionalBalance = {
 		accountBalance: number;
 		accountName: string;
 		accountType: string;
-	}
-}
+};
 
-export interface IBankInfo {
+export type InstitutionalBalanceObject = Record<string, InstitutionalBalance>;
+
+export type BankInfo = {
 	institutionId: string;
 	institutionBalance: number;
-	institutionBalanceObject: IInstitutionalBalanceObject;
+	institutionBalanceObject: InstitutionalBalanceObject;
 }

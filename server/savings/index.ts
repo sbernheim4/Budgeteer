@@ -4,7 +4,12 @@ import mongoose from 'mongoose';
 
 import { formatNewDataPoints, createNewInstitutionData } from './helpers';
 
-import { IUser, IInstitutionSavingsPoint, IInstitutionSavingsInfo, IBankInfo } from './../types';
+import {
+    User as IUser,
+    InstitutionSavingsPoint,
+    InstitutionSavingsInfo,
+    BankInfo
+} from './../types';
 
 const User = mongoose.model('User');
 const savingsRouter = express.Router();
@@ -22,8 +27,8 @@ savingsRouter.get('/data', async (req, res) => {
 	const institutionId = req.query.id;
 	const userId = req.session.user._id;
 
-	let history: IInstitutionSavingsInfo[];
-	let savings: IInstitutionSavingsPoint[];
+	let history: InstitutionSavingsInfo[];
+	let savings: InstitutionSavingsPoint[];
 
 	try {
 
@@ -35,7 +40,7 @@ savingsRouter.get('/data', async (req, res) => {
 
 	} catch (error) {
 
-		const inititalInstitutionSavingsData: IInstitutionSavingsInfo = {
+		const inititalInstitutionSavingsData: InstitutionSavingsInfo = {
 			institutionId,
 			savingsData: []
 		};
@@ -59,7 +64,7 @@ savingsRouter.post('/data', async (req, res) => {
 
 	try {
 
-		const data: IBankInfo = req.body;
+		const data: BankInfo = req.body;
 		const userId = req.session.user._id;
 		const userInfo: IUser = await User.findOne({ _id: req.session.user._id });
 		const savingsArray = userInfo.savings;

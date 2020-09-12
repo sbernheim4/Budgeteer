@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 
 /* Used to generate html file from template */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -22,35 +21,6 @@ const envKeys = Object.keys(env).reduce((prev, next) => {
 	prev[`process.env.${next}`] = JSON.stringify(env[next]);
 	return prev;
 }, {});
-
-const serverConfig = {
-	devtool: 'source-map',
-	entry: {
-		server: './server/index.ts'
-	},
-	output: {
-        path: __dirname + '/server-dist',
-        filename: '[name].js'
-	},
-    externals: [ nodeExternals() ],
-	mode: process.env.NODE_ENV || 'development',
-    target: 'node',
-	module: {
-		rules: [
-			{
-				test: /\.ts$/,
-				exclude: /node_modules/,
-				use: ['ts-loader']
-            }
-		]
-	},
-    plugins: [
-		new WebpackBar(),
-    ],
-	resolve: {
-		extensions: ['.js', '.ts']
-	}
-}
 
 const clientConfig = {
 	devtool: 'source-map',
@@ -183,4 +153,4 @@ const clientConfig = {
 	},
 };
 
-module.exports = [clientConfig, serverConfig];
+module.exports = clientConfig;

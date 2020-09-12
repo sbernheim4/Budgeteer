@@ -1,4 +1,11 @@
 {
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"plugins": [ "@typescript-eslint" ],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
 	"parser": "babel-eslint",
 	"env": {
 		"es6": true,
@@ -24,6 +31,7 @@
 	},
 
 	"rules": {
+		"@typescript-eslint/explicit-function-return-type": 0,
 		"react/jsx-uses-vars": 2,
 		"camelcase": 0,
 		"no-unused-vars": 0,
