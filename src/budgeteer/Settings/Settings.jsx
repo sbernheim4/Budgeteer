@@ -15,7 +15,7 @@ class Settings extends Component {
 	}
 
 	async removeAccount(e) {
-		let bankName = e.target.parentNode.querySelector('h2').innerText;
+		const bankName = e.target.parentNode.querySelector('h2').innerText;
 
 		let index;
 		this.state.linkedBanks.map((bank, i) => {

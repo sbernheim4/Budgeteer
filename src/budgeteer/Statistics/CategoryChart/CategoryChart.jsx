@@ -80,7 +80,7 @@ class CategoryChart extends Component {
 
 	generateDoughnutChart() {
 		// Default names and values for each category
-		let amts = [
+		const amts = [
 			{ name: 'Food and Drink', value: 0 }, //eslint-disable-line
 			{ name: 'Travel', value: 0 }, //eslint-disable-line
 			{ name: 'Shops', value: 0 }, //eslint-disable-line
@@ -101,11 +101,11 @@ class CategoryChart extends Component {
 		const oneMonthAgo = subMonths(now, 1);
 
 		this.props.transactions.forEach((t) => {
-			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+			const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 			if (isWithinInterval(transactionDate, { start: oneMonthAgo, end: now } )) {
-				let category = (t.category || [''])[0];
-				let amount = t.amount;
+				const category = (t.category || [''])[0];
+				const amount = t.amount;
 				// TODO: Try cleaning up the switch statements to something like this
 				// amts[t.category] += t.amount;
 
@@ -155,7 +155,7 @@ class CategoryChart extends Component {
 			}
 		});
 
-		let newAmts = [];
+		const newAmts = [];
 		let total = 0;
 
 		amts.forEach((entry) => {

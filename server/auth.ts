@@ -2,11 +2,12 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import passport from 'passport';
 import mongoose from 'mongoose';
-
+import FBPassport from 'passport-facebook';
+import GooglePassport from 'passport-google-oauth';
 import { User } from './types';
 
-const FBStrategy = require('passport-facebook').Strategy;
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const FBStrategy = FBPassport.Strategy;
+const GoogleStrategy = GooglePassport.OAuth2Strategy;
 
 const authRouter = express.Router();
 const User = mongoose.model('User');
@@ -16,15 +17,18 @@ authRouter.get('/', (_req: Request, res: Response) => {
 });
 
 authRouter.get('/logout', (req, res) => {
-
 	req.logout();
 	req.logOut();
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
 	req.session.destroy(() => {});
 	res.redirect('/');
 
 });
 
-authRouter.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }), () => {});
+authRouter.get(
+    '/google',
+    passport.authenticate('google', { scope: ['email', 'profile'] })
+);
 
 authRouter.get('/google/return', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
 		// Passportjs sends back the user attached to the request object, I set it as part of the session
@@ -35,7 +39,10 @@ authRouter.get('/google/return', passport.authenticate('google', { scope: ['emai
 	}
 );
 
-authRouter.get('/facebook', passport.authenticate('facebook'), () => {});
+authRouter.get(
+    '/facebook',
+    passport.authenticate('facebook')
+);
 
 authRouter.get('/facebook/return', passport.authenticate('facebook'), (req, res) => {
 	// Passportjs sends back the user attached to the request object, I set it as part of the session

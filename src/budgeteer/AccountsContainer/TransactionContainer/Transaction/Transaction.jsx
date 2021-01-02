@@ -48,7 +48,7 @@ class Transaction extends Component {
 
 		} catch (err) {
 
-			for (let acct of this.props.accounts) {
+			for (const acct of this.props.accounts) {
 				if (acct.account_id === accountID) {
 					return acct.name;
 				}

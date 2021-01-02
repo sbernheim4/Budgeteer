@@ -14,8 +14,8 @@ import '../scss/globals.scss';
 class App extends Component {
 	constructor(props) {
 		super(props);
-		let x = new Set();
-		let y = new Set();
+		const x = new Set();
+		const y = new Set();
 
 		this.state = {
 			account_ids: x,
@@ -55,7 +55,7 @@ class App extends Component {
 			const startDateString = format(startDate, "yyyy-MM-dd");
 			const endDateString = format(endDate, "yyyy-MM-dd");
 
-			let transactionsRequest = await axios({
+			const transactionsRequest = await axios({
 				method: 'get',
 				url: `/plaid-api/transactions?startDate=${startDateString}&endDate=${endDateString}`,
 			});
@@ -117,7 +117,7 @@ class App extends Component {
 
 	async storeTransactions(data) {
 		const currentTransactions = this.props.transactions;
-		let currentTransactionIds = this.state.transaction_ids;
+		const currentTransactionIds = this.state.transaction_ids;
 
 		data.forEach((bank) => {
 
@@ -172,7 +172,7 @@ class App extends Component {
 	}
 
 	render() {
-		let loading = this.state.counter !== 1;
+		const loading = this.state.counter !== 1;
 
 		return (
 			<div>

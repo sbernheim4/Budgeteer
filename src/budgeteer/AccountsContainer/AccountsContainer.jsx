@@ -90,8 +90,8 @@ class AccountsContainer extends Component {
 		}
 
 		releventTransactions.sort((a, b) => {
-			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			const dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			const dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateOne - dateTwo;
 		});
 
@@ -143,8 +143,8 @@ class AccountsContainer extends Component {
 
 		// Sort the transactions newest to oldest
 		releventTransactions.sort((a, b) => {
-			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			const dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			const dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateOne - dateTwo;
 		});
 
@@ -172,9 +172,9 @@ class AccountsContainer extends Component {
 		// Don't allow a range greater than 5 years or some other arbitrary amount
 
 		e.preventDefault();
-		let dateOne = new Date(this.state.yearOne, this.state.monthOne - 1, this.state.dayOne);
-		let dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
-		let releventTransactions = [];
+		const dateOne = new Date(this.state.yearOne, this.state.monthOne - 1, this.state.dayOne);
+		const dateTwo = new Date(this.state.yearTwo, this.state.monthTwo - 1, this.state.dayTwo);
+		const releventTransactions = [];
 		let total = 0;
 
 		try {
@@ -198,8 +198,8 @@ class AccountsContainer extends Component {
 
 			// Sort the transactions newest to oldest
 			releventTransactions.sort((a, b) => {
-				let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-				let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+				const dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+				const dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 				return dateOne - dateTwo;
 			});
 
@@ -232,8 +232,8 @@ class AccountsContainer extends Component {
 		const formattedCategoryTotal = formatAmount(filteredTotal);
 
 		const sortedTransactions = matchingTransactions.sort((a, b) => {
-			let dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-			let dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			const dateOne = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			const dateTwo = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateOne - dateTwo;
 		});
 
@@ -248,7 +248,7 @@ class AccountsContainer extends Component {
 	}
 
 	getKeyword(e) {
-		let searchTerm = e.target.value;
+		const searchTerm = e.target.value;
 
 		this.searchByKeyword(searchTerm);
 

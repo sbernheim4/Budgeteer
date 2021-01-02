@@ -43,35 +43,43 @@ class Savings extends Component {
 
 	async getSavingsDataFromServer() {
 
-		const savingsDataRequest = await axios.get('/plaid-api/balance');
-		const savingsData = savingsDataRequest.data;
+		try {
 
-		if (savingsData.Error) {
+			const savingsDataRequest = await axios.get('/plaid-api/balance');
+			const savingsData = savingsDataRequest.data;
 
-			const keyAndEnv = await axios.get('/plaid-api/key-and-env');
+			if (savingsData.Error) {
 
-			const plaid = Plaid.create({
-				apiVersion: 'v2',
-				clientName: 'Budgeteer',
-				env: keyAndEnv.data.env,
-				product: ['balance'],
-				key: keyAndEnv.data.publicKey,
-				token: savingsData.publicToken,
-				onSuccess: function() {
-					console.log('Update of Account successful');
-				}
-			});
+				const keyAndEnv = await axios.get('/plaid-api/key-and-env');
 
-			plaid.open();
-		}
+				const plaid = Plaid.create({
+					apiVersion: 'v2',
+					clientName: 'Budgeteer',
+					env: keyAndEnv.data.env,
+					product: ['balance'],
+					key: keyAndEnv.data.publicKey,
+					token: savingsData.publicToken,
+					onSuccess: function() {
+						console.log('Update of Account successful');
+					}
+				});
 
-		const { totalSavings, arrayOfObjects } = savingsData;
+				plaid.open();
+			}
 
-		return {
-			totalSavings,
-			bankInfo: arrayOfObjects
-		}
+			const { totalSavings, arrayOfObjects } = savingsData;
 
+			return {
+				totalSavings,
+				bankInfo: arrayOfObjects
+			}
+
+
+		} catch (error) {
+
+			console.log(error);
+
+        }
 	}
 
 	cacheSavingsData(totalSavings, bankInfo) {

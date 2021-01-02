@@ -58,7 +58,7 @@ class WeekSpendingChart extends Component {
 
 		let startingIndex = 0;
 
-		for (let [index, t] of nextProps.transactions.entries()) {
+		for (const [index, t] of nextProps.transactions.entries()) {
 
 			const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
@@ -76,13 +76,13 @@ class WeekSpendingChart extends Component {
 
 		}
 
-		let currentWeekAmounts = new Array(7).fill(0);
+		const currentWeekAmounts = new Array(7).fill(0);
 
 		if (startingIndex !== 0) {
 			const pastWeekTransactions = nextProps.transactions.slice(startingIndex);
 
 			pastWeekTransactions.forEach((t) => {
-				let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+				const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 				const index = differenceInDays(end, transactionDate);
 
 				currentWeekAmounts[index] += t.amount;

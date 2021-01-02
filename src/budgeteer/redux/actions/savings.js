@@ -85,7 +85,7 @@ export const getSavingsChartData = (institutionId) => {
 
 		for (let i = 1; i < historicalSavingsData.length; i++) {
 
-			let currentVal = historicalSavingsData[i];
+			const currentVal = historicalSavingsData[i];
 
 			if (isAfter(currentVal.date, mostRecentDataPoint.date)) {
 				mostRecentDataPoint = currentVal;

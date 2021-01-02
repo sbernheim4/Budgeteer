@@ -25,18 +25,28 @@ userInfoRouter.get('/profile', (req, res) => {
 userInfoRouter.get('/monthly-budget', async (req, res) => {
 	// Send back monthly budget from session variable or 0 if it doesn't exist
 	if (req.session.user.monthlyBudget) {
+
 		res.json({ monthlyBudget: req.session.user.monthlyBudget });
+
 	} else {
+
 		try {
+
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			const userData: User = await User.findOne({ _id: req.session.user._id }, () => {});
+
 			if (userData.monthlyBudget === undefined) {
 				throw new Error('No monthly budget found');
 			} else {
 				res.json({ monthlyBudget: userData.monthlyBudget });
 			}
+
+
 		} catch (err) {
+
 			console.log(err);
 			res.status(404).send(new Error('No monthly budget found'));
+
 		}
 	}
 });
@@ -45,10 +55,13 @@ userInfoRouter.post('/monthly-budget', (req, res) => {
 	const newMonthlyBudget = req.body.monthlyBudget;
 
 	// Update monthly budget in DB
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	User.updateOne({ _id: req.session.user._id }, { monthlyBudget: newMonthlyBudget }, () => {});
 
 	// Update monthlyBudget in session
 	req.session.user.monthlyBudget = newMonthlyBudget;
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	req.session.save(() => {});
 
 	res.status(204).end();
@@ -84,12 +97,16 @@ userInfoRouter.get('/last-accessed', async (req, res) => {
 userInfoRouter.post('/last-accessed', (req, res) => {
 	const date = req.body.date;
 
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	User.updateOne({ _id: req.session.user._id }, { lastAccessed: date.toString() }, () => {});
 
 	req.session.user.lastAccessed = date;
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	req.session.save(() => {});
 
 	res.status(204).end();
+
 });
 
 userInfoRouter.get('/display-names', async (req, res) => {
@@ -106,17 +123,17 @@ userInfoRouter.get('/display-names', async (req, res) => {
 			//TODO: Might just want to return an empty map then...
 			if (serializedMap === undefined) throw new Error('No account display names found :(');
 
-			// Store it on the session for next time
-			req.session.user.displayNames = serializedMap;
+															 // Store it on the session for next time
+															 req.session.user.displayNames = serializedMap;
 
-			// Send it back to the client
-			res.json(serializedMap);
+														 // Send it back to the client
+														 res.json(serializedMap);
 		} catch (err) {
 			// TODO: Send back some kind of error for the front end to parse
 			res.status(404)
-				.json('Error in GET /user-info/display-names')
-				.end();
-			console.error(err);
+		.json('Error in GET /user-info/display-names')
+		.end();
+		console.error(err);
 		}
 	}
 });
@@ -131,6 +148,8 @@ userInfoRouter.post('/display-names', (req, res) => {
 
 	// Save new object in session
 	req.session.user.displayNames = serializedMap;
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	req.session.save(() => {});
 
 	res.status(204).end();

@@ -1,5 +1,4 @@
-require('dotenv').config();
-
+import dotenv from 'dotenv'
 import express, { Response } from 'express';
 import chalk from 'chalk';
 import bodyParser from 'body-parser';
@@ -8,11 +7,13 @@ import mongoose from 'mongoose';
 
 import './db/models/index';
 
+dotenv.config();
+
 const User = mongoose.model('User');
 const plaidRouter = express.Router({});
 
 // Initialize the Plaid client
-let client = new plaid.Client(
+const client = new plaid.Client(
 	process.env.PLAID_CLIENT_ID,
 	process.env.PLAID_SECRET,
 	process.env.PLAID_PUBLIC_KEY,
@@ -41,7 +42,7 @@ plaidRouter.post('/rotate-access-tokens', async (req, res) => {
 	if (accessTokens.length === 0 || itemID.length === 0) return;
 
 	// Rotate access tokens
-	let newAccessTokens = [];
+	const newAccessTokens = [];
 
 	for (const token of accessTokens) {
 		try {
@@ -59,6 +60,8 @@ plaidRouter.post('/rotate-access-tokens', async (req, res) => {
 
 	// Update access tokens on the session
 	req.session.user.accessTokens = newAccessTokens;
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	req.session.save(() => {});
 
 	// Update access tokens on the server
@@ -77,17 +80,19 @@ plaidRouter.post('/get-access-token', async (req, res) => {
 
 	try {
 		// Get the token response
-		let tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
+		const tokenResponse = await client.exchangePublicToken(PUBLIC_TOKEN);
 
-		let currAccessTokens = req.session.user.accessTokens;
+		const currAccessTokens = req.session.user.accessTokens;
 		currAccessTokens.push(tokenResponse.access_token);
 
-		let currItemID = req.session.user.itemID;
+		const currItemID = req.session.user.itemID;
 		currItemID.push(tokenResponse.item_id);
 
 		// Update the session with the new account info
 		req.session.user.accessTokens = currAccessTokens;
 		req.session.user.itemID = currItemID;
+
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		req.session.save(() => {});
 
 		// Update the db with the new account info
@@ -112,8 +117,8 @@ plaidRouter.post('/get-access-token', async (req, res) => {
 // Get Transaction information
 plaidRouter.get('/transactions', async (req, res) => {
 
-	const startDate = req.query.startDate;
-	const endDate = req.query.endDate;
+	const startDate = req.query.startDate as string;
+	const endDate = req.query.endDate as string;
 
 	try {
 
@@ -155,6 +160,7 @@ plaidRouter.get('/transactions', async (req, res) => {
 plaidRouter.get('/balance', async (req, res) => {
 
 	const bankData = await resolvePlaidBalance(req.session.user.accessTokens, res);
+
 	const data = createData(bankData);
 
 	const { totalSavings, arrayOfObjects } = data;
@@ -168,15 +174,16 @@ plaidRouter.get('/balance', async (req, res) => {
 
 function createData(data: plaid.AccountsResponse[]) {
 
-	let allInstitutionInformation: {institutionId: string; institutionBalance: number; institutionBalanceObject: Object}[] = [];
 	let totalSavings = 0;
 
-	data.forEach(institution => {
+	const allInstitutionInformation = data.map(institutionPromise => {
 
+		const institution = institutionPromise;
 		const institutionId = institution.item.institution_id;
 		const accountsArray = institution.accounts;
 
 		const info = collateInstitutionInfo(accountsArray);
+
 		const { institutionBalance, institutionBalanceObject } = info;
 
 		totalSavings += institutionBalance;
@@ -185,9 +192,9 @@ function createData(data: plaid.AccountsResponse[]) {
 			institutionId,
 			institutionBalance,
 			institutionBalanceObject
-		}
+		};
 
-		allInstitutionInformation.push(institutionInformation);
+		return institutionInformation;
 
 	});
 
@@ -195,38 +202,62 @@ function createData(data: plaid.AccountsResponse[]) {
 		arrayOfObjects: allInstitutionInformation,
 		totalSavings
 	};
+
 }
 
 function collateInstitutionInfo(accounts: plaid.Account[]) {
-	let institutionBalance = 0;
-	let institutionBalanceObject = {};
 
-	accounts.forEach((account) => {
+	const institutionBalanceObject = accounts.reduce(
+		(accumulator, account) => {
 
-		const {
-			account_id,
-			type,
-			name,
-			balances: {
-				current: accountBalance
+			const {
+				account_id,
+				type,
+				name,
+				balances: {
+					current: accountBalance
+				}
+			} = account;
+
+			if (accountBalance !== null) {
+
+				accumulator[account_id] = {
+					accountType: type,
+					accountBalance,
+					accountName: name
+				}
 			}
-		} = account;
 
-		if (accountBalance !== null) {
+			return accumulator;
 
-			if (type === 'credit') {
-				institutionBalance -= accountBalance;
-			} else {
-				institutionBalance += accountBalance;
+		},
+		{} as Record<string, { accountType: string; accountBalance: number; accountName: string; }>
+	);
+
+	const institutionBalance = accounts.reduce(
+		(accumulator, account) => {
+
+			const {
+				type,
+				balances: {
+					current: accountBalance
+				}
+			} = account;
+
+			if (accountBalance !== null) {
+
+				if (type === 'credit') {
+					accumulator -= accountBalance;
+				} else {
+					accumulator += accountBalance;
+				}
 			}
 
-			institutionBalanceObject[account_id] = {
-				accountType: type,
-				accountBalance,
-				accountName: name
-			};
-		}
-	});
+			return accumulator;
+
+		},
+		0
+	);
 
 	return {
 		institutionBalance,
@@ -236,24 +267,33 @@ function collateInstitutionInfo(accounts: plaid.Account[]) {
 
 async function resolvePlaidBalance(accessTokensArray: string[], res: Response) {
 
-	let allDataPromises: Promise<plaid.AccountsResponse>[] = [];
 
-	for (let i = 0; i < accessTokensArray.length; i++) {
-		const newDataPromise = client.getBalance(accessTokensArray[i]);
-		allDataPromises.push(newDataPromise);
-	}
+	const promises = accessTokensArray.map((accessToken) => {
+
+		try {
+
+			return client.getBalance(accessToken);
+
+		} catch(error) {
+
+			console.log('--------------' + error);
+
+			return {} as plaid.AccountsResponse;
+
+		}
+
+	});
 
 	try {
 
-		const resolvedData = await Promise.all(allDataPromises);
+		return await Promise.all(promises)
 
-		return resolvedData;
-
-	} catch (err) {
+	} catch(error) {
 
 		console.log('We got a bad one...');
 
-		const badAccessToken = err.message.split(':')[1].trim();
+		console.log(error);
+		const badAccessToken = error.message.split(':')[1].trim();
 
 		client.createPublicToken(badAccessToken, (err, result) => {
 
@@ -288,14 +328,14 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 
 	try {
 
-		let banks = {};
+		const banks = {};
 
 		// Get Item ID for each access token
 		const itemInfo = req.session.user.accessTokens.map(
 			(token: string): Promise<plaid.ItemResponse> => client.getItem(token)
 		);
 
-		let itemData = await Promise.all(itemInfo); // Wait for all the promises to resolve
+		const itemData = await Promise.all(itemInfo); // Wait for all the promises to resolve
 
 		// Get the associated instituion for the given Item ID
 		const ids = itemData.map((thing: { item: { institution_id: string } }) =>
@@ -359,7 +399,7 @@ plaidRouter.post('/remove-account', async (req, res) => {
 });
 
 async function resolvePlaidTransactions(accessTokensArray: string[], startDate: string, endDate: string) {
-	let allData = [];
+	const allData = [];
 	for (let i = 0; i < accessTokensArray.length; i++) {
 		try {
 			const newData = await client.getTransactions(accessTokensArray[i], startDate, endDate, {

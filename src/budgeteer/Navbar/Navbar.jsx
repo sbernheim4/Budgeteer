@@ -55,7 +55,7 @@ class Navbar extends Component {
 			}
 		});
 
-		let name = await axios.get('/user-info/name');
+		const name = await axios.get('/user-info/name');
 
 		this.setState({
 			handler: plaid,
@@ -147,7 +147,6 @@ class Navbar extends Component {
 					<div className='navbar--mobile--links'>
 						<div className='navbar--mobile--links--profile'>
 							<img src='https://via.placeholder.com/50x50' />
-							<h3>{this.state.name}</h3>
 						</div>
 
 						<Link to='/transactions' className='first' onClick={this.toggleMenu}>

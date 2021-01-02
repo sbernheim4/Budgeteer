@@ -53,7 +53,7 @@ class AnnualChart extends Component {
 		// Ensure the order of the date is chronological not just based on jan - dec.
 
 		/* Sum up costs by week */
-		let amounts = new Array(12);
+		const amounts = new Array(12);
 		amounts.fill(0);
 
 		let avg = 0;
@@ -76,7 +76,7 @@ class AnnualChart extends Component {
 		// Divide by 12 and round to two decimal places
 		avg = avg / 12;
 
-		let monthsDefault = [
+		const monthsDefault = [
 			'Jan.',
 			'Feb.',
 			'Mar.',
@@ -90,20 +90,20 @@ class AnnualChart extends Component {
 			'Nov.',
 			'Dec.'
 		];
-		let currMonth = new Date().getMonth(); // 0
+		const currMonth = new Date().getMonth(); // 0
 
 		// Normalize the labels and amounts array to match up properly and always display the current month/current amount at the end
-		let orderedLabels = [];
+		const orderedLabels = [];
 		for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
 			orderedLabels.push(monthsDefault[i % 12]);
 		}
 
-		let orderedAmounts = [];
+		const orderedAmounts = [];
 		for (let i = currMonth + 1; i <= monthsDefault.length + currMonth; i++) {
 			orderedAmounts.push(amounts[i % 12]);
 		}
 
-		let data = [];
+		const data = [];
 		for (let i = 0; i < 12; i++) {
 			data.push({
 				name: orderedLabels[i],

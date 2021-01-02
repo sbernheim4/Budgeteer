@@ -126,6 +126,8 @@ function checkAuthentication(req: Request, res: Response, next: () => void) {
 		// logged in store the route they tried to visit in the session to redirect
 		// them too after authentication completes
 		req.session.returnUrl = req.url;
+
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		req.session.save(() => {});
 
 		res.redirect('/login');

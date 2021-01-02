@@ -52,33 +52,33 @@ class WeekWeekendChart extends Component {
 
 		const sortedTransactions = nextProps.transactions.sort((a, b) => {
 			// a and b are transactions
-			let dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
-			let dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
+			const dateA = new Date(a.date.slice(0, 4), a.date.slice(5, 7) - 1, a.date.slice(8, 10));
+			const dateB = new Date(b.date.slice(0, 4), b.date.slice(5, 7) - 1, b.date.slice(8, 10));
 			return dateA - dateB;
 		});
 
 		// TODO: Should be refactored to actually only include transactions that occur within the last 6 months --> Use .filter on the array
-		let pastSixMonths = sortedTransactions.slice(nextProps.transactions.length / 2);
+		const pastSixMonths = sortedTransactions.slice(nextProps.transactions.length / 2);
 
 		// Start date is the Monday following the first transaction
-		let firstDate = pastSixMonths[0].date;
+		const firstDate = pastSixMonths[0].date;
 		let startWeek = new Date(firstDate.slice(0, 4), firstDate.slice(5, 7) - 1, firstDate.slice(8, 10));
 		startWeek = startOfWeek(startWeek, { weekStartsOn: 1 });
 		let currentWeek = startWeek;
 
 		// End week is the Sunday of the current week
-		let endWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
+		const endWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
 		// Arrays only need to be as large as how many weeks have passed in the year so far
 		// [week 1, week 2, week 3, ... week n - 1, week n] where n is the current week
-		let arrSize = differenceInCalendarWeeks(endWeek, startWeek);
+		const arrSize = differenceInCalendarWeeks(endWeek, startWeek);
 
-		let weekday = new Array(arrSize).fill(0);
-		let weekend = new Array(arrSize).fill(0);
+		const weekday = new Array(arrSize).fill(0);
+		const weekend = new Array(arrSize).fill(0);
 
 		let counter = 0;
 		pastSixMonths.forEach((t) => {
-			let transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
+			const transactionDate = new Date(t.date.slice(0, 4), t.date.slice(5, 7) - 1, t.date.slice(8, 10));
 
 			// if the transaction date is the same week as the current week
 			if (isSameWeek(currentWeek, transactionDate) && t.amount > 0) {
@@ -124,7 +124,7 @@ class WeekWeekendChart extends Component {
 			}
 		});*/
 
-		let data = [];
+		const data = [];
 		for (let i = arrSize - 1; i >= 0; i--) {
 			data.push({
 				name: i,

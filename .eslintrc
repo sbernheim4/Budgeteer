@@ -30,6 +30,7 @@
 		"@typescript-eslint/camelcase": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",
 		"@typescript-eslint/explicit-function-return-type": "off",
+		"prefer-const": 2,
 		"react/jsx-uses-vars": 2,
 		"camelcase": 0,
 		"no-unused-vars": 0,

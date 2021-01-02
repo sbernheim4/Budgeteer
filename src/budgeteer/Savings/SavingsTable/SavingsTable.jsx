@@ -8,6 +8,7 @@ import { dollarify } from '../../helpers.js';
 import './savingsTable.scss';
 
 function SavingsTable(props) {
+
 	const accountBalancesLoaded = props.accountBalances.length > 0;
 
 	if (!accountBalancesLoaded) {
@@ -18,6 +19,7 @@ function SavingsTable(props) {
 				<img src='/loading-gifs/loading-three.gif' alt='loading' />
 			</div>
 		);
+
 	}
 
 	const {
@@ -36,9 +38,7 @@ function SavingsTable(props) {
 				institutionNames={institutionNames}
 				totalSavings={savings}
 			/>
-		});
-
-		institutionCards.sort((a, b) => {
+		}).sort((a, b) => {
 
 			const aInstitutionInfoValues = Object.values(a.props.institutionInfo);
 			const bInstitutionInfoValues = Object.values(b.props.institutionInfo);
@@ -58,7 +58,7 @@ function SavingsTable(props) {
 
 	return (
 		<section className='networth-table'>
-			{institutionCards}
+			{ institutionCards }
 
 			<div className='institution-card'>
 				<div className='institution-card--info'>
@@ -74,6 +74,7 @@ function SavingsTable(props) {
 }
 
 const mapStateToProps = (state) => {
+	console.log(state.savings);
 	return {
 		accountBalances: state.savings.bankInfo
 	}

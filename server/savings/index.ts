@@ -24,7 +24,7 @@ savingsRouter.use(bodyParser.json());
 
 savingsRouter.get('/data', async (req, res) => {
 
-	const institutionId = req.query.id;
+	const institutionId = req.query.id as string;
 	const userId = req.session.user._id;
 
 	let history: InstitutionSavingsInfo[];

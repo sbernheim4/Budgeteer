@@ -57,7 +57,7 @@ function calculateTranslationAmount(element, totalNumElements, direction) {
 	const minimumBound = (totalNumElements * innerItemWidth - window.innerWidth) * -1;
 	const maximumBound = 0;
 
-	let newXTranslateAmt = currentXTranslateAmt + innerItemWidth * direction;
+	const newXTranslateAmt = currentXTranslateAmt + innerItemWidth * direction;
 
 	if (newXTranslateAmt > maximumBound) {
 		return maximumBound;

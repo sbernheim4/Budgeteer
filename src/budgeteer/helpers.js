@@ -33,14 +33,13 @@ export function jsonToMap(jsonStr) {
 export function formatDate(date) {
 	const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 	const stringDate = JSON.stringify(date);
-
-	let monthIndex = parseInt(stringDate.slice(stringDate.indexOf("-") + 1, stringDate.indexOf("-") + 3));
+	const monthIndex = parseInt(stringDate.slice(stringDate.indexOf("-") + 1, stringDate.indexOf("-") + 3));
 	const month = months[monthIndex - 1];
-
 	const day = stringDate.slice(stringDate.length - 3, stringDate.length - 1);
 
-	let year = stringDate.slice(1, 5);
-	year = year.slice(2);
+    const year = stringDate
+        .slice(1, 5)
+        .slice(2);
 
 	return `${month}. ${day} '${year}`
 }
