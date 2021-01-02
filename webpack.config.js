@@ -44,6 +44,12 @@ const clientConfig = {
 				use: ['babel-loader', 'eslint-loader']
 			},
 
+			{
+				test: /\.tsx$/,
+				exclude: /node_modules/,
+				use: ['babel-loader', 'eslint-loader', 'ts-loader']
+			},
+
 			// use sass-loader, css-loader, and style-loader for all scss files
 			// sass-loader - converts scss to css
 			// postcss-loader for backwards compatibility
