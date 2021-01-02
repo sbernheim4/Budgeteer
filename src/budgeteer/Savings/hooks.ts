@@ -35,7 +35,6 @@ export const useSavingsData = () => {
 
 	}
 
-
 	const getSavingsDataFromServer = async () => {
 
 		try {

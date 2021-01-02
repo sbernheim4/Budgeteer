@@ -1,7 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import InstitutionCard from './InstitutionCard/InstitutionCard.jsx';
+import { InstitutionBalance } from './InstitutionCard/InstitutionCard.jsx';
 
 import { dollarify } from '../../helpers.js';
 
@@ -9,7 +9,9 @@ import './savingsTable.scss';
 
 function SavingsTable(props) {
 
-	const accountBalancesLoaded = props.accountBalances.length > 0;
+    const accountBalances = useSelector(state => state.savings.bankInfo);
+
+	const accountBalancesLoaded = accountBalances.length > 0;
 
 	if (!accountBalancesLoaded) {
 
@@ -22,16 +24,12 @@ function SavingsTable(props) {
 
 	}
 
-	const {
-		savings,
-		accountBalances,
-		institutionNames,
-	} = props;
+	const { savings, institutionNames, } = props;
 
 	function generateInstitutionCards(accountBalances) {
 
 		const institutionCards = accountBalances.map((institution, i) => {
-			return <InstitutionCard
+			return <InstitutionBalance
 				key={i}
 				institutionId={institution.institutionId}
 				institutionInfo={institution.institutionBalanceObject}
@@ -73,15 +71,4 @@ function SavingsTable(props) {
 	);
 }
 
-const mapStateToProps = (state) => {
-	console.log(state.savings);
-	return {
-		accountBalances: state.savings.bankInfo
-	}
-};
-
-const mapDispatchToProps = () => {
-	return {}
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SavingsTable);
+export default SavingsTable;

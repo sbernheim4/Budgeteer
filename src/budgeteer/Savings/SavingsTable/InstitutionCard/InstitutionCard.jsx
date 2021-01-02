@@ -5,7 +5,7 @@ import { determineNewWidth } from './helpers';
 
 import './accountInformation.scss';
 
-export default function InstitutionCard(props) {
+export const InstitutionBalance = (props) => {
 
 	const {
 		institutionInfo,

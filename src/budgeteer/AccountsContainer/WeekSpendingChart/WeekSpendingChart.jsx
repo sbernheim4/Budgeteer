@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { ResponsiveContainer, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
+import {
+    ResponsiveContainer,
+    ComposedChart,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Bar
+} from 'recharts';
 import subWeeks from 'date-fns/subWeeks';
 import isWithinInterval from 'date-fns/isWithinInterval';
 import differenceInDays from 'date-fns/differenceInDays';

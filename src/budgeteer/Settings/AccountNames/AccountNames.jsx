@@ -97,7 +97,7 @@ class AccountNames extends Component {
 					color={'green'}
 				/>
 
-				<h1>Account Nicknames</h1>
+				<h1>Account Names</h1>
 
 				{this.props.accounts.map((acct, index) => (
 					<div className='account-names' key={index}>

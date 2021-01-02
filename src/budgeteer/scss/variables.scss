@@ -2,15 +2,15 @@
 // Every style sheet should import this file
 
 // Light Theme
-$background-color: rgb(240, 240, 240);
+$background-color: rgb(117, 117, 117);
 $pink: rgb(255, 132, 132);
 $red: #c5434d;
 $green: rgb(50, 150, 100);
 $blue: rgb(0, 101, 137);
 $gray: rgb(64, 64, 64);
 
-$default-font-color: black;
-$default-font-contrast-color: white;
+$default-font-color: white;
+$default-font-contrast-color: black;
 
 // When navbar switches from desktop to mobile
 $navbar-media-query-width: 800px;

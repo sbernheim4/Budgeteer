@@ -13,12 +13,13 @@ const User = mongoose.model('User');
 const plaidRouter = express.Router({});
 
 // Initialize the Plaid client
-const client = new plaid.Client(
-	process.env.PLAID_CLIENT_ID,
-	process.env.PLAID_SECRET,
-	process.env.PLAID_PUBLIC_KEY,
-	plaid.environments[process.env.PLAID_ENV]
-);
+const client = new plaid.Client({
+	clientID: process.env.PLAID_CLIENT_ID,
+	secret: process.env.PLAID_SECRET,
+	env: plaid.environments[process.env.PLAID_ENV],
+	options: { }
+	// process.env.PLAID_PUBLIC_KEY,
+});
 
 plaidRouter.use(
 	bodyParser.urlencoded({
@@ -65,12 +66,10 @@ plaidRouter.post('/rotate-access-tokens', async (req, res) => {
 	req.session.save(() => {});
 
 	// Update access tokens on the server
-	User.update({ _id: req.session.user._id }, { $set: { accessTokens: newAccessTokens } }, () => {
-		console.log(chalk.green('Access Tokens have rotated'));
-		res.json({
-			result: 'New tokens were successfully generated. Please refresh the page to continue.'
-		});
-	});
+	User.updateOne(
+		{ _id: req.session.user._id },
+		{ $set: { accessTokens: newAccessTokens } }
+	);
 });
 
 // Get Access Tokens and Item IDs from Plaid
@@ -96,12 +95,9 @@ plaidRouter.post('/get-access-token', async (req, res) => {
 		req.session.save(() => {});
 
 		// Update the db with the new account info
-		User.update(
+		User.updateOne(
 			{ _id: req.session.user._id },
-			{ $set: { accessTokens: currAccessTokens, itemID: currItemID } },
-			() => {
-				console.log(chalk.green('New account has been saved'));
-			}
+			{ $set: { accessTokens: currAccessTokens, itemID: currItemID } }
 		);
 
 		res.status(204).end();
@@ -339,7 +335,7 @@ plaidRouter.get('/linked-accounts', async (req, res) => {
 
 		// Get the associated instituion for the given Item ID
 		const ids = itemData.map((thing: { item: { institution_id: string } }) =>
-			client.getInstitutionById(thing.item.institution_id)
+			client.getInstitutionById(thing.item.institution_id, ['US'])
 		);
 
 		const data = await Promise.all(ids); // Wait for all the IDs to be processed
@@ -378,7 +374,7 @@ plaidRouter.post('/remove-account', async (req, res) => {
 
 	try {
 		// Update the values in the database
-		await User.update(
+		await User.updateOne(
 			{ _id: req.session.user._id },
 			{
 				$set: {

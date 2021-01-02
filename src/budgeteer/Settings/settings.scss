@@ -2,6 +2,7 @@
 
 .settings {
 	position: relative;
+	color: white;
 
 	h1 {
 		margin-bottom: 30px;
@@ -22,7 +23,7 @@
 			background-color: $green;
 			border-radius: 5px;
 			font-size: 1em;
-			color: $default-font-contrast-color;
+			color: $default-font-color;
 			cursor: pointer;
 			transition: background-color .1s ease;
 			box-shadow: 0 6px darken($green, 10%);

@@ -6,6 +6,11 @@
 	max-width: 800px;
 	width: 100vw;
 
+	h2 {
+		color: #f6f6f6;
+		font-weight: 400;
+	}
+
 	h1 {
 		margin-top: 30px;
 	}
@@ -14,9 +19,7 @@
 
 		margin: 0 auto;
 		width: 90%;
-		height: 400px;
 		padding: 20px;
-		background-color: white;
 
 		@media all and (max-width: 500px) {
 			font-size: .9em;
@@ -35,6 +38,7 @@
 			justify-content: space-between;
 			align-items: center;
 			display: flex;
+			border-bottom: 1px solid #6a6a6a;
 
 			button {
 
@@ -42,15 +46,15 @@
 				min-width: 90px;
 				height: 40px;
 				background-color: $red;
-				border-radius: 5px;
-				font-size: 1em;
-				color: $default-font-contrast-color;
+				border-radius: 4px;
+				font-size: .9em;
+				color: $default-font-color;
 				cursor: pointer;
 				transition: background-color .1s ease-in;
 				font-weight: 800;
-				box-shadow: 0 6px darken($red, 10%);
-				box-sizing: border-box;
-				top: -3px;
+				// box-shadow: 0 6px darken($red, 10%);
+				// box-sizing: border-box;
+				// top: -3px;
 
 				@media all and (max-width: 500px) {
 
@@ -61,18 +65,15 @@
 				}
 
 				&:hover {
-
 					background-color: darken($red, 10%);
-					box-shadow: 0 6px darken($red, 20%);
-
 				}
 
-				&:active {
+				// &:active {
 
-					top: 3px;
-					box-shadow: 0 0 darken($red, 17%);
+				// 	top: 3px;
+				// 	box-shadow: 0 0 darken($red, 17%);
 
-				}
+				// }
 			}
 
 		}

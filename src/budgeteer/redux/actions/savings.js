@@ -25,7 +25,7 @@ export const getSavingsChartData = (institutionId) => {
 			return;
 		}
 
-		const historicalSavingsData = await downloadHistoricalData();
+		const historicalSavingsData = await fetchHistoricalData();
 
 		dispatch({
 			type: SavingsActions.STORE_SAVINGS_CHART_DATA,
@@ -42,7 +42,7 @@ export const getSavingsChartData = (institutionId) => {
 
 	};
 
-	async function downloadHistoricalData() {
+	async function fetchHistoricalData() {
 
 		const historicalDataRequest = await axios({
 			method: 'get',

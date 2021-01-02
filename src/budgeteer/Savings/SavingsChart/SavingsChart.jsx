@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { connect, useDispatch } from "react-redux";
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { useSelector, useDispatch } from "react-redux";
+import {
+    AreaChart,
+    Area,
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
+    Tooltip
+} from 'recharts';
 
 import { getSavingsChartData } from './../../redux/actions/savings';
 
@@ -13,6 +20,12 @@ function SavingsChart(props) {
 	const [minMax, setMinMax] = useState({min: 0, max: 10});
 	const [chartColor] = useState('#79c6a3');
 
+	const rechartsData = useSelector(state => state.savings[props.institutionId]) || [];
+
+	// const bankInfo = useSelector(
+	// 	state => state.savings.bankInfo.find(institution => institution.institutionId === props.institutionId)
+	// );
+
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -23,14 +36,21 @@ function SavingsChart(props) {
 
 	useEffect(() => {
 
-		const bounds = getChartBounds(props.rechartsData);
+		const bounds = getChartBounds(rechartsData);
 
-		setMinMax(bounds);
-		determineChartColor(props.rechartsData);
+		if (minMax !== bounds) {
+			setMinMax(bounds);
+		}
 
-	}, [props.rechartsData])
+		determineChartColor(rechartsData);
+
+	}, [rechartsData])
 
 	function getChartBounds(data) {
+
+		if (!rechartsData.length) {
+			return minMax;
+		}
 
 		const multiplier = .03;
 		const normalizer = 100;
@@ -69,7 +89,7 @@ function SavingsChart(props) {
 
 	function determineInterval() {
 
-		const { length } = props.rechartsData;
+		const { length } = rechartsData;
 
 		if (length <= 4) {
 			return 1;
@@ -96,7 +116,7 @@ function SavingsChart(props) {
 				height='100%'
 			>
 				<AreaChart
-					data={props.rechartsData}
+					data={rechartsData}
 					margin={{ top: 20, right: 35, left: 35, bottom: 10 }}
 				>
 					<YAxis
@@ -131,47 +151,28 @@ function SavingsChart(props) {
 }
 
 function CustomToolTip(props) {
+	if (!(props.active && props.payload)) {
 
-	if (props.active && props.payload) {
-
-		const { payload, label } = props;
-
-		const balance = payload[0].value;
-		const displayableBalance = `$${dollarify(balance)}`;
-		const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-
-		const date = label.split('/');
-		const [month, day, year] = date;
-		const writtenMonth = months[month - 1];
-
-		return (
-			<div className="savings-chart-tooltip">
-				<p>{writtenMonth}. {day} {year}</p>
-				<p>{displayableBalance}</p>
-			</div>
-		);
-
+		return null
 	}
 
-	return null;
+	const { payload, label } = props;
+
+	const balance = payload[0].value;
+	const displayableBalance = `$${dollarify(balance)}`;
+	const months = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+	const date = label.split('/');
+	const [month, day, year] = date;
+	const writtenMonth = months[month - 1];
+
+	return (
+		<div className="savings-chart-tooltip">
+		<p>{writtenMonth}. {day} {year}</p>
+		<p>{displayableBalance}</p>
+		</div>
+	);
 
 }
 
-const mapStateToProps = (state, ownProps) => {
-
-	const institutionInfo = state.savings.bankInfo.find(institution => {
-		return institution.institutionId === ownProps.institutionId
-	});
-
-	const rechartsData = state.savings[ownProps.institutionId] || [];
-
-	return {
-		bankInfo: institutionInfo,
-		rechartsData
-	}
-
-};
-
-const connectedSavingsChart = connect(mapStateToProps, null)(SavingsChart);
-
-export default connectedSavingsChart;
+export default SavingsChart;

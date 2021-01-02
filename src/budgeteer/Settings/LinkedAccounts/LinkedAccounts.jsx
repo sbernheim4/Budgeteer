@@ -3,9 +3,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowAltCircleDown } from '@fortawesome/free-solid-svg-icons';
-
 import './linkedAccounts.scss';
 
 class LinkedAccounts extends Component {
@@ -61,6 +58,7 @@ class LinkedAccounts extends Component {
 	}
 
 	displayMessage(msg, color) {
+
 		this.setState({
 			message: msg,
 			display: true
@@ -86,7 +84,6 @@ class LinkedAccounts extends Component {
 							<button onClick={(e) => this.removeAccount(e)}>Unlink</button>
 						</div>
 					))}
-					<FontAwesomeIcon className='linked-accounts__list__icon' icon={faArrowAltCircleDown} />
 				</div>
 			</section>
 		);

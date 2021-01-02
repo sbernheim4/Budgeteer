@@ -36,8 +36,10 @@ class Settings extends Component {
 			this.setState({
 				linkedBanks: [...this.state.linkedBanks.slice(0, index), ...this.state.linkedBanks.slice(index + 1)]
 			});
+
 			window.localStorage.clear();
 			window.sessionStorage.clear();
+
 		} catch (err) {
 			console.log('DISPLAY ERROR MESSAGE');
 			console.log(err.ERROR);
